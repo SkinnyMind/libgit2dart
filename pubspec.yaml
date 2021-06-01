@@ -1,6 +1,6 @@
-name: libgit2_dart
-
-description: Dart bindings for libgit2
+name: libgit2dart
+description: Dart bindings to libgit2
+version: 0.0.1
 
 environment:
   sdk: ">=2.12.0 <3.0.0"
@@ -9,15 +9,17 @@ dependencies:
 
 dev_dependencies:
   pedantic: ^1.11.0
-  ffigen: ^3.0.0
+  ffigen: ^3.1.0-dev.1
 
 ffigen:
-  output: "./lib/src/libgit2_bindings.dart"
+  output: "lib/src/libgit2_bindings.dart"
   headers:
     entry-points:
-      - "./src/headers/"
+      - "libgit2-1.1.0/headers/*.h"
   name: "Libgit2"
   description: "Bindings to libgit2"
   comments:
     style: any
     length: full
+  llvm-path:
+    - "/usr/lib64/libclang.so"

@@ -4,3 +4,6 @@ linter:
     - file_names
     - prefer_const_constructors
     - sort_constructors_first
+analyzer:
+  exclude:
+    - lib/src/bindings/libgit2_bindings.dart
