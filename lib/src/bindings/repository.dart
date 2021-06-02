@@ -27,10 +27,11 @@ Pointer<Pointer<git_repository>> open(String path) {
 /// The [bare_path] can point to only a bare repository.
 ///
 /// Throws a [LibGit2Error] if error occured.
-Pointer<Pointer<git_repository>> openBare(String bare_path) {
+Pointer<Pointer<git_repository>> openBare(String barePath) {
   final out = calloc<Pointer<git_repository>>();
-  final error = libgit2.git_repository_open_bare(
-      out, bare_path.toNativeUtf8().cast<Int8>());
+  final barePathC = barePath.toNativeUtf8().cast<Int8>();
+  final error = libgit2.git_repository_open_bare(out, barePathC);
+  calloc.free(barePathC);
 
   if (error < 0) {
     throw LibGit2Error(error, libgit2.git_error_last());
@@ -75,11 +76,13 @@ Pointer<Pointer<git_object>> revParseSingle(
   String spec,
 ) {
   final out = calloc<Pointer<git_object>>();
+  final specC = spec.toNativeUtf8().cast<Int8>();
   final error = libgit2.git_revparse_single(
     out,
     repo,
-    spec.toNativeUtf8().cast<Int8>(),
+    specC,
   );
+  calloc.free(specC);
 
   if (error < 0) {
     throw LibGit2Error(error, libgit2.git_error_last());

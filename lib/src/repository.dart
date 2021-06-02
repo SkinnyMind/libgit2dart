@@ -15,25 +15,18 @@ class Repository {
   Repository.open(String dir) {
     libgit2.git_libgit2_init();
 
-    _repoPointer = repository.open(dir);
-    _head = repository.revParseSingle(_repoPointer.value, 'HEAD^{commit}');
-    headCommit = libgit2
-        .git_commit_message(_head.value.cast<git_commit>())
-        .cast<Utf8>()
-        .toDartString();
+    final _repoPointer = repository.open(dir);
     path = repository.path(_repoPointer.value);
     namespace = repository.getNamespace(_repoPointer.value);
     isBare = repository.isBare(_repoPointer.value);
 
     // free up neccessary pointers
     calloc.free(_repoPointer);
-    calloc.free(_head);
     libgit2.git_libgit2_shutdown();
   }
 
-  late Pointer<Pointer<git_repository>> _repoPointer;
-  late Pointer<Pointer<git_object>> _head;
-  late String headCommit;
+  /// Path to the `.git` folder for normal repositories
+  /// or path to the repository itself for bare repositories.
   late String path;
   late String namespace;
   late bool isBare;
