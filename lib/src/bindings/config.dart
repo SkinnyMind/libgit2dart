@@ -15,7 +15,7 @@ Pointer<Pointer<git_config>> newConfig() {
   final error = libgit2.git_config_new(out);
 
   if (error < 0) {
-    throw LibGit2Error(error, libgit2.git_error_last());
+    throw LibGit2Error(libgit2.git_error_last());
   }
 
   return out;
@@ -31,7 +31,7 @@ Pointer<Pointer<git_config>> open(String path) {
   calloc.free(pathC);
 
   if (error < 0) {
-    throw LibGit2Error(error, libgit2.git_error_last());
+    throw LibGit2Error(libgit2.git_error_last());
   }
 
   return out;
@@ -49,7 +49,7 @@ Pointer<Pointer<git_config>> openDefault() {
   final error = libgit2.git_config_open_default(out);
 
   if (error < 0) {
-    throw LibGit2Error(error, libgit2.git_error_last());
+    throw LibGit2Error(libgit2.git_error_last());
   }
 
   return out;
@@ -75,7 +75,7 @@ String findGlobal() {
   calloc.free(out);
 
   if (error < 0) {
-    throw LibGit2Error(error, libgit2.git_error_last());
+    throw LibGit2Error(libgit2.git_error_last());
   }
 
   return path;
@@ -93,7 +93,7 @@ String findSystem() {
   calloc.free(out);
 
   if (error < 0) {
-    throw LibGit2Error(error, libgit2.git_error_last());
+    throw LibGit2Error(libgit2.git_error_last());
   }
 
   return path;
@@ -112,7 +112,7 @@ String findXdg() {
   calloc.free(out);
 
   if (error < 0) {
-    throw LibGit2Error(error, libgit2.git_error_last());
+    throw LibGit2Error(libgit2.git_error_last());
   }
 
   return path;
@@ -134,7 +134,7 @@ Pointer<Int8> getConfigValue(Pointer<git_config> cfg, String variable) {
   calloc.free(name);
 
   if (error < 0) {
-    throw LibGit2Error(error, libgit2.git_error_last());
+    throw LibGit2Error(libgit2.git_error_last());
   }
 
   return value;

@@ -3,14 +3,12 @@ import 'package:ffi/ffi.dart';
 import 'bindings/libgit2_bindings.dart';
 
 class LibGit2Error {
-  LibGit2Error(this.errorCode, this.errorPointer);
-  final int errorCode;
+  LibGit2Error(this.errorPointer);
   final Pointer<git_error> errorPointer;
 
   @override
   String toString() {
-    final errorClass = errorPointer.ref.klass;
     final errorMessage = errorPointer.ref.message.cast<Utf8>().toDartString();
-    return 'Error $errorCode/$errorClass: $errorMessage';
+    return '$errorMessage';
   }
 }

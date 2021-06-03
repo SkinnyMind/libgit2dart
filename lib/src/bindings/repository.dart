@@ -16,7 +16,7 @@ Pointer<Pointer<git_repository>> open(String path) {
   calloc.free(pathC);
 
   if (error < 0) {
-    throw LibGit2Error(error, libgit2.git_error_last());
+    throw LibGit2Error(libgit2.git_error_last());
   }
 
   return out;
@@ -34,7 +34,7 @@ Pointer<Pointer<git_repository>> openBare(String barePath) {
   calloc.free(barePathC);
 
   if (error < 0) {
-    throw LibGit2Error(error, libgit2.git_error_last());
+    throw LibGit2Error(libgit2.git_error_last());
   }
 
   return out;
@@ -85,7 +85,7 @@ Pointer<Pointer<git_object>> revParseSingle(
   calloc.free(specC);
 
   if (error < 0) {
-    throw LibGit2Error(error, libgit2.git_error_last());
+    throw LibGit2Error(libgit2.git_error_last());
   }
 
   return out;
