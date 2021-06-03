@@ -19,9 +19,79 @@ class Config {
     libgit2.git_libgit2_init();
 
     if (path == null) {
-      configPointer = config.openDefault();
+      try {
+        configPointer = config.openDefault();
+      } catch (e) {
+        rethrow;
+      }
     } else {
-      configPointer = config.open(path!);
+      try {
+        configPointer = config.open(path!);
+      } catch (e) {
+        rethrow;
+      }
+    }
+
+    entries = config.getEntries(configPointer.value);
+
+    libgit2.git_libgit2_shutdown();
+  }
+
+  /// Initializes a new instance of [Config] class.
+  ///
+  /// Opens the system configuration file.
+  ///
+  /// Throws a [LibGit2Error] if error occured.
+  Config.system() {
+    libgit2.git_libgit2_init();
+
+    try {
+      final systemPath = config.findSystem();
+      configPointer = config.open(systemPath);
+      entries = config.getEntries(configPointer.value);
+    } catch (e) {
+      configPointer = nullptr;
+      rethrow;
+    }
+
+    libgit2.git_libgit2_shutdown();
+  }
+
+  /// Initializes a new instance of [Config] class.
+  ///
+  /// Opens the global configuration file.
+  ///
+  /// Throws a [LibGit2Error] if error occured.
+  Config.global() {
+    libgit2.git_libgit2_init();
+
+    try {
+      final globalPath = config.findGlobal();
+      configPointer = config.open(globalPath);
+      entries = config.getEntries(configPointer.value);
+    } catch (e) {
+      configPointer = nullptr;
+      rethrow;
+    }
+
+    libgit2.git_libgit2_shutdown();
+  }
+
+  /// Initializes a new instance of [Config] class.
+  ///
+  /// Opens the global XDG configuration file.
+  ///
+  /// Throws a [LibGit2Error] if error occured.
+  Config.xdg() {
+    libgit2.git_libgit2_init();
+
+    try {
+      final xdgPath = config.findXdg();
+      configPointer = config.open(xdgPath);
+      entries = config.getEntries(configPointer.value);
+    } catch (e) {
+      configPointer = nullptr;
+      rethrow;
     }
 
     libgit2.git_libgit2_shutdown();
@@ -33,23 +103,24 @@ class Config {
   /// Pointer to memory address for allocated config object.
   late Pointer<Pointer<git_config>> configPointer;
 
-  /// Get boolean value of `key` [variable]
-  bool getBool(String variable) {
-    return config.getBool(configPointer.value, variable);
-  }
+  /// Map of key/value entries from config file.
+  Map<String, dynamic> entries = {};
 
-  ///Get integer value of `key` [variable]
-  int getInt(String variable) {
-    return config.getInt(configPointer.value, variable);
+  /// Sets value of config key
+  void setEntry(String key, dynamic value) {
+    try {
+      if (value.runtimeType == bool) {
+        config.setBool(configPointer.value, key, value);
+      } else if (value.runtimeType == int) {
+        config.setInt(configPointer.value, key, value);
+      } else {
+        config.setString(configPointer.value, key, value);
+      }
+      entries = config.getEntries(configPointer.value);
+    } catch (e) {
+      rethrow;
+    }
   }
-
-  ///Get string value of `key` [variable]
-  String getString(String variable) {
-    return config.getString(configPointer.value, variable);
-  }
-
-  /// Set value of config key
-  // TODO
 
   /// Releases memory allocated for config object.
   void close() {

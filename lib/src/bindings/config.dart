@@ -174,3 +174,72 @@ String getString(Pointer<git_config> cfg, String variable) {
   final value = getConfigValue(cfg, variable);
   return value.cast<Utf8>().toDartString();
 }
+
+/// Set the value of a boolean config variable in the config file with the
+/// highest level (usually the local one).
+///
+/// Throws a [LibGit2Error] if error occured.
+void setBool(Pointer<git_config> cfg, String name, bool value) {
+  final nameC = name.toNativeUtf8().cast<Int8>();
+  final valueC = value ? 1 : 0;
+  final error = libgit2.git_config_set_bool(cfg, nameC, valueC);
+  calloc.free(nameC);
+
+  if (error < 0) {
+    throw LibGit2Error(libgit2.git_error_last());
+  }
+}
+
+/// Set the value of an integer config variable in the config file with the
+/// highest level (usually the local one).
+void setInt(Pointer<git_config> cfg, String name, int value) {
+  final nameC = name.toNativeUtf8().cast<Int8>();
+  final error = libgit2.git_config_set_int64(cfg, nameC, value);
+  calloc.free(nameC);
+
+  if (error < 0) {
+    throw LibGit2Error(libgit2.git_error_last());
+  }
+}
+
+/// Set the value of a string config variable in the config file with the
+/// highest level (usually the local one).
+void setString(Pointer<git_config> cfg, String name, String value) {
+  final nameC = name.toNativeUtf8().cast<Int8>();
+  final valueC = value.toNativeUtf8().cast<Int8>();
+  final error = libgit2.git_config_set_string(cfg, nameC, valueC);
+  calloc.free(nameC);
+  calloc.free(valueC);
+
+  if (error < 0) {
+    throw LibGit2Error(libgit2.git_error_last());
+  }
+}
+
+/// Iterate over all the config variables.
+Map<String, dynamic> getEntries(Pointer<git_config> cfg) {
+  final iterator = calloc<Pointer<git_config_iterator>>();
+  final entry = calloc<Pointer<git_config_entry>>();
+  libgit2.git_config_iterator_new(iterator, cfg);
+  var error = 0;
+  final entries = <String, dynamic>{};
+
+  while (error != -31) {
+    error = libgit2.git_config_next(entry, iterator.value);
+    entries[entry.value.ref.name.cast<Utf8>().toDartString()] =
+        entry.value.ref.value.cast<Utf8>().toDartString();
+  }
+  calloc.free(entry);
+  calloc.free(iterator);
+
+  return entries;
+}
+
+/// Iterate over the values of multivar
+// TODO
+
+/// Multivars variables get/set
+// TODO
+
+/// Deletes a config variable
+// TODO
