@@ -1,4 +1,5 @@
 import 'dart:ffi';
+import 'dart:io';
 import 'package:ffi/ffi.dart';
 import 'bindings/libgit2_bindings.dart';
 import 'bindings/config.dart' as config;
@@ -7,6 +8,8 @@ import 'util.dart';
 /// [Config] provides management of global configuration options
 /// (system, global, XDG, excluding repository config)
 class Config {
+  Config();
+
   /// Initializes a new instance of [Config] class.
   ///
   /// If [path] isn't provided, opens global, XDG and system config files.
@@ -15,7 +18,7 @@ class Config {
   /// Git config file following the default Git config syntax (see man git-config).
   ///
   /// [Config] object should be closed with [close] function to release allocated memory.
-  Config({this.path}) {
+  Config.open({this.path}) {
     libgit2.git_libgit2_init();
 
     if (path == null) {
@@ -26,13 +29,17 @@ class Config {
       }
     } else {
       try {
-        configPointer = config.open(path!);
+        if (File(path!).existsSync()) {
+          configPointer = config.open(path!);
+        } else {
+          throw Exception('File not found');
+        }
       } catch (e) {
         rethrow;
       }
     }
 
-    entries = config.getEntries(configPointer.value);
+    variables = config.getVariables(configPointer.value);
 
     libgit2.git_libgit2_shutdown();
   }
@@ -48,7 +55,7 @@ class Config {
     try {
       final systemPath = config.findSystem();
       configPointer = config.open(systemPath);
-      entries = config.getEntries(configPointer.value);
+      variables = config.getVariables(configPointer.value);
     } catch (e) {
       configPointer = nullptr;
       rethrow;
@@ -68,7 +75,7 @@ class Config {
     try {
       final globalPath = config.findGlobal();
       configPointer = config.open(globalPath);
-      entries = config.getEntries(configPointer.value);
+      variables = config.getVariables(configPointer.value);
     } catch (e) {
       configPointer = nullptr;
       rethrow;
@@ -88,7 +95,7 @@ class Config {
     try {
       final xdgPath = config.findXdg();
       configPointer = config.open(xdgPath);
-      entries = config.getEntries(configPointer.value);
+      variables = config.getVariables(configPointer.value);
     } catch (e) {
       configPointer = nullptr;
       rethrow;
@@ -104,7 +111,7 @@ class Config {
   late Pointer<Pointer<git_config>> configPointer;
 
   /// Map of key/value entries from config file.
-  Map<String, dynamic> entries = {};
+  Map<String, dynamic> variables = {};
 
   /// Sets value of config key
   void setEntry(String key, dynamic value) {
@@ -116,7 +123,7 @@ class Config {
       } else {
         config.setString(configPointer.value, key, value);
       }
-      entries = config.getEntries(configPointer.value);
+      variables = config.getVariables(configPointer.value);
     } catch (e) {
       rethrow;
     }

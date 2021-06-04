@@ -217,7 +217,7 @@ void setString(Pointer<git_config> cfg, String name, String value) {
 }
 
 /// Iterate over all the config variables.
-Map<String, dynamic> getEntries(Pointer<git_config> cfg) {
+Map<String, dynamic> getVariables(Pointer<git_config> cfg) {
   final iterator = calloc<Pointer<git_config_iterator>>();
   final entry = calloc<Pointer<git_config_entry>>();
   libgit2.git_config_iterator_new(iterator, cfg);
