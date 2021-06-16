@@ -3,6 +3,7 @@ import 'dart:io';
 import 'package:test/test.dart';
 import 'package:libgit2dart/src/util.dart';
 import 'package:libgit2dart/src/config.dart';
+import 'package:libgit2dart/src/error.dart';
 
 void main() {
   final tmpDir = Directory.systemTemp.path;
@@ -50,6 +51,18 @@ void main() {
     test('sets string value for provided key', () {
       config.setVariable('remote.origin.url', 'updated');
       expect(config.variables['remote.origin.url'], equals('updated'));
+    });
+
+    test('deletes variable', () {
+      config.deleteVariable('core.bare');
+      expect(config.variables['core.bare'], isNull);
+    });
+
+    test('throws on deleting non existing variable', () {
+      expect(
+        () => config.deleteVariable('not.there'),
+        throwsA(isA<LibGit2Error>()),
+      );
     });
   });
   ;

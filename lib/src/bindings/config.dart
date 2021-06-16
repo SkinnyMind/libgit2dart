@@ -233,11 +233,22 @@ Map<String, dynamic> getVariables(Pointer<git_config> cfg) {
   return entries;
 }
 
+/// Delete a config variable from the config file with the highest level
+/// (usually the local one).
+///
+/// Throws a [LibGit2Error] if error occured.
+void deleteVariable(Pointer<git_config> cfg, String name) {
+  final nameC = name.toNativeUtf8().cast<Int8>();
+  final error = libgit2.git_config_delete_entry(cfg, nameC);
+  calloc.free(nameC);
+
+  if (error < 0) {
+    throw LibGit2Error(libgit2.git_error_last());
+  }
+}
+
 /// Iterate over the values of multivar
 // TODO
 
 /// Multivars variables get/set
-// TODO
-
-/// Deletes a config variable
 // TODO

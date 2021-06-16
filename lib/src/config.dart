@@ -129,6 +129,19 @@ class Config {
     }
   }
 
+  /// Deletes variable from the config file with the highest level
+  /// (usually the local one).
+  ///
+  /// Throws a [LibGit2Error] if error occured.
+  void deleteVariable(String key) {
+    try {
+      config.deleteVariable(configPointer.value, key);
+      variables = config.getVariables(configPointer.value);
+    } catch (e) {
+      rethrow;
+    }
+  }
+
   /// Releases memory allocated for config object.
   void close() {
     calloc.free(configPointer);
