@@ -169,12 +169,6 @@ int getInt(Pointer<git_config> cfg, String variable) {
   return result;
 }
 
-/// Get the value of a config variable and parse it as a string.
-String getString(Pointer<git_config> cfg, String variable) {
-  final value = getConfigValue(cfg, variable);
-  return value.cast<Utf8>().toDartString();
-}
-
 /// Set the value of a boolean config variable in the config file with the
 /// highest level (usually the local one).
 ///
@@ -192,6 +186,8 @@ void setBool(Pointer<git_config> cfg, String name, bool value) {
 
 /// Set the value of an integer config variable in the config file with the
 /// highest level (usually the local one).
+///
+/// Throws a [LibGit2Error] if error occured.
 void setInt(Pointer<git_config> cfg, String name, int value) {
   final nameC = name.toNativeUtf8().cast<Int8>();
   final error = libgit2.git_config_set_int64(cfg, nameC, value);
@@ -204,6 +200,8 @@ void setInt(Pointer<git_config> cfg, String name, int value) {
 
 /// Set the value of a string config variable in the config file with the
 /// highest level (usually the local one).
+///
+/// Throws a [LibGit2Error] if error occured.
 void setString(Pointer<git_config> cfg, String name, String value) {
   final nameC = name.toNativeUtf8().cast<Int8>();
   final valueC = value.toNativeUtf8().cast<Int8>();

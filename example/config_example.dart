@@ -1,53 +1,42 @@
 import 'package:libgit2dart/libgit2dart.dart';
 
 void main() {
-  final repoConfig = Config(path: '.git/config');
+  // Open system + global config file.
+  final config = Config.open();
 
-  print('All entries of repo config:');
-  for (final entry in repoConfig.entries.entries) {
+  print('All entries of system/global config:');
+  // config.variables hold key/value from config file
+  for (final entry in config.variables.entries) {
     print('${entry.key}: ${entry.value}');
   }
+  // .close should be called on object to free memory when done.
+  config.close();
 
-  repoConfig.close();
-
+  // Open config file at provided path.
+  // Exception is thrown if file not found.
   try {
-    final systemConfig = Config.system();
+    final repoConfig = Config.open(path: '.git/config');
 
-    print(
-        '\nUser Name from system config: ${systemConfig.entries['user.name']}');
+    print('All entries of repo config:');
+    for (final entry in repoConfig.variables.entries) {
+      print('${entry.key}: ${entry.value}');
+    }
 
-    systemConfig.close();
+    repoConfig.close();
   } catch (e) {
-    print('\n$e');
+    print(e);
   }
 
+  // Open global config file if there's one.
+  // Exception is thrown if file not found.
   try {
     final globalConfig = Config.global();
 
-    print(
-        '\nUser Name from global config: ${globalConfig.entries['user.name']}');
+    final userName = globalConfig.variables['user.name'];
+    print('\nUser Name from global config: $userName');
 
     globalConfig.close();
   } catch (e) {
     print('\n$e');
   }
-
-  try {
-    final xdgConfig = Config.xdg();
-    print('\nAll entries of repo config:');
-
-    print('\nUser Name from xdg config: ${xdgConfig.entries['user.name']}');
-
-    xdgConfig.close();
-  } catch (e) {
-    print('\n$e');
-  }
-
-  final config = Config();
-
-  print('\nAll entries of system/global config:');
-  for (final entry in config.entries.entries) {
-    print('${entry.key}: ${entry.value}');
-  }
-  config.close();
 }

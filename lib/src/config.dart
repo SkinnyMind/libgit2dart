@@ -114,7 +114,7 @@ class Config {
   Map<String, dynamic> variables = {};
 
   /// Sets value of config key
-  void setEntry(String key, dynamic value) {
+  void setVariable(String key, dynamic value) {
     try {
       if (value.runtimeType == bool) {
         config.setBool(configPointer.value, key, value);
