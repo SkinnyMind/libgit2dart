@@ -280,3 +280,23 @@ List<String> getMultivar(
 
   return entries;
 }
+
+/// Set the value of a multivar config variable in the config file with the
+/// highest level (usually the local one).
+///
+/// The regular expression is applied case-sensitively on the value.
+void setMultivar(
+  Pointer<git_config> cfg,
+  String name,
+  String regexp,
+  String value,
+) {
+  final nameC = name.toNativeUtf8().cast<Int8>();
+  final regexpC = regexp.toNativeUtf8().cast<Int8>();
+  final valueC = value.toNativeUtf8().cast<Int8>();
+  libgit2.git_config_set_multivar(cfg, nameC, regexpC, valueC);
+
+  calloc.free(nameC);
+  calloc.free(regexpC);
+  calloc.free(valueC);
+}

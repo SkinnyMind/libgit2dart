@@ -113,7 +113,7 @@ class Config {
   /// Map of key/value entries from config file.
   Map<String, dynamic> variables = {};
 
-  /// Sets value of config key
+  /// Sets the [value] of config [key]
   void setVariable(String key, dynamic value) {
     try {
       if (value.runtimeType == bool) {
@@ -148,6 +148,15 @@ class Config {
   /// values which match the pattern.
   List<String> getMultivar(String key, {String? regexp}) {
     return config.getMultivar(configPointer.value, key, regexp);
+  }
+
+  /// Sets the [value] of a multivar [key] in the config file with the
+  /// highest level (usually the local one).
+  ///
+  /// The [regexp] is applied case-sensitively on the value.
+  /// Empty [regexp] sets [value] for all values of a multivar [key]
+  void setMultivar(String key, String regexp, String value) {
+    config.setMultivar(configPointer.value, key, regexp, value);
   }
 
   /// Releases memory allocated for config object.

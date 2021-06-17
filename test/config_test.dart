@@ -10,12 +10,12 @@ void main() {
   const configFileName = 'test_config';
   const contents = '''
 [core]
-  repositoryformatversion = 0
-  bare = false
-  gitproxy = proxy-command for kernel.org
-  gitproxy = default-proxy
+\trepositoryformatversion = 0
+\tbare = false
+\tgitproxy = proxy-command for kernel.org
+\tgitproxy = default-proxy
 [remote "origin"]
-  url = someurl
+\turl = someurl
 ''';
 
   late Config config;
@@ -89,6 +89,22 @@ void main() {
         config.getMultivar('core.gitproxy', regexp: 'for kernel.org\$'),
         ['proxy-command for kernel.org'],
       );
+    });
+
+    test('sets value of multivar', () {
+      config.setMultivar('core.gitproxy', 'default', 'updated');
+      final multivarValues = config.getMultivar('core.gitproxy');
+      expect(multivarValues, isNot(contains('default-proxy')));
+      expect(multivarValues, contains('updated'));
+    });
+
+    test('sets value for all multivar values when regexp is empty', () {
+      config.setMultivar('core.gitproxy', '', 'updated');
+      final multivarValues = config.getMultivar('core.gitproxy');
+      expect(multivarValues, isNot(contains('default-proxy')));
+      expect(multivarValues, isNot(contains('proxy-command for kernel.org')));
+      expect(multivarValues, contains('updated'));
+      expect(multivarValues.length, equals(2));
     });
   });
   ;
