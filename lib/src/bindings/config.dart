@@ -247,8 +247,36 @@ void deleteVariable(Pointer<git_config> cfg, String name) {
   }
 }
 
-/// Iterate over the values of multivar
-// TODO
+/// Iterate over the values of a multivar
+///
+/// If regexp is present, then the iterator will only iterate over all
+/// values which match the pattern.
+List<String> getMultivar(
+  Pointer<git_config> cfg,
+  String name,
+  String? regexp,
+) {
+  final nameC = name.toNativeUtf8().cast<Int8>();
+  final regexpC = regexp?.toNativeUtf8().cast<Int8>() ?? nullptr;
+  final iterator = calloc<Pointer<git_config_iterator>>();
+  final entry = calloc<Pointer<git_config_entry>>();
+  libgit2.git_config_multivar_iterator_new(iterator, cfg, nameC, regexpC);
+  var error = 0;
+  final entries = <String>[];
 
-/// Multivars variables get/set
-// TODO
+  while (error == 0) {
+    error = libgit2.git_config_next(entry, iterator.value);
+    if (error != -31) {
+      entries.add(entry.value.ref.value.cast<Utf8>().toDartString());
+    } else {
+      break;
+    }
+  }
+
+  calloc.free(nameC);
+  calloc.free(regexpC);
+  calloc.free(iterator);
+  calloc.free(entry);
+
+  return entries;
+}

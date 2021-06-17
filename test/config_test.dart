@@ -8,6 +8,16 @@ import 'package:libgit2dart/src/error.dart';
 void main() {
   final tmpDir = Directory.systemTemp.path;
   const configFileName = 'test_config';
+  const contents = '''
+[core]
+  repositoryformatversion = 0
+  bare = false
+  gitproxy = proxy-command for kernel.org
+  gitproxy = default-proxy
+[remote "origin"]
+  url = someurl
+''';
+
   late Config config;
 
   group('Config', () {
@@ -16,8 +26,7 @@ void main() {
     });
 
     setUp(() {
-      File('$tmpDir/$configFileName').writeAsStringSync(
-          '[core]\n\trepositoryformatversion = 0\n\tbare = false\n[remote "origin"]\n\turl = someurl');
+      File('$tmpDir/$configFileName').writeAsStringSync(contents);
       config = Config.open(path: '$tmpDir/$configFileName');
     });
 
@@ -62,6 +71,23 @@ void main() {
       expect(
         () => config.deleteVariable('not.there'),
         throwsA(isA<LibGit2Error>()),
+      );
+    });
+
+    test('returns values of multivar', () {
+      expect(
+        config.getMultivar('core.gitproxy'),
+        [
+          'proxy-command for kernel.org',
+          'default-proxy',
+        ],
+      );
+    });
+
+    test('returns values of multivar with regexp', () {
+      expect(
+        config.getMultivar('core.gitproxy', regexp: 'for kernel.org\$'),
+        ['proxy-command for kernel.org'],
       );
     });
   });

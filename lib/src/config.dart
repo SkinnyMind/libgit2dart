@@ -142,6 +142,14 @@ class Config {
     }
   }
 
+  /// Returns list of values for multivar [key]
+  ///
+  /// If [regexp] is present, then the iterator will only iterate over all
+  /// values which match the pattern.
+  List<String> getMultivar(String key, {String? regexp}) {
+    return config.getMultivar(configPointer.value, key, regexp);
+  }
+
   /// Releases memory allocated for config object.
   void close() {
     calloc.free(configPointer);
