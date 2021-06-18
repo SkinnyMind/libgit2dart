@@ -140,11 +140,11 @@ String getValue(Pointer<git_config> cfg, String variable) {
 /// highest level (usually the local one).
 ///
 /// Throws a [LibGit2Error] if error occured.
-void setBool(Pointer<git_config> cfg, String name, bool value) {
-  final nameC = name.toNativeUtf8().cast<Int8>();
+void setBool(Pointer<git_config> cfg, String variable, bool value) {
+  final name = variable.toNativeUtf8().cast<Int8>();
   final valueC = value ? 1 : 0;
-  final error = libgit2.git_config_set_bool(cfg, nameC, valueC);
-  calloc.free(nameC);
+  final error = libgit2.git_config_set_bool(cfg, name, valueC);
+  calloc.free(name);
 
   if (error < 0) {
     throw LibGit2Error(libgit2.git_error_last());
@@ -155,10 +155,10 @@ void setBool(Pointer<git_config> cfg, String name, bool value) {
 /// highest level (usually the local one).
 ///
 /// Throws a [LibGit2Error] if error occured.
-void setInt(Pointer<git_config> cfg, String name, int value) {
-  final nameC = name.toNativeUtf8().cast<Int8>();
-  final error = libgit2.git_config_set_int64(cfg, nameC, value);
-  calloc.free(nameC);
+void setInt(Pointer<git_config> cfg, String variable, int value) {
+  final name = variable.toNativeUtf8().cast<Int8>();
+  final error = libgit2.git_config_set_int64(cfg, name, value);
+  calloc.free(name);
 
   if (error < 0) {
     throw LibGit2Error(libgit2.git_error_last());
@@ -169,11 +169,11 @@ void setInt(Pointer<git_config> cfg, String name, int value) {
 /// highest level (usually the local one).
 ///
 /// Throws a [LibGit2Error] if error occured.
-void setString(Pointer<git_config> cfg, String name, String value) {
-  final nameC = name.toNativeUtf8().cast<Int8>();
+void setString(Pointer<git_config> cfg, String variable, String value) {
+  final name = variable.toNativeUtf8().cast<Int8>();
   final valueC = value.toNativeUtf8().cast<Int8>();
-  final error = libgit2.git_config_set_string(cfg, nameC, valueC);
-  calloc.free(nameC);
+  final error = libgit2.git_config_set_string(cfg, name, valueC);
+  calloc.free(name);
   calloc.free(valueC);
 
   if (error < 0) {
@@ -204,10 +204,10 @@ Map<String, String> getEntries(Pointer<git_config> cfg) {
 /// (usually the local one).
 ///
 /// Throws a [LibGit2Error] if error occured.
-void deleteVariable(Pointer<git_config> cfg, String name) {
-  final nameC = name.toNativeUtf8().cast<Int8>();
-  final error = libgit2.git_config_delete_entry(cfg, nameC);
-  calloc.free(nameC);
+void deleteVariable(Pointer<git_config> cfg, String variable) {
+  final name = variable.toNativeUtf8().cast<Int8>();
+  final error = libgit2.git_config_delete_entry(cfg, name);
+  calloc.free(name);
 
   if (error < 0) {
     throw LibGit2Error(libgit2.git_error_last());
@@ -220,14 +220,14 @@ void deleteVariable(Pointer<git_config> cfg, String name) {
 /// values which match the pattern.
 List<String> getMultivar(
   Pointer<git_config> cfg,
-  String name,
+  String variable,
   String? regexp,
 ) {
-  final nameC = name.toNativeUtf8().cast<Int8>();
+  final name = variable.toNativeUtf8().cast<Int8>();
   final regexpC = regexp?.toNativeUtf8().cast<Int8>() ?? nullptr;
   final iterator = calloc<Pointer<git_config_iterator>>();
   final entry = calloc<Pointer<git_config_entry>>();
-  libgit2.git_config_multivar_iterator_new(iterator, cfg, nameC, regexpC);
+  libgit2.git_config_multivar_iterator_new(iterator, cfg, name, regexpC);
   var error = 0;
   final entries = <String>[];
 
@@ -240,7 +240,7 @@ List<String> getMultivar(
     }
   }
 
-  calloc.free(nameC);
+  calloc.free(name);
   calloc.free(regexpC);
   calloc.free(iterator);
   calloc.free(entry);
@@ -254,16 +254,16 @@ List<String> getMultivar(
 /// The regular expression is applied case-sensitively on the value.
 void setMultivar(
   Pointer<git_config> cfg,
-  String name,
+  String variable,
   String regexp,
   String value,
 ) {
-  final nameC = name.toNativeUtf8().cast<Int8>();
+  final name = variable.toNativeUtf8().cast<Int8>();
   final regexpC = regexp.toNativeUtf8().cast<Int8>();
   final valueC = value.toNativeUtf8().cast<Int8>();
-  libgit2.git_config_set_multivar(cfg, nameC, regexpC, valueC);
+  libgit2.git_config_set_multivar(cfg, name, regexpC, valueC);
 
-  calloc.free(nameC);
+  calloc.free(name);
   calloc.free(regexpC);
   calloc.free(valueC);
 }
