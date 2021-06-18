@@ -251,7 +251,7 @@ List<String> getMultivarValue(
 /// Set the value of a multivar config variable in the config file with the
 /// highest level (usually the local one).
 ///
-/// The regular expression is applied case-sensitively on the value.
+/// The regexp is applied case-sensitively on the value.
 void setMultivarValue(
   Pointer<git_config> cfg,
   String variable,
@@ -266,4 +266,21 @@ void setMultivarValue(
   calloc.free(name);
   calloc.free(regexpC);
   calloc.free(valueC);
+}
+
+/// Deletes one or several values from a multivar in the config file
+/// with the highest level (usually the local one).
+///
+/// The regexp is applied case-sensitively on the value.
+void deleteMultivar(
+  Pointer<git_config> cfg,
+  String variable,
+  String regexp,
+) {
+  final name = variable.toNativeUtf8().cast<Int8>();
+  final regexpC = regexp.toNativeUtf8().cast<Int8>();
+  libgit2.git_config_delete_multivar(cfg, name, regexpC);
+
+  calloc.free(name);
+  calloc.free(regexpC);
 }

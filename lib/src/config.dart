@@ -105,12 +105,12 @@ class Config {
   /// Pointer to memory address for allocated config object.
   late Pointer<Pointer<git_config>> configPointer;
 
-  /// Returns map of all the config variables and their values
+  /// Returns map of all the config variables and their values.
   Map<String, String> getEntries() {
     return config.getEntries(configPointer.value);
   }
 
-  /// Returns the value of config [variable]
+  /// Returns the value of config [variable].
   String getValue(String variable) {
     try {
       return config.getValue(configPointer.value, variable);
@@ -119,7 +119,7 @@ class Config {
     }
   }
 
-  /// Sets the [value] of config [variable]
+  /// Sets the [value] of config [variable].
   void setValue(String variable, dynamic value) {
     try {
       if (value.runtimeType == bool) {
@@ -158,9 +158,18 @@ class Config {
   /// highest level (usually the local one).
   ///
   /// The [regexp] is applied case-sensitively on the value.
-  /// Empty [regexp] sets [value] for all values of a multivar [variable]
+  /// Empty [regexp] sets [value] for all values of a multivar [variable].
   void setMultivarValue(String variable, String regexp, String value) {
     config.setMultivarValue(configPointer.value, variable, regexp, value);
+  }
+
+  /// Deletes one or several values from a multivar [variable] in the config file
+  /// with the highest level (usually the local one).
+  ///
+  /// The [regexp] is applied case-sensitively on the value.
+  /// Empty [regexp] deletes all values of a multivar [variable].
+  void deleteMultivar(String variable, String regexp) {
+    config.deleteMultivar(configPointer.value, variable, regexp);
   }
 
   /// Releases memory allocated for config object.

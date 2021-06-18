@@ -80,6 +80,7 @@ void main() {
 
     group('deleteEntry()', () {
       test('successfully deletes entry', () {
+        expect(config.getValue('core.bare'), equals('false'));
         config.deleteEntry('core.bare');
         final entries = config.getEntries();
         expect(entries['core.bare'], isNull);
@@ -131,6 +132,37 @@ void main() {
         expect(multivarValues, isNot(contains('proxy-command for kernel.org')));
         expect(multivarValues, contains('updated'));
         expect(multivarValues.length, equals(2));
+      });
+    });
+
+    group('deleteMultivar()', () {
+      test('successfully deletes value of a multivar', () {
+        expect(
+          config.getMultivarValue('core.gitproxy', regexp: 'for kernel.org\$'),
+          ['proxy-command for kernel.org'],
+        );
+
+        config.deleteMultivar('core.gitproxy', 'for kernel.org\$');
+
+        expect(
+          config.getMultivarValue('core.gitproxy', regexp: 'for kernel.org\$'),
+          [],
+        );
+      });
+
+      test('successfully deletes all values of a multivar when regexp is empty',
+          () {
+        expect(
+          config.getMultivarValue('core.gitproxy'),
+          [
+            'proxy-command for kernel.org',
+            'default-proxy',
+          ],
+        );
+
+        config.deleteMultivar('core.gitproxy', '');
+
+        expect(config.getMultivarValue('core.gitproxy'), []);
       });
     });
   });
