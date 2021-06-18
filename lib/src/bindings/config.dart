@@ -204,7 +204,7 @@ Map<String, String> getEntries(Pointer<git_config> cfg) {
 /// (usually the local one).
 ///
 /// Throws a [LibGit2Error] if error occured.
-void deleteVariable(Pointer<git_config> cfg, String variable) {
+void deleteEntry(Pointer<git_config> cfg, String variable) {
   final name = variable.toNativeUtf8().cast<Int8>();
   final error = libgit2.git_config_delete_entry(cfg, name);
   calloc.free(name);
@@ -218,7 +218,7 @@ void deleteVariable(Pointer<git_config> cfg, String variable) {
 ///
 /// If regexp is present, then the iterator will only iterate over all
 /// values which match the pattern.
-List<String> getMultivar(
+List<String> getMultivarValue(
   Pointer<git_config> cfg,
   String variable,
   String? regexp,
@@ -252,7 +252,7 @@ List<String> getMultivar(
 /// highest level (usually the local one).
 ///
 /// The regular expression is applied case-sensitively on the value.
-void setMultivar(
+void setMultivarValue(
   Pointer<git_config> cfg,
   String variable,
   String regexp,

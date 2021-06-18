@@ -138,9 +138,9 @@ class Config {
   /// (usually the local one).
   ///
   /// Throws a [LibGit2Error] if error occured.
-  void deleteVariable(String variable) {
+  void deleteEntry(String variable) {
     try {
-      config.deleteVariable(configPointer.value, variable);
+      config.deleteEntry(configPointer.value, variable);
     } catch (e) {
       rethrow;
     }
@@ -150,8 +150,8 @@ class Config {
   ///
   /// If [regexp] is present, then the iterator will only iterate over all
   /// values which match the pattern.
-  List<String> getMultivar(String variable, {String? regexp}) {
-    return config.getMultivar(configPointer.value, variable, regexp);
+  List<String> getMultivarValue(String variable, {String? regexp}) {
+    return config.getMultivarValue(configPointer.value, variable, regexp);
   }
 
   /// Sets the [value] of a multivar [variable] in the config file with the
@@ -159,8 +159,8 @@ class Config {
   ///
   /// The [regexp] is applied case-sensitively on the value.
   /// Empty [regexp] sets [value] for all values of a multivar [variable]
-  void setMultivar(String variable, String regexp, String value) {
-    config.setMultivar(configPointer.value, variable, regexp, value);
+  void setMultivarValue(String variable, String regexp, String value) {
+    config.setMultivarValue(configPointer.value, variable, regexp, value);
   }
 
   /// Releases memory allocated for config object.

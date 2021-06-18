@@ -78,50 +78,60 @@ void main() {
       });
     });
 
-    test('deletes variable', () {
-      config.deleteVariable('core.bare');
-      final entries = config.getEntries();
-      expect(entries['core.bare'], isNull);
+    group('deleteEntry()', () {
+      test('successfully deletes entry', () {
+        config.deleteEntry('core.bare');
+        final entries = config.getEntries();
+        expect(entries['core.bare'], isNull);
+      });
+
+      test('throws on deleting non existing variable', () {
+        expect(
+          () => config.deleteEntry('not.there'),
+          throwsA(isA<LibGit2Error>()),
+        );
+      });
     });
 
-    test('throws on deleting non existing variable', () {
-      expect(
-        () => config.deleteVariable('not.there'),
-        throwsA(isA<LibGit2Error>()),
-      );
+    group('getMultivarValue()', () {
+      test('returns values of multivar', () {
+        expect(
+          config.getMultivarValue('core.gitproxy'),
+          [
+            'proxy-command for kernel.org',
+            'default-proxy',
+          ],
+        );
+      });
+
+      test('returns values of multivar for provided regexp', () {
+        expect(
+          config.getMultivarValue('core.gitproxy', regexp: 'for kernel.org\$'),
+          ['proxy-command for kernel.org'],
+        );
+      });
+
+      test('returns empty list if multivar not found', () {
+        expect(config.getMultivarValue('not.there'), equals([]));
+      });
     });
 
-    test('returns values of multivar', () {
-      expect(
-        config.getMultivar('core.gitproxy'),
-        [
-          'proxy-command for kernel.org',
-          'default-proxy',
-        ],
-      );
-    });
+    group('setMultivarValue()', () {
+      test('sets value of multivar', () {
+        config.setMultivarValue('core.gitproxy', 'default', 'updated');
+        final multivarValues = config.getMultivarValue('core.gitproxy');
+        expect(multivarValues, isNot(contains('default-proxy')));
+        expect(multivarValues, contains('updated'));
+      });
 
-    test('returns values of multivar with regexp', () {
-      expect(
-        config.getMultivar('core.gitproxy', regexp: 'for kernel.org\$'),
-        ['proxy-command for kernel.org'],
-      );
-    });
-
-    test('sets value of multivar', () {
-      config.setMultivar('core.gitproxy', 'default', 'updated');
-      final multivarValues = config.getMultivar('core.gitproxy');
-      expect(multivarValues, isNot(contains('default-proxy')));
-      expect(multivarValues, contains('updated'));
-    });
-
-    test('sets value for all multivar values when regexp is empty', () {
-      config.setMultivar('core.gitproxy', '', 'updated');
-      final multivarValues = config.getMultivar('core.gitproxy');
-      expect(multivarValues, isNot(contains('default-proxy')));
-      expect(multivarValues, isNot(contains('proxy-command for kernel.org')));
-      expect(multivarValues, contains('updated'));
-      expect(multivarValues.length, equals(2));
+      test('sets value for all multivar values when regexp is empty', () {
+        config.setMultivarValue('core.gitproxy', '', 'updated');
+        final multivarValues = config.getMultivarValue('core.gitproxy');
+        expect(multivarValues, isNot(contains('default-proxy')));
+        expect(multivarValues, isNot(contains('proxy-command for kernel.org')));
+        expect(multivarValues, contains('updated'));
+        expect(multivarValues.length, equals(2));
+      });
     });
   });
   ;
