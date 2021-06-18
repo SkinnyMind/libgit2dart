@@ -43,6 +43,11 @@ void main() {
       expect(config, isA<Config>());
     });
 
+    test('getEntries() returns map with variables and values', () {
+      final entries = config.getEntries();
+      expect(entries['remote.origin.url'], equals('someurl'));
+    });
+
     group('getValue()', () {
       test('returns value of variable', () {
         expect(config.getValue('core.bare'), equals('false'));
@@ -59,23 +64,24 @@ void main() {
     group('setValue()', () {
       test('sets boolean value for provided variable', () {
         config.setValue('core.bare', true);
-        expect(config.variables['core.bare'], equals('true'));
+        expect(config.getValue('core.bare'), equals('true'));
       });
 
       test('sets integer value for provided variable', () {
         config.setValue('core.repositoryformatversion', 1);
-        expect(config.variables['core.repositoryformatversion'], equals('1'));
+        expect(config.getValue('core.repositoryformatversion'), equals('1'));
       });
 
       test('sets string value for provided variable', () {
         config.setValue('remote.origin.url', 'updated');
-        expect(config.variables['remote.origin.url'], equals('updated'));
+        expect(config.getValue('remote.origin.url'), equals('updated'));
       });
     });
 
     test('deletes variable', () {
       config.deleteVariable('core.bare');
-      expect(config.variables['core.bare'], isNull);
+      final entries = config.getEntries();
+      expect(entries['core.bare'], isNull);
     });
 
     test('throws on deleting non existing variable', () {

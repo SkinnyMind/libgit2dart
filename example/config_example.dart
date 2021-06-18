@@ -5,8 +5,8 @@ void main() {
   final config = Config.open();
 
   print('All entries of system/global config:');
-  // config.variables hold key/value from config file
-  for (final entry in config.variables.entries) {
+  final entries = config.getEntries();
+  for (final entry in entries.entries) {
     print('${entry.key}: ${entry.value}');
   }
   // .close should be called on object to free memory when done.
@@ -18,7 +18,8 @@ void main() {
     final repoConfig = Config.open(path: '.git/config');
 
     print('All entries of repo config:');
-    for (final entry in repoConfig.variables.entries) {
+    final entries = repoConfig.getEntries();
+    for (final entry in entries.entries) {
       print('${entry.key}: ${entry.value}');
     }
 
@@ -32,7 +33,8 @@ void main() {
   try {
     final globalConfig = Config.global();
 
-    final userName = globalConfig.variables['user.name'];
+    // get value of config variable
+    final userName = globalConfig.getValue('user.name');
     print('\nUser Name from global config: $userName');
 
     globalConfig.close();

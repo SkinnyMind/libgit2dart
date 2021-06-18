@@ -39,8 +39,6 @@ class Config {
       }
     }
 
-    variables = config.getVariables(configPointer.value);
-
     libgit2.git_libgit2_shutdown();
   }
 
@@ -55,7 +53,6 @@ class Config {
     try {
       final systemPath = config.findSystem();
       configPointer = config.open(systemPath);
-      variables = config.getVariables(configPointer.value);
     } catch (e) {
       configPointer = nullptr;
       rethrow;
@@ -75,7 +72,6 @@ class Config {
     try {
       final globalPath = config.findGlobal();
       configPointer = config.open(globalPath);
-      variables = config.getVariables(configPointer.value);
     } catch (e) {
       configPointer = nullptr;
       rethrow;
@@ -95,7 +91,6 @@ class Config {
     try {
       final xdgPath = config.findXdg();
       configPointer = config.open(xdgPath);
-      variables = config.getVariables(configPointer.value);
     } catch (e) {
       configPointer = nullptr;
       rethrow;
@@ -110,8 +105,10 @@ class Config {
   /// Pointer to memory address for allocated config object.
   late Pointer<Pointer<git_config>> configPointer;
 
-  /// Map of key/value entries from config file.
-  Map<String, dynamic> variables = {};
+  /// Returns map of all the config variables and their values
+  Map<String, String> getEntries() {
+    return config.getEntries(configPointer.value);
+  }
 
   /// Returns the value of config [variable]
   String getValue(String variable) {
@@ -132,7 +129,6 @@ class Config {
       } else {
         config.setString(configPointer.value, variable, value);
       }
-      variables = config.getVariables(configPointer.value);
     } catch (e) {
       rethrow;
     }
@@ -145,7 +141,6 @@ class Config {
   void deleteVariable(String key) {
     try {
       config.deleteVariable(configPointer.value, key);
-      variables = config.getVariables(configPointer.value);
     } catch (e) {
       rethrow;
     }
