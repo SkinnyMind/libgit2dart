@@ -113,15 +113,24 @@ class Config {
   /// Map of key/value entries from config file.
   Map<String, dynamic> variables = {};
 
-  /// Sets the [value] of config [key]
-  void setVariable(String key, dynamic value) {
+  /// Returns the value of config [variable]
+  String getValue(String variable) {
+    try {
+      return config.getValue(configPointer.value, variable);
+    } catch (e) {
+      rethrow;
+    }
+  }
+
+  /// Sets the [value] of config [variable]
+  void setValue(String variable, dynamic value) {
     try {
       if (value.runtimeType == bool) {
-        config.setBool(configPointer.value, key, value);
+        config.setBool(configPointer.value, variable, value);
       } else if (value.runtimeType == int) {
-        config.setInt(configPointer.value, key, value);
+        config.setInt(configPointer.value, variable, value);
       } else {
-        config.setString(configPointer.value, key, value);
+        config.setString(configPointer.value, variable, value);
       }
       variables = config.getVariables(configPointer.value);
     } catch (e) {

@@ -43,23 +43,34 @@ void main() {
       expect(config, isA<Config>());
     });
 
-    test('gets entries of file', () {
-      expect(config.variables['core.repositoryformatversion'], equals('0'));
+    group('getValue()', () {
+      test('returns value of variable', () {
+        expect(config.getValue('core.bare'), equals('false'));
+      });
+
+      test('throws when variable isn\'t found', () {
+        expect(
+          () => config.getValue('not.there'),
+          throwsA(isA<LibGit2Error>()),
+        );
+      });
     });
 
-    test('sets boolean value for provided key', () {
-      config.setVariable('core.bare', true);
-      expect(config.variables['core.bare'], equals('true'));
-    });
+    group('setValue()', () {
+      test('sets boolean value for provided variable', () {
+        config.setValue('core.bare', true);
+        expect(config.variables['core.bare'], equals('true'));
+      });
 
-    test('sets integer value for provided key', () {
-      config.setVariable('core.repositoryformatversion', 1);
-      expect(config.variables['core.repositoryformatversion'], equals('1'));
-    });
+      test('sets integer value for provided variable', () {
+        config.setValue('core.repositoryformatversion', 1);
+        expect(config.variables['core.repositoryformatversion'], equals('1'));
+      });
 
-    test('sets string value for provided key', () {
-      config.setVariable('remote.origin.url', 'updated');
-      expect(config.variables['remote.origin.url'], equals('updated'));
+      test('sets string value for provided variable', () {
+        config.setValue('remote.origin.url', 'updated');
+        expect(config.variables['remote.origin.url'], equals('updated'));
+      });
     });
 
     test('deletes variable', () {

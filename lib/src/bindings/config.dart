@@ -120,16 +120,12 @@ String findXdg() {
 
 /// Get the value of a config variable.
 ///
-/// All config files will be looked into, in the order of their
-/// defined level. A higher level means a higher priority. The
-/// first occurrence of the variable will be returned here.
-///
 /// Throws a [LibGit2Error] if error occured.
-Pointer<Int8> getConfigValue(Pointer<git_config> cfg, String variable) {
-  final out = calloc<git_buf>();
+String getValue(Pointer<git_config> cfg, String variable) {
+  final out = calloc<Pointer<git_config_entry>>();
   final name = variable.toNativeUtf8().cast<Int8>();
-  final error = libgit2.git_config_get_path(out, cfg, name);
-  final value = out.ref.ptr;
+  final error = libgit2.git_config_get_entry(out, cfg, name);
+  final value = out.value;
   calloc.free(out);
   calloc.free(name);
 
@@ -137,36 +133,7 @@ Pointer<Int8> getConfigValue(Pointer<git_config> cfg, String variable) {
     throw LibGit2Error(libgit2.git_error_last());
   }
 
-  return value;
-}
-
-/// Get the value of a config variable and parse it as a boolean according
-/// to git-config rules.
-///
-/// Interprets "true", "yes", "on", 1, or any non-zero number as true.
-/// Interprets "false", "no", "off", 0, or an empty string as false.
-bool getBool(Pointer<git_config> cfg, String variable) {
-  final value = getConfigValue(cfg, variable);
-  final out = calloc<Int32>();
-  libgit2.git_config_parse_bool(out, value);
-  final result = out.value;
-  calloc.free(out);
-
-  return (result == 0) ? false : true;
-}
-
-/// Get the value of a config variable and parse it as an integer according
-/// to git-config rules.
-///
-/// Handles suffixes like k, M, or G - kilo, mega, giga.
-int getInt(Pointer<git_config> cfg, String variable) {
-  final value = getConfigValue(cfg, variable);
-  final out = calloc<Int64>();
-  libgit2.git_config_parse_int64(out, value);
-  final result = out.value;
-  calloc.free(out);
-
-  return result;
+  return value.ref.value.cast<Utf8>().toDartString();
 }
 
 /// Set the value of a boolean config variable in the config file with the
