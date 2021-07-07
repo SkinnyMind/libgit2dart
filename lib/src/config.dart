@@ -2,7 +2,7 @@ import 'dart:ffi';
 import 'dart:io';
 import 'package:ffi/ffi.dart';
 import 'bindings/libgit2_bindings.dart';
-import 'bindings/config.dart' as config;
+import 'bindings/config.dart' as bindings;
 import 'util.dart';
 
 /// [Config] provides management of global configuration options
@@ -23,14 +23,14 @@ class Config {
 
     if (path == null) {
       try {
-        configPointer = config.openDefault();
+        _configPointer = bindings.openDefault();
       } catch (e) {
         rethrow;
       }
     } else {
       try {
         if (File(path!).existsSync()) {
-          configPointer = config.open(path!);
+          _configPointer = bindings.open(path!);
         } else {
           throw Exception('File not found');
         }
@@ -51,10 +51,10 @@ class Config {
     libgit2.git_libgit2_init();
 
     try {
-      final systemPath = config.findSystem();
-      configPointer = config.open(systemPath);
+      final systemPath = bindings.findSystem();
+      _configPointer = bindings.open(systemPath);
     } catch (e) {
-      configPointer = nullptr;
+      _configPointer = nullptr;
       rethrow;
     }
 
@@ -70,10 +70,10 @@ class Config {
     libgit2.git_libgit2_init();
 
     try {
-      final globalPath = config.findGlobal();
-      configPointer = config.open(globalPath);
+      final globalPath = bindings.findGlobal();
+      _configPointer = bindings.open(globalPath);
     } catch (e) {
-      configPointer = nullptr;
+      _configPointer = nullptr;
       rethrow;
     }
 
@@ -89,10 +89,10 @@ class Config {
     libgit2.git_libgit2_init();
 
     try {
-      final xdgPath = config.findXdg();
-      configPointer = config.open(xdgPath);
+      final xdgPath = bindings.findXdg();
+      _configPointer = bindings.open(xdgPath);
     } catch (e) {
-      configPointer = nullptr;
+      _configPointer = nullptr;
       rethrow;
     }
 
@@ -103,17 +103,17 @@ class Config {
   String? path;
 
   /// Pointer to memory address for allocated config object.
-  late Pointer<Pointer<git_config>> configPointer;
+  late final Pointer<Pointer<git_config>> _configPointer;
 
   /// Returns map of all the config variables and their values.
   Map<String, String> getEntries() {
-    return config.getEntries(configPointer.value);
+    return bindings.getEntries(_configPointer.value);
   }
 
   /// Returns the value of config [variable].
   String getValue(String variable) {
     try {
-      return config.getValue(configPointer.value, variable);
+      return bindings.getValue(_configPointer.value, variable);
     } catch (e) {
       rethrow;
     }
@@ -123,11 +123,11 @@ class Config {
   void setValue(String variable, dynamic value) {
     try {
       if (value.runtimeType == bool) {
-        config.setBool(configPointer.value, variable, value);
+        bindings.setBool(_configPointer.value, variable, value);
       } else if (value.runtimeType == int) {
-        config.setInt(configPointer.value, variable, value);
+        bindings.setInt(_configPointer.value, variable, value);
       } else {
-        config.setString(configPointer.value, variable, value);
+        bindings.setString(_configPointer.value, variable, value);
       }
     } catch (e) {
       rethrow;
@@ -140,7 +140,7 @@ class Config {
   /// Throws a [LibGit2Error] if error occured.
   void deleteEntry(String variable) {
     try {
-      config.deleteEntry(configPointer.value, variable);
+      bindings.deleteEntry(_configPointer.value, variable);
     } catch (e) {
       rethrow;
     }
@@ -151,7 +151,7 @@ class Config {
   /// If [regexp] is present, then the iterator will only iterate over all
   /// values which match the pattern.
   List<String> getMultivarValue(String variable, {String? regexp}) {
-    return config.getMultivarValue(configPointer.value, variable, regexp);
+    return bindings.getMultivarValue(_configPointer.value, variable, regexp);
   }
 
   /// Sets the [value] of a multivar [variable] in the config file with the
@@ -160,7 +160,7 @@ class Config {
   /// The [regexp] is applied case-sensitively on the value.
   /// Empty [regexp] sets [value] for all values of a multivar [variable].
   void setMultivarValue(String variable, String regexp, String value) {
-    config.setMultivarValue(configPointer.value, variable, regexp, value);
+    bindings.setMultivarValue(_configPointer.value, variable, regexp, value);
   }
 
   /// Deletes one or several values from a multivar [variable] in the config file
@@ -169,11 +169,11 @@ class Config {
   /// The [regexp] is applied case-sensitively on the value.
   /// Empty [regexp] deletes all values of a multivar [variable].
   void deleteMultivar(String variable, String regexp) {
-    config.deleteMultivar(configPointer.value, variable, regexp);
+    bindings.deleteMultivar(_configPointer.value, variable, regexp);
   }
 
   /// Releases memory allocated for config object.
   void close() {
-    calloc.free(configPointer);
+    calloc.free(_configPointer);
   }
 }
