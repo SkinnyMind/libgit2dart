@@ -1,7 +1,6 @@
 import 'dart:io';
 
 import 'package:test/test.dart';
-import 'package:libgit2dart/src/util.dart';
 import 'package:libgit2dart/src/config.dart';
 import 'package:libgit2dart/src/error.dart';
 
@@ -21,10 +20,6 @@ void main() {
   late Config config;
 
   group('Config', () {
-    setUpAll(() {
-      libgit2.git_libgit2_init();
-    });
-
     setUp(() {
       File('$tmpDir/$configFileName').writeAsStringSync(contents);
       config = Config.open(path: '$tmpDir/$configFileName');
@@ -33,10 +28,6 @@ void main() {
     tearDown(() {
       config.close();
       File('$tmpDir/$configFileName').deleteSync();
-    });
-
-    tearDownAll(() {
-      libgit2.git_libgit2_shutdown();
     });
 
     test('opens file successfully with provided path', () {

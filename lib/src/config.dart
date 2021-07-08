@@ -38,8 +38,6 @@ class Config {
         rethrow;
       }
     }
-
-    libgit2.git_libgit2_shutdown();
   }
 
   /// Initializes a new instance of [Config] class.
@@ -57,8 +55,6 @@ class Config {
       _configPointer = nullptr;
       rethrow;
     }
-
-    libgit2.git_libgit2_shutdown();
   }
 
   /// Initializes a new instance of [Config] class.
@@ -76,8 +72,6 @@ class Config {
       _configPointer = nullptr;
       rethrow;
     }
-
-    libgit2.git_libgit2_shutdown();
   }
 
   /// Initializes a new instance of [Config] class.
@@ -95,8 +89,6 @@ class Config {
       _configPointer = nullptr;
       rethrow;
     }
-
-    libgit2.git_libgit2_shutdown();
   }
 
   /// Path to on-disk config file provided by user.
@@ -175,5 +167,6 @@ class Config {
   /// Releases memory allocated for config object.
   void close() {
     calloc.free(_configPointer);
+    libgit2.git_libgit2_shutdown();
   }
 }
