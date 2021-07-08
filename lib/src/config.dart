@@ -23,14 +23,14 @@ class Config {
 
     if (path == null) {
       try {
-        _configPointer = bindings.openDefault();
+        _configPointer = bindings.openDefault().value;
       } catch (e) {
         rethrow;
       }
     } else {
       try {
         if (File(path!).existsSync()) {
-          _configPointer = bindings.open(path!);
+          _configPointer = bindings.open(path!).value;
         } else {
           throw Exception('File not found');
         }
@@ -50,7 +50,7 @@ class Config {
 
     try {
       final systemPath = bindings.findSystem();
-      _configPointer = bindings.open(systemPath);
+      _configPointer = bindings.open(systemPath).value;
     } catch (e) {
       _configPointer = nullptr;
       rethrow;
@@ -67,7 +67,7 @@ class Config {
 
     try {
       final globalPath = bindings.findGlobal();
-      _configPointer = bindings.open(globalPath);
+      _configPointer = bindings.open(globalPath).value;
     } catch (e) {
       _configPointer = nullptr;
       rethrow;
@@ -84,7 +84,7 @@ class Config {
 
     try {
       final xdgPath = bindings.findXdg();
-      _configPointer = bindings.open(xdgPath);
+      _configPointer = bindings.open(xdgPath).value;
     } catch (e) {
       _configPointer = nullptr;
       rethrow;
@@ -95,17 +95,17 @@ class Config {
   String? path;
 
   /// Pointer to memory address for allocated config object.
-  late final Pointer<Pointer<git_config>> _configPointer;
+  late final Pointer<git_config> _configPointer;
 
   /// Returns map of all the config variables and their values.
   Map<String, String> getEntries() {
-    return bindings.getEntries(_configPointer.value);
+    return bindings.getEntries(_configPointer);
   }
 
   /// Returns the value of config [variable].
   String getValue(String variable) {
     try {
-      return bindings.getValue(_configPointer.value, variable);
+      return bindings.getValue(_configPointer, variable);
     } catch (e) {
       rethrow;
     }
@@ -115,11 +115,11 @@ class Config {
   void setValue(String variable, dynamic value) {
     try {
       if (value.runtimeType == bool) {
-        bindings.setBool(_configPointer.value, variable, value);
+        bindings.setBool(_configPointer, variable, value);
       } else if (value.runtimeType == int) {
-        bindings.setInt(_configPointer.value, variable, value);
+        bindings.setInt(_configPointer, variable, value);
       } else {
-        bindings.setString(_configPointer.value, variable, value);
+        bindings.setString(_configPointer, variable, value);
       }
     } catch (e) {
       rethrow;
@@ -132,7 +132,7 @@ class Config {
   /// Throws a [LibGit2Error] if error occured.
   void deleteEntry(String variable) {
     try {
-      bindings.deleteEntry(_configPointer.value, variable);
+      bindings.deleteEntry(_configPointer, variable);
     } catch (e) {
       rethrow;
     }
@@ -143,7 +143,7 @@ class Config {
   /// If [regexp] is present, then the iterator will only iterate over all
   /// values which match the pattern.
   List<String> getMultivarValue(String variable, {String? regexp}) {
-    return bindings.getMultivarValue(_configPointer.value, variable, regexp);
+    return bindings.getMultivarValue(_configPointer, variable, regexp);
   }
 
   /// Sets the [value] of a multivar [variable] in the config file with the
@@ -152,7 +152,7 @@ class Config {
   /// The [regexp] is applied case-sensitively on the value.
   /// Empty [regexp] sets [value] for all values of a multivar [variable].
   void setMultivarValue(String variable, String regexp, String value) {
-    bindings.setMultivarValue(_configPointer.value, variable, regexp, value);
+    bindings.setMultivarValue(_configPointer, variable, regexp, value);
   }
 
   /// Deletes one or several values from a multivar [variable] in the config file
@@ -161,7 +161,7 @@ class Config {
   /// The [regexp] is applied case-sensitively on the value.
   /// Empty [regexp] deletes all values of a multivar [variable].
   void deleteMultivar(String variable, String regexp) {
-    bindings.deleteMultivar(_configPointer.value, variable, regexp);
+    bindings.deleteMultivar(_configPointer, variable, regexp);
   }
 
   /// Releases memory allocated for config object.
