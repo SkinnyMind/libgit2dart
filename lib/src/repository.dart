@@ -44,6 +44,24 @@ class Repository {
   /// empty string is returned.
   String getNamespace() => bindings.getNamespace(_repoPointer);
 
+  /// Sets the active namespace for this repository.
+  ///
+  /// This namespace affects all reference operations for the repo. See `man gitnamespaces`
+  ///
+  /// The [namespace] should not include the refs folder, e.g. to namespace all references
+  /// under refs/namespaces/foo/, use foo as the namespace.
+  ///
+  /// Pass null to unset.
+  ///
+  /// Throws a [LibGit2Error] if error occured.
+  void setNamespace(String? namespace) {
+    try {
+      bindings.setNamespace(_repoPointer, namespace);
+    } catch (e) {
+      rethrow;
+    }
+  }
+
   /// Checks whether this repository is a bare repository or not.
   bool isBare() => bindings.isBare(_repoPointer);
 
@@ -85,7 +103,7 @@ class Repository {
   /// Sets the identity to be used for writing reflogs.
   ///
   /// If both are set, this name and email will be used to write to the reflog.
-  /// Pass NULL to unset. When unset, the identity will be taken from the repository's configuration.
+  /// Pass null to unset. When unset, the identity will be taken from the repository's configuration.
   void setIdentity({required String? name, required String? email}) {
     bindings.setIdentity(_repoPointer, name, email);
   }

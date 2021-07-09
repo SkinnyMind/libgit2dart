@@ -83,6 +83,14 @@ void main() {
       });
 
       test('returns empty string when there is no namespace', () {
+        expect(repo.getNamespace(), isEmpty);
+      });
+
+      test('successfully sets and unsets the namespace', () {
+        expect(repo.getNamespace(), '');
+        repo.setNamespace('some');
+        expect(repo.getNamespace(), 'some');
+        repo.setNamespace(null);
         expect(repo.getNamespace(), '');
       });
 

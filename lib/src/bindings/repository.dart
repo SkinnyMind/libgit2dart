@@ -70,6 +70,24 @@ String getNamespace(Pointer<git_repository> repo) {
   }
 }
 
+/// Sets the active namespace for this repository.
+///
+/// This namespace affects all reference operations for the repo. See `man gitnamespaces`
+///
+/// The [namespace] should not include the refs folder, e.g. to namespace all references
+/// under refs/namespaces/foo/, use foo as the namespace.
+///
+/// Throws a [LibGit2Error] if error occured.
+void setNamespace(Pointer<git_repository> repo, String? namespace) {
+  final nmspace = namespace?.toNativeUtf8().cast<Int8>() ?? nullptr;
+  final error = libgit2.git_repository_set_namespace(repo, nmspace);
+  calloc.free(nmspace);
+
+  if (error < 0) {
+    throw LibGit2Error(libgit2.git_error_last());
+  }
+}
+
 /// Check if a repository is bare or not.
 bool isBare(Pointer<git_repository> repo) {
   final result = libgit2.git_repository_is_bare(repo);
@@ -327,24 +345,6 @@ void setHeadDetachedFromAnnotated(
       libgit2.git_repository_set_head_detached_from_annotated(repo, commitish);
 
   if (error < 0 && (error != -1 || error != -3)) {
-    throw LibGit2Error(libgit2.git_error_last());
-  }
-}
-
-/// Sets the active namespace for this Git Repository
-///
-/// This namespace affects all reference operations for the repo. See `man gitnamespaces`
-///
-/// The [namespace] should not include the refs folder, e.g. to namespace all references
-/// under refs/namespaces/foo/, use foo as the namespace.
-///
-/// Throws a [LibGit2Error] if error occured.
-void setNamespace(Pointer<git_repository> repo, String namespace) {
-  final nmspace = namespace.toNativeUtf8().cast<Int8>();
-  final error = libgit2.git_repository_set_namespace(repo, nmspace);
-  calloc.free(nmspace);
-
-  if (error < 0) {
     throw LibGit2Error(libgit2.git_error_last());
   }
 }
