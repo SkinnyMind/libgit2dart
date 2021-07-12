@@ -7,12 +7,12 @@ void main() {
   try {
     final repo = Repository.open(Directory.current.path);
 
-    print('Path to git repository: ${repo.path()}');
-    print('Is repository bare: ${repo.isBare()}');
-    print('Is repository empty: ${repo.isEmpty()}');
-    print('Is head detached: ${repo.isHeadDetached()}');
+    print('Path to git repository: ${repo.path}');
+    print('Is repository bare: ${repo.isBare}');
+    print('Is repository empty: ${repo.isEmpty}');
+    print('Is head detached: ${repo.isHeadDetached}');
     try {
-      print('Prepared message: ${repo.message()}');
+      print('Prepared message: ${repo.message}');
     } catch (e) {
       print('Prepared message: $e');
     }

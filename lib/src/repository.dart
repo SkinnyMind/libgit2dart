@@ -29,20 +29,20 @@ class Repository {
 
   /// Returns path to the `.git` folder for normal repositories
   /// or path to the repository itself for bare repositories.
-  String path() => bindings.path(_repoPointer);
+  String get path => bindings.path(_repoPointer);
 
   /// Returns the path of the shared common directory for this repository.
   ///
   /// If the repository is bare, it is the root directory for the repository.
   /// If the repository is a worktree, it is the parent repo's `.git` folder.
   /// Otherwise, it is the `.git` folder.
-  String commonDir() => bindings.commonDir(_repoPointer);
+  String get commonDir => bindings.commonDir(_repoPointer);
 
   /// Returns the currently active namespace for this repository.
   ///
   /// If there is no namespace, or the namespace is not a valid utf8 string,
   /// empty string is returned.
-  String getNamespace() => bindings.getNamespace(_repoPointer);
+  String get namespace => bindings.getNamespace(_repoPointer);
 
   /// Sets the active namespace for this repository.
   ///
@@ -63,7 +63,7 @@ class Repository {
   }
 
   /// Checks whether this repository is a bare repository or not.
-  bool isBare() => bindings.isBare(_repoPointer);
+  bool get isBare => bindings.isBare(_repoPointer);
 
   /// Check if a repository is empty.
   ///
@@ -71,16 +71,36 @@ class Repository {
   /// apart from HEAD, which must be pointing to the unborn master branch.
   ///
   /// Throws a [LibGit2Error] if repository is corrupted.
-  bool isEmpty() => bindings.isEmpty(_repoPointer);
+  bool get isEmpty => bindings.isEmpty(_repoPointer);
 
   /// Checks if a repository's HEAD is detached.
   ///
   /// A repository's HEAD is detached when it points directly to a commit instead of a branch.
   ///
   /// Throws a [LibGit2Error] if error occured.
-  bool isHeadDetached() {
+  bool get isHeadDetached {
     try {
       return bindings.isHeadDetached(_repoPointer);
+    } catch (e) {
+      rethrow;
+    }
+  }
+
+  /// Makes the repository HEAD point to the specified reference.
+  ///
+  /// If the provided [reference] points to a Tree or a Blob, the HEAD is unaltered.
+  ///
+  /// If the provided [reference] points to a branch, the HEAD will point to that branch,
+  /// staying attached, or become attached if it isn't yet.
+  ///
+  /// If the branch doesn't exist yet, the HEAD will be attached to an unborn branch.
+  ///
+  /// Otherwise, the HEAD will be detached and will directly point to the Commit.
+  ///
+  /// Throws a [LibGit2Error] if error occured.
+  void setHead(String reference) {
+    try {
+      bindings.setHead(_repoPointer, reference);
     } catch (e) {
       rethrow;
     }
@@ -92,7 +112,7 @@ class Repository {
   /// because it doesn't have any commit to point to.
   ///
   /// Throws a [LibGit2Error] if error occured.
-  bool isBranchUnborn() {
+  bool get isBranchUnborn {
     try {
       return bindings.isBranchUnborn(_repoPointer);
     } catch (e) {
@@ -109,13 +129,13 @@ class Repository {
   }
 
   /// Returns the configured identity to use for reflogs.
-  Map<String, String> identity() => bindings.identity(_repoPointer);
+  Map<String, String> get identity => bindings.identity(_repoPointer);
 
   /// Checks if the repository was a shallow clone.
-  bool isShallow() => bindings.isShallow(_repoPointer);
+  bool get isShallow => bindings.isShallow(_repoPointer);
 
   /// Checks if a repository is a linked work tree.
-  bool isWorktree() => bindings.isWorktree(_repoPointer);
+  bool get isWorktree => bindings.isWorktree(_repoPointer);
 
   /// Retrieves git's prepared message.
   ///
@@ -128,7 +148,7 @@ class Repository {
   /// Don't forget to remove the file with [removeMessage] after you create the commit.
   ///
   /// Throws a [LibGit2Error] if error occured.
-  String message() {
+  String get message {
     try {
       return bindings.message(_repoPointer);
     } catch (e) {
@@ -142,7 +162,7 @@ class Repository {
   /// Returns the status of a git repository - ie, whether an operation
   /// (merge, cherry-pick, etc) is in progress.
   // git_repository_state_t from libgit2_bindings.dart represents possible states
-  int state() => bindings.state(_repoPointer);
+  int get state => bindings.state(_repoPointer);
 
   /// Removes all the metadata associated with an ongoing command like
   /// merge, revert, cherry-pick, etc. For example: MERGE_HEAD, MERGE_MSG, etc.
@@ -159,7 +179,7 @@ class Repository {
   /// Returns the path of the working directory for this repository.
   ///
   /// If the repository is bare, this function will always return empty string.
-  String workdir() => bindings.workdir(_repoPointer);
+  String get workdir => bindings.workdir(_repoPointer);
 
   /// Releases memory allocated for repository object.
   void close() {
