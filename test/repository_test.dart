@@ -134,6 +134,9 @@ void main() {
       final tmpDir = '${Directory.systemTemp.path}/testrepo/';
 
       setUpAll(() async {
+        if (await Directory(tmpDir).exists()) {
+          await Directory(tmpDir).delete(recursive: true);
+        }
         await copyRepo(
           from: Directory('test/assets/testrepo/'),
           to: await Directory(tmpDir).create(),
