@@ -55,4 +55,7 @@ class Oid {
     return (other is Oid) &&
         (bindings.compare(_oidPointer, other._oidPointer) == 1);
   }
+
+  @override
+  int get hashCode => _oidPointer.address.hashCode;
 }

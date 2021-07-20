@@ -365,9 +365,9 @@ void setWorkdir(
   bool updateGitlink,
 ) {
   final workdir = path.toNativeUtf8().cast<Int8>();
-  final update_gitlink = updateGitlink ? 1 : 0;
+  final updateGitlinkC = updateGitlink ? 1 : 0;
   final error =
-      libgit2.git_repository_set_workdir(repo, workdir, update_gitlink);
+      libgit2.git_repository_set_workdir(repo, workdir, updateGitlinkC);
   calloc.free(workdir);
 
   if (error < 0) {

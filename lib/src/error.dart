@@ -8,7 +8,6 @@ class LibGit2Error {
 
   @override
   String toString() {
-    final errorMessage = errorPointer.ref.message.cast<Utf8>().toDartString();
-    return '$errorMessage';
+    return errorPointer.ref.message.cast<Utf8>().toDartString();
   }
 }
