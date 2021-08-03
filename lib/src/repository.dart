@@ -1,5 +1,6 @@
 import 'dart:ffi';
 import 'package:ffi/ffi.dart';
+import 'reference.dart';
 import 'bindings/libgit2_bindings.dart';
 import 'bindings/repository.dart' as bindings;
 import 'util.dart';
@@ -24,8 +25,10 @@ class Repository {
     }
   }
 
-  /// Pointer to memory address for allocated repository object.
   late final Pointer<git_repository> _repoPointer;
+
+  /// Pointer to memory address for allocated repository object.
+  Pointer<git_repository> get pointer => _repoPointer;
 
   /// Returns path to the `.git` folder for normal repositories
   /// or path to the repository itself for bare repositories.
@@ -84,6 +87,23 @@ class Repository {
     } catch (e) {
       rethrow;
     }
+  }
+
+  /// Returns reference object pointing to repository head.
+  Reference get head => Reference(bindings.head(_repoPointer));
+
+  /// Returns a map with all the references names and corresponding SHA hexes
+  /// that can be found in a repository.
+  Map<String, String> get references {
+    var refMap = <String, String>{};
+    final refList = Reference.list(_repoPointer);
+    for (var ref in refList) {
+      final r = Reference.lookup(this, ref);
+      refMap[ref] = r.target;
+      r.free();
+    }
+
+    return refMap;
   }
 
   /// Makes the repository HEAD point to the specified reference.

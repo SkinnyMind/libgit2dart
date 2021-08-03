@@ -5,6 +5,12 @@ import 'util.dart';
 
 class Oid {
   /// Initializes a new instance of [Oid] class from provided
+  /// pointer to Oid object in memory.
+  Oid(this._oidPointer) {
+    libgit2.git_libgit2_init();
+  }
+
+  /// Initializes a new instance of [Oid] class from provided
   /// hexadecimal [sha] string.
   ///
   /// Throws a [LibGit2Error] if error occured.

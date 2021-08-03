@@ -11,11 +11,7 @@ void main() {
     print('Is repository bare: ${repo.isBare}');
     print('Is repository empty: ${repo.isEmpty}');
     print('Is head detached: ${repo.isHeadDetached}');
-    try {
-      print('Prepared message: ${repo.message}');
-    } catch (e) {
-      print('Prepared message: $e');
-    }
+    print('Repository refs: ${repo.references}');
 
     // close() should be called on object to free memory when done.
     repo.close();
