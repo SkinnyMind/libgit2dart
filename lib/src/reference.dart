@@ -60,18 +60,18 @@ class Reference {
         : ReferenceType.symbolic;
   }
 
-  /// Returns the SHA hex of the OID pointed to by a direct reference.
-  ///
-  /// Only available if the reference is direct (i.e. an object id reference, not a symbolic one).
+  /// Returns the SHA hex of the OID pointed to by a reference.
   String get target {
-    final oidPointer = bindings.target(_refPointer);
+    late final Pointer<git_oid>? oidPointer;
     final sha = '';
-    if (oidPointer == nullptr) {
-      return sha;
+
+    if (type == ReferenceType.direct) {
+      oidPointer = bindings.target(_refPointer);
     } else {
-      final oid = Oid(oidPointer!);
-      return oid.sha;
+      oidPointer = bindings.target(bindings.resolve(_refPointer));
     }
+
+    return oidPointer == nullptr ? sha : Oid(oidPointer!).sha;
   }
 
   /// Returns the full name of a reference.

@@ -33,11 +33,21 @@ void main() {
     test('returns correct type of reference', () {
       expect(repo.head.type, ReferenceType.direct);
       repo.head.free();
+
+      final ref = Reference.lookup(repo, 'HEAD');
+      expect(ref.type, ReferenceType.symbolic);
+      ref.free();
     });
 
     test('returns SHA hex of direct reference', () {
       expect(repo.head.target, lastCommit);
       repo.head.free();
+    });
+
+    test('returns SHA hex of symbolic reference', () {
+      final ref = Reference.lookup(repo, 'HEAD');
+      expect(ref.target, lastCommit);
+      ref.free();
     });
 
     test('returns the full name of a reference', () {

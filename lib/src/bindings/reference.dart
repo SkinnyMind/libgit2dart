@@ -14,6 +14,28 @@ int referenceType(Pointer<git_reference> ref) =>
 Pointer<git_oid>? target(Pointer<git_reference> ref) =>
     libgit2.git_reference_target(ref);
 
+/// Resolve a symbolic reference to a direct reference.
+///
+/// This method iteratively peels a symbolic reference until it resolves
+/// to a direct reference to an OID.
+///
+/// The peeled reference must be freed manually once it's no longer needed.
+///
+/// If a direct reference is passed as an argument, a copy of that reference is returned.
+/// This copy must be manually freed too.
+///
+/// Throws a [LibGit2Error] if error occured.
+Pointer<git_reference> resolve(Pointer<git_reference> ref) {
+  final out = calloc<Pointer<git_reference>>();
+  final error = libgit2.git_reference_resolve(out, ref);
+
+  if (error < 0) {
+    throw LibGit2Error(libgit2.git_error_last());
+  } else {
+    return out.value;
+  }
+}
+
 /// Lookup a reference by name in a repository.
 ///
 /// The returned reference must be freed by the user.
