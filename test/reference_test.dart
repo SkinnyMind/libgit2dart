@@ -51,6 +51,7 @@ void main() {
         {
           'refs/heads/feature': '5aecfa0fb97eadaac050ccb99f03c3fb65460ad4',
           'refs/heads/master': '78b8bf123e3952c970ae5c1ce0a3ea1d1336f6e8',
+          'refs/tags/v0.1': '78b8bf123e3952c970ae5c1ce0a3ea1d1336f6e8',
         },
       );
     });
@@ -79,8 +80,8 @@ void main() {
     });
 
     test('checks if reference is a tag', () {
-      final ref = Reference.lookup(repo, 'refs/heads/master');
-      expect(ref.isTag, false);
+      final ref = Reference.lookup(repo, 'refs/tags/v0.1');
+      expect(ref.isTag, true);
       ref.free();
     });
 
