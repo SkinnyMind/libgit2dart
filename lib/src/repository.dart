@@ -1,5 +1,7 @@
 import 'dart:ffi';
 import 'package:ffi/ffi.dart';
+import 'odb.dart';
+import 'oid.dart';
 import 'reference.dart';
 import 'bindings/libgit2_bindings.dart';
 import 'bindings/repository.dart' as bindings;
@@ -25,10 +27,8 @@ class Repository {
     }
   }
 
-  late final Pointer<git_repository> _repoPointer;
-
   /// Pointer to memory address for allocated repository object.
-  Pointer<git_repository> get pointer => _repoPointer;
+  late final Pointer<git_repository> _repoPointer;
 
   /// Returns path to the `.git` folder for normal repositories
   /// or path to the repository itself for bare repositories.
@@ -89,17 +89,84 @@ class Repository {
     }
   }
 
-  /// Returns reference object pointing to repository head.
+  /// Creates a new reference.
+  ///
+  /// The reference will be created in the repository and written to the disk.
+  /// The generated [Reference] object must be freed by the user.
+  ///
+  /// Valid reference names must follow one of two patterns:
+  ///
+  /// Top-level names must contain only capital letters and underscores, and must begin and end
+  /// with a letter. (e.g. "HEAD", "ORIG_HEAD").
+  /// Names prefixed with "refs/" can be almost anything. You must avoid the characters
+  /// '~', '^', ':', '\', '?', '[', and '*', and the sequences ".." and "@{" which have
+  /// special meaning to revparse.
+  /// Throws a [LibGit2Error] if a reference already exists with the given name
+  /// unless force is true, in which case it will be overwritten.
+  ///
+  /// The message for the reflog will be ignored if the reference does not belong in the
+  /// standard set (HEAD, branches and remote-tracking branches) and it does not have a reflog.
+  Reference createReference({
+    required String name,
+    required Object target,
+    bool force = false,
+    String logMessage = '',
+  }) {
+    late final Oid oid;
+    late final bool isDirect;
+
+    if (target.runtimeType == Oid) {
+      oid = target as Oid;
+      isDirect = true;
+    } else if (_isValidShaHex(target as String)) {
+      if (target.length == 40) {
+        oid = Oid.fromSHA(target);
+      } else {
+        final shortOid = Oid.fromSHAn(target);
+        final odb = this.odb;
+        oid = Oid(odb.existsPrefix(shortOid.pointer, target.length));
+        odb.free();
+      }
+      isDirect = true;
+    } else {
+      oid = getReference(target).target;
+      isDirect = false;
+    }
+
+    if (isDirect) {
+      return Reference.createDirect(
+        repo: _repoPointer,
+        name: name,
+        oid: oid.pointer,
+        force: force,
+        logMessage: logMessage,
+      );
+    } else {
+      throw UnimplementedError;
+    }
+  }
+
+  /// Returns [Reference] object pointing to repository head.
   Reference get head => Reference(bindings.head(_repoPointer));
 
-  /// Returns a map with all the references names and corresponding SHA hexes
+  /// Returns [Reference] object by lookingup a [name] in repository.
+  ///
+  /// Throws a [LibGit2Error] if error occured.
+  Reference getReference(String name) => Reference.lookup(_repoPointer, name);
+
+  /// Checks if a reflog exists for the specified reference [name].
+  ///
+  /// Throws a [LibGit2Error] if error occured.
+  bool referenceHasLog(String name) => Reference.hasLog(_repoPointer, name);
+
+  /// Returns a map with all the references names and corresponding SHA hashes
   /// that can be found in a repository.
   Map<String, String> get references {
     var refMap = <String, String>{};
     final refList = Reference.list(_repoPointer);
     for (var ref in refList) {
-      final r = Reference.lookup(this, ref);
-      refMap[ref] = r.target;
+      final r = getReference(ref);
+      refMap[ref] = r.target.sha;
       r.free();
     }
 
@@ -205,5 +272,18 @@ class Repository {
   void close() {
     calloc.free(_repoPointer);
     libgit2.git_libgit2_shutdown();
+  }
+
+  /// Returns [Odb] for this repository.
+  ///
+  /// ODB Object must be freed once it's no longer being used.
+  ///
+  /// Throws a [LibGit2Error] if error occured.
+  Odb get odb => Odb(bindings.odb(_repoPointer));
+
+  bool _isValidShaHex(String str) {
+    final hexRegExp = RegExp(r'^[0-9a-fA-F]+$');
+    return hexRegExp.hasMatch(str) &&
+        (GIT_OID_MINPREFIXLEN <= str.length && GIT_OID_HEXSZ >= str.length);
   }
 }

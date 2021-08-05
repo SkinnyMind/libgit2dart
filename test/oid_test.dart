@@ -1,6 +1,5 @@
 import 'package:test/test.dart';
 import 'package:libgit2dart/src/oid.dart';
-import 'package:libgit2dart/src/error.dart';
 
 void main() {
   const sha = '9d81c715ff606057fa448e558c7458467a86c8c7';
@@ -10,9 +9,12 @@ void main() {
       test('initializes successfully', () {
         expect(Oid.fromSHA(sha), isA<Oid>());
       });
+    });
 
-      test('throws when hex string is lesser than 40 characters', () {
-        expect(() => Oid.fromSHA('9d8'), throwsA(isA<LibGit2Error>()));
+    group('fromSHAn()', () {
+      test('initializes successfully from short hex string', () {
+        final oid = Oid.fromSHAn('9d81');
+        expect(oid, isA<Oid>());
       });
     });
 

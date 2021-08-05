@@ -24,8 +24,19 @@ class Oid {
     }
   }
 
+  /// Initializes a new instance of [Oid] class from provided
+  /// hexadecimal [sha] string that is lesser than 40 characters long.
+  ///
+  /// Throws a [LibGit2Error] if error occured.
+  Oid.fromSHAn(String sha) {
+    libgit2.git_libgit2_init();
+    _oidPointer = bindings.fromStrN(sha);
+  }
+
+  late final Pointer<git_oid> _oidPointer;
+
   /// Pointer to memory address for allocated oid object.
-  late Pointer<git_oid> _oidPointer;
+  Pointer<git_oid> get pointer => _oidPointer;
 
   /// Returns hexadecimal SHA-1 string.
   String get sha {

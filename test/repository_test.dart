@@ -6,9 +6,8 @@ import 'package:libgit2dart/src/error.dart';
 import 'helpers/util.dart';
 
 void main() {
-  late Repository repo;
-
   group('Repository', () {
+    late Repository repo;
     test('throws when repository isn\'t found at provided path', () {
       expect(
         () => Repository.open(''),

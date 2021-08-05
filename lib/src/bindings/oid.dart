@@ -4,6 +4,24 @@ import '../error.dart';
 import 'libgit2_bindings.dart';
 import '../util.dart';
 
+/// Parse N characters of a hex formatted object id into a git_oid.
+///
+/// If N is odd, the last byte's high nibble will be read in and the low nibble set to zero.
+///
+/// Throws a [LibGit2Error] if error occured.
+Pointer<git_oid> fromStrN(String hex) {
+  final out = calloc<git_oid>();
+  final str = hex.toNativeUtf8().cast<Int8>();
+  final error = libgit2.git_oid_fromstrn(out, str, hex.length);
+  calloc.free(str);
+
+  if (error < 0) {
+    throw LibGit2Error(libgit2.git_error_last());
+  } else {
+    return out;
+  }
+}
+
 /// Parse a hex formatted object id into a git_oid.
 ///
 /// Throws a [LibGit2Error] if error occured.
