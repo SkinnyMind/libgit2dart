@@ -22,20 +22,12 @@ class Config {
     libgit2.git_libgit2_init();
 
     if (path == null) {
-      try {
-        _configPointer = bindings.openDefault().value;
-      } catch (e) {
-        rethrow;
-      }
+      _configPointer = bindings.openDefault().value;
     } else {
-      try {
-        if (File(path!).existsSync()) {
-          _configPointer = bindings.open(path!).value;
-        } else {
-          throw Exception('File not found');
-        }
-      } catch (e) {
-        rethrow;
+      if (File(path!).existsSync()) {
+        _configPointer = bindings.open(path!).value;
+      } else {
+        throw Exception('File not found');
       }
     }
   }
@@ -104,25 +96,17 @@ class Config {
 
   /// Returns the value of config [variable].
   String getValue(String variable) {
-    try {
-      return bindings.getValue(_configPointer, variable);
-    } catch (e) {
-      rethrow;
-    }
+    return bindings.getValue(_configPointer, variable);
   }
 
   /// Sets the [value] of config [variable].
   void setValue(String variable, dynamic value) {
-    try {
-      if (value.runtimeType == bool) {
-        bindings.setBool(_configPointer, variable, value);
-      } else if (value.runtimeType == int) {
-        bindings.setInt(_configPointer, variable, value);
-      } else {
-        bindings.setString(_configPointer, variable, value);
-      }
-    } catch (e) {
-      rethrow;
+    if (value.runtimeType == bool) {
+      bindings.setBool(_configPointer, variable, value);
+    } else if (value.runtimeType == int) {
+      bindings.setInt(_configPointer, variable, value);
+    } else {
+      bindings.setString(_configPointer, variable, value);
     }
   }
 
@@ -131,11 +115,7 @@ class Config {
   ///
   /// Throws a [LibGit2Error] if error occured.
   void deleteEntry(String variable) {
-    try {
-      bindings.deleteEntry(_configPointer, variable);
-    } catch (e) {
-      rethrow;
-    }
+    bindings.deleteEntry(_configPointer, variable);
   }
 
   /// Returns list of values for multivar [variable]

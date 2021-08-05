@@ -20,11 +20,7 @@ class Repository {
   Repository.open(String path) {
     libgit2.git_libgit2_init();
 
-    try {
-      _repoPointer = bindings.open(path);
-    } catch (e) {
-      rethrow;
-    }
+    _repoPointer = bindings.open(path);
   }
 
   /// Pointer to memory address for allocated repository object.
@@ -58,11 +54,7 @@ class Repository {
   ///
   /// Throws a [LibGit2Error] if error occured.
   void setNamespace(String? namespace) {
-    try {
-      bindings.setNamespace(_repoPointer, namespace);
-    } catch (e) {
-      rethrow;
-    }
+    bindings.setNamespace(_repoPointer, namespace);
   }
 
   /// Checks whether this repository is a bare repository or not.
@@ -82,11 +74,7 @@ class Repository {
   ///
   /// Throws a [LibGit2Error] if error occured.
   bool get isHeadDetached {
-    try {
-      return bindings.isHeadDetached(_repoPointer);
-    } catch (e) {
-      rethrow;
-    }
+    return bindings.isHeadDetached(_repoPointer);
   }
 
   /// Creates a new reference.
@@ -186,11 +174,7 @@ class Repository {
   ///
   /// Throws a [LibGit2Error] if error occured.
   void setHead(String reference) {
-    try {
-      bindings.setHead(_repoPointer, reference);
-    } catch (e) {
-      rethrow;
-    }
+    bindings.setHead(_repoPointer, reference);
   }
 
   /// Checks if the current branch is unborn.
@@ -200,11 +184,7 @@ class Repository {
   ///
   /// Throws a [LibGit2Error] if error occured.
   bool get isBranchUnborn {
-    try {
-      return bindings.isBranchUnborn(_repoPointer);
-    } catch (e) {
-      rethrow;
-    }
+    return bindings.isBranchUnborn(_repoPointer);
   }
 
   /// Sets the identity to be used for writing reflogs.
@@ -235,13 +215,7 @@ class Repository {
   /// Don't forget to remove the file with [removeMessage] after you create the commit.
   ///
   /// Throws a [LibGit2Error] if error occured.
-  String get message {
-    try {
-      return bindings.message(_repoPointer);
-    } catch (e) {
-      rethrow;
-    }
-  }
+  String get message => bindings.message(_repoPointer);
 
   /// Removes git's prepared message.
   void removeMessage() => bindings.removeMessage(_repoPointer);
@@ -255,13 +229,7 @@ class Repository {
   /// merge, revert, cherry-pick, etc. For example: MERGE_HEAD, MERGE_MSG, etc.
   ///
   /// Throws a [LibGit2Error] if error occured.
-  void stateCleanup() {
-    try {
-      bindings.stateCleanup(_repoPointer);
-    } catch (e) {
-      rethrow;
-    }
-  }
+  void stateCleanup() => bindings.stateCleanup(_repoPointer);
 
   /// Returns the path of the working directory for this repository.
   ///

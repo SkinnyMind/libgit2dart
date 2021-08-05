@@ -17,11 +17,7 @@ class Oid {
   Oid.fromSHA(String sha) {
     libgit2.git_libgit2_init();
 
-    try {
-      _oidPointer = bindings.fromSHA(sha);
-    } catch (e) {
-      rethrow;
-    }
+    _oidPointer = bindings.fromSHA(sha);
   }
 
   /// Initializes a new instance of [Oid] class from provided
@@ -39,13 +35,7 @@ class Oid {
   Pointer<git_oid> get pointer => _oidPointer;
 
   /// Returns hexadecimal SHA-1 string.
-  String get sha {
-    try {
-      return bindings.toSHA(_oidPointer);
-    } catch (e) {
-      rethrow;
-    }
-  }
+  String get sha => bindings.toSHA(_oidPointer);
 
   @override
   bool operator ==(other) {
