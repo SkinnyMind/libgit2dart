@@ -284,3 +284,6 @@ void deleteMultivar(
   calloc.free(name);
   calloc.free(regexpC);
 }
+
+/// Free the configuration and its associated memory and files.
+void free(Pointer<git_config> cfg) => libgit2.git_config_free(cfg);

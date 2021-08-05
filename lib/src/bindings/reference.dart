@@ -215,3 +215,6 @@ bool isValidName(String name) {
   calloc.free(refname);
   return result == 1 ? true : false;
 }
+
+/// Free the given reference.
+void free(Pointer<git_reference> ref) => libgit2.git_reference_free(ref);

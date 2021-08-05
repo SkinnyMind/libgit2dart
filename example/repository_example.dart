@@ -13,8 +13,8 @@ void main() {
     print('Is head detached: ${repo.isHeadDetached}');
     print('Repository refs: ${repo.references}');
 
-    // close() should be called on object to free memory when done.
-    repo.close();
+    // free() should be called on object to free memory when done.
+    repo.free();
   } catch (e) {
     print(e);
   }

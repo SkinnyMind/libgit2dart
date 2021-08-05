@@ -138,7 +138,7 @@ class Reference {
 
   /// Releases memory allocated for reference object.
   void free() {
-    calloc.free(_refPointer);
+    bindings.free(_refPointer);
     libgit2.git_libgit2_shutdown();
   }
 }

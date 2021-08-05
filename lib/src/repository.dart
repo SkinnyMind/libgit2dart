@@ -14,7 +14,7 @@ class Repository {
   /// or to the working directory. For a bare repository, [path] should directly
   /// point to the repository folder.
   ///
-  /// [Repository] object should be close with [close] function to release allocated memory.
+  /// [Repository] object should be close with [free] function to release allocated memory.
   ///
   /// Throws a [LibGit2Error] if error occured.
   Repository.open(String path) {
@@ -237,8 +237,8 @@ class Repository {
   String get workdir => bindings.workdir(_repoPointer);
 
   /// Releases memory allocated for repository object.
-  void close() {
-    calloc.free(_repoPointer);
+  void free() {
+    bindings.free(_repoPointer);
     libgit2.git_libgit2_shutdown();
   }
 

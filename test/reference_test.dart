@@ -27,7 +27,7 @@ void main() {
     });
 
     tearDownAll(() async {
-      repo.close();
+      repo.free();
       await Directory(tmpDir).delete(recursive: true);
     });
 

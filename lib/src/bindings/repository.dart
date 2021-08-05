@@ -446,3 +446,6 @@ Pointer<Pointer<git_object>> revParseSingle(
 
   return out;
 }
+
+/// Free a previously allocated repository.
+void free(Pointer<git_repository> repo) => libgit2.git_repository_free(repo);

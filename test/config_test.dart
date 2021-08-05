@@ -26,7 +26,7 @@ void main() {
     });
 
     tearDown(() {
-      config.close();
+      config.free();
       File('$tmpDir/$configFileName').deleteSync();
     });
 

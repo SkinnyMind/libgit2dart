@@ -11,5 +11,5 @@ void main() {
   print('Reference full name: ${ref.name}');
 
   ref.free();
-  repo.close();
+  repo.free();
 }

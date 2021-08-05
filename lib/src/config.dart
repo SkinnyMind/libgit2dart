@@ -17,7 +17,7 @@ class Config {
   /// [path] should point to single on-disk file; it's expected to be a native
   /// Git config file following the default Git config syntax (see man git-config).
   ///
-  /// [Config] object should be closed with [close] function to release allocated memory.
+  /// [Config] object should be closed with [free] function to release allocated memory.
   Config.open({this.path}) {
     libgit2.git_libgit2_init();
 
@@ -145,8 +145,8 @@ class Config {
   }
 
   /// Releases memory allocated for config object.
-  void close() {
-    calloc.free(_configPointer);
+  void free() {
+    bindings.free(_configPointer);
     libgit2.git_libgit2_shutdown();
   }
 }

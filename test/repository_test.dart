@@ -22,7 +22,7 @@ void main() {
         });
 
         tearDown(() {
-          repo.close();
+          repo.free();
         });
 
         test('opens successfully', () {
@@ -67,7 +67,7 @@ void main() {
         });
 
         tearDown(() {
-          repo.close();
+          repo.free();
         });
 
         test('opens standart repository from working directory successfully',
@@ -144,7 +144,7 @@ void main() {
       });
 
       tearDownAll(() async {
-        repo.close();
+        repo.free();
         await Directory(tmpDir).delete(recursive: true);
       });
 

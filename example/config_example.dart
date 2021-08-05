@@ -9,8 +9,8 @@ void main() {
   for (final entry in entries.entries) {
     print('${entry.key}: ${entry.value}');
   }
-  // .close should be called on object to free memory when done.
-  config.close();
+  // free() should be called on object to free memory when done.
+  config.free();
 
   // Open config file at provided path.
   // Exception is thrown if file not found.
@@ -31,7 +31,7 @@ void main() {
     // Delete variable
     repoConfig.deleteEntry('core.variable');
 
-    repoConfig.close();
+    repoConfig.free();
   } catch (e) {
     print(e);
   }
@@ -45,7 +45,7 @@ void main() {
     final userName = globalConfig.getValue('user.name');
     print('\nUser Name from global config: $userName');
 
-    globalConfig.close();
+    globalConfig.free();
   } catch (e) {
     print('\n$e');
   }
