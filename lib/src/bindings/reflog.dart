@@ -43,12 +43,13 @@ String entryMessage(Pointer<git_reflog_entry> entry) {
   return result.cast<Utf8>().toDartString();
 }
 
-/// Get the committer of this entry.
-Map<String, String> entryCommiter(Pointer<git_reflog_entry> entry) {
+/// Get the committer of this entry (name, email, seconds from epoch).
+Map<String, Object> entryCommiter(Pointer<git_reflog_entry> entry) {
   final result = libgit2.git_reflog_entry_committer(entry);
-  var committer = <String, String>{};
+  var committer = <String, Object>{};
   committer['name'] = result.ref.name.cast<Utf8>().toDartString();
   committer['email'] = result.ref.email.cast<Utf8>().toDartString();
+  committer['when'] = result.ref.when.time;
   return committer;
 }
 

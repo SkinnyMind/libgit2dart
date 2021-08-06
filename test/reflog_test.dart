@@ -51,6 +51,7 @@ void main() {
       final entry = reflog.entryAt(0);
       expect(entry.committer['name'], 'Aleksey Kulikov');
       expect(entry.committer['email'], 'skinny.mind@gmail.com');
+      expect(entry.committer['when'], 1626091184);
     });
   });
 }

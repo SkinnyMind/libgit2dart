@@ -47,6 +47,6 @@ class RefLogEntry {
   /// Returns the log message.
   String get message => bindings.entryMessage(_entryPointer);
 
-  /// Returns the committer of this entry.
-  Map<String, String> get committer => bindings.entryCommiter(_entryPointer);
+  /// Returns the committer of this entry (name, email, seconds from epoch).
+  Map<String, Object> get committer => bindings.entryCommiter(_entryPointer);
 }

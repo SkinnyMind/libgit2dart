@@ -82,7 +82,8 @@ void main() {
         final reflogEntry = reflog.entryAt(0);
 
         expect(reflogEntry.message, 'log message');
-        expect(reflogEntry.committer, {'name': 'name', 'email': 'email'});
+        expect(reflogEntry.committer['name'], 'name');
+        expect(reflogEntry.committer['email'], 'email');
 
         reflog.free();
         ref.delete();
@@ -222,7 +223,8 @@ void main() {
         final reflogEntry = reflog.entryAt(0);
 
         expect(reflogEntry.message, 'log message');
-        expect(reflogEntry.committer, {'name': 'name', 'email': 'email'});
+        expect(reflogEntry.committer['name'], 'name');
+        expect(reflogEntry.committer['email'], 'email');
 
         // set HEAD back to master
         repo
@@ -333,6 +335,12 @@ void main() {
           throwsA(isA<LibGit2Error>()),
         );
       });
+    });
+
+    test('returns log for reference', () {
+      final ref = repo.getReference('refs/heads/master');
+      expect(ref.log.last.message, 'commit (initial): init');
+      ref.free();
     });
 
     group('isValidName()', () {

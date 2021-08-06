@@ -2,6 +2,7 @@ import 'dart:ffi';
 import 'bindings/libgit2_bindings.dart';
 import 'bindings/reference.dart' as bindings;
 import 'oid.dart';
+import 'reflog.dart';
 import 'util.dart';
 
 enum ReferenceType { direct, symbolic }
@@ -143,6 +144,18 @@ class Reference {
   /// Throws a [LibGit2Error] if error occured.
   static bool hasLog(Pointer<git_repository> repo, String name) {
     return bindings.hasLog(repo, name);
+  }
+
+  /// Returns a list with entries of reference log.
+  List<RefLogEntry> get log {
+    final reflog = RefLog(this);
+    var log = <RefLogEntry>[];
+
+    for (var i = 0; i < reflog.count; i++) {
+      log.add(reflog.entryAt(i));
+    }
+
+    return log;
   }
 
   /// Checks if a reference is a local branch.
