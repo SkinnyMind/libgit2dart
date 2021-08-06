@@ -73,6 +73,15 @@ String name(Pointer<git_reference> ref) {
   return result.cast<Utf8>().toDartString();
 }
 
+/// Get the reference's short name.
+///
+/// This will transform the reference name into a name "human-readable" version.
+/// If no shortname is appropriate, it will return the full name.
+String shorthand(Pointer<git_reference> ref) {
+  final result = libgit2.git_reference_shorthand(ref);
+  return result.cast<Utf8>().toDartString();
+}
+
 /// Fill a list with all the references that can be found in a repository.
 ///
 /// The string array will be filled with the names of all references;

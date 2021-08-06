@@ -165,6 +165,12 @@ class Reference {
   /// Returns the full name of a reference.
   String get name => bindings.name(_refPointer);
 
+  /// Returns the reference's short name.
+  ///
+  /// This will transform the reference name into a name "human-readable" version.
+  /// If no shortname is appropriate, it will return the full name.
+  String get shorthand => bindings.shorthand(_refPointer);
+
   /// Returns a list with all the references that can be found in a repository.
   ///
   /// Throws a [LibGit2Error] if error occured.

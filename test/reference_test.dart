@@ -272,9 +272,23 @@ void main() {
       ref.free();
     });
 
-    test('returns the full name of a reference', () {
+    test('returns the full name', () {
       expect(repo.head.name, 'refs/heads/master');
       repo.head.free();
+    });
+
+    test('returns the short name', () {
+      final ref = repo.createReference(
+        name: 'refs/remotes/origin/master',
+        target: lastCommit,
+      );
+
+      expect(repo.head.shorthand, 'master');
+      expect(ref.shorthand, 'origin/master');
+
+      repo.head.free();
+      ref.delete();
+      ref.free();
     });
 
     test('returns a map with all the references of repository', () {
