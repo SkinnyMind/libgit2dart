@@ -358,7 +358,7 @@ void main() {
       ref.free();
     });
 
-    group('setTarget()', () {
+    group('.setTarget()', () {
       test('successfully sets target with SHA hex', () {
         final ref = repo.getReference('refs/heads/master');
         ref.setTarget(newCommit);
@@ -415,6 +415,80 @@ void main() {
         );
 
         ref.free();
+      });
+    });
+
+    group('.rename()', () {
+      test('successfully renames reference', () {
+        final ref = repo.createReference(
+          name: 'refs/tags/v1',
+          target: lastCommit,
+        );
+        expect(ref.name, 'refs/tags/v1');
+
+        ref.rename('refs/tags/v2');
+        expect(ref.name, 'refs/tags/v2');
+
+        ref.delete();
+        ref.free();
+      });
+
+      test('throws on invalid name', () {
+        final ref = repo.createReference(
+          name: 'refs/tags/v1',
+          target: lastCommit,
+        );
+
+        expect(
+          () => ref.rename('refs/tags/invalid~'),
+          throwsA(isA<LibGit2Error>()),
+        );
+
+        ref.delete();
+        ref.free();
+      });
+
+      test('throws if name already exists', () {
+        final ref1 = repo.createReference(
+          name: 'refs/tags/v1',
+          target: lastCommit,
+        );
+
+        final ref2 = repo.createReference(
+          name: 'refs/tags/v2',
+          target: lastCommit,
+        );
+
+        expect(
+          () => ref1.rename('refs/tags/v2'),
+          throwsA(isA<LibGit2Error>()),
+        );
+
+        ref1.delete();
+        ref2.delete();
+        ref1.free();
+        ref2.free();
+      });
+
+      test('successfully renames with force flag set to true', () {
+        final ref1 = repo.createReference(
+          name: 'refs/tags/v1',
+          target: lastCommit,
+        );
+
+        final ref2 = repo.createReference(
+          name: 'refs/tags/v2',
+          target: newCommit,
+        );
+
+        expect(ref2.target.sha, newCommit);
+
+        ref1.rename('refs/tags/v2', force: true);
+        expect(ref1.name, 'refs/tags/v2');
+
+        ref1.delete();
+        ref1.free();
+        ref2.free();
       });
     });
 

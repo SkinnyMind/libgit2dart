@@ -171,6 +171,23 @@ class Reference {
   /// If no shortname is appropriate, it will return the full name.
   String get shorthand => bindings.shorthand(_refPointer);
 
+  /// Renames an existing reference.
+  ///
+  /// This method works for both direct and symbolic references.
+  ///
+  /// The new name will be checked for validity.
+  ///
+  /// If the force flag is not enabled, and there's already a reference with the given name,
+  /// the renaming will fail.
+  ///
+  /// IMPORTANT: The user needs to write a proper reflog entry if the reflog is enabled for
+  /// the repository. We only rename the reflog if it exists.
+  ///
+  /// Throws a [LibGit2Error] if error occured.
+  void rename(String newName, {bool force = false, String? logMessage}) {
+    _refPointer = bindings.rename(_refPointer, newName, force, logMessage);
+  }
+
   /// Returns a list with all the references that can be found in a repository.
   ///
   /// Throws a [LibGit2Error] if error occured.

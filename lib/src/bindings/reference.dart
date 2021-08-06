@@ -82,6 +82,46 @@ String shorthand(Pointer<git_reference> ref) {
   return result.cast<Utf8>().toDartString();
 }
 
+/// Rename an existing reference.
+///
+/// This method works for both direct and symbolic references.
+///
+/// The new name will be checked for validity.
+///
+/// If the force flag is not enabled, and there's already a reference with the given name,
+/// the renaming will fail.
+///
+/// IMPORTANT: The user needs to write a proper reflog entry if the reflog is enabled for
+/// the repository. We only rename the reflog if it exists.
+///
+/// Throws a [LibGit2Error] if error occured.
+Pointer<git_reference> rename(
+  Pointer<git_reference> ref,
+  String newName,
+  bool force,
+  String? logMessage,
+) {
+  final out = calloc<Pointer<git_reference>>();
+  final newNameC = newName.toNativeUtf8().cast<Int8>();
+  final forceC = force == true ? 1 : 0;
+  final logMessageC = logMessage?.toNativeUtf8().cast<Int8>() ?? nullptr;
+  final error = libgit2.git_reference_rename(
+    out,
+    ref,
+    newNameC,
+    forceC,
+    logMessageC,
+  );
+  calloc.free(newNameC);
+  calloc.free(logMessageC);
+
+  if (error < 0) {
+    throw LibGit2Error(libgit2.git_error_last());
+  } else {
+    return out.value;
+  }
+}
+
 /// Fill a list with all the references that can be found in a repository.
 ///
 /// The string array will be filled with the names of all references;
