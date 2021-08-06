@@ -147,6 +147,97 @@ void main() {
       });
     });
 
+    group('.createSymbolic()', () {
+      test('successfully creates with valid target', () {
+        final ref = repo.createReference(
+          name: 'refs/tags/symbolic',
+          target: 'refs/heads/master',
+        );
+
+        expect(repo.references, contains('refs/tags/symbolic'));
+        expect(ref.type, ReferenceType.symbolic);
+
+        ref.delete();
+        ref.free();
+      });
+
+      test('successfully creates with force flag if name already exists', () {
+        final ref = repo.createReference(
+          name: 'refs/tags/test',
+          target: 'refs/heads/master',
+        );
+
+        final forceRef = repo.createReference(
+          name: 'refs/tags/test',
+          target: 'refs/heads/master',
+          force: true,
+        );
+
+        expect(forceRef.target.sha, lastCommit);
+        expect(forceRef.type, ReferenceType.symbolic);
+
+        forceRef.delete();
+        ref.free();
+        forceRef.free();
+      });
+
+      test('throws if name already exists', () {
+        final ref = repo.createReference(
+          name: 'refs/tags/exists',
+          target: 'refs/heads/master',
+        );
+
+        expect(
+          () => repo.createReference(
+            name: 'refs/tags/exists',
+            target: 'refs/heads/master',
+          ),
+          throwsA(isA<LibGit2Error>()),
+        );
+
+        ref.delete();
+        ref.free();
+      });
+
+      test('throws if name is not valid', () {
+        expect(
+          () => repo.createReference(
+            name: 'refs/tags/invalid~',
+            target: 'refs/heads/master',
+          ),
+          throwsA(isA<LibGit2Error>()),
+        );
+      });
+
+      test('successfully creates with log message', () {
+        repo.setIdentity(name: 'name', email: 'email');
+        final ref = repo.createReference(
+          name: 'HEAD',
+          target: 'refs/heads/feature',
+          force: true,
+          logMessage: 'log message',
+        );
+
+        final reflog = RefLog(ref);
+        final reflogEntry = reflog.entryAt(0);
+
+        expect(reflogEntry.message, 'log message');
+        expect(reflogEntry.committer, {'name': 'name', 'email': 'email'});
+
+        // set HEAD back to master
+        repo
+            .createReference(
+              name: 'HEAD',
+              target: 'refs/heads/master',
+              force: true,
+            )
+            .free();
+
+        reflog.free();
+        ref.free();
+      });
+    });
+
     test('successfully deletes reference', () {
       final ref = repo.createReference(
         name: 'refs/tags/test',

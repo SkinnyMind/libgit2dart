@@ -169,9 +169,68 @@ Pointer<git_reference> createDirect(
   final nameC = name.toNativeUtf8().cast<Int8>();
   final forceC = force == true ? 1 : 0;
   final logMessageC = logMessage.toNativeUtf8().cast<Int8>();
-  final error =
-      libgit2.git_reference_create(out, repo, nameC, oid, forceC, logMessageC);
+  final error = libgit2.git_reference_create(
+    out,
+    repo,
+    nameC,
+    oid,
+    forceC,
+    logMessageC,
+  );
   calloc.free(nameC);
+  calloc.free(logMessageC);
+
+  if (error < 0) {
+    throw (LibGit2Error(libgit2.git_error_last()));
+  } else {
+    return out.value;
+  }
+}
+
+/// Create a new symbolic reference.
+///
+/// A symbolic reference is a reference name that refers to another reference name.
+/// If the other name moves, the symbolic name will move, too. As a simple example,
+/// the "HEAD" reference might refer to "refs/heads/master" while on the "master" branch
+/// of a repository.
+///
+/// The symbolic reference will be created in the repository and written to the disk.
+/// The generated reference object must be freed by the user.
+///
+/// Valid reference names must follow one of two patterns:
+///
+/// Top-level names must contain only capital letters and underscores, and must begin and end
+/// with a letter. (e.g. "HEAD", "ORIG_HEAD").
+/// Names prefixed with "refs/" can be almost anything. You must avoid the characters
+/// '~', '^', ':', '\', '?', '[', and '*', and the sequences ".." and "@{" which have special
+/// meaning to revparse.
+/// This function will throw an [LibGit2Error] if a reference already exists with the given
+/// name unless force is true, in which case it will be overwritten.
+///
+/// The message for the reflog will be ignored if the reference does not belong in the standard
+/// set (HEAD, branches and remote-tracking branches) and it does not have a reflog.
+Pointer<git_reference> createSymbolic(
+  Pointer<git_repository> repo,
+  String name,
+  String target,
+  bool force,
+  String logMessage,
+) {
+  final out = calloc<Pointer<git_reference>>();
+  final nameC = name.toNativeUtf8().cast<Int8>();
+  final targetC = target.toNativeUtf8().cast<Int8>();
+  final forceC = force == true ? 1 : 0;
+  final logMessageC = logMessage.toNativeUtf8().cast<Int8>();
+  final error = libgit2.git_reference_symbolic_create(
+    out,
+    repo,
+    nameC,
+    targetC,
+    forceC,
+    logMessageC,
+  );
+  calloc.free(nameC);
+  calloc.free(targetC);
   calloc.free(logMessageC);
 
   if (error < 0) {

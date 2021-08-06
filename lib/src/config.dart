@@ -1,6 +1,5 @@
 import 'dart:ffi';
 import 'dart:io';
-import 'package:ffi/ffi.dart';
 import 'bindings/libgit2_bindings.dart';
 import 'bindings/config.dart' as bindings;
 import 'util.dart';
