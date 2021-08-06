@@ -178,7 +178,7 @@ class Repository {
     required String name,
     required Object target,
     bool force = false,
-    String logMessage = '',
+    String? logMessage,
   }) {
     late final Oid oid;
     late final bool isDirect;
@@ -186,7 +186,7 @@ class Repository {
     if (target.runtimeType == Oid) {
       oid = target as Oid;
       isDirect = true;
-    } else if (_isValidShaHex(target as String)) {
+    } else if (isValidShaHex(target as String)) {
       if (target.length == 40) {
         oid = Oid.fromSHA(target);
       } else {
@@ -252,10 +252,4 @@ class Repository {
   ///
   /// Throws a [LibGit2Error] if error occured.
   Odb get odb => Odb(bindings.odb(_repoPointer));
-
-  bool _isValidShaHex(String str) {
-    final hexRegExp = RegExp(r'^[0-9a-fA-F]+$');
-    return hexRegExp.hasMatch(str) &&
-        (GIT_OID_MINPREFIXLEN <= str.length && GIT_OID_HEXSZ >= str.length);
-  }
 }

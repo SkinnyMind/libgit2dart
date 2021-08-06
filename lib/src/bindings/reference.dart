@@ -163,12 +163,12 @@ Pointer<git_reference> createDirect(
   String name,
   Pointer<git_oid> oid,
   bool force,
-  String logMessage,
+  String? logMessage,
 ) {
   final out = calloc<Pointer<git_reference>>();
   final nameC = name.toNativeUtf8().cast<Int8>();
   final forceC = force == true ? 1 : 0;
-  final logMessageC = logMessage.toNativeUtf8().cast<Int8>();
+  final logMessageC = logMessage?.toNativeUtf8().cast<Int8>() ?? nullptr;
   final error = libgit2.git_reference_create(
     out,
     repo,
@@ -214,13 +214,13 @@ Pointer<git_reference> createSymbolic(
   String name,
   String target,
   bool force,
-  String logMessage,
+  String? logMessage,
 ) {
   final out = calloc<Pointer<git_reference>>();
   final nameC = name.toNativeUtf8().cast<Int8>();
   final targetC = target.toNativeUtf8().cast<Int8>();
   final forceC = force == true ? 1 : 0;
-  final logMessageC = logMessage.toNativeUtf8().cast<Int8>();
+  final logMessageC = logMessage?.toNativeUtf8().cast<Int8>() ?? nullptr;
   final error = libgit2.git_reference_symbolic_create(
     out,
     repo,
@@ -257,6 +257,60 @@ void delete(Pointer<git_reference> ref) {
 /// Get the repository where a reference resides.
 Pointer<git_repository> owner(Pointer<git_reference> ref) {
   return libgit2.git_reference_owner(ref);
+}
+
+/// Conditionally create a new reference with the same name as the given reference
+/// but a different OID target. The reference must be a direct reference, otherwise this will fail.
+///
+/// The new reference will be written to disk, overwriting the given reference.
+///
+/// Throws a [LibGit2Error] if error occured.
+Pointer<git_reference> setTarget(
+  Pointer<git_reference> ref,
+  Pointer<git_oid> oid,
+  String? logMessage,
+) {
+  final out = calloc<Pointer<git_reference>>();
+  final logMessageC = logMessage?.toNativeUtf8().cast<Int8>() ?? nullptr;
+  final error = libgit2.git_reference_set_target(out, ref, oid, logMessageC);
+  calloc.free(logMessageC);
+
+  if (error < 0) {
+    throw LibGit2Error(libgit2.git_error_last());
+  } else {
+    return out.value;
+  }
+}
+
+/// Create a new reference with the same name as the given reference but a different
+/// symbolic target. The reference must be a symbolic reference, otherwise this will fail.
+///
+/// The new reference will be written to disk, overwriting the given reference.
+///
+/// The target name will be checked for validity.
+///
+/// The message for the reflog will be ignored if the reference does not belong in the
+/// standard set (HEAD, branches and remote-tracking branches) and and it does not have a reflog.
+///
+/// Throws a [LibGit2Error] if error occured.
+Pointer<git_reference> setTargetSymbolic(
+  Pointer<git_reference> ref,
+  String target,
+  String? logMessage,
+) {
+  final out = calloc<Pointer<git_reference>>();
+  final targetC = target.toNativeUtf8().cast<Int8>();
+  final logMessageC = logMessage?.toNativeUtf8().cast<Int8>() ?? nullptr;
+  final error =
+      libgit2.git_reference_symbolic_set_target(out, ref, targetC, logMessageC);
+  calloc.free(targetC);
+  calloc.free(logMessageC);
+
+  if (error < 0) {
+    throw LibGit2Error(libgit2.git_error_last());
+  } else {
+    return out.value;
+  }
 }
 
 /// Ensure the reference name is well-formed.

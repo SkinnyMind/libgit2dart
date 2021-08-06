@@ -1,6 +1,8 @@
 import 'dart:ffi';
 import 'bindings/libgit2_bindings.dart';
 import 'bindings/reference.dart' as bindings;
+import 'bindings/repository.dart' as repo_bindings;
+import 'odb.dart';
 import 'oid.dart';
 import 'reflog.dart';
 import 'util.dart';
@@ -37,7 +39,7 @@ class Reference {
     required String name,
     required Pointer<git_oid> oid,
     required bool force,
-    required String logMessage,
+    String? logMessage,
   }) {
     _refPointer = bindings.createDirect(repo, name, oid, force, logMessage);
   }
@@ -69,7 +71,7 @@ class Reference {
     required String name,
     required String target,
     required bool force,
-    required String logMessage,
+    String? logMessage,
   }) {
     _refPointer =
         bindings.createSymbolic(repo, name, target, force, logMessage);
@@ -89,7 +91,7 @@ class Reference {
   }
 
   /// Pointer to memory address for allocated reference object.
-  late final Pointer<git_reference> _refPointer;
+  late Pointer<git_reference> _refPointer;
 
   /// Checks if the reference [name] is well-formed.
   ///
@@ -127,6 +129,37 @@ class Reference {
       oidPointer = bindings.target(bindings.resolve(_refPointer));
     }
     return Oid(oidPointer);
+  }
+
+  /// Conditionally creates a new reference with the same name as the given reference
+  /// but a different OID target.
+  ///
+  /// The new reference will be written to disk, overwriting the given reference.
+  ///
+  /// Throws a [LibGit2Error] if error occured.
+  void setTarget(String target, [String? logMessage]) {
+    late final Oid oid;
+
+    if (isValidShaHex(target)) {
+      if (target.length == 40) {
+        oid = Oid.fromSHA(target);
+      } else {
+        final shortOid = Oid.fromSHAn(target);
+        final odb = Odb(repo_bindings.odb(owner));
+        oid = Oid(odb.existsPrefix(shortOid.pointer, target.length));
+        odb.free();
+      }
+    } else {
+      final ref = Reference(bindings.lookup(owner, target));
+      oid = ref.target;
+      ref.free();
+    }
+
+    if (type == ReferenceType.direct) {
+      _refPointer = bindings.setTarget(_refPointer, oid.pointer, logMessage);
+    } else {
+      _refPointer = bindings.setTargetSymbolic(_refPointer, target, logMessage);
+    }
   }
 
   /// Returns the full name of a reference.

@@ -10,6 +10,7 @@ import 'helpers/util.dart';
 
 void main() {
   const lastCommit = '78b8bf123e3952c970ae5c1ce0a3ea1d1336f6e8';
+  const newCommit = 'c68ff54aabf660fcdd9a2838d401583fe31249e3';
 
   group('Reference', () {
     late final Repository repo;
@@ -341,6 +342,50 @@ void main() {
       final ref = repo.getReference('refs/heads/master');
       expect(ref.log.last.message, 'commit (initial): init');
       ref.free();
+    });
+
+    group('setTarget()', () {
+      test('successfully sets target with SHA hex', () {
+        final ref = repo.getReference('refs/heads/master');
+        ref.setTarget(newCommit);
+        expect(ref.target.sha, newCommit);
+
+        // change back for tests purpose
+        ref.setTarget(lastCommit);
+        ref.free();
+      });
+
+      test('successfully sets target with short SHA hex', () {
+        final ref = repo.getReference('refs/heads/master');
+        ref.setTarget(newCommit.substring(0, 5));
+        expect(ref.target.sha, newCommit);
+
+        // change back for tests purpose
+        ref.setTarget(lastCommit);
+        ref.free();
+      });
+
+      test('successfully sets symbolic target', () {
+        final ref = repo.getReference('HEAD');
+        expect(ref.target.sha, lastCommit);
+
+        ref.setTarget('refs/heads/feature');
+        expect(ref.target.sha, '5aecfa0fb97eadaac050ccb99f03c3fb65460ad4');
+
+        // change back for tests purpose
+        ref.setTarget('refs/heads/master');
+        ref.free();
+      });
+
+      test('throws on invalid target', () {
+        final ref = repo.getReference('HEAD');
+        expect(
+          () => ref.setTarget('refs/heads/invalid~'),
+          throwsA(isA<LibGit2Error>()),
+        );
+
+        ref.free();
+      });
     });
 
     group('isValidName()', () {
