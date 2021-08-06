@@ -90,6 +90,19 @@ class Reference {
     _refPointer = bindings.lookup(repo, name);
   }
 
+  /// Initializes a new instance of the [Reference] class by
+  /// lookingup a reference by DWIMing it's short [name] in a repository.
+  ///
+  /// Should be freed with `free()` to release allocated memory.
+  ///
+  /// The name will be checked for validity.
+  ///
+  /// Throws a [LibGit2Error] if error occured.
+  Reference.lookupDWIM(Pointer<git_repository> repo, String name) {
+    libgit2.git_libgit2_init();
+    _refPointer = bindings.lookupDWIM(repo, name);
+  }
+
   /// Pointer to memory address for allocated reference object.
   late Pointer<git_reference> _refPointer;
 

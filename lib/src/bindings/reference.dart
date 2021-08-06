@@ -65,6 +65,25 @@ Pointer<git_reference> lookup(Pointer<git_repository> repo, String name) {
   }
 }
 
+/// Lookup a reference by DWIMing its short name.
+///
+/// Apply the git precendence rules to the given shorthand to determine which reference
+/// the user is referring to.
+///
+/// Throws a [LibGit2Error] if error occured.
+Pointer<git_reference> lookupDWIM(Pointer<git_repository> repo, String name) {
+  final out = calloc<Pointer<git_reference>>();
+  final nameC = name.toNativeUtf8().cast<Int8>();
+  final error = libgit2.git_reference_dwim(out, repo, nameC);
+  calloc.free(nameC);
+
+  if (error < 0) {
+    throw LibGit2Error(libgit2.git_error_last());
+  } else {
+    return out.value;
+  }
+}
+
 /// Get the full name of a reference.
 String name(Pointer<git_reference> ref) {
   var result = calloc<Int8>();

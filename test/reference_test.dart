@@ -16,6 +16,12 @@ void main() {
     late final Repository repo;
     final tmpDir = '${Directory.systemTemp.path}/ref_testrepo/';
 
+    // pros of using setUpAll:
+    //   - reduced amount of writes that leads to lesser burden on SSD drive
+    //   - better speed of test suite than with setUp
+    // cons of using setUpAll:
+    //   - fail in test might lead to failing tests below it in file
+    //   - necessity to do clean up at the end of test if it creates references
     setUpAll(() async {
       if (await Directory(tmpDir).exists()) {
         await Directory(tmpDir).delete(recursive: true);
@@ -347,6 +353,45 @@ void main() {
       test('throws when error occured', () {
         expect(
           () => repo.getReference('refs/heads/not/there'),
+          throwsA(isA<LibGit2Error>()),
+        );
+      });
+    });
+
+    group('.lookupDWIM()', () {
+      test('finds a reference with provided name', () {
+        final remoteRef = repo.createReference(
+          name: 'refs/remotes/origin/master',
+          target: lastCommit,
+        );
+        expect(remoteRef.shorthand, 'origin/master');
+
+        final tagRef = repo.createReference(
+          name: 'refs/tags/v1',
+          target: lastCommit,
+        );
+        expect(tagRef.shorthand, 'v1');
+
+        var ref = repo.getReferenceDWIM('refs/heads/master');
+        expect(ref.name, 'refs/heads/master');
+
+        ref = repo.getReferenceDWIM('master');
+        expect(ref.name, 'refs/heads/master');
+
+        ref = repo.getReferenceDWIM('origin/master');
+        expect(ref.name, 'refs/remotes/origin/master');
+
+        ref = repo.getReferenceDWIM('v1');
+        expect(ref.name, 'refs/tags/v1');
+
+        remoteRef.delete();
+        tagRef.delete();
+        ref.free();
+      });
+
+      test('throws when error occured', () {
+        expect(
+          () => repo.getReferenceDWIM('refs/heads/not/there'),
           throwsA(isA<LibGit2Error>()),
         );
       });

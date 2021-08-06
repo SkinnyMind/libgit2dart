@@ -227,6 +227,12 @@ class Repository {
   /// Throws a [LibGit2Error] if error occured.
   Reference getReference(String name) => Reference.lookup(_repoPointer, name);
 
+  /// Returns [Reference] object by lookingup a short [name] in repository.
+  ///
+  /// Throws a [LibGit2Error] if error occured.
+  Reference getReferenceDWIM(String name) =>
+      Reference.lookupDWIM(_repoPointer, name);
+
   /// Checks if a reflog exists for the specified reference [name].
   ///
   /// Throws a [LibGit2Error] if error occured.
