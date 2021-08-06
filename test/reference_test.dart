@@ -391,6 +391,22 @@ void main() {
         ref.free();
       });
 
+      test('successfully sets target with log message', () {
+        final ref = repo.getReference('HEAD');
+        expect(ref.target.sha, lastCommit);
+
+        repo.setIdentity(name: 'name', email: 'email');
+        ref.setTarget('refs/heads/feature', 'log message');
+        expect(ref.target.sha, '5aecfa0fb97eadaac050ccb99f03c3fb65460ad4');
+        expect(ref.log.first.message, 'log message');
+        expect(ref.log.first.committer['name'], 'name');
+        expect(ref.log.first.committer['email'], 'email');
+
+        // change back for tests purpose
+        ref.setTarget('refs/heads/master');
+        ref.free();
+      });
+
       test('throws on invalid target', () {
         final ref = repo.getReference('HEAD');
         expect(
