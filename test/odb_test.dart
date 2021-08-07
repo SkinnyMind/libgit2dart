@@ -14,7 +14,7 @@ void main() {
     late Repository repo;
     final tmpDir = '${Directory.systemTemp.path}/odb_testrepo/';
 
-    setUpAll(() async {
+    setUp(() async {
       if (await Directory(tmpDir).exists()) {
         await Directory(tmpDir).delete(recursive: true);
       }
@@ -25,7 +25,7 @@ void main() {
       repo = Repository.open(tmpDir);
     });
 
-    tearDownAll(() async {
+    tearDown(() async {
       repo.free();
       await Directory(tmpDir).delete(recursive: true);
     });

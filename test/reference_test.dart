@@ -13,16 +13,10 @@ void main() {
   const newCommit = 'c68ff54aabf660fcdd9a2838d401583fe31249e3';
 
   group('Reference', () {
-    late final Repository repo;
+    late Repository repo;
     final tmpDir = '${Directory.systemTemp.path}/ref_testrepo/';
 
-    // pros of using setUpAll:
-    //   - reduced amount of writes that leads to lesser burden on SSD drive
-    //   - better speed of test suite than with setUp
-    // cons of using setUpAll:
-    //   - fail in test might lead to failing tests below it in file
-    //   - necessity to do clean up at the end of test if it creates references
-    setUpAll(() async {
+    setUp(() async {
       if (await Directory(tmpDir).exists()) {
         await Directory(tmpDir).delete(recursive: true);
       }
@@ -33,7 +27,7 @@ void main() {
       repo = Repository.open(tmpDir);
     });
 
-    tearDownAll(() async {
+    tearDown(() async {
       repo.free();
       await Directory(tmpDir).delete(recursive: true);
     });
@@ -48,7 +42,6 @@ void main() {
 
         expect(repo.references, contains('refs/tags/from.oid'));
 
-        refFromOid.delete();
         refFromOid.free();
         ref.free();
       });
@@ -61,7 +54,6 @@ void main() {
 
         expect(repo.references, contains('refs/tags/from.hash'));
 
-        refFromHash.delete();
         refFromHash.free();
       });
 
@@ -73,7 +65,6 @@ void main() {
 
         expect(repo.references, contains('refs/tags/from.short.hash'));
 
-        refFromHash.delete();
         refFromHash.free();
       });
 
@@ -93,7 +84,6 @@ void main() {
         expect(reflogEntry.committer['email'], 'email');
 
         reflog.free();
-        ref.delete();
         ref.free();
       });
 
@@ -131,7 +121,6 @@ void main() {
 
         expect(forceRef.target.sha, lastCommit);
 
-        forceRef.delete();
         ref.free();
         forceRef.free();
       });
@@ -150,7 +139,6 @@ void main() {
           throwsA(isA<LibGit2Error>()),
         );
 
-        ref.delete();
         ref.free();
       });
     });
@@ -165,7 +153,6 @@ void main() {
         expect(repo.references, contains('refs/tags/symbolic'));
         expect(ref.type, ReferenceType.symbolic);
 
-        ref.delete();
         ref.free();
       });
 
@@ -184,7 +171,6 @@ void main() {
         expect(forceRef.target.sha, lastCommit);
         expect(forceRef.type, ReferenceType.symbolic);
 
-        forceRef.delete();
         ref.free();
         forceRef.free();
       });
@@ -203,7 +189,6 @@ void main() {
           throwsA(isA<LibGit2Error>()),
         );
 
-        ref.delete();
         ref.free();
       });
 
@@ -233,15 +218,6 @@ void main() {
         expect(reflogEntry.committer['name'], 'name');
         expect(reflogEntry.committer['email'], 'email');
 
-        // set HEAD back to master
-        repo
-            .createReference(
-              name: 'HEAD',
-              target: 'refs/heads/master',
-              force: true,
-            )
-            .free();
-
         reflog.free();
         ref.free();
       });
@@ -256,6 +232,7 @@ void main() {
 
       ref.delete();
       expect(repo.references, isNot(contains('refs/tags/test')));
+      ref.free();
     });
 
     test('returns correct type of reference', () {
@@ -293,7 +270,6 @@ void main() {
       expect(ref.shorthand, 'origin/master');
 
       repo.head.free();
-      ref.delete();
       ref.free();
     });
 
@@ -333,7 +309,6 @@ void main() {
 
       expect(ref.isRemote, true);
 
-      ref.delete();
       ref.free();
     });
 
@@ -384,8 +359,8 @@ void main() {
         ref = repo.getReferenceDWIM('v1');
         expect(ref.name, 'refs/tags/v1');
 
-        remoteRef.delete();
-        tagRef.delete();
+        remoteRef.free();
+        tagRef.free();
         ref.free();
       });
 
@@ -409,8 +384,6 @@ void main() {
         ref.setTarget(newCommit);
         expect(ref.target.sha, newCommit);
 
-        // change back for tests purpose
-        ref.setTarget(lastCommit);
         ref.free();
       });
 
@@ -419,8 +392,6 @@ void main() {
         ref.setTarget(newCommit.substring(0, 5));
         expect(ref.target.sha, newCommit);
 
-        // change back for tests purpose
-        ref.setTarget(lastCommit);
         ref.free();
       });
 
@@ -431,8 +402,6 @@ void main() {
         ref.setTarget('refs/heads/feature');
         expect(ref.target.sha, '5aecfa0fb97eadaac050ccb99f03c3fb65460ad4');
 
-        // change back for tests purpose
-        ref.setTarget('refs/heads/master');
         ref.free();
       });
 
@@ -447,8 +416,6 @@ void main() {
         expect(ref.log.first.committer['name'], 'name');
         expect(ref.log.first.committer['email'], 'email');
 
-        // change back for tests purpose
-        ref.setTarget('refs/heads/master');
         ref.free();
       });
 
@@ -474,7 +441,6 @@ void main() {
         ref.rename('refs/tags/v2');
         expect(ref.name, 'refs/tags/v2');
 
-        ref.delete();
         ref.free();
       });
 
@@ -489,7 +455,6 @@ void main() {
           throwsA(isA<LibGit2Error>()),
         );
 
-        ref.delete();
         ref.free();
       });
 
@@ -509,8 +474,6 @@ void main() {
           throwsA(isA<LibGit2Error>()),
         );
 
-        ref1.delete();
-        ref2.delete();
         ref1.free();
         ref2.free();
       });
@@ -531,7 +494,6 @@ void main() {
         ref1.rename('refs/tags/v2', force: true);
         expect(ref1.name, 'refs/tags/v2');
 
-        ref1.delete();
         ref1.free();
         ref2.free();
       });

@@ -8,11 +8,11 @@ import 'helpers/util.dart';
 
 void main() {
   group('RefLog', () {
-    late final Repository repo;
-    late final RefLog reflog;
+    late Repository repo;
+    late RefLog reflog;
     final tmpDir = '${Directory.systemTemp.path}/reflog_testrepo/';
 
-    setUpAll(() async {
+    setUp(() async {
       if (await Directory(tmpDir).exists()) {
         await Directory(tmpDir).delete(recursive: true);
       }
@@ -24,7 +24,7 @@ void main() {
       reflog = RefLog(repo.head);
     });
 
-    tearDownAll(() async {
+    tearDown(() async {
       repo.head.free();
       reflog.free();
       repo.free();
