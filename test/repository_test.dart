@@ -154,6 +154,16 @@ void main() {
         expect(repo.namespace, '');
       });
 
+      test('successfully sets working directory', () {
+        final tmpWorkDir = '${Directory.systemTemp.path}/tmp_work_dir/';
+        Directory(tmpWorkDir).createSync();
+
+        repo.setWorkdir(tmpWorkDir);
+        expect(repo.workdir, tmpWorkDir);
+
+        Directory(tmpWorkDir).deleteSync();
+      });
+
       group('setHead', () {
         test('successfully sets head when target is reference', () {
           expect(repo.head.name, 'refs/heads/master');

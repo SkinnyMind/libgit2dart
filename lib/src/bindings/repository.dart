@@ -349,7 +349,7 @@ void setHeadDetachedFromAnnotated(
   }
 }
 
-/// Set the path to the working directory for this repository
+/// Set the path to the working directory for this repository.
 ///
 /// The working directory doesn't need to be the same one that contains the
 /// `.git` folder for this repository.

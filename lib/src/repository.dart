@@ -167,6 +167,20 @@ class Repository {
   /// If the repository is bare, this function will always return empty string.
   String get workdir => bindings.workdir(_repoPointer);
 
+  /// Sets the path to the working directory for this repository.
+  ///
+  /// The working directory doesn't need to be the same one that contains the
+  /// `.git` folder for this repository.
+  ///
+  /// If this repository is bare, setting its working directory will turn it into a
+  /// normal repository, capable of performing all the common workdir operations
+  /// (checkout, status, index manipulation, etc).
+  ///
+  /// Throws a [LibGit2Error] if error occured.
+  void setWorkdir(String path, [bool updateGitlink = false]) {
+    bindings.setWorkdir(_repoPointer, path, updateGitlink);
+  }
+
   /// Releases memory allocated for repository object.
   void free() {
     bindings.free(_repoPointer);
