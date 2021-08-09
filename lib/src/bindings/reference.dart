@@ -381,6 +381,12 @@ Pointer<git_reference> setTargetSymbolic(
   }
 }
 
+/// Compare two references.
+bool compare(Pointer<git_reference> ref1, Pointer<git_reference> ref2) {
+  final result = libgit2.git_reference_cmp(ref1, ref2);
+  return result == 0 ? true : false;
+}
+
 /// Ensure the reference name is well-formed.
 ///
 /// Valid reference names must follow one of two patterns:

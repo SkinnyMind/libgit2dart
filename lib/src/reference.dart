@@ -253,6 +253,15 @@ class Reference {
   /// Throws a [LibGit2Error] if the reference has changed from the time it was looked up.
   void delete() => bindings.delete(_refPointer);
 
+  @override
+  bool operator ==(other) {
+    return (other is Reference) &&
+        bindings.compare(_refPointer, other._refPointer);
+  }
+
+  @override
+  int get hashCode => _refPointer.address.hashCode;
+
   /// Releases memory allocated for reference object.
   void free() {
     bindings.free(_refPointer);

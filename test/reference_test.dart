@@ -523,6 +523,21 @@ void main() {
       });
     });
 
+    test('checks equality', () {
+      final ref1 = Reference.get(repo, 'refs/heads/master');
+      final ref2 = Reference.get(repo, 'refs/heads/master');
+      final ref3 = Reference.get(repo, 'refs/heads/feature');
+
+      expect(ref1 == ref2, true);
+      expect(ref1 != ref2, false);
+      expect(ref1 == ref3, false);
+      expect(ref1 != ref3, true);
+
+      ref1.free();
+      ref2.free();
+      ref3.free();
+    });
+
     group('isValidName()', () {
       test('returns true for valid names', () {
         expect(Reference.isValidName('HEAD'), true);
