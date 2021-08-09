@@ -254,8 +254,9 @@ void main() {
     });
 
     test('returns correct type of reference', () {
-      expect(repo.head.type, ReferenceType.direct);
-      repo.head.free();
+      final head = repo.head;
+      expect(head.type, ReferenceType.direct);
+      head.free();
 
       final ref = Reference.get(repo, 'HEAD');
       expect(ref.type, ReferenceType.symbolic);
@@ -263,8 +264,9 @@ void main() {
     });
 
     test('returns SHA hex of direct reference', () {
-      expect(repo.head.target.sha, lastCommit);
-      repo.head.free();
+      final head = repo.head;
+      expect(head.target.sha, lastCommit);
+      head.free();
     });
 
     test('returns SHA hex of symbolic reference', () {
@@ -274,8 +276,9 @@ void main() {
     });
 
     test('returns the full name', () {
-      expect(repo.head.name, 'refs/heads/master');
-      repo.head.free();
+      final head = repo.head;
+      expect(head.name, 'refs/heads/master');
+      head.free();
     });
 
     test('returns the short name', () {
@@ -285,10 +288,12 @@ void main() {
         target: lastCommit,
       );
 
-      expect(repo.head.shorthand, 'master');
+      final head = repo.head;
+
+      expect(head.shorthand, 'master');
       expect(ref.shorthand, 'origin/master');
 
-      repo.head.free();
+      head.free();
       ref.free();
     });
 
