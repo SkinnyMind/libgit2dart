@@ -1,5 +1,6 @@
 import 'dart:ffi';
 import 'odb.dart';
+import 'oid.dart';
 import 'reference.dart';
 import 'bindings/libgit2_bindings.dart';
 import 'bindings/repository.dart' as bindings;
@@ -77,11 +78,11 @@ class Repository {
     return bindings.isHeadDetached(_repoPointer);
   }
 
-  /// Makes the repository HEAD point to the specified reference.
+  /// Makes the repository HEAD point to the specified reference or commit.
   ///
-  /// If the provided [reference] points to a Tree or a Blob, the HEAD is unaltered.
+  /// If the provided [target] points to a Tree or a Blob, the HEAD is unaltered.
   ///
-  /// If the provided [reference] points to a branch, the HEAD will point to that branch,
+  /// If the provided [target] points to a branch, the HEAD will point to that branch,
   /// staying attached, or become attached if it isn't yet.
   ///
   /// If the branch doesn't exist yet, the HEAD will be attached to an unborn branch.
@@ -89,8 +90,22 @@ class Repository {
   /// Otherwise, the HEAD will be detached and will directly point to the Commit.
   ///
   /// Throws a [LibGit2Error] if error occured.
-  void setHead(String reference) {
-    bindings.setHead(_repoPointer, reference);
+  void setHead(String target) {
+    late final Oid oid;
+
+    if (isValidShaHex(target)) {
+      if (target.length == 40) {
+        oid = Oid.fromSHA(target);
+      } else {
+        final shortOid = Oid.fromSHAn(target);
+        final odb = this.odb;
+        oid = Oid(odb.existsPrefix(shortOid.pointer, target.length));
+        odb.free();
+      }
+      bindings.setHeadDetached(_repoPointer, oid.pointer);
+    } else {
+      bindings.setHead(_repoPointer, target);
+    }
   }
 
   /// Checks if the current branch is unborn.

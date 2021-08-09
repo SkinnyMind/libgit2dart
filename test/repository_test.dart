@@ -50,15 +50,6 @@ void main() {
         test('returns empty string as path of the working directory', () {
           expect(repo.workdir, '');
         });
-
-        group('setHead', () {
-          test('throws when reference doesn\'t exist', () {
-            expect(
-              () => repo.setHead('refs/tags/doesnt/exist'),
-              throwsA(isA<LibGit2Error>()),
-            );
-          });
-        });
       });
 
       group('standard', () {
@@ -130,9 +121,12 @@ void main() {
     });
 
     group('testrepo', () {
+      const lastCommit = '78b8bf123e3952c970ae5c1ce0a3ea1d1336f6e8';
+      const featureCommit = '5aecfa0fb97eadaac050ccb99f03c3fb65460ad4';
+
       final tmpDir = '${Directory.systemTemp.path}/testrepo/';
 
-      setUpAll(() async {
+      setUp(() async {
         if (await Directory(tmpDir).exists()) {
           await Directory(tmpDir).delete(recursive: true);
         }
@@ -143,7 +137,7 @@ void main() {
         repo = Repository.open(tmpDir);
       });
 
-      tearDownAll(() async {
+      tearDown(() async {
         repo.free();
         await Directory(tmpDir).delete(recursive: true);
       });
@@ -158,6 +152,37 @@ void main() {
         expect(repo.namespace, 'some');
         repo.setNamespace(null);
         expect(repo.namespace, '');
+      });
+
+      group('setHead', () {
+        test('successfully sets head when target is reference', () {
+          expect(repo.head.name, 'refs/heads/master');
+          expect(repo.head.target.sha, lastCommit);
+          repo.setHead('refs/heads/feature');
+          expect(repo.head.name, 'refs/heads/feature');
+          expect(repo.head.target.sha, featureCommit);
+        });
+
+        test('successfully sets head when target is sha hex', () {
+          expect(repo.head.target.sha, lastCommit);
+          repo.setHead(featureCommit);
+          expect(repo.head.target.sha, featureCommit);
+          expect(repo.isHeadDetached, true);
+        });
+
+        test('successfully sets head when target is short sha hex', () {
+          expect(repo.head.target.sha, lastCommit);
+          repo.setHead(featureCommit.substring(0, 5));
+          expect(repo.head.target.sha, featureCommit);
+          expect(repo.isHeadDetached, true);
+        });
+
+        test('successfully attaches to an unborn branch', () {
+          expect(repo.head.name, 'refs/heads/master');
+          expect(repo.isBranchUnborn, false);
+          repo.setHead('refs/heads/not.there');
+          expect(repo.isBranchUnborn, true);
+        });
       });
     });
   });
