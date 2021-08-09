@@ -11,7 +11,6 @@ void main() {
     print('Is repository bare: ${repo.isBare}');
     print('Is repository empty: ${repo.isEmpty}');
     print('Is head detached: ${repo.isHeadDetached}');
-    print('Repository refs: ${repo.references}');
 
     // free() should be called on object to free memory when done.
     repo.free();

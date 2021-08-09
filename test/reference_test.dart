@@ -34,43 +34,47 @@ void main() {
 
     group('.createDirect()', () {
       test('successfully creates with Oid as target', () {
-        final ref = repo.getReference('refs/heads/master');
-        final refFromOid = repo.createReference(
+        final ref = Reference.get(repo, 'refs/heads/master');
+        final refFromOid = Reference.create(
+          repository: repo,
           name: 'refs/tags/from.oid',
           target: ref.target,
         );
 
-        expect(repo.references, contains('refs/tags/from.oid'));
+        expect(Reference.list(repo), contains('refs/tags/from.oid'));
 
         refFromOid.free();
         ref.free();
       });
 
       test('successfully creates with SHA hash as target', () {
-        final refFromHash = repo.createReference(
+        final refFromHash = Reference.create(
+          repository: repo,
           name: 'refs/tags/from.hash',
           target: lastCommit,
         );
 
-        expect(repo.references, contains('refs/tags/from.hash'));
+        expect(Reference.list(repo), contains('refs/tags/from.hash'));
 
         refFromHash.free();
       });
 
       test('successfully creates with short SHA hash as target', () {
-        final refFromHash = repo.createReference(
+        final refFromHash = Reference.create(
+          repository: repo,
           name: 'refs/tags/from.short.hash',
           target: '78b8bf',
         );
 
-        expect(repo.references, contains('refs/tags/from.short.hash'));
+        expect(Reference.list(repo), contains('refs/tags/from.short.hash'));
 
         refFromHash.free();
       });
 
       test('successfully creates with log message', () {
         repo.setIdentity(name: 'name', email: 'email');
-        final ref = repo.createReference(
+        final ref = Reference.create(
+          repository: repo,
           name: 'refs/heads/log.message',
           target: lastCommit,
           logMessage: 'log message',
@@ -89,7 +93,8 @@ void main() {
 
       test('throws if target is not valid', () {
         expect(
-          () => repo.createReference(
+          () => Reference.create(
+            repository: repo,
             name: 'refs/tags/invalid',
             target: '78b',
           ),
@@ -99,7 +104,8 @@ void main() {
 
       test('throws if name is not valid', () {
         expect(
-          () => repo.createReference(
+          () => Reference.create(
+            repository: repo,
             name: 'refs/tags/invalid~',
             target: lastCommit,
           ),
@@ -108,12 +114,14 @@ void main() {
       });
 
       test('successfully creates with force flag if name already exists', () {
-        final ref = repo.createReference(
+        final ref = Reference.create(
+          repository: repo,
           name: 'refs/tags/test',
           target: lastCommit,
         );
 
-        final forceRef = repo.createReference(
+        final forceRef = Reference.create(
+          repository: repo,
           name: 'refs/tags/test',
           target: lastCommit,
           force: true,
@@ -126,13 +134,15 @@ void main() {
       });
 
       test('throws if name already exists', () {
-        final ref = repo.createReference(
+        final ref = Reference.create(
+          repository: repo,
           name: 'refs/tags/test',
           target: lastCommit,
         );
 
         expect(
-          () => repo.createReference(
+          () => Reference.create(
+            repository: repo,
             name: 'refs/tags/test',
             target: lastCommit,
           ),
@@ -145,24 +155,27 @@ void main() {
 
     group('.createSymbolic()', () {
       test('successfully creates with valid target', () {
-        final ref = repo.createReference(
+        final ref = Reference.create(
+          repository: repo,
           name: 'refs/tags/symbolic',
           target: 'refs/heads/master',
         );
 
-        expect(repo.references, contains('refs/tags/symbolic'));
+        expect(Reference.list(repo), contains('refs/tags/symbolic'));
         expect(ref.type, ReferenceType.symbolic);
 
         ref.free();
       });
 
       test('successfully creates with force flag if name already exists', () {
-        final ref = repo.createReference(
+        final ref = Reference.create(
+          repository: repo,
           name: 'refs/tags/test',
           target: 'refs/heads/master',
         );
 
-        final forceRef = repo.createReference(
+        final forceRef = Reference.create(
+          repository: repo,
           name: 'refs/tags/test',
           target: 'refs/heads/master',
           force: true,
@@ -176,13 +189,15 @@ void main() {
       });
 
       test('throws if name already exists', () {
-        final ref = repo.createReference(
+        final ref = Reference.create(
+          repository: repo,
           name: 'refs/tags/exists',
           target: 'refs/heads/master',
         );
 
         expect(
-          () => repo.createReference(
+          () => Reference.create(
+            repository: repo,
             name: 'refs/tags/exists',
             target: 'refs/heads/master',
           ),
@@ -194,7 +209,8 @@ void main() {
 
       test('throws if name is not valid', () {
         expect(
-          () => repo.createReference(
+          () => Reference.create(
+            repository: repo,
             name: 'refs/tags/invalid~',
             target: 'refs/heads/master',
           ),
@@ -204,7 +220,8 @@ void main() {
 
       test('successfully creates with log message', () {
         repo.setIdentity(name: 'name', email: 'email');
-        final ref = repo.createReference(
+        final ref = Reference.create(
+          repository: repo,
           name: 'HEAD',
           target: 'refs/heads/feature',
           force: true,
@@ -224,14 +241,15 @@ void main() {
     });
 
     test('successfully deletes reference', () {
-      final ref = repo.createReference(
+      final ref = Reference.create(
+        repository: repo,
         name: 'refs/tags/test',
         target: lastCommit,
       );
-      expect(repo.references, contains('refs/tags/test'));
+      expect(Reference.list(repo), contains('refs/tags/test'));
 
       ref.delete();
-      expect(repo.references, isNot(contains('refs/tags/test')));
+      expect(Reference.list(repo), isNot(contains('refs/tags/test')));
       ref.free();
     });
 
@@ -239,7 +257,7 @@ void main() {
       expect(repo.head.type, ReferenceType.direct);
       repo.head.free();
 
-      final ref = repo.getReference('HEAD');
+      final ref = Reference.get(repo, 'HEAD');
       expect(ref.type, ReferenceType.symbolic);
       ref.free();
     });
@@ -250,7 +268,7 @@ void main() {
     });
 
     test('returns SHA hex of symbolic reference', () {
-      final ref = repo.getReference('HEAD');
+      final ref = Reference.get(repo, 'HEAD');
       expect(ref.target.sha, lastCommit);
       ref.free();
     });
@@ -261,7 +279,8 @@ void main() {
     });
 
     test('returns the short name', () {
-      final ref = repo.createReference(
+      final ref = Reference.create(
+        repository: repo,
         name: 'refs/remotes/origin/master',
         target: lastCommit,
       );
@@ -275,34 +294,31 @@ void main() {
 
     test('returns a map with all the references of repository', () {
       expect(
-        repo.references,
-        {
-          'refs/heads/feature': '5aecfa0fb97eadaac050ccb99f03c3fb65460ad4',
-          'refs/heads/master': '78b8bf123e3952c970ae5c1ce0a3ea1d1336f6e8',
-          'refs/tags/v0.1': '78b8bf123e3952c970ae5c1ce0a3ea1d1336f6e8',
-        },
+        Reference.list(repo),
+        ['refs/heads/feature', 'refs/heads/master', 'refs/tags/v0.1'],
       );
     });
 
     test('checks if reflog exists for the reference', () {
-      expect(repo.referenceHasLog('refs/heads/master'), true);
-      expect(repo.referenceHasLog('refs/tags/v0.1'), false);
+      expect(Reference.hasLog(repo, 'refs/heads/master'), true);
+      expect(Reference.hasLog(repo, 'refs/tags/v0.1'), false);
     });
 
     test('checks if reference is a local branch', () {
-      final ref = repo.getReference('refs/heads/feature');
+      final ref = Reference.get(repo, 'refs/heads/feature');
       expect(ref.isBranch, true);
       ref.free();
     });
 
     test('checks if reference is a note', () {
-      final ref = repo.getReference('refs/heads/master');
+      final ref = Reference.get(repo, 'refs/heads/master');
       expect(ref.isNote, false);
       ref.free();
     });
 
     test('checks if reference is a remote branch', () {
-      final ref = repo.createReference(
+      final ref = Reference.create(
+        repository: repo,
         name: 'refs/remotes/origin/master',
         target: lastCommit,
       );
@@ -313,21 +329,21 @@ void main() {
     });
 
     test('checks if reference is a tag', () {
-      final ref = repo.getReference('refs/tags/v0.1');
+      final ref = Reference.get(repo, 'refs/tags/v0.1');
       expect(ref.isTag, true);
       ref.free();
     });
 
     group('.lookup()', () {
       test('finds a reference with provided name', () {
-        final ref = repo.getReference('refs/heads/master');
+        final ref = Reference.get(repo, 'refs/heads/master');
         expect(ref.target.sha, lastCommit);
         ref.free();
       });
 
       test('throws when error occured', () {
         expect(
-          () => repo.getReference('refs/heads/not/there'),
+          () => Reference.get(repo, 'refs/heads/not/there'),
           throwsA(isA<LibGit2Error>()),
         );
       });
@@ -335,28 +351,30 @@ void main() {
 
     group('.lookupDWIM()', () {
       test('finds a reference with provided name', () {
-        final remoteRef = repo.createReference(
+        final remoteRef = Reference.create(
+          repository: repo,
           name: 'refs/remotes/origin/master',
           target: lastCommit,
         );
         expect(remoteRef.shorthand, 'origin/master');
 
-        final tagRef = repo.createReference(
+        final tagRef = Reference.create(
+          repository: repo,
           name: 'refs/tags/v1',
           target: lastCommit,
         );
         expect(tagRef.shorthand, 'v1');
 
-        var ref = repo.getReferenceDWIM('refs/heads/master');
+        var ref = Reference.getDWIM(repo, 'refs/heads/master');
         expect(ref.name, 'refs/heads/master');
 
-        ref = repo.getReferenceDWIM('master');
+        ref = Reference.getDWIM(repo, 'master');
         expect(ref.name, 'refs/heads/master');
 
-        ref = repo.getReferenceDWIM('origin/master');
+        ref = Reference.getDWIM(repo, 'origin/master');
         expect(ref.name, 'refs/remotes/origin/master');
 
-        ref = repo.getReferenceDWIM('v1');
+        ref = Reference.getDWIM(repo, 'v1');
         expect(ref.name, 'refs/tags/v1');
 
         remoteRef.free();
@@ -366,21 +384,21 @@ void main() {
 
       test('throws when error occured', () {
         expect(
-          () => repo.getReferenceDWIM('refs/heads/not/there'),
+          () => Reference.getDWIM(repo, 'refs/heads/not/there'),
           throwsA(isA<LibGit2Error>()),
         );
       });
     });
 
     test('returns log for reference', () {
-      final ref = repo.getReference('refs/heads/master');
+      final ref = Reference.get(repo, 'refs/heads/master');
       expect(ref.log.last.message, 'commit (initial): init');
       ref.free();
     });
 
     group('.setTarget()', () {
       test('successfully sets target with SHA hex', () {
-        final ref = repo.getReference('refs/heads/master');
+        final ref = Reference.get(repo, 'refs/heads/master');
         ref.setTarget(newCommit);
         expect(ref.target.sha, newCommit);
 
@@ -388,7 +406,7 @@ void main() {
       });
 
       test('successfully sets target with short SHA hex', () {
-        final ref = repo.getReference('refs/heads/master');
+        final ref = Reference.get(repo, 'refs/heads/master');
         ref.setTarget(newCommit.substring(0, 5));
         expect(ref.target.sha, newCommit);
 
@@ -396,7 +414,7 @@ void main() {
       });
 
       test('successfully sets symbolic target', () {
-        final ref = repo.getReference('HEAD');
+        final ref = Reference.get(repo, 'HEAD');
         expect(ref.target.sha, lastCommit);
 
         ref.setTarget('refs/heads/feature');
@@ -406,7 +424,7 @@ void main() {
       });
 
       test('successfully sets target with log message', () {
-        final ref = repo.getReference('HEAD');
+        final ref = Reference.get(repo, 'HEAD');
         expect(ref.target.sha, lastCommit);
 
         repo.setIdentity(name: 'name', email: 'email');
@@ -420,7 +438,7 @@ void main() {
       });
 
       test('throws on invalid target', () {
-        final ref = repo.getReference('HEAD');
+        final ref = Reference.get(repo, 'HEAD');
         expect(
           () => ref.setTarget('refs/heads/invalid~'),
           throwsA(isA<LibGit2Error>()),
@@ -432,7 +450,8 @@ void main() {
 
     group('.rename()', () {
       test('successfully renames reference', () {
-        final ref = repo.createReference(
+        final ref = Reference.create(
+          repository: repo,
           name: 'refs/tags/v1',
           target: lastCommit,
         );
@@ -445,7 +464,8 @@ void main() {
       });
 
       test('throws on invalid name', () {
-        final ref = repo.createReference(
+        final ref = Reference.create(
+          repository: repo,
           name: 'refs/tags/v1',
           target: lastCommit,
         );
@@ -459,12 +479,14 @@ void main() {
       });
 
       test('throws if name already exists', () {
-        final ref1 = repo.createReference(
+        final ref1 = Reference.create(
+          repository: repo,
           name: 'refs/tags/v1',
           target: lastCommit,
         );
 
-        final ref2 = repo.createReference(
+        final ref2 = Reference.create(
+          repository: repo,
           name: 'refs/tags/v2',
           target: lastCommit,
         );
@@ -479,12 +501,14 @@ void main() {
       });
 
       test('successfully renames with force flag set to true', () {
-        final ref1 = repo.createReference(
+        final ref1 = Reference.create(
+          repository: repo,
           name: 'refs/tags/v1',
           target: lastCommit,
         );
 
-        final ref2 = repo.createReference(
+        final ref2 = Reference.create(
+          repository: repo,
           name: 'refs/tags/v2',
           target: newCommit,
         );
