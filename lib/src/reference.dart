@@ -44,8 +44,8 @@ class Reference {
     late final Oid oid;
     late final bool isDirect;
 
-    if (target.runtimeType == Oid) {
-      oid = target as Oid;
+    if (target is Oid) {
+      oid = target;
       isDirect = true;
     } else if (isValidShaHex(target as String)) {
       if (target.length == 40) {

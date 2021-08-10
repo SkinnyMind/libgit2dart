@@ -1,4 +1,5 @@
 import 'dart:ffi';
+import 'index.dart';
 import 'odb.dart';
 import 'oid.dart';
 import 'reference.dart';
@@ -188,7 +189,14 @@ class Repository {
   }
 
   /// Returns [Reference] object pointing to repository head.
+  ///
+  /// Must be freed once it's no longer being used.
   Reference get head => Reference(bindings.head(_repoPointer));
+
+  /// Returns [Index] file for this repository.
+  ///
+  /// Must be freed once it's no longer being used.
+  Index get index => Index(bindings.index(_repoPointer));
 
   /// Returns [Odb] for this repository.
   ///
