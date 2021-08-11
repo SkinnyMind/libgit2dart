@@ -38,7 +38,7 @@ void main() {
     });
 
     test('returns mode of index entry', () {
-      expect(index['file'].mode, 33188);
+      expect(index['file'].mode, GitFilemode.blob);
     });
 
     test('returns index entry at provided position', () {

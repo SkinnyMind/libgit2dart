@@ -3,6 +3,7 @@ import 'package:ffi/ffi.dart';
 import 'bindings/libgit2_bindings.dart';
 import 'bindings/index.dart' as bindings;
 import 'oid.dart';
+import 'types.dart';
 import 'util.dart';
 
 class Index {
@@ -131,10 +132,47 @@ class IndexEntry {
   /// Returns id of the index entry as sha-1 hex.
   String get sha => _oidToHex(_indexEntryPointer.ref.id);
 
-  /// Mode of the index entry.
-  int get mode => _indexEntryPointer.ref.mode;
+  GitFilemode get mode {
+    switch (_indexEntryPointer.ref.mode) {
+      case 0:
+        return GitFilemode.undreadable;
+      case 16384:
+        return GitFilemode.tree;
+      case 33188:
+        return GitFilemode.blob;
+      case 33261:
+        return GitFilemode.blobExecutable;
+      case 40960:
+        return GitFilemode.link;
+      case 57344:
+        return GitFilemode.commit;
+      default:
+        return GitFilemode.undreadable;
+    }
+  }
 
-  set mode(int mode) => _indexEntryPointer.ref.mode = mode;
+  set mode(GitFilemode mode) {
+    switch (mode) {
+      case GitFilemode.undreadable:
+        _indexEntryPointer.ref.mode = 0;
+        break;
+      case GitFilemode.tree:
+        _indexEntryPointer.ref.mode = 16384;
+        break;
+      case GitFilemode.blob:
+        _indexEntryPointer.ref.mode = 33188;
+        break;
+      case GitFilemode.blobExecutable:
+        _indexEntryPointer.ref.mode = 33261;
+        break;
+      case GitFilemode.link:
+        _indexEntryPointer.ref.mode = 40960;
+        break;
+      case GitFilemode.commit:
+        _indexEntryPointer.ref.mode = 57344;
+        break;
+    }
+  }
 
   String _oidToHex(git_oid oid) {
     var hex = StringBuffer();
