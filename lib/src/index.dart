@@ -2,6 +2,7 @@ import 'dart:ffi';
 import 'package:ffi/ffi.dart';
 import 'bindings/libgit2_bindings.dart';
 import 'bindings/index.dart' as bindings;
+import 'oid.dart';
 import 'util.dart';
 
 class Index {
@@ -116,18 +117,30 @@ class IndexEntry {
   /// Pointer to memory address for allocated index entry object.
   late final Pointer<git_index_entry> _indexEntryPointer;
 
-  /// Returns path to file.
+  /// Unique identity of the index entry.
+  Oid get id => Oid.fromSHA(sha);
+
+  set id(Oid oid) => _indexEntryPointer.ref.id = oid.pointer.ref;
+
+  /// Path of the index entry.
   String get path => _indexEntryPointer.ref.path.cast<Utf8>().toDartString();
 
-  /// Returns sha-1 of file.
-  String get sha {
+  set path(String path) =>
+      _indexEntryPointer.ref.path = path.toNativeUtf8().cast<Int8>();
+
+  /// Returns id of the index entry as sha-1 hex.
+  String get sha => _oidToHex(_indexEntryPointer.ref.id);
+
+  /// Mode of the index entry.
+  int get mode => _indexEntryPointer.ref.mode;
+
+  set mode(int mode) => _indexEntryPointer.ref.mode = mode;
+
+  String _oidToHex(git_oid oid) {
     var hex = StringBuffer();
     for (var i = 0; i < 20; i++) {
-      hex.write(_indexEntryPointer.ref.id.id[i].toRadixString(16));
+      hex.write(oid.id[i].toRadixString(16));
     }
     return hex.toString();
   }
-
-  /// Returns mode of file.
-  int get mode => _indexEntryPointer.ref.mode;
 }

@@ -1,8 +1,10 @@
 import 'dart:io';
 
+import 'package:libgit2dart/libgit2dart.dart';
 import 'package:test/test.dart';
 import 'package:libgit2dart/src/index.dart';
 import 'package:libgit2dart/src/repository.dart';
+import 'package:libgit2dart/src/types.dart';
 import 'package:libgit2dart/src/error.dart';
 
 import 'helpers/util.dart';
@@ -58,6 +60,22 @@ void main() {
 
     test('throws if provided entry path is not found', () {
       expect(() => index[10], throwsA(isA<ArgumentError>()));
+    });
+
+    test('successfully changes attributes', () {
+      final entry = index['file'];
+      final otherEntry = index['feature_file'];
+
+      expect(entry.id == otherEntry.id, false);
+      expect(entry.mode, isNot(GitFilemode.blobExecutable));
+
+      entry.path = 'some.txt';
+      entry.id = otherEntry.id;
+      entry.mode = GitFilemode.blobExecutable;
+
+      expect(entry.path, 'some.txt');
+      expect(entry.id == otherEntry.id, true);
+      expect(entry.mode, GitFilemode.blobExecutable);
     });
 
     test('clears the contents', () {
