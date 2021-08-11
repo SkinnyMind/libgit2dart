@@ -191,7 +191,72 @@ class Repository {
   /// Returns [Reference] object pointing to repository head.
   ///
   /// Must be freed once it's no longer being used.
-  Reference get head => Reference(bindings.head(_repoPointer));
+  Reference get head => Reference(_repoPointer, bindings.head(_repoPointer));
+
+  /// Returns [References] object.
+  References get references => References(_repoPointer);
+
+  /// Creates a new reference.
+  ///
+  /// The reference will be created in the repository and written to the disk.
+  /// The generated [Reference] object must be freed by the user.
+  ///
+  /// Valid reference names must follow one of two patterns:
+  ///
+  /// Top-level names must contain only capital letters and underscores, and must begin and end
+  /// with a letter. (e.g. "HEAD", "ORIG_HEAD").
+  /// Names prefixed with "refs/" can be almost anything. You must avoid the characters
+  /// '~', '^', ':', '\', '?', '[', and '*', and the sequences ".." and "@{" which have
+  /// special meaning to revparse.
+  /// Throws a [LibGit2Error] if a reference already exists with the given name
+  /// unless force is true, in which case it will be overwritten.
+  ///
+  /// The message for the reflog will be ignored if the reference does not belong in the
+  /// standard set (HEAD, branches and remote-tracking branches) and it does not have a reflog.
+  Reference createReference({
+    required String name,
+    required Object target,
+    bool force = false,
+    String? logMessage,
+  }) {
+    late final Oid oid;
+    late final bool isDirect;
+
+    if (target.runtimeType == Oid) {
+      oid = target as Oid;
+      isDirect = true;
+    } else if (isValidShaHex(target as String)) {
+      if (target.length == 40) {
+        oid = Oid.fromSHA(target);
+      } else {
+        final shortOid = Oid.fromSHAn(target);
+        final odb = this.odb;
+        oid = Oid(odb.existsPrefix(shortOid.pointer, target.length));
+        odb.free();
+      }
+      isDirect = true;
+    } else {
+      isDirect = false;
+    }
+
+    if (isDirect) {
+      return Reference.createDirect(
+        repo: _repoPointer,
+        name: name,
+        oid: oid.pointer,
+        force: force,
+        logMessage: logMessage,
+      );
+    } else {
+      return Reference.createSymbolic(
+        repo: _repoPointer,
+        name: name,
+        target: target as String,
+        force: force,
+        logMessage: logMessage,
+      );
+    }
+  }
 
   /// Returns [Index] file for this repository.
   ///

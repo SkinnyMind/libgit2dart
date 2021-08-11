@@ -3,9 +3,6 @@ import 'dart:io';
 import 'package:libgit2dart/libgit2dart.dart';
 import 'package:test/test.dart';
 import 'package:libgit2dart/src/index.dart';
-import 'package:libgit2dart/src/repository.dart';
-import 'package:libgit2dart/src/types.dart';
-import 'package:libgit2dart/src/error.dart';
 
 import 'helpers/util.dart';
 

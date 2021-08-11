@@ -19,6 +19,17 @@ class RefLog {
   /// Pointer to memory address for allocated reflog object.
   late final Pointer<git_reflog> _reflogPointer;
 
+  /// Returns a list with entries of reference log.
+  List<RefLogEntry> list() {
+    var log = <RefLogEntry>[];
+
+    for (var i = 0; i < count; i++) {
+      log.add(entryAt(i));
+    }
+
+    return log;
+  }
+
   /// Returns the number of log entries in a reflog.
   int get count => bindings.entryCount(_reflogPointer);
 

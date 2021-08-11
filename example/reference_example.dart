@@ -5,9 +5,9 @@ import 'package:libgit2dart/libgit2dart.dart';
 void main() {
   final repo = Repository.open(Directory.current.path);
 
-  print('Repository references: ${Reference.list(repo)}');
+  print('Repository references: ${repo.references.list()}');
 
-  final ref = Reference.get(repo, 'refs/heads/master');
+  final ref = repo.references['refs/heads/master'];
 
   print('Reference SHA hex: ${ref.target.sha}');
   print('Is reference a local branch: ${ref.isBranch}');

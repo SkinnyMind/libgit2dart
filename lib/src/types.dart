@@ -1,3 +1,5 @@
+enum ReferenceType { direct, symbolic }
+
 /// Valid modes for index and tree entries.
 abstract class GitFilemode {
   static const int unreadable = 0;
