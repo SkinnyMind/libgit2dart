@@ -164,5 +164,31 @@ void main() {
       expect(index.contains('file'), false);
       expect(index.contains('feature_file'), false);
     });
+
+    group('read tree', () {
+      const treeSha = 'df2b8fc99e1c1d4dbc0a854d9f72157f1d6ea078';
+      test('successfully reads with provided SHA hex', () {
+        expect(index.count, 3);
+        index.readTree(treeSha);
+
+        expect(index.count, 1);
+
+        // make sure the index is only modified in memory
+        index.read();
+        expect(index.count, 3);
+      });
+
+      test('successfully reads with provided short SHA hex', () {
+        expect(index.count, 3);
+        index.readTree(treeSha.substring(0, 5));
+
+        expect(index.count, 1);
+      });
+    });
+
+    test('successfully writes tree', () {
+      final oid = index.writeTree();
+      expect(oid.sha, '7796359a96eb722939c24bafdb1afe9f07f2f628');
+    });
   });
 }

@@ -25,6 +25,41 @@ void read(Pointer<git_index> index, bool force) {
   }
 }
 
+/// Read a tree into the index file with stats.
+///
+/// The current index contents will be replaced by the specified tree.
+///
+/// Throws a [LibGit2Error] if error occured.
+void readTree(Pointer<git_index> index, Pointer<git_tree> tree) {
+  final error = libgit2.git_index_read_tree(index, tree);
+
+  if (error < 0) {
+    throw LibGit2Error(libgit2.git_error_last());
+  }
+}
+
+/// Write the index as a tree.
+///
+/// This method will scan the index and write a representation of its current state back to disk;
+/// it recursively creates tree objects for each of the subtrees stored in the index, but only
+/// returns the OID of the root tree. This is the OID that can be used e.g. to create a commit.
+///
+/// The index instance cannot be bare, and needs to be associated to an existing repository.
+///
+/// The index must not contain any file in conflict.
+///
+/// Throws a [LibGit2Error] if error occured.
+Pointer<git_oid> writeTree(Pointer<git_index> index) {
+  final out = calloc<git_oid>();
+  final error = libgit2.git_index_write_tree(out, index);
+
+  if (error < 0) {
+    throw LibGit2Error(libgit2.git_error_last());
+  } else {
+    return out;
+  }
+}
+
 /// Find the first position of any entries which point to given path in the Git index.
 bool find(Pointer<git_index> index, String path) {
   final pathC = path.toNativeUtf8().cast<Int8>();
@@ -222,6 +257,10 @@ void removeAll(Pointer<git_index> index, List<String> pathspec) {
     throw LibGit2Error(libgit2.git_error_last());
   }
 }
+
+/// Get the repository this index relates to.
+Pointer<git_repository> owner(Pointer<git_index> index) =>
+    libgit2.git_index_owner(index);
 
 /// Free an existing index object.
 void free(Pointer<git_index> index) => libgit2.git_index_free(index);

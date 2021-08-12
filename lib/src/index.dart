@@ -1,7 +1,10 @@
 import 'dart:ffi';
 import 'package:ffi/ffi.dart';
+import 'package:libgit2dart/src/tree.dart';
 import 'bindings/libgit2_bindings.dart';
 import 'bindings/index.dart' as bindings;
+import 'bindings/repository.dart' as repo_bindings;
+import 'odb.dart';
 import 'oid.dart';
 import 'types.dart';
 import 'util.dart';
@@ -88,10 +91,47 @@ class Index {
   /// Throws a [LibGit2Error] if error occured.
   void read({bool force = true}) => bindings.read(_indexPointer, force);
 
+  /// Updates the contents of an existing index object in memory by reading from the
+  /// specified tree.
+  void readTree(Object target) {
+    late final Oid oid;
+    late final Tree tree;
+    if (target is Oid) {
+      tree = Tree(bindings.owner(_indexPointer), target.pointer);
+    } else if (target is Tree) {
+      tree = target;
+    } else if (isValidShaHex(target as String)) {
+      if (target.length == 40) {
+        oid = Oid.fromSHA(target);
+        tree = Tree(bindings.owner(_indexPointer), oid.pointer);
+      } else {
+        final shortOid = Oid.fromSHAn(target);
+        final odb = Odb(repo_bindings.odb(bindings.owner(_indexPointer)));
+        oid = Oid(odb.existsPrefix(shortOid.pointer, target.length));
+        odb.free();
+        tree = Tree(bindings.owner(_indexPointer), oid.pointer);
+      }
+    } else {
+      throw ArgumentError.value(
+          '$target should be either Oid object, SHA hex string or Tree object');
+    }
+    bindings.readTree(_indexPointer, tree.pointer);
+    tree.free();
+  }
+
   /// Writes an existing index object from memory back to disk using an atomic file lock.
   ///
   /// Throws a [LibGit2Error] if error occured.
   void write() => bindings.write(_indexPointer);
+
+  /// Write the index as a tree.
+  ///
+  /// This method will scan the index and write a representation of its current state back to disk;
+  /// it recursively creates tree objects for each of the subtrees stored in the index, but only
+  /// returns the OID of the root tree. This is the OID that can be used e.g. to create a commit.
+  ///
+  /// The index must not contain any file in conflict.
+  Oid writeTree() => Oid(bindings.writeTree(_indexPointer));
 
   /// Removes an entry from the index.
   ///
