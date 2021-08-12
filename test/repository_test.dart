@@ -141,6 +141,14 @@ void main() {
         await Directory(tmpDir).delete(recursive: true);
       });
 
+      test('returns config for repository', () {
+        final config = repo.config;
+        expect(config.getValue('remote.origin.url'),
+            'git://github.com/SkinnyMind/libgit2dart.git');
+
+        config.free();
+      });
+
       test('returns empty string when there is no namespace', () {
         expect(repo.namespace, isEmpty);
       });

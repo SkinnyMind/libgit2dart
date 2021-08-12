@@ -10,21 +10,21 @@ import '../util.dart';
 /// anything with it.
 ///
 /// Throws a [LibGit2Error] if error occured.
-Pointer<Pointer<git_config>> newConfig() {
+Pointer<git_config> newConfig() {
   final out = calloc<Pointer<git_config>>();
   final error = libgit2.git_config_new(out);
 
   if (error < 0) {
     throw LibGit2Error(libgit2.git_error_last());
+  } else {
+    return out.value;
   }
-
-  return out;
 }
 
 /// Create a new config instance containing a single on-disk file
 ///
 /// Throws a [LibGit2Error] if error occured.
-Pointer<Pointer<git_config>> open(String path) {
+Pointer<git_config> open(String path) {
   final out = calloc<Pointer<git_config>>();
   final pathC = path.toNativeUtf8().cast<Int8>();
   final error = libgit2.git_config_open_ondisk(out, pathC);
@@ -32,9 +32,9 @@ Pointer<Pointer<git_config>> open(String path) {
 
   if (error < 0) {
     throw LibGit2Error(libgit2.git_error_last());
+  } else {
+    return out.value;
   }
-
-  return out;
 }
 
 /// Open the global, XDG and system configuration files
@@ -44,15 +44,15 @@ Pointer<Pointer<git_config>> open(String path) {
 /// be used when accessing default config data outside a repository.
 ///
 /// Throws a [LibGit2Error] if error occured.
-Pointer<Pointer<git_config>> openDefault() {
+Pointer<git_config> openDefault() {
   final out = calloc<Pointer<git_config>>();
   final error = libgit2.git_config_open_default(out);
 
   if (error < 0) {
     throw LibGit2Error(libgit2.git_error_last());
+  } else {
+    return out.value;
   }
-
-  return out;
 }
 
 /// Locate the path to the global configuration file
@@ -67,18 +67,18 @@ Pointer<Pointer<git_config>> openDefault() {
 /// This method will not guess the path to the xdg compatible config file
 /// (`.config/git/config`).
 ///
-/// Throws a [LibGit2Error] if error occured.
+/// Throws an error if file has not been found.
 String findGlobal() {
-  final out = calloc<git_buf>();
+  final out = calloc<git_buf>(2);
   final error = libgit2.git_config_find_global(out);
   final path = out.ref.ptr.cast<Utf8>().toDartString();
   calloc.free(out);
 
-  if (error < 0) {
-    throw LibGit2Error(libgit2.git_error_last());
+  if (error != 0) {
+    throw Error();
+  } else {
+    return path;
   }
-
-  return path;
 }
 
 /// Locate the path to the system configuration file
@@ -94,9 +94,9 @@ String findSystem() {
 
   if (error < 0) {
     throw LibGit2Error(libgit2.git_error_last());
+  } else {
+    return path;
   }
-
-  return path;
 }
 
 /// Locate the path to the global xdg compatible configuration file
@@ -113,9 +113,27 @@ String findXdg() {
 
   if (error < 0) {
     throw LibGit2Error(libgit2.git_error_last());
+  } else {
+    return path;
   }
+}
 
-  return path;
+/// Create a snapshot of the configuration.
+///
+/// Create a snapshot of the current state of a configuration, which allows you to look
+/// into a consistent view of the configuration for looking up complex values
+/// (e.g. a remote, submodule).
+///
+/// Throws a [LibGit2Error] if error occured.
+Pointer<git_config> snapshot(Pointer<git_config> config) {
+  final out = calloc<Pointer<git_config>>();
+  final error = libgit2.git_config_snapshot(out, config);
+
+  if (error < 0) {
+    throw LibGit2Error(libgit2.git_error_last());
+  } else {
+    return out.value;
+  }
 }
 
 /// Get the value of a config variable.
@@ -131,9 +149,9 @@ String getValue(Pointer<git_config> cfg, String variable) {
 
   if (error < 0) {
     throw LibGit2Error(libgit2.git_error_last());
+  } else {
+    return value.ref.value.cast<Utf8>().toDartString();
   }
-
-  return value.ref.value.cast<Utf8>().toDartString();
 }
 
 /// Set the value of a boolean config variable in the config file with the

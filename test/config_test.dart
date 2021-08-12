@@ -22,7 +22,7 @@ void main() {
   group('Config', () {
     setUp(() {
       File('$tmpDir/$configFileName').writeAsStringSync(contents);
-      config = Config.open(path: '$tmpDir/$configFileName');
+      config = Config.open('$tmpDir/$configFileName');
     });
 
     tearDown(() {

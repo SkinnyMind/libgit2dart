@@ -1,4 +1,5 @@
 import 'dart:ffi';
+import 'config.dart';
 import 'index.dart';
 import 'odb.dart';
 import 'oid.dart';
@@ -187,6 +188,26 @@ class Repository {
     bindings.free(_repoPointer);
     libgit2.git_libgit2_shutdown();
   }
+
+  /// Returns the configuration file for this repository.
+  ///
+  /// If a configuration file has not been set, the default config set for the repository
+  /// will be returned, including global and system configurations (if they are available).
+  ///
+  /// The configuration file must be freed once it's no longer being used by the user.
+  ///
+  /// Throws a [LibGit2Error] if error occured.
+  Config get config => Config(bindings.config(_repoPointer));
+
+  /// Returns a snapshot of the repository's configuration.
+  ///
+  /// Convenience function to take a snapshot from the repository's configuration.
+  /// The contents of this snapshot will not change, even if the underlying config files are modified.
+  ///
+  /// The configuration file must be freed once it's no longer being used by the user.
+  ///
+  /// Throws a [LibGit2Error] if error occured.
+  Config get configSnapshot => Config(bindings.configSnapshot(_repoPointer));
 
   /// Returns [Reference] object pointing to repository head.
   ///

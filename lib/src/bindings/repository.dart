@@ -192,6 +192,44 @@ Map<String, String> identity(Pointer<git_repository> repo) {
   return identity;
 }
 
+/// Get the configuration file for this repository.
+///
+/// If a configuration file has not been set, the default config set for the repository
+/// will be returned, including global and system configurations (if they are available).
+///
+/// The configuration file must be freed once it's no longer being used by the user.
+///
+/// Throws a [LibGit2Error] if error occured.
+Pointer<git_config> config(Pointer<git_repository> repo) {
+  final out = calloc<Pointer<git_config>>();
+  final error = libgit2.git_repository_config(out, repo);
+
+  if (error < 0) {
+    throw LibGit2Error(libgit2.git_error_last());
+  } else {
+    return out.value;
+  }
+}
+
+/// Get a snapshot of the repository's configuration.
+///
+/// Convenience function to take a snapshot from the repository's configuration.
+/// The contents of this snapshot will not change, even if the underlying config files are modified.
+///
+/// The configuration file must be freed once it's no longer being used by the user.
+///
+/// Throws a [LibGit2Error] if error occured.
+Pointer<git_config> configSnapshot(Pointer<git_repository> repo) {
+  final out = calloc<Pointer<git_config>>();
+  final error = libgit2.git_repository_config_snapshot(out, repo);
+
+  if (error < 0) {
+    throw LibGit2Error(libgit2.git_error_last());
+  } else {
+    return out.value;
+  }
+}
+
 /// Get the Index file for this repository.
 ///
 /// If a custom index has not been set, the default index for the repository
