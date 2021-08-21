@@ -10,12 +10,24 @@ import 'util.dart';
 
 /// A Repository is the primary interface into a git repository
 class Repository {
+  /// Initializes a new instance of the [Repository] class by creating a new
+  /// Git repository in the given folder.
+  ///
+  /// Should be freed with `free()` to release allocated memory.
+  ///
+  /// Throws a [LibGit2Error] if error occured.
+  Repository.init(String path, {bool isBare = false}) {
+    libgit2.git_libgit2_init();
+
+    _repoPointer = bindings.init(path, isBare);
+  }
+
   /// Initializes a new instance of the [Repository] class.
   /// For a standard repository, [path] should either point to the `.git` folder
   /// or to the working directory. For a bare repository, [path] should directly
   /// point to the repository folder.
   ///
-  /// [Repository] object should be close with [free] function to release allocated memory.
+  /// Should be freed with `free()` to release allocated memory.
   ///
   /// Throws a [LibGit2Error] if error occured.
   Repository.open(String path) {

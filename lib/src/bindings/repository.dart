@@ -69,6 +69,22 @@ String discover(String startPath, String ceilingDirs) {
   return result;
 }
 
+/// Creates a new Git repository in the given folder.
+///
+/// Throws a [LibGit2Error] if error occured.
+Pointer<git_repository> init(String path, bool isBare) {
+  final out = calloc<Pointer<git_repository>>();
+  final pathC = path.toNativeUtf8().cast<Int8>();
+  final isBareC = isBare ? 1 : 0;
+  final error = libgit2.git_repository_init(out, pathC, isBareC);
+
+  if (error < 0) {
+    throw LibGit2Error(libgit2.git_error_last());
+  }
+
+  return out.value;
+}
+
 /// Returns the path to the `.git` folder for normal repositories or the
 /// repository itself for bare repositories.
 String path(Pointer<git_repository> repo) {

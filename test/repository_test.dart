@@ -14,6 +14,36 @@ void main() {
       );
     });
 
+    group('.init()', () {
+      final initDir = '${Directory.systemTemp.path}/init_repo/';
+
+      setUp(() async {
+        if (await Directory(initDir).exists()) {
+          await Directory(initDir).delete(recursive: true);
+        } else {
+          await Directory(initDir).create();
+        }
+      });
+
+      tearDown(() async {
+        repo.free();
+        await Directory(initDir).delete(recursive: true);
+      });
+
+      test('successfully creates new bare repo at provided path', () {
+        repo = Repository.init(initDir, isBare: true);
+        expect(repo.path, initDir);
+        expect(repo.isBare, true);
+      });
+
+      test('successfully creates new standard repo at provided path', () {
+        repo = Repository.init(initDir);
+        expect(repo.path, '$initDir.git/');
+        expect(repo.isBare, false);
+        expect(repo.isEmpty, true);
+      });
+    });
+
     group('empty', () {
       group('bare', () {
         setUp(() {
