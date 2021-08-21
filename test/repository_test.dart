@@ -149,6 +149,18 @@ void main() {
         config.free();
       });
 
+      group('.discover()', () {
+        test('discovers repository', () async {
+          final subDir = '${tmpDir}subdir1/subdir2/';
+          await Directory(subDir).create(recursive: true);
+          expect(Repository.discover(subDir), repo.path);
+        });
+
+        test('returns empty string when repository not found', () {
+          expect(Repository.discover(Directory.systemTemp.path), '');
+        });
+      });
+
       test('returns empty string when there is no namespace', () {
         expect(repo.namespace, isEmpty);
       });

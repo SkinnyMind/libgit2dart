@@ -69,7 +69,7 @@ Pointer<git_config> openDefault() {
 ///
 /// Throws an error if file has not been found.
 String findGlobal() {
-  final out = calloc<git_buf>(2);
+  final out = calloc<git_buf>(sizeOf<git_buf>());
   final error = libgit2.git_config_find_global(out);
   final path = out.ref.ptr.cast<Utf8>().toDartString();
   calloc.free(out);

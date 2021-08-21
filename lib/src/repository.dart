@@ -29,6 +29,17 @@ class Repository {
   /// Pointer to memory address for allocated repository object.
   Pointer<git_repository> get pointer => _repoPointer;
 
+  /// Look for a git repository and return its path. The lookup start from [startPath]
+  /// and walk across parent directories if nothing has been found. The lookup ends when
+  /// the first repository is found, or when reaching a directory referenced in [ceilingDirs].
+  ///
+  /// The method will automatically detect if the repository is bare (if there is a repository).
+  ///
+  /// Throws a [LibGit2Error] if error occured.
+  static String discover(String startPath, [String ceilingDirs = '']) {
+    return bindings.discover(startPath, ceilingDirs);
+  }
+
   /// Returns path to the `.git` folder for normal repositories
   /// or path to the repository itself for bare repositories.
   String get path => bindings.path(_repoPointer);

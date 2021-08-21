@@ -40,6 +40,35 @@ Pointer<git_repository> openBare(String barePath) {
   return out.value;
 }
 
+/// Look for a git repository and return its path. The lookup start from [startPath]
+/// and walk across parent directories if nothing has been found. The lookup ends when
+/// the first repository is found, or when reaching a directory referenced in [ceilingDirs].
+///
+/// The method will automatically detect if the repository is bare (if there is a repository).
+///
+/// Throws a [LibGit2Error] if error occured.
+String discover(String startPath, String ceilingDirs) {
+  final out = calloc<git_buf>(sizeOf<git_buf>());
+  final startPathC = startPath.toNativeUtf8().cast<Int8>();
+  final ceilingDirsC = ceilingDirs.toNativeUtf8().cast<Int8>();
+  final error =
+      libgit2.git_repository_discover(out, startPathC, 0, ceilingDirsC);
+  var result = '';
+
+  if (error == git_error_code.GIT_ENOTFOUND) {
+    return result;
+  } else if (error < 0) {
+    throw LibGit2Error(libgit2.git_error_last());
+  }
+
+  result = out.ref.ptr.cast<Utf8>().toDartString();
+  calloc.free(out);
+  calloc.free(startPathC);
+  calloc.free(ceilingDirsC);
+
+  return result;
+}
+
 /// Returns the path to the `.git` folder for normal repositories or the
 /// repository itself for bare repositories.
 String path(Pointer<git_repository> repo) {
