@@ -84,17 +84,14 @@ class Config {
   Config get snapshot => Config(bindings.snapshot(_configPointer));
 
   /// Returns map of all the config variables and their values.
-  Map<String, String> getEntries() {
-    return bindings.getEntries(_configPointer);
-  }
+  Map<String, String> get variables => bindings.getEntries(_configPointer);
 
   /// Returns the value of config [variable].
-  String getValue(String variable) {
-    return bindings.getValue(_configPointer, variable);
-  }
+  String operator [](String variable) =>
+      bindings.getValue(_configPointer, variable);
 
   /// Sets the [value] of config [variable].
-  void setValue(String variable, dynamic value) {
+  void operator []=(String variable, dynamic value) {
     if (value.runtimeType == bool) {
       bindings.setBool(_configPointer, variable, value);
     } else if (value.runtimeType == int) {
@@ -108,16 +105,14 @@ class Config {
   /// (usually the local one).
   ///
   /// Throws a [LibGit2Error] if error occured.
-  void deleteEntry(String variable) {
-    bindings.deleteEntry(_configPointer, variable);
-  }
+  void delete(String variable) => bindings.delete(_configPointer, variable);
 
   /// Returns list of values for multivar [variable]
   ///
   /// If [regexp] is present, then the iterator will only iterate over all
   /// values which match the pattern.
-  List<String> getMultivarValue(String variable, {String? regexp}) {
-    return bindings.getMultivarValue(_configPointer, variable, regexp);
+  List<String> multivar(String variable, {String? regexp}) {
+    return bindings.multivarValues(_configPointer, variable, regexp);
   }
 
   /// Sets the [value] of a multivar [variable] in the config file with the
@@ -125,8 +120,8 @@ class Config {
   ///
   /// The [regexp] is applied case-sensitively on the value.
   /// Empty [regexp] sets [value] for all values of a multivar [variable].
-  void setMultivarValue(String variable, String regexp, String value) {
-    bindings.setMultivarValue(_configPointer, variable, regexp, value);
+  void setMultivar(String variable, String regexp, String value) {
+    bindings.setMultivar(_configPointer, variable, regexp, value);
   }
 
   /// Deletes one or several values from a multivar [variable] in the config file

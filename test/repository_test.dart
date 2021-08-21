@@ -143,7 +143,7 @@ void main() {
 
       test('returns config for repository', () {
         final config = repo.config;
-        expect(config.getValue('remote.origin.url'),
+        expect(config['remote.origin.url'],
             'git://github.com/SkinnyMind/libgit2dart.git');
 
         config.free();

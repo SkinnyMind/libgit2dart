@@ -13,8 +13,7 @@ void main() async {
   final config = Config.open();
 
   print('All entries of system/global config:');
-  final entries = config.getEntries();
-  for (final entry in entries.entries) {
+  for (final entry in config.variables.entries) {
     print('${entry.key}: ${entry.value}');
   }
   // free() should be called on object to free memory when done.
@@ -26,18 +25,17 @@ void main() async {
     final repoConfig = Config.open('$tmpDir/.git/config');
 
     print('\nAll entries of repo config:');
-    final entries = repoConfig.getEntries();
-    for (final entry in entries.entries) {
+    for (final entry in repoConfig.variables.entries) {
       print('${entry.key}: ${entry.value}');
     }
 
     // Set value of config variable
-    repoConfig.setValue('core.variable', 'value');
+    repoConfig['core.variable'] = 'value';
     print(
-        '\nNew value for variable "core.variable": ${repoConfig.getValue('core.variable')}');
+        '\nNew value for variable "core.variable": ${repoConfig['core.variable']}');
 
     // Delete variable
-    repoConfig.deleteEntry('core.variable');
+    repoConfig.delete('core.variable');
 
     repoConfig.free();
   } catch (e) {
@@ -50,7 +48,7 @@ void main() async {
     final globalConfig = Config.global();
 
     // Get value of config variable.
-    final userName = globalConfig.getValue('user.name');
+    final userName = globalConfig['user.name'];
     print('\nUser Name from global config: $userName');
 
     globalConfig.free();

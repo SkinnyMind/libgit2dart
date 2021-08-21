@@ -34,61 +34,59 @@ void main() {
       expect(config, isA<Config>());
     });
 
-    test('getEntries() returns map with variables and values', () {
-      final entries = config.getEntries();
-      expect(entries['remote.origin.url'], equals('someurl'));
+    test('returns map with variables and values', () {
+      expect(config.variables['remote.origin.url'], equals('someurl'));
     });
 
-    group('getValue()', () {
+    group('get value', () {
       test('returns value of variable', () {
-        expect(config.getValue('core.bare'), equals('false'));
+        expect(config['core.bare'], equals('false'));
       });
 
       test('throws when variable isn\'t found', () {
         expect(
-          () => config.getValue('not.there'),
+          () => config['not.there'],
           throwsA(isA<LibGit2Error>()),
         );
       });
     });
 
-    group('setValue()', () {
+    group('set value', () {
       test('sets boolean value for provided variable', () {
-        config.setValue('core.bare', true);
-        expect(config.getValue('core.bare'), equals('true'));
+        config['core.bare'] = true;
+        expect(config['core.bare'], equals('true'));
       });
 
       test('sets integer value for provided variable', () {
-        config.setValue('core.repositoryformatversion', 1);
-        expect(config.getValue('core.repositoryformatversion'), equals('1'));
+        config['core.repositoryformatversion'] = 1;
+        expect(config['core.repositoryformatversion'], equals('1'));
       });
 
       test('sets string value for provided variable', () {
-        config.setValue('remote.origin.url', 'updated');
-        expect(config.getValue('remote.origin.url'), equals('updated'));
+        config['remote.origin.url'] = 'updated';
+        expect(config['remote.origin.url'], equals('updated'));
       });
     });
 
-    group('deleteEntry()', () {
+    group('delete', () {
       test('successfully deletes entry', () {
-        expect(config.getValue('core.bare'), equals('false'));
-        config.deleteEntry('core.bare');
-        final entries = config.getEntries();
-        expect(entries['core.bare'], isNull);
+        expect(config['core.bare'], equals('false'));
+        config.delete('core.bare');
+        expect(config.variables['core.bare'], isNull);
       });
 
       test('throws on deleting non existing variable', () {
         expect(
-          () => config.deleteEntry('not.there'),
+          () => config.delete('not.there'),
           throwsA(isA<LibGit2Error>()),
         );
       });
     });
 
-    group('getMultivarValue()', () {
-      test('returns values of multivar', () {
+    group('get multivar values', () {
+      test('returns list of values', () {
         expect(
-          config.getMultivarValue('core.gitproxy'),
+          config.multivar('core.gitproxy'),
           [
             'proxy-command for kernel.org',
             'default-proxy',
@@ -96,29 +94,29 @@ void main() {
         );
       });
 
-      test('returns values of multivar for provided regexp', () {
+      test('returns list of values for provided regexp', () {
         expect(
-          config.getMultivarValue('core.gitproxy', regexp: 'for kernel.org\$'),
+          config.multivar('core.gitproxy', regexp: 'for kernel.org\$'),
           ['proxy-command for kernel.org'],
         );
       });
 
       test('returns empty list if multivar not found', () {
-        expect(config.getMultivarValue('not.there'), equals([]));
+        expect(config.multivar('not.there'), equals([]));
       });
     });
 
     group('setMultivarValue()', () {
       test('sets value of multivar', () {
-        config.setMultivarValue('core.gitproxy', 'default', 'updated');
-        final multivarValues = config.getMultivarValue('core.gitproxy');
+        config.setMultivar('core.gitproxy', 'default', 'updated');
+        final multivarValues = config.multivar('core.gitproxy');
         expect(multivarValues, isNot(contains('default-proxy')));
         expect(multivarValues, contains('updated'));
       });
 
       test('sets value for all multivar values when regexp is empty', () {
-        config.setMultivarValue('core.gitproxy', '', 'updated');
-        final multivarValues = config.getMultivarValue('core.gitproxy');
+        config.setMultivar('core.gitproxy', '', 'updated');
+        final multivarValues = config.multivar('core.gitproxy');
         expect(multivarValues, isNot(contains('default-proxy')));
         expect(multivarValues, isNot(contains('proxy-command for kernel.org')));
         expect(multivarValues, contains('updated'));
@@ -129,14 +127,14 @@ void main() {
     group('deleteMultivar()', () {
       test('successfully deletes value of a multivar', () {
         expect(
-          config.getMultivarValue('core.gitproxy', regexp: 'for kernel.org\$'),
+          config.multivar('core.gitproxy', regexp: 'for kernel.org\$'),
           ['proxy-command for kernel.org'],
         );
 
         config.deleteMultivar('core.gitproxy', 'for kernel.org\$');
 
         expect(
-          config.getMultivarValue('core.gitproxy', regexp: 'for kernel.org\$'),
+          config.multivar('core.gitproxy', regexp: 'for kernel.org\$'),
           [],
         );
       });
@@ -144,7 +142,7 @@ void main() {
       test('successfully deletes all values of a multivar when regexp is empty',
           () {
         expect(
-          config.getMultivarValue('core.gitproxy'),
+          config.multivar('core.gitproxy'),
           [
             'proxy-command for kernel.org',
             'default-proxy',
@@ -153,7 +151,7 @@ void main() {
 
         config.deleteMultivar('core.gitproxy', '');
 
-        expect(config.getMultivarValue('core.gitproxy'), []);
+        expect(config.multivar('core.gitproxy'), []);
       });
     });
   });
