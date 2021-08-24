@@ -2,6 +2,7 @@ import 'dart:ffi';
 import 'bindings/libgit2_bindings.dart';
 import 'bindings/reflog.dart' as bindings;
 import 'reference.dart';
+import 'signature.dart';
 import 'util.dart';
 
 class RefLog {
@@ -58,6 +59,6 @@ class RefLogEntry {
   /// Returns the log message.
   String get message => bindings.entryMessage(_entryPointer);
 
-  /// Returns the committer of this entry (name, email, seconds from epoch).
-  Map<String, Object> get committer => bindings.entryCommiter(_entryPointer);
+  /// Returns the committer of this entry.
+  Signature get committer => Signature(bindings.entryCommiter(_entryPointer));
 }

@@ -165,8 +165,8 @@ void main() {
         final reflogEntry = reflog.entryAt(0);
 
         expect(reflogEntry.message, 'log message');
-        expect(reflogEntry.committer['name'], 'name');
-        expect(reflogEntry.committer['email'], 'email');
+        expect(reflogEntry.committer.name, 'name');
+        expect(reflogEntry.committer.email, 'email');
 
         reflog.free();
         ref.free();
@@ -300,8 +300,8 @@ void main() {
         final reflogEntry = reflog.entryAt(0);
 
         expect(reflogEntry.message, 'log message');
-        expect(reflogEntry.committer['name'], 'name');
-        expect(reflogEntry.committer['email'], 'email');
+        expect(reflogEntry.committer.name, 'name');
+        expect(reflogEntry.committer.email, 'email');
 
         reflog.free();
         ref.free();
@@ -380,8 +380,8 @@ void main() {
         expect(ref.target.sha, '5aecfa0fb97eadaac050ccb99f03c3fb65460ad4');
         final reflog = ref.log;
         expect(reflog.list().first.message, 'log message');
-        expect(reflog.list().first.committer['name'], 'name');
-        expect(reflog.list().first.committer['email'], 'email');
+        expect(reflog.list().first.committer.name, 'name');
+        expect(reflog.list().first.committer.email, 'email');
 
         reflog.free();
         ref.free();
