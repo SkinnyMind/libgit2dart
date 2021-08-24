@@ -97,19 +97,19 @@ class Index {
     late final Oid oid;
     late final Tree tree;
     if (target is Oid) {
-      tree = Tree(bindings.owner(_indexPointer), target.pointer);
+      tree = Tree.lookup(bindings.owner(_indexPointer), target.pointer);
     } else if (target is Tree) {
       tree = target;
     } else if (isValidShaHex(target as String)) {
       if (target.length == 40) {
         oid = Oid.fromSHA(target);
-        tree = Tree(bindings.owner(_indexPointer), oid.pointer);
+        tree = Tree.lookup(bindings.owner(_indexPointer), oid.pointer);
       } else {
         final shortOid = Oid.fromSHAn(target);
         final odb = Odb(repo_bindings.odb(bindings.owner(_indexPointer)));
         oid = Oid(odb.existsPrefix(shortOid.pointer, target.length));
         odb.free();
-        tree = Tree(bindings.owner(_indexPointer), oid.pointer);
+        tree = Tree.lookup(bindings.owner(_indexPointer), oid.pointer);
       }
     } else {
       throw ArgumentError.value(

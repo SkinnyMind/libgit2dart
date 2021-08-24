@@ -4,11 +4,11 @@ import 'bindings/libgit2_bindings.dart';
 import 'bindings/config.dart' as bindings;
 import 'util.dart';
 
-/// [Config] provides management of global configuration options
-/// (system, global, XDG, excluding repository config)
 class Config {
   /// Initializes a new instance of [Config] class from provided
   /// pointer to config object in memory.
+  ///
+  /// Should be freed with `free()` to release allocated memory.
   Config(this._configPointer) {
     libgit2.git_libgit2_init();
   }
@@ -20,7 +20,7 @@ class Config {
   /// [path] should point to single on-disk file; it's expected to be a native
   /// Git config file following the default Git config syntax (see man git-config).
   ///
-  /// [Config] object should be closed with [free] function to release allocated memory.
+  /// Should be freed with `free()` to release allocated memory.
   Config.open([String? path]) {
     libgit2.git_libgit2_init();
 
@@ -39,6 +39,8 @@ class Config {
   ///
   /// Opens the system configuration file.
   ///
+  /// Should be freed with `free()` to release allocated memory.
+  ///
   /// Throws a [LibGit2Error] if error occured.
   Config.system() {
     libgit2.git_libgit2_init();
@@ -51,6 +53,8 @@ class Config {
   ///
   /// Opens the global configuration file.
   ///
+  /// Should be freed with `free()` to release allocated memory.
+  ///
   /// Throws an error if file has not been found.
   Config.global() {
     libgit2.git_libgit2_init();
@@ -62,6 +66,8 @@ class Config {
   /// Initializes a new instance of [Config] class.
   ///
   /// Opens the global XDG configuration file.
+  ///
+  /// Should be freed with `free()` to release allocated memory.
   ///
   /// Throws a [LibGit2Error] if error occured.
   Config.xdg() {

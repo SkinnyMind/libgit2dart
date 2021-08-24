@@ -1,4 +1,5 @@
 import 'dart:ffi';
+import 'commit.dart';
 import 'config.dart';
 import 'index.dart';
 import 'odb.dart';
@@ -8,7 +9,6 @@ import 'bindings/libgit2_bindings.dart';
 import 'bindings/repository.dart' as bindings;
 import 'util.dart';
 
-/// A Repository is the primary interface into a git repository
 class Repository {
   /// Initializes a new instance of the [Repository] class by creating a new
   /// Git repository in the given folder.
@@ -270,14 +270,7 @@ class Repository {
       oid = target as Oid;
       isDirect = true;
     } else if (isValidShaHex(target as String)) {
-      if (target.length == 40) {
-        oid = Oid.fromSHA(target);
-      } else {
-        final shortOid = Oid.fromSHAn(target);
-        final odb = this.odb;
-        oid = Oid(odb.existsPrefix(shortOid.pointer, target.length));
-        odb.free();
-      }
+      oid = _getOid(target);
       isDirect = true;
     } else {
       isDirect = false;
@@ -313,4 +306,33 @@ class Repository {
   ///
   /// Throws a [LibGit2Error] if error occured.
   Odb get odb => Odb(bindings.odb(_repoPointer));
+
+  /// Looksup [Commit] for provided [sha] hex string.
+  ///
+  /// Throws [ArgumentError] if provided [sha] is not valid sha hex string.
+  Commit operator [](String sha) {
+    late final Oid oid;
+
+    if (isValidShaHex(sha)) {
+      oid = _getOid(sha);
+    } else {
+      throw ArgumentError.value('$sha is not a valid sha hex string');
+    }
+    return Commit.lookup(_repoPointer, oid.pointer);
+  }
+
+  /// Returns [Oid] for provided sha hex that is 40 characters long or less.
+  Oid _getOid(String sha) {
+    late final Oid oid;
+
+    if (sha.length == 40) {
+      oid = Oid.fromSHA(sha);
+    } else {
+      final shortOid = Oid.fromSHAn(sha);
+      final odb = this.odb;
+      oid = Oid(odb.existsPrefix(shortOid.pointer, sha.length));
+      odb.free();
+    }
+    return oid;
+  }
 }
