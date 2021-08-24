@@ -6,7 +6,7 @@ import 'bindings/index.dart' as bindings;
 import 'bindings/repository.dart' as repo_bindings;
 import 'odb.dart';
 import 'oid.dart';
-import 'types.dart';
+import 'enums.dart';
 import 'util.dart';
 
 class Index {
