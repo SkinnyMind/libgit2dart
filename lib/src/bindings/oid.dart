@@ -42,16 +42,17 @@ Pointer<git_oid> fromSHA(String hex) {
 ///
 /// Throws a [LibGit2Error] if error occured.
 String toSHA(Pointer<git_oid> id) {
-  final out = calloc.allocate<Int8>(40);
-  final error = libgit2.git_oid_fmt(out, id);
-  final result = out.cast<Utf8>().toDartString(length: 40);
-  malloc.free(out);
+  return using((Arena arena) {
+    final out = arena<Int8>(40);
+    final error = libgit2.git_oid_fmt(out, id);
+    final result = out.cast<Utf8>().toDartString(length: 40);
 
-  if (error < 0) {
-    throw LibGit2Error(libgit2.git_error_last());
-  } else {
-    return result;
-  }
+    if (error < 0) {
+      throw LibGit2Error(libgit2.git_error_last());
+    } else {
+      return result;
+    }
+  });
 }
 
 /// Compare two oid structures.

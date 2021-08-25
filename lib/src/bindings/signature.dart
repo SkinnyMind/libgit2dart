@@ -16,36 +16,36 @@ Pointer<git_signature> create(
   int time,
   int offset,
 ) {
-  final out = calloc<Pointer<git_signature>>();
-  final nameC = name.toNativeUtf8().cast<Int8>();
-  final emailC = email.toNativeUtf8().cast<Int8>();
-  final error = libgit2.git_signature_new(out, nameC, emailC, time, offset);
-  calloc.free(nameC);
-  calloc.free(emailC);
+  return using((Arena arena) {
+    final out = arena<Pointer<git_signature>>();
+    final nameC = name.toNativeUtf8(allocator: arena).cast<Int8>();
+    final emailC = email.toNativeUtf8(allocator: arena).cast<Int8>();
+    final error = libgit2.git_signature_new(out, nameC, emailC, time, offset);
 
-  if (error < 0) {
-    throw LibGit2Error(libgit2.git_error_last());
-  } else {
-    return out.value;
-  }
+    if (error < 0) {
+      throw LibGit2Error(libgit2.git_error_last());
+    } else {
+      return out.value;
+    }
+  });
 }
 
 /// Create a new action signature with a timestamp of 'now'.
 ///
 /// Throws a [LibGit2Error] if error occured.
 Pointer<git_signature> now(String name, String email) {
-  final out = calloc<Pointer<git_signature>>();
-  final nameC = name.toNativeUtf8().cast<Int8>();
-  final emailC = email.toNativeUtf8().cast<Int8>();
-  final error = libgit2.git_signature_now(out, nameC, emailC);
-  calloc.free(nameC);
-  calloc.free(emailC);
+  return using((Arena arena) {
+    final out = arena<Pointer<git_signature>>();
+    final nameC = name.toNativeUtf8(allocator: arena).cast<Int8>();
+    final emailC = email.toNativeUtf8(allocator: arena).cast<Int8>();
+    final error = libgit2.git_signature_now(out, nameC, emailC);
 
-  if (error < 0) {
-    throw LibGit2Error(libgit2.git_error_last());
-  } else {
-    return out.value;
-  }
+    if (error < 0) {
+      throw LibGit2Error(libgit2.git_error_last());
+    } else {
+      return out.value;
+    }
+  });
 }
 
 /// Free an existing signature.

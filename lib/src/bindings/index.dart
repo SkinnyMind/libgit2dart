@@ -62,11 +62,12 @@ Pointer<git_oid> writeTree(Pointer<git_index> index) {
 
 /// Find the first position of any entries which point to given path in the Git index.
 bool find(Pointer<git_index> index, String path) {
-  final pathC = path.toNativeUtf8().cast<Int8>();
-  final result = libgit2.git_index_find(nullptr, index, pathC);
-  calloc.free(pathC);
+  return using((Arena arena) {
+    final pathC = path.toNativeUtf8(allocator: arena).cast<Int8>();
+    final result = libgit2.git_index_find(nullptr, index, pathC);
 
-  return result == git_error_code.GIT_ENOTFOUND ? false : true;
+    return result == git_error_code.GIT_ENOTFOUND ? false : true;
+  });
 }
 
 /// Get the count of entries currently in the index.
@@ -97,15 +98,16 @@ Pointer<git_index_entry> getByPath(
   String path,
   int stage,
 ) {
-  final pathC = path.toNativeUtf8().cast<Int8>();
-  final result = libgit2.git_index_get_bypath(index, pathC, stage);
-  calloc.free(pathC);
+  return using((Arena arena) {
+    final pathC = path.toNativeUtf8(allocator: arena).cast<Int8>();
+    final result = libgit2.git_index_get_bypath(index, pathC, stage);
 
-  if (result == nullptr) {
-    throw ArgumentError.value('$path was not found');
-  } else {
-    return result;
-  }
+    if (result == nullptr) {
+      throw ArgumentError.value('$path was not found');
+    } else {
+      return result;
+    }
+  });
 }
 
 /// Clear the contents (all the entries) of an index object.
@@ -150,13 +152,14 @@ void add(Pointer<git_index> index, Pointer<git_index_entry> sourceEntry) {
 ///
 /// Throws a [LibGit2Error] if error occured.
 void addByPath(Pointer<git_index> index, String path) {
-  final pathC = path.toNativeUtf8().cast<Int8>();
-  final error = libgit2.git_index_add_bypath(index, pathC);
-  calloc.free(pathC);
+  using((Arena arena) {
+    final pathC = path.toNativeUtf8(allocator: arena).cast<Int8>();
+    final error = libgit2.git_index_add_bypath(index, pathC);
 
-  if (error < 0) {
-    throw LibGit2Error(libgit2.git_error_last());
-  }
+    if (error < 0) {
+      throw LibGit2Error(libgit2.git_error_last());
+    }
+  });
 }
 
 /// Add or update index entries matching files in the working directory.
@@ -169,35 +172,32 @@ void addByPath(Pointer<git_index> index, String path) {
 ///
 /// Throws a [LibGit2Error] if error occured.
 void addAll(Pointer<git_index> index, List<String> pathspec) {
-  var pathspecC = calloc<git_strarray>();
-  final List<Pointer<Int8>> pathPointers =
-      pathspec.map((e) => e.toNativeUtf8().cast<Int8>()).toList();
-  final Pointer<Pointer<Int8>> strArray = calloc(pathspec.length);
+  using((Arena arena) {
+    var pathspecC = arena<git_strarray>();
+    final List<Pointer<Int8>> pathPointers = pathspec
+        .map((e) => e.toNativeUtf8(allocator: arena).cast<Int8>())
+        .toList();
+    final Pointer<Pointer<Int8>> strArray = arena(pathspec.length);
 
-  for (var i = 0; i < pathspec.length; i++) {
-    strArray[i] = pathPointers[i];
-  }
+    for (var i = 0; i < pathspec.length; i++) {
+      strArray[i] = pathPointers[i];
+    }
 
-  pathspecC.ref.strings = strArray;
-  pathspecC.ref.count = pathspec.length;
+    pathspecC.ref.strings = strArray;
+    pathspecC.ref.count = pathspec.length;
 
-  final error = libgit2.git_index_add_all(
-    index,
-    pathspecC,
-    0,
-    nullptr,
-    nullptr,
-  );
+    final error = libgit2.git_index_add_all(
+      index,
+      pathspecC,
+      0,
+      nullptr,
+      nullptr,
+    );
 
-  calloc.free(pathspecC);
-  calloc.free(strArray);
-  for (var p in pathPointers) {
-    calloc.free(p);
-  }
-
-  if (error < 0) {
-    throw LibGit2Error(libgit2.git_error_last());
-  }
+    if (error < 0) {
+      throw LibGit2Error(libgit2.git_error_last());
+    }
+  });
 }
 
 /// Write an existing index object from memory back to disk using an atomic file lock.
@@ -215,47 +215,45 @@ void write(Pointer<git_index> index) {
 ///
 /// Throws a [LibGit2Error] if error occured.
 void remove(Pointer<git_index> index, String path, int stage) {
-  final pathC = path.toNativeUtf8().cast<Int8>();
-  final error = libgit2.git_index_remove(index, pathC, stage);
-  calloc.free(pathC);
+  using((Arena arena) {
+    final pathC = path.toNativeUtf8(allocator: arena).cast<Int8>();
+    final error = libgit2.git_index_remove(index, pathC, stage);
 
-  if (error < 0) {
-    throw LibGit2Error(libgit2.git_error_last());
-  }
+    if (error < 0) {
+      throw LibGit2Error(libgit2.git_error_last());
+    }
+  });
 }
 
 /// Remove all matching index entries.
 ///
 /// Throws a [LibGit2Error] if error occured.
 void removeAll(Pointer<git_index> index, List<String> pathspec) {
-  final pathspecC = calloc<git_strarray>();
-  final List<Pointer<Int8>> pathPointers =
-      pathspec.map((e) => e.toNativeUtf8().cast<Int8>()).toList();
-  final Pointer<Pointer<Int8>> strArray = calloc(pathspec.length);
+  using((Arena arena) {
+    final pathspecC = arena<git_strarray>();
+    final List<Pointer<Int8>> pathPointers = pathspec
+        .map((e) => e.toNativeUtf8(allocator: arena).cast<Int8>())
+        .toList();
+    final Pointer<Pointer<Int8>> strArray = arena(pathspec.length);
 
-  for (var i = 0; i < pathspec.length; i++) {
-    strArray[i] = pathPointers[i];
-  }
+    for (var i = 0; i < pathspec.length; i++) {
+      strArray[i] = pathPointers[i];
+    }
 
-  pathspecC.ref.strings = strArray;
-  pathspecC.ref.count = pathspec.length;
+    pathspecC.ref.strings = strArray;
+    pathspecC.ref.count = pathspec.length;
 
-  final error = libgit2.git_index_remove_all(
-    index,
-    pathspecC,
-    nullptr,
-    nullptr,
-  );
+    final error = libgit2.git_index_remove_all(
+      index,
+      pathspecC,
+      nullptr,
+      nullptr,
+    );
 
-  calloc.free(pathspecC);
-  calloc.free(strArray);
-  for (var p in pathPointers) {
-    calloc.free(p);
-  }
-
-  if (error < 0) {
-    throw LibGit2Error(libgit2.git_error_last());
-  }
+    if (error < 0) {
+      throw LibGit2Error(libgit2.git_error_last());
+    }
+  });
 }
 
 /// Get the repository this index relates to.

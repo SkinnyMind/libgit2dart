@@ -214,6 +214,11 @@ void main() {
       });
 
       group('setHead', () {
+        late Reference head;
+
+        setUp(() => head = repo.head);
+        tearDown(() => head.free());
+
         test('successfully sets head when target is reference', () {
           expect(repo.head.name, 'refs/heads/master');
           expect(repo.head.target.sha, lastCommit);

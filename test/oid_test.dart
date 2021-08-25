@@ -1,5 +1,5 @@
 import 'package:test/test.dart';
-import 'package:libgit2dart/src/oid.dart';
+import 'package:libgit2dart/libgit2dart.dart';
 
 void main() {
   const sha = '9d81c715ff606057fa448e558c7458467a86c8c7';
@@ -20,8 +20,7 @@ void main() {
 
     test('returns sha hex string', () {
       final oid = Oid.fromSHA(sha);
-      final hex = oid.sha;
-      expect(hex, equals(sha));
+      expect(oid.sha, equals(sha));
     });
 
     group('compare', () {

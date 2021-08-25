@@ -1,9 +1,7 @@
 import 'dart:io';
 
-import 'package:libgit2dart/libgit2dart.dart';
 import 'package:test/test.dart';
-import 'package:libgit2dart/src/index.dart';
-
+import 'package:libgit2dart/libgit2dart.dart';
 import 'helpers/util.dart';
 
 void main() {

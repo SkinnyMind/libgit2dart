@@ -1,5 +1,12 @@
 export 'src/repository.dart';
 export 'src/config.dart';
+export 'src/commit.dart';
+export 'src/index.dart';
+export 'src/odb.dart';
+export 'src/oid.dart';
+export 'src/reference.dart';
+export 'src/reflog.dart';
+export 'src/tree.dart';
 export 'src/signature.dart';
 export 'src/error.dart';
 export 'src/enums.dart';
