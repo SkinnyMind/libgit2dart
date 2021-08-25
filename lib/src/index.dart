@@ -105,9 +105,8 @@ class Index {
         oid = Oid.fromSHA(target);
         tree = Tree.lookup(bindings.owner(_indexPointer), oid.pointer);
       } else {
-        final shortOid = Oid.fromSHAn(target);
         final odb = Odb(repo_bindings.odb(bindings.owner(_indexPointer)));
-        oid = Oid(odb.existsPrefix(shortOid.pointer, target.length));
+        oid = Oid.fromShortSHA(target, odb);
         odb.free();
         tree = Tree.lookup(bindings.owner(_indexPointer), oid.pointer);
       }

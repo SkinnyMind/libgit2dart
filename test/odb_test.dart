@@ -34,10 +34,10 @@ void main() {
 
     test('finds object by short oid', () {
       final shortSha = '78b8bf';
-      final shortOid = Oid.fromSHAn(shortSha);
-      final oid = repo.odb.existsPrefix(shortOid.pointer, shortSha.length);
-      expect(Oid(oid).sha, lastCommit);
-      repo.odb.free();
+      final odb = repo.odb;
+      final oid = Oid.fromShortSHA(shortSha, odb);
+      expect(oid.sha, lastCommit);
+      odb.free();
     });
   });
 }

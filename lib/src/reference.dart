@@ -142,9 +142,8 @@ class Reference {
       if (target.length == 40) {
         oid = Oid.fromSHA(target);
       } else {
-        final shortOid = Oid.fromSHAn(target);
         final odb = Odb(repo_bindings.odb(owner));
-        oid = Oid(odb.existsPrefix(shortOid.pointer, target.length));
+        oid = Oid.fromShortSHA(target, odb);
         odb.free();
       }
     } else {

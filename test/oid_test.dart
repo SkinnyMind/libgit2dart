@@ -1,20 +1,50 @@
+import 'dart:io';
+
 import 'package:test/test.dart';
 import 'package:libgit2dart/libgit2dart.dart';
+import 'helpers/util.dart';
 
 void main() {
-  const sha = '9d81c715ff606057fa448e558c7458467a86c8c7';
+  const sha = '78b8bf123e3952c970ae5c1ce0a3ea1d1336f6e8';
+  const biggerSha = '78b8bf123e3952c970ae5c1ce0a3ea1d1336f6e9';
+  const lesserSha = '78b8bf123e3952c970ae5c1ce0a3ea1d1336f6e7';
 
   group('Oid', () {
+    late Repository repo;
+    final tmpDir = '${Directory.systemTemp.path}/oid_testrepo/';
+
+    setUp(() async {
+      if (await Directory(tmpDir).exists()) {
+        await Directory(tmpDir).delete(recursive: true);
+      }
+      await copyRepo(
+        from: Directory('test/assets/testrepo/'),
+        to: await Directory(tmpDir).create(),
+      );
+      repo = Repository.open(tmpDir);
+    });
+
+    tearDown(() async {
+      repo.free();
+      await Directory(tmpDir).delete(recursive: true);
+    });
     group('fromSHA()', () {
       test('initializes successfully', () {
-        expect(Oid.fromSHA(sha), isA<Oid>());
+        final oid = Oid.fromSHA(sha);
+        expect(oid, isA<Oid>());
+        expect(oid.sha, sha);
       });
     });
 
-    group('fromSHAn()', () {
+    group('fromShortSHA()', () {
       test('initializes successfully from short hex string', () {
-        final oid = Oid.fromSHAn('9d81');
+        final odb = repo.odb;
+        final oid = Oid.fromShortSHA(sha.substring(0, 4), odb);
+
         expect(oid, isA<Oid>());
+        expect(oid.sha, sha);
+
+        odb.free();
       });
     });
 
@@ -26,7 +56,7 @@ void main() {
     group('compare', () {
       test('< and <=', () {
         final oid1 = Oid.fromSHA(sha);
-        final oid2 = Oid.fromSHA('9d81c715ff606057fa448e558c7458467a86c8c8');
+        final oid2 = Oid.fromSHA(biggerSha);
         expect(oid1 < oid2, true);
         expect(oid1 <= oid2, true);
       });
@@ -39,7 +69,7 @@ void main() {
 
       test('> and >=', () {
         final oid1 = Oid.fromSHA(sha);
-        final oid2 = Oid.fromSHA('9d81c715ff606057fa448e558c7458467a86c8c6');
+        final oid2 = Oid.fromSHA(lesserSha);
         expect(oid1 > oid2, true);
         expect(oid1 >= oid2, true);
       });

@@ -122,9 +122,8 @@ class Repository {
       if (target.length == 40) {
         oid = Oid.fromSHA(target);
       } else {
-        final shortOid = Oid.fromSHAn(target);
         final odb = this.odb;
-        oid = Oid(odb.existsPrefix(shortOid.pointer, target.length));
+        oid = Oid.fromShortSHA(target, odb);
         odb.free();
       }
       bindings.setHeadDetached(_repoPointer, oid.pointer);
@@ -328,9 +327,8 @@ class Repository {
     if (sha.length == 40) {
       oid = Oid.fromSHA(sha);
     } else {
-      final shortOid = Oid.fromSHAn(sha);
       final odb = this.odb;
-      oid = Oid(odb.existsPrefix(shortOid.pointer, sha.length));
+      oid = Oid.fromShortSHA(sha, odb);
       odb.free();
     }
     return oid;
