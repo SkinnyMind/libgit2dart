@@ -2015,6 +2015,11 @@ class Libgit2 {
   /// >
   /// > - `ciphers` is the list of ciphers that are eanbled.
   ///
+  /// * opts(GIT_OPT_GET_USER_AGENT, git_buf *out)
+  ///
+  /// > Get the value of the User-Agent header.
+  /// > The User-Agent is written to the `out` buffer.
+  ///
   /// * opts(GIT_OPT_ENABLE_OFS_DELTA, int enabled)
   ///
   /// > Enable or disable the use of "offset deltas" when creating packfiles,
@@ -4917,6 +4922,7 @@ class Libgit2 {
   ///
   /// @param bld Tree builder
   /// @param filename Filename of the entry to remove
+  /// @return 0 or an error code
   int git_treebuilder_remove(
     ffi.Pointer<git_treebuilder> bld,
     ffi.Pointer<ffi.Int8> filename,
@@ -5086,6 +5092,7 @@ class Libgit2 {
   /// @param baseline the tree to base these changes on
   /// @param nupdates the number of elements in the update list
   /// @param updates the list of updates to perform
+  /// @return 0 or an error code
   int git_tree_create_updated(
     ffi.Pointer<git_oid> out,
     ffi.Pointer<git_repository> repo,
@@ -5386,7 +5393,7 @@ class Libgit2 {
   ///
   /// The message for the reflog will be ignored if the reference does
   /// not belong in the standard set (HEAD, branches and remote-tracking
-  /// branches) and and it does not have a reflog.
+  /// branches) and it does not have a reflog.
   ///
   /// @param out Pointer to the newly created reference
   /// @param repo Repository where that reference will live
@@ -5443,7 +5450,7 @@ class Libgit2 {
   ///
   /// The message for the reflog will be ignored if the reference does
   /// not belong in the standard set (HEAD, branches and remote-tracking
-  /// branches) and and it does not have a reflog.
+  /// branches) and it does not have a reflog.
   ///
   /// It will return GIT_EMODIFIED if the reference's value at the time
   /// of updating does not match the one passed through `current_id`
@@ -5650,7 +5657,7 @@ class Libgit2 {
   ///
   /// The message for the reflog will be ignored if the reference does
   /// not belong in the standard set (HEAD, branches and remote-tracking
-  /// branches) and and it does not have a reflog.
+  /// branches) and it does not have a reflog.
   ///
   /// @param out Pointer to the newly created reference
   /// @param ref The reference
@@ -6700,7 +6707,7 @@ class Libgit2 {
 
   /// Query how many diff deltas are there in a diff filtered by type.
   ///
-  /// This works just like `git_diff_entrycount()` with an extra parameter
+  /// This works just like `git_diff_num_deltas()` with an extra parameter
   /// that is a `git_delta_t` and returns just the count of how many deltas
   /// match that particular type.
   ///
@@ -7394,6 +7401,7 @@ class Libgit2 {
   /// @param preimage the tree to apply the diff to
   /// @param diff the diff to apply
   /// @param options the options for the apply (or null for defaults)
+  /// @return 0 or an error code
   int git_apply_to_tree(
     ffi.Pointer<ffi.Pointer<git_index>> out,
     ffi.Pointer<git_repository> repo,
@@ -7422,6 +7430,7 @@ class Libgit2 {
   /// @param diff the diff to apply
   /// @param location the location to apply (workdir, index or both)
   /// @param options the options for the apply (or null for defaults)
+  /// @return 0 or an error code
   int git_apply(
     ffi.Pointer<git_repository> repo,
     ffi.Pointer<git_diff> diff,
@@ -7778,6 +7787,31 @@ class Libgit2 {
   late final _dart_git_blob_rawsize _git_blob_rawsize =
       _git_blob_rawsize_ptr.asFunction<_dart_git_blob_rawsize>();
 
+  /// Initialize git_blob_filter_options structure
+  ///
+  /// Initializes a `git_blob_filter_options` with default values. Equivalent
+  /// to creating an instance with `GIT_BLOB_FILTER_OPTIONS_INIT`.
+  ///
+  /// @param opts The `git_blob_filter_options` struct to initialize.
+  /// @param version The struct version; pass `GIT_BLOB_FILTER_OPTIONS_VERSION`.
+  /// @return Zero on success; -1 on failure.
+  int git_blob_filter_options_init(
+    ffi.Pointer<git_blob_filter_options> opts,
+    int version,
+  ) {
+    return _git_blob_filter_options_init(
+      opts,
+      version,
+    );
+  }
+
+  late final _git_blob_filter_options_init_ptr =
+      _lookup<ffi.NativeFunction<_c_git_blob_filter_options_init>>(
+          'git_blob_filter_options_init');
+  late final _dart_git_blob_filter_options_init _git_blob_filter_options_init =
+      _git_blob_filter_options_init_ptr
+          .asFunction<_dart_git_blob_filter_options_init>();
+
   /// Get a buffer with the filtered content of a blob.
   ///
   /// This applies filters as if the blob was being checked out to the
@@ -7942,7 +7976,7 @@ class Libgit2 {
   /// Write an in-memory buffer to the ODB as a blob
   ///
   /// @param id return the id of the written blob
-  /// @param repo repository where to blob will be written
+  /// @param repo repository where the blob will be written
   /// @param buffer data to be written into the blob
   /// @param len length of the data
   /// @return 0 or an error code
@@ -9215,7 +9249,7 @@ class Libgit2 {
   ///
   /// The index must not contain any file in conflict.
   ///
-  /// @param out Pointer where to store OID of the the written tree
+  /// @param out Pointer where to store OID of the written tree
   /// @param index Index to write
   /// @param repo Repository where to write the tree
   /// @return 0 on success, GIT_EUNMERGED when the index is not clean
@@ -9760,7 +9794,7 @@ class Libgit2 {
   /// @param at_pos the address to which the position of the index entry is written (optional)
   /// @param index an existing index object
   /// @param path path to search
-  /// @return a zero-based position in the index if found; GIT_ENOTFOUND otherwise
+  /// @return 0 with valid value in at_pos; an error code otherwise
   int git_index_find(
     ffi.Pointer<ffi.Int32> at_pos,
     ffi.Pointer<git_index> index,
@@ -13689,7 +13723,7 @@ class Libgit2 {
   ///
   /// Git allows you to store your global configuration at
   /// `$HOME/.gitconfig` or `$XDG_CONFIG_HOME/git/config`. For backwards
-  /// compatability, the XDG file shouldn't be used unless the use has
+  /// compatibility, the XDG file shouldn't be used unless the use has
   /// created it explicitly. With this function you'll open the correct
   /// one to write to.
   ///
@@ -19194,7 +19228,7 @@ class Libgit2 {
   ///
   /// @param odb database to add the backend to
   /// @param path path to the objects folder for the alternate
-  /// @return 0 on success; error code otherwise
+  /// @return 0 on success, error code otherwise
   int git_odb_add_disk_alternate(
     ffi.Pointer<git_odb> odb,
     ffi.Pointer<ffi.Int8> path,
@@ -19240,9 +19274,8 @@ class Libgit2 {
   /// @param out pointer where to store the read object
   /// @param db database to search for the object in.
   /// @param id identity of the object to read.
-  /// @return
-  /// - 0 if the object was read;
-  /// - GIT_ENOTFOUND if the object is not in the database.
+  /// @return 0 if the object was read, GIT_ENOTFOUND if the object is
+  /// not in the database.
   int git_odb_read(
     ffi.Pointer<ffi.Pointer<git_odb_object>> out,
     ffi.Pointer<git_odb> db,
@@ -19281,10 +19314,9 @@ class Libgit2 {
   /// @param db database to search for the object in.
   /// @param short_id a prefix of the id of the object to read.
   /// @param len the length of the prefix
-  /// @return
-  /// - 0 if the object was read;
-  /// - GIT_ENOTFOUND if the object is not in the database.
-  /// - GIT_EAMBIGUOUS if the prefix is ambiguous (several objects match the prefix)
+  /// @return 0 if the object was read, GIT_ENOTFOUND if the object is not in the
+  /// database. GIT_EAMBIGUOUS if the prefix is ambiguous
+  /// (several objects match the prefix)
   int git_odb_read_prefix(
     ffi.Pointer<ffi.Pointer<git_odb_object>> out,
     ffi.Pointer<git_odb> db,
@@ -19318,9 +19350,8 @@ class Libgit2 {
   /// @param type_out pointer where to store the type
   /// @param db database to search for the object in.
   /// @param id identity of the object to read.
-  /// @return
-  /// - 0 if the object was read;
-  /// - GIT_ENOTFOUND if the object is not in the database.
+  /// @return 0 if the object was read, GIT_ENOTFOUND if the object is not
+  /// in the database.
   int git_odb_read_header(
     ffi.Pointer<ffi.Int32> len_out,
     ffi.Pointer<ffi.Int32> type_out,
@@ -19345,9 +19376,7 @@ class Libgit2 {
   ///
   /// @param db database to be searched for the given object.
   /// @param id the object to search for.
-  /// @return
-  /// - 1, if the object was found
-  /// - 0, otherwise
+  /// @return 1 if the object was found, 0 otherwise
   int git_odb_exists(
     ffi.Pointer<git_odb> db,
     ffi.Pointer<git_oid> id,
@@ -19566,7 +19595,7 @@ class Libgit2 {
   /// @param stream the stream
   /// @param buffer the data to write
   /// @param len the buffer's length
-  /// @return 0 if the write succeeded; error code otherwise
+  /// @return 0 if the write succeeded, error code otherwise
   int git_odb_stream_write(
     ffi.Pointer<git_odb_stream> stream,
     ffi.Pointer<ffi.Int8> buffer,
@@ -19595,7 +19624,7 @@ class Libgit2 {
   ///
   /// @param out pointer to store the resulting object's id
   /// @param stream the stream
-  /// @return 0 on success; an error code otherwise
+  /// @return 0 on success, an error code otherwise
   int git_odb_stream_finalize_write(
     ffi.Pointer<git_oid> out,
     ffi.Pointer<git_odb_stream> stream,
@@ -19674,7 +19703,7 @@ class Libgit2 {
   /// @param type pointer where to store the type of the object
   /// @param db object database where the stream will read from
   /// @param oid oid of the object the stream will read from
-  /// @return 0 if the stream was created; error code otherwise
+  /// @return 0 if the stream was created, error code otherwise
   int git_odb_open_rstream(
     ffi.Pointer<ffi.Pointer<git_odb_stream>> out,
     ffi.Pointer<ffi.Int32> len,
@@ -19925,7 +19954,7 @@ class Libgit2 {
   /// @param odb database to add the backend to
   /// @param backend pointer to a git_odb_backend instance
   /// @param priority Value for ordering the backends queue
-  /// @return 0 on success; error code otherwise
+  /// @return 0 on success, error code otherwise
   int git_odb_add_backend(
     ffi.Pointer<git_odb> odb,
     ffi.Pointer<git_odb_backend> backend,
@@ -19960,7 +19989,7 @@ class Libgit2 {
   /// @param odb database to add the backend to
   /// @param backend pointer to a git_odb_backend instance
   /// @param priority Value for ordering the backends queue
-  /// @return 0 on success; error code otherwise
+  /// @return 0 on success, error code otherwise
   int git_odb_add_alternate(
     ffi.Pointer<git_odb> odb,
     ffi.Pointer<git_odb_backend> backend,
@@ -20002,7 +20031,7 @@ class Libgit2 {
   /// @param out output pointer to ODB backend at pos
   /// @param odb object database
   /// @param pos index into object database backend list
-  /// @return 0 on success; GIT_ENOTFOUND if pos is invalid; other errors < 0
+  /// @return 0 on success, GIT_ENOTFOUND if pos is invalid, other errors < 0
   int git_odb_get_backend(
     ffi.Pointer<ffi.Pointer<git_odb_backend>> out,
     ffi.Pointer<git_odb> odb,
@@ -23705,35 +23734,39 @@ abstract class git_repository_open_flag_t {
 ///
 /// These flags configure extra behaviors to `git_repository_init_ext`.
 /// In every case, the default behavior is the zero value (i.e. flag is
-/// not set).  Just OR the flag values together for the `flags` parameter
-/// when initializing a new repo.  Details of individual values are:
-///
-/// * BARE   - Create a bare repository with no working directory.
-/// * NO_REINIT - Return an GIT_EEXISTS error if the repo_path appears to
-/// already be an git repository.
-/// * NO_DOTGIT_DIR - Normally a "/.git/" will be appended to the repo
-/// path for non-bare repos (if it is not already there), but
-/// passing this flag prevents that behavior.
-/// * MKDIR  - Make the repo_path (and workdir_path) as needed.  Init is
-/// always willing to create the ".git" directory even without this
-/// flag.  This flag tells init to create the trailing component of
-/// the repo and workdir paths as needed.
-/// * MKPATH - Recursively make all components of the repo and workdir
-/// paths as necessary.
-/// * EXTERNAL_TEMPLATE - libgit2 normally uses internal templates to
-/// initialize a new repo.  This flags enables external templates,
-/// looking the "template_path" from the options if set, or the
-/// `init.templatedir` global config if not, or falling back on
-/// "/usr/share/git-core/templates" if it exists.
-/// * GIT_REPOSITORY_INIT_RELATIVE_GITLINK - If an alternate workdir is
-/// specified, use relative paths for the gitdir and core.worktree.
+/// not set). Just OR the flag values together for the `flags` parameter
+/// when initializing a new repo.
 abstract class git_repository_init_flag_t {
+  /// Create a bare repository with no working directory.
   static const int GIT_REPOSITORY_INIT_BARE = 1;
+
+  /// Return an GIT_EEXISTS error if the repo_path appears to already be
+  /// an git repository.
   static const int GIT_REPOSITORY_INIT_NO_REINIT = 2;
+
+  /// Normally a "/.git/" will be appended to the repo path for
+  /// non-bare repos (if it is not already there), but passing this flag
+  /// prevents that behavior.
   static const int GIT_REPOSITORY_INIT_NO_DOTGIT_DIR = 4;
+
+  /// Make the repo_path (and workdir_path) as needed. Init is always willing
+  /// to create the ".git" directory even without this flag. This flag tells
+  /// init to create the trailing component of the repo and workdir paths
+  /// as needed.
   static const int GIT_REPOSITORY_INIT_MKDIR = 8;
+
+  /// Recursively make all components of the repo and workdir paths as
+  /// necessary.
   static const int GIT_REPOSITORY_INIT_MKPATH = 16;
+
+  /// libgit2 normally uses internal templates to initialize a new repo.
+  /// This flags enables external templates, looking the "template_path" from
+  /// the options if set, or the `init.templatedir` global config if not,
+  /// or falling back on "/usr/share/git-core/templates" if it exists.
   static const int GIT_REPOSITORY_INIT_EXTERNAL_TEMPLATE = 32;
+
+  /// If an alternate workdir is specified, use relative paths for the gitdir
+  /// and core.worktree.
   static const int GIT_REPOSITORY_INIT_RELATIVE_GITLINK = 64;
 }
 
@@ -23741,63 +23774,61 @@ abstract class git_repository_init_flag_t {
 ///
 /// Set the mode field of the `git_repository_init_options` structure
 /// either to the custom mode that you would like, or to one of the
-/// following modes:
-///
-/// * SHARED_UMASK - Use permissions configured by umask - the default.
-/// * SHARED_GROUP - Use "--shared=group" behavior, chmod'ing the new repo
-/// to be group writable and "g+sx" for sticky group assignment.
-/// * SHARED_ALL - Use "--shared=all" behavior, adding world readability.
-/// * Anything else - Set to custom value.
+/// defined modes.
 abstract class git_repository_init_mode_t {
+  /// Use permissions configured by umask - the default.
   static const int GIT_REPOSITORY_INIT_SHARED_UMASK = 0;
+
+  /// Use "--shared=group" behavior, chmod'ing the new repo to be group
+  /// writable and "g+sx" for sticky group assignment.
   static const int GIT_REPOSITORY_INIT_SHARED_GROUP = 1533;
+
+  /// Use "--shared=all" behavior, adding world readability.
   static const int GIT_REPOSITORY_INIT_SHARED_ALL = 1535;
 }
 
 /// Extended options structure for `git_repository_init_ext`.
 ///
 /// This contains extra options for `git_repository_init_ext` that enable
-/// additional initialization features.  The fields are:
-///
-/// * flags - Combination of GIT_REPOSITORY_INIT flags above.
-/// * mode  - Set to one of the standard GIT_REPOSITORY_INIT_SHARED_...
-/// constants above, or to a custom value that you would like.
-/// * workdir_path - The path to the working dir or NULL for default (i.e.
-/// repo_path parent on non-bare repos).  IF THIS IS RELATIVE PATH,
-/// IT WILL BE EVALUATED RELATIVE TO THE REPO_PATH.  If this is not
-/// the "natural" working directory, a .git gitlink file will be
-/// created here linking to the repo_path.
-/// * description - If set, this will be used to initialize the "description"
-/// file in the repository, instead of using the template content.
-/// * template_path - When GIT_REPOSITORY_INIT_EXTERNAL_TEMPLATE is set,
-/// this contains the path to use for the template directory.  If
-/// this is NULL, the config or default directory options will be
-/// used instead.
-/// * initial_head - The name of the head to point HEAD at.  If NULL, then
-/// this will be treated as "master" and the HEAD ref will be set
-/// to "refs/heads/master".  If this begins with "refs/" it will be
-/// used verbatim; otherwise "refs/heads/" will be prefixed.
-/// * origin_url - If this is non-NULL, then after the rest of the
-/// repository initialization is completed, an "origin" remote
-/// will be added pointing to this URL.
+/// additional initialization features.
 class git_repository_init_options extends ffi.Struct {
   @ffi.Uint32()
   external int version;
 
+  /// Combination of GIT_REPOSITORY_INIT flags above.
   @ffi.Uint32()
   external int flags;
 
+  /// Set to one of the standard GIT_REPOSITORY_INIT_SHARED_... constants
+  /// above, or to a custom value that you would like.
   @ffi.Uint32()
   external int mode;
 
+  /// The path to the working dir or NULL for default (i.e. repo_path parent
+  /// on non-bare repos). IF THIS IS RELATIVE PATH, IT WILL BE EVALUATED
+  /// RELATIVE TO THE REPO_PATH. If this is not the "natural" working
+  /// directory, a .git gitlink file will be created here linking to the
+  /// repo_path.
   external ffi.Pointer<ffi.Int8> workdir_path;
 
+  /// If set, this will be used to initialize the "description" file in the
+  /// repository, instead of using the template content.
   external ffi.Pointer<ffi.Int8> description;
 
+  /// When GIT_REPOSITORY_INIT_EXTERNAL_TEMPLATE is set, this contains
+  /// the path to use for the template directory. If this is NULL, the config
+  /// or default directory options will be used instead.
   external ffi.Pointer<ffi.Int8> template_path;
 
+  /// The name of the head to point HEAD at. If NULL, then this will be
+  /// treated as "master" and the HEAD ref will be set to "refs/heads/master".
+  /// If this begins with "refs/" it will be used verbatim;
+  /// otherwise "refs/heads/" will be prefixed.
   external ffi.Pointer<ffi.Int8> initial_head;
 
+  /// If this is non-NULL, then after the rest of the repository
+  /// initialization is completed, an "origin" remote will be added
+  /// pointing to this URL.
   external ffi.Pointer<ffi.Int8> origin_url;
 }
 
@@ -24727,6 +24758,9 @@ abstract class git_blob_filter_flag_t {
 }
 
 /// The options used when applying filter options to a file.
+///
+/// Initialize with `GIT_BLOB_FILTER_OPTIONS_INIT`. Alternatively, you can
+/// use `git_blob_filter_options_init`.
 class git_blob_filter_options extends ffi.Struct {
   @ffi.Int32()
   external int version;
@@ -28023,13 +28057,13 @@ const int GIT_CREDTYPE_USERNAME = 32;
 
 const int GIT_CREDTYPE_SSH_MEMORY = 64;
 
-const String LIBGIT2_VERSION = '1.1.0';
+const String LIBGIT2_VERSION = '1.1.1';
 
 const int LIBGIT2_VER_MAJOR = 1;
 
 const int LIBGIT2_VER_MINOR = 1;
 
-const int LIBGIT2_VER_REVISION = 0;
+const int LIBGIT2_VER_REVISION = 1;
 
 const int LIBGIT2_VER_PATCH = 0;
 
@@ -31704,6 +31738,16 @@ typedef _c_git_blob_rawsize = ffi.Uint64 Function(
 
 typedef _dart_git_blob_rawsize = int Function(
   ffi.Pointer<git_blob> blob,
+);
+
+typedef _c_git_blob_filter_options_init = ffi.Int32 Function(
+  ffi.Pointer<git_blob_filter_options> opts,
+  ffi.Uint32 version,
+);
+
+typedef _dart_git_blob_filter_options_init = int Function(
+  ffi.Pointer<git_blob_filter_options> opts,
+  int version,
 );
 
 typedef _c_git_blob_filter = ffi.Int32 Function(

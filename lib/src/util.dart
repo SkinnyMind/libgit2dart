@@ -5,15 +5,15 @@ import 'bindings/libgit2_bindings.dart';
 DynamicLibrary loadLibrary() {
   if (Platform.isLinux || Platform.isAndroid || Platform.isFuchsia) {
     return DynamicLibrary.open(
-        '${Directory.current.path}/libgit2-1.1.0/libgit2.so');
+        '${Directory.current.path}/libgit2/libgit2-1.1.1.so');
   }
   if (Platform.isMacOS) {
     return DynamicLibrary.open(
-        '${Directory.current.path}/libgit2-1.1.0/libgit2.dylib');
+        '${Directory.current.path}/libgit2/libgit2-1.1.1.dylib');
   }
   if (Platform.isWindows) {
     return DynamicLibrary.open(
-        '${Directory.current.path}/libgit2-1.1.0/libgit2.dll');
+        '${Directory.current.path}/libgit2/libgit2-1.1.1.dll');
   }
   throw Exception('Platform not implemented');
 }

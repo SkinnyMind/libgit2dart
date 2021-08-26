@@ -14,10 +14,10 @@ dev_dependencies:
   path: ^1.8.0
 
 ffigen:
-  output: "lib/src/libgit2_bindings.dart"
+  output: "lib/src/bindings/libgit2_bindings.dart"
   headers:
     entry-points:
-      - "libgit2-1.1.0/headers/*.h"
+      - "libgit2/headers/*.h"
   name: "Libgit2"
   description: "Bindings to libgit2"
   comments:
