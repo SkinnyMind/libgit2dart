@@ -39,7 +39,7 @@ void main() {
     group('fromShortSHA()', () {
       test('initializes successfully from short hex string', () {
         final odb = repo.odb;
-        final oid = Oid.fromShortSHA(sha.substring(0, 4), odb);
+        final oid = Oid.fromShortSHA(sha.substring(0, 5), odb);
 
         expect(oid, isA<Oid>());
         expect(oid.sha, sha);

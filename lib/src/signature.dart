@@ -34,8 +34,10 @@ class Signature {
     }
   }
 
-  /// Pointer to memory address for allocated signature object.
   late final Pointer<git_signature> _signaturePointer;
+
+  /// Pointer to memory address for allocated signature object.
+  Pointer<git_signature> get pointer => _signaturePointer;
 
   /// Returns full name of the author.
   String get name => _signaturePointer.ref.name.cast<Utf8>().toDartString();

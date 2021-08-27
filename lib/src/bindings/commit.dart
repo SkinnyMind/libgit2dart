@@ -3,6 +3,7 @@ import 'package:ffi/ffi.dart';
 import '../error.dart';
 import 'libgit2_bindings.dart';
 import '../util.dart';
+import 'oid.dart' as oid_bindings;
 
 /// Lookup a commit object from a repository.
 ///
@@ -17,6 +18,83 @@ Pointer<git_commit> lookup(Pointer<git_repository> repo, Pointer<git_oid> id) {
     throw LibGit2Error(libgit2.git_error_last());
   } else {
     return out.value;
+  }
+}
+
+/// Lookup a commit object from a repository, given a prefix of its identifier (short id).
+///
+/// Throws a [LibGit2Error] if error occured.
+Pointer<git_commit> lookupPrefix(
+  Pointer<git_repository> repo,
+  Pointer<git_oid> id,
+  int len,
+) {
+  final out = calloc<Pointer<git_commit>>();
+  final error = libgit2.git_commit_lookup_prefix(out, repo, id, len);
+
+  if (error < 0) {
+    throw LibGit2Error(libgit2.git_error_last());
+  } else {
+    return out.value;
+  }
+}
+
+/// Create new commit in the repository.
+///
+/// Throws a [LibGit2Error] if error occured.
+Pointer<git_oid> create(
+  Pointer<git_repository> repo,
+  String? updateRef,
+  Pointer<git_signature> author,
+  Pointer<git_signature> committer,
+  String? messageEncoding,
+  String message,
+  Pointer<git_tree> tree,
+  int parentCount,
+  List<String> parents,
+) {
+  final out = calloc<git_oid>();
+  final updateRefC = updateRef?.toNativeUtf8().cast<Int8>() ?? nullptr;
+  final messageEncodingC =
+      messageEncoding?.toNativeUtf8().cast<Int8>() ?? nullptr;
+  final messageC = message.toNativeUtf8().cast<Int8>();
+  late final Pointer<Pointer<git_commit>> parentsC;
+
+  if (parents.isNotEmpty) {
+    parentsC = calloc(parentCount);
+
+    for (var i = 0; i < parentCount; i++) {
+      final oid = oid_bindings.fromSHA(parents[i]);
+      final commit = lookup(repo, oid);
+      parentsC[i] = commit;
+    }
+  } else {
+    throw UnimplementedError(
+        'Writing commit without parents is not implemented');
+  }
+
+  final error = libgit2.git_commit_create(
+    out,
+    repo,
+    updateRefC,
+    author,
+    committer,
+    messageEncodingC,
+    messageC,
+    tree,
+    parentCount,
+    parentsC,
+  );
+
+  calloc.free(updateRefC);
+  calloc.free(messageEncodingC);
+  calloc.free(messageC);
+  calloc.free(parentsC);
+
+  if (error < 0) {
+    throw LibGit2Error(libgit2.git_error_last());
+  } else {
+    return out;
   }
 }
 
