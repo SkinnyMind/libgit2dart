@@ -13,17 +13,17 @@ import '../util.dart';
 ///
 /// Throws a [LibGit2Error] if error occured.
 Pointer<git_reflog> read(Pointer<git_repository> repo, String name) {
-  return using((Arena arena) {
-    final out = arena<Pointer<git_reflog>>();
-    final nameC = name.toNativeUtf8(allocator: arena).cast<Int8>();
-    final error = libgit2.git_reflog_read(out, repo, nameC);
+  final out = calloc<Pointer<git_reflog>>();
+  final nameC = name.toNativeUtf8().cast<Int8>();
+  final error = libgit2.git_reflog_read(out, repo, nameC);
 
-    if (error < 0) {
-      throw LibGit2Error(libgit2.git_error_last());
-    } else {
-      return out.value;
-    }
-  });
+  calloc.free(nameC);
+
+  if (error < 0) {
+    throw LibGit2Error(libgit2.git_error_last());
+  } else {
+    return out.value;
+  }
 }
 
 /// Get the number of log entries in a reflog.

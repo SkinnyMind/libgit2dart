@@ -10,17 +10,17 @@ import '../util.dart';
 ///
 /// Throws a [LibGit2Error] if error occured.
 Pointer<git_repository> open(String path) {
-  return using((Arena arena) {
-    final out = arena<Pointer<git_repository>>();
-    final pathC = path.toNativeUtf8(allocator: arena).cast<Int8>();
-    final error = libgit2.git_repository_open(out, pathC);
+  final out = calloc<Pointer<git_repository>>();
+  final pathC = path.toNativeUtf8().cast<Int8>();
+  final error = libgit2.git_repository_open(out, pathC);
 
-    if (error < 0) {
-      throw LibGit2Error(libgit2.git_error_last());
-    } else {
-      return out.value;
-    }
-  });
+  calloc.free(pathC);
+
+  if (error < 0) {
+    throw LibGit2Error(libgit2.git_error_last());
+  } else {
+    return out.value;
+  }
 }
 
 /// Attempt to open an already-existing bare repository at [bare_path].
@@ -29,17 +29,17 @@ Pointer<git_repository> open(String path) {
 ///
 /// Throws a [LibGit2Error] if error occured.
 Pointer<git_repository> openBare(String barePath) {
-  return using((Arena arena) {
-    final out = arena<Pointer<git_repository>>();
-    final barePathC = barePath.toNativeUtf8(allocator: arena).cast<Int8>();
-    final error = libgit2.git_repository_open_bare(out, barePathC);
+  final out = calloc<Pointer<git_repository>>();
+  final barePathC = barePath.toNativeUtf8().cast<Int8>();
+  final error = libgit2.git_repository_open_bare(out, barePathC);
 
-    if (error < 0) {
-      throw LibGit2Error(libgit2.git_error_last());
-    } else {
-      return out.value;
-    }
-  });
+  calloc.free(barePathC);
+
+  if (error < 0) {
+    throw LibGit2Error(libgit2.git_error_last());
+  } else {
+    return out.value;
+  }
 }
 
 /// Look for a git repository and return its path. The lookup start from [startPath]
@@ -50,40 +50,40 @@ Pointer<git_repository> openBare(String barePath) {
 ///
 /// Throws a [LibGit2Error] if error occured.
 String discover(String startPath, String ceilingDirs) {
-  return using((Arena arena) {
-    final out = arena<git_buf>(sizeOf<git_buf>());
-    final startPathC = startPath.toNativeUtf8(allocator: arena).cast<Int8>();
-    final ceilingDirsC =
-        ceilingDirs.toNativeUtf8(allocator: arena).cast<Int8>();
-    final error =
-        libgit2.git_repository_discover(out, startPathC, 0, ceilingDirsC);
+  final out = calloc<git_buf>(sizeOf<git_buf>());
+  final startPathC = startPath.toNativeUtf8().cast<Int8>();
+  final ceilingDirsC = ceilingDirs.toNativeUtf8().cast<Int8>();
+  final error =
+      libgit2.git_repository_discover(out, startPathC, 0, ceilingDirsC);
 
-    if (error == git_error_code.GIT_ENOTFOUND) {
-      return '';
-    } else if (error < 0) {
-      throw LibGit2Error(libgit2.git_error_last());
-    } else {
-      return out.ref.ptr.cast<Utf8>().toDartString();
-    }
-  });
+  calloc.free(startPathC);
+  calloc.free(ceilingDirsC);
+
+  if (error == git_error_code.GIT_ENOTFOUND) {
+    return '';
+  } else if (error < 0) {
+    throw LibGit2Error(libgit2.git_error_last());
+  } else {
+    return out.ref.ptr.cast<Utf8>().toDartString();
+  }
 }
 
 /// Creates a new Git repository in the given folder.
 ///
 /// Throws a [LibGit2Error] if error occured.
 Pointer<git_repository> init(String path, bool isBare) {
-  return using((Arena arena) {
-    final out = arena<Pointer<git_repository>>();
-    final pathC = path.toNativeUtf8(allocator: arena).cast<Int8>();
-    final isBareC = isBare ? 1 : 0;
-    final error = libgit2.git_repository_init(out, pathC, isBareC);
+  final out = calloc<Pointer<git_repository>>();
+  final pathC = path.toNativeUtf8().cast<Int8>();
+  final isBareC = isBare ? 1 : 0;
+  final error = libgit2.git_repository_init(out, pathC, isBareC);
 
-    if (error < 0) {
-      throw LibGit2Error(libgit2.git_error_last());
-    } else {
-      return out.value;
-    }
-  });
+  calloc.free(pathC);
+
+  if (error < 0) {
+    throw LibGit2Error(libgit2.git_error_last());
+  } else {
+    return out.value;
+  }
 }
 
 /// Returns the path to the `.git` folder for normal repositories or the
@@ -125,15 +125,14 @@ String getNamespace(Pointer<git_repository> repo) {
 ///
 /// Throws a [LibGit2Error] if error occured.
 void setNamespace(Pointer<git_repository> repo, String? namespace) {
-  using((Arena arena) {
-    final nmspace =
-        namespace?.toNativeUtf8(allocator: arena).cast<Int8>() ?? nullptr;
-    final error = libgit2.git_repository_set_namespace(repo, nmspace);
+  final nmspace = namespace?.toNativeUtf8().cast<Int8>() ?? nullptr;
+  final error = libgit2.git_repository_set_namespace(repo, nmspace);
 
-    if (error < 0) {
-      throw LibGit2Error(libgit2.git_error_last());
-    }
-  });
+  calloc.free(nmspace);
+
+  if (error < 0) {
+    throw LibGit2Error(libgit2.git_error_last());
+  }
 }
 
 /// Check if a repository is bare or not.
@@ -165,16 +164,14 @@ bool isEmpty(Pointer<git_repository> repo) {
 ///
 /// Throws a [LibGit2Error] if error occured.
 Pointer<git_reference> head(Pointer<git_repository> repo) {
-  return using((Arena arena) {
-    final out = arena<Pointer<git_reference>>();
-    final error = libgit2.git_repository_head(out, repo);
+  final out = calloc<Pointer<git_reference>>();
+  final error = libgit2.git_repository_head(out, repo);
 
-    if (error < 0) {
-      throw LibGit2Error(libgit2.git_error_last());
-    } else {
-      return out.value;
-    }
-  });
+  if (error < 0) {
+    throw LibGit2Error(libgit2.git_error_last());
+  } else {
+    return out.value;
+  }
 }
 
 /// Check if a repository's HEAD is detached.
@@ -213,32 +210,33 @@ bool isBranchUnborn(Pointer<git_repository> repo) {
 /// If both are set, this name and email will be used to write to the reflog.
 /// Pass NULL to unset. When unset, the identity will be taken from the repository's configuration.
 void setIdentity(Pointer<git_repository> repo, String? name, String? email) {
-  using((Arena arena) {
-    final nameC = name?.toNativeUtf8(allocator: arena).cast<Int8>() ?? nullptr;
-    final emailC =
-        email?.toNativeUtf8(allocator: arena).cast<Int8>() ?? nullptr;
+  final nameC = name?.toNativeUtf8().cast<Int8>() ?? nullptr;
+  final emailC = email?.toNativeUtf8().cast<Int8>() ?? nullptr;
 
-    libgit2.git_repository_set_ident(repo, nameC, emailC);
-  });
+  libgit2.git_repository_set_ident(repo, nameC, emailC);
+
+  calloc.free(nameC);
+  calloc.free(emailC);
 }
 
 /// Retrieve the configured identity to use for reflogs.
 Map<String, String> identity(Pointer<git_repository> repo) {
-  return using((Arena arena) {
-    final name = arena<Pointer<Int8>>();
-    final email = arena<Pointer<Int8>>();
-    libgit2.git_repository_ident(name, email, repo);
-    var identity = <String, String>{};
+  final name = calloc<Pointer<Int8>>();
+  final email = calloc<Pointer<Int8>>();
+  libgit2.git_repository_ident(name, email, repo);
+  var identity = <String, String>{};
 
-    if (name.value == nullptr && email.value == nullptr) {
-      return identity;
-    } else {
-      identity[name.value.cast<Utf8>().toDartString()] =
-          email.value.cast<Utf8>().toDartString();
-    }
-
+  if (name.value == nullptr && email.value == nullptr) {
     return identity;
-  });
+  } else {
+    identity[name.value.cast<Utf8>().toDartString()] =
+        email.value.cast<Utf8>().toDartString();
+  }
+
+  calloc.free(name);
+  calloc.free(email);
+
+  return identity;
 }
 
 /// Get the configuration file for this repository.
@@ -250,16 +248,14 @@ Map<String, String> identity(Pointer<git_repository> repo) {
 ///
 /// Throws a [LibGit2Error] if error occured.
 Pointer<git_config> config(Pointer<git_repository> repo) {
-  return using((Arena arena) {
-    final out = arena<Pointer<git_config>>();
-    final error = libgit2.git_repository_config(out, repo);
+  final out = calloc<Pointer<git_config>>();
+  final error = libgit2.git_repository_config(out, repo);
 
-    if (error < 0) {
-      throw LibGit2Error(libgit2.git_error_last());
-    } else {
-      return out.value;
-    }
-  });
+  if (error < 0) {
+    throw LibGit2Error(libgit2.git_error_last());
+  } else {
+    return out.value;
+  }
 }
 
 /// Get a snapshot of the repository's configuration.
@@ -271,16 +267,14 @@ Pointer<git_config> config(Pointer<git_repository> repo) {
 ///
 /// Throws a [LibGit2Error] if error occured.
 Pointer<git_config> configSnapshot(Pointer<git_repository> repo) {
-  return using((Arena arena) {
-    final out = arena<Pointer<git_config>>();
-    final error = libgit2.git_repository_config_snapshot(out, repo);
+  final out = calloc<Pointer<git_config>>();
+  final error = libgit2.git_repository_config_snapshot(out, repo);
 
-    if (error < 0) {
-      throw LibGit2Error(libgit2.git_error_last());
-    } else {
-      return out.value;
-    }
-  });
+  if (error < 0) {
+    throw LibGit2Error(libgit2.git_error_last());
+  } else {
+    return out.value;
+  }
 }
 
 /// Get the Index file for this repository.
@@ -292,16 +286,14 @@ Pointer<git_config> configSnapshot(Pointer<git_repository> repo) {
 ///
 /// Throws a [LibGit2Error] if error occured.
 Pointer<git_index> index(Pointer<git_repository> repo) {
-  return using((Arena arena) {
-    final out = arena<Pointer<git_index>>();
-    final error = libgit2.git_repository_index(out, repo);
+  final out = calloc<Pointer<git_index>>();
+  final error = libgit2.git_repository_index(out, repo);
 
-    if (error < 0) {
-      throw LibGit2Error(libgit2.git_error_last());
-    } else {
-      return out.value;
-    }
-  });
+  if (error < 0) {
+    throw LibGit2Error(libgit2.git_error_last());
+  } else {
+    return out.value;
+  }
 }
 
 /// Determine if the repository was a shallow clone.
@@ -328,16 +320,14 @@ bool isWorktree(Pointer<git_repository> repo) {
 ///
 /// Throws a [LibGit2Error] if error occured.
 String message(Pointer<git_repository> repo) {
-  return using((Arena arena) {
-    final out = arena<git_buf>(sizeOf<git_buf>());
-    final error = libgit2.git_repository_message(out, repo);
+  final out = calloc<git_buf>(sizeOf<git_buf>());
+  final error = libgit2.git_repository_message(out, repo);
 
-    if (error < 0) {
-      throw LibGit2Error(libgit2.git_error_last());
-    } else {
-      return out.ref.ptr.cast<Utf8>().toDartString();
-    }
-  });
+  if (error < 0) {
+    throw LibGit2Error(libgit2.git_error_last());
+  } else {
+    return out.ref.ptr.cast<Utf8>().toDartString();
+  }
 }
 
 /// Remove git's prepared message.
@@ -354,16 +344,14 @@ void removeMessage(Pointer<git_repository> repo) {
 ///
 /// Throws a [LibGit2Error] if error occured.
 Pointer<git_odb> odb(Pointer<git_repository> repo) {
-  return using((Arena arena) {
-    final out = arena<Pointer<git_odb>>();
-    final error = libgit2.git_repository_odb(out, repo);
+  final out = calloc<Pointer<git_odb>>();
+  final error = libgit2.git_repository_odb(out, repo);
 
-    if (error < 0) {
-      throw LibGit2Error(libgit2.git_error_last());
-    } else {
-      return out.value;
-    }
-  });
+  if (error < 0) {
+    throw LibGit2Error(libgit2.git_error_last());
+  } else {
+    return out.value;
+  }
 }
 
 /// Get the Reference Database Backend for this repository.
@@ -376,16 +364,14 @@ Pointer<git_odb> odb(Pointer<git_repository> repo) {
 ///
 /// Throws a [LibGit2Error] if error occured.
 Pointer<git_refdb> refdb(Pointer<git_repository> repo) {
-  return using((Arena arena) {
-    final out = arena<Pointer<git_refdb>>();
-    final error = libgit2.git_repository_refdb(out, repo);
+  final out = calloc<Pointer<git_refdb>>();
+  final error = libgit2.git_repository_refdb(out, repo);
 
-    if (error < 0) {
-      throw LibGit2Error(libgit2.git_error_last());
-    } else {
-      return out.value;
-    }
-  });
+  if (error < 0) {
+    throw LibGit2Error(libgit2.git_error_last());
+  } else {
+    return out.value;
+  }
 }
 
 /// Make the repository HEAD point to the specified reference.
@@ -401,14 +387,14 @@ Pointer<git_refdb> refdb(Pointer<git_repository> repo) {
 ///
 /// Throws a [LibGit2Error] if error occured.
 void setHead(Pointer<git_repository> repo, String ref) {
-  using((Arena arena) {
-    final refname = ref.toNativeUtf8(allocator: arena).cast<Int8>();
-    final error = libgit2.git_repository_set_head(repo, refname);
+  final refname = ref.toNativeUtf8().cast<Int8>();
+  final error = libgit2.git_repository_set_head(repo, refname);
 
-    if (error < 0) {
-      throw LibGit2Error(libgit2.git_error_last());
-    }
-  });
+  calloc.free(refname);
+
+  if (error < 0) {
+    throw LibGit2Error(libgit2.git_error_last());
+  }
 }
 
 /// Make the repository HEAD directly point to the commit.
@@ -462,16 +448,19 @@ void setWorkdir(
   String path,
   bool updateGitlink,
 ) {
-  using((Arena arena) {
-    final workdir = path.toNativeUtf8(allocator: arena).cast<Int8>();
-    final updateGitlinkC = updateGitlink ? 1 : 0;
-    final error =
-        libgit2.git_repository_set_workdir(repo, workdir, updateGitlinkC);
+  final workdir = path.toNativeUtf8().cast<Int8>();
+  final updateGitlinkC = updateGitlink ? 1 : 0;
+  final error = libgit2.git_repository_set_workdir(
+    repo,
+    workdir,
+    updateGitlinkC,
+  );
 
-    if (error < 0) {
-      throw LibGit2Error(libgit2.git_error_last());
-    }
-  });
+  calloc.free(workdir);
+
+  if (error < 0) {
+    throw LibGit2Error(libgit2.git_error_last());
+  }
 }
 
 /// Determines the status of a git repository - ie, whether an operation
@@ -511,16 +500,14 @@ String workdir(Pointer<git_repository> repo) {
 ///
 /// Throws a [LibGit2Error] if error occured.
 Pointer<git_repository> wrapODB(Pointer<git_odb> odb) {
-  return using((Arena arena) {
-    final out = arena<Pointer<git_repository>>();
-    final error = libgit2.git_repository_wrap_odb(out, odb);
+  final out = calloc<Pointer<git_repository>>();
+  final error = libgit2.git_repository_wrap_odb(out, odb);
 
-    if (error < 0) {
-      throw LibGit2Error(libgit2.git_error_last());
-    } else {
-      return out.value;
-    }
-  });
+  if (error < 0) {
+    throw LibGit2Error(libgit2.git_error_last());
+  } else {
+    return out.value;
+  }
 }
 
 /// Find a single object, as specified by a [spec] string.
@@ -532,21 +519,21 @@ Pointer<git_object> revParseSingle(
   Pointer<git_repository> repo,
   String spec,
 ) {
-  return using((Arena arena) {
-    final out = arena<Pointer<git_object>>();
-    final specC = spec.toNativeUtf8(allocator: arena).cast<Int8>();
-    final error = libgit2.git_revparse_single(
-      out,
-      repo,
-      specC,
-    );
+  final out = calloc<Pointer<git_object>>();
+  final specC = spec.toNativeUtf8().cast<Int8>();
+  final error = libgit2.git_revparse_single(
+    out,
+    repo,
+    specC,
+  );
 
-    if (error < 0) {
-      throw LibGit2Error(libgit2.git_error_last());
-    } else {
-      return out.value;
-    }
-  });
+  calloc.free(specC);
+
+  if (error < 0) {
+    throw LibGit2Error(libgit2.git_error_last());
+  } else {
+    return out.value;
+  }
 }
 
 /// Free a previously allocated repository.

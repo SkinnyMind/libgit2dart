@@ -10,16 +10,14 @@ import '../util.dart';
 ///
 /// Throws a [LibGit2Error] if error occured.
 Pointer<git_commit> lookup(Pointer<git_repository> repo, Pointer<git_oid> id) {
-  return using((Arena arena) {
-    final out = arena<Pointer<git_commit>>();
-    final error = libgit2.git_commit_lookup(out, repo, id);
+  final out = calloc<Pointer<git_commit>>();
+  final error = libgit2.git_commit_lookup(out, repo, id);
 
-    if (error < 0) {
-      throw LibGit2Error(libgit2.git_error_last());
-    } else {
-      return out.value;
-    }
-  });
+  if (error < 0) {
+    throw LibGit2Error(libgit2.git_error_last());
+  } else {
+    return out.value;
+  }
 }
 
 /// Get the encoding for the message of a commit, as a string representing a standard encoding name.
