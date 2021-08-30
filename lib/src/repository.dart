@@ -238,7 +238,7 @@ class Repository {
   Reference get head => Reference(_repoPointer, bindings.head(_repoPointer));
 
   /// Returns [References] object.
-  References get references => References(_repoPointer);
+  References get references => References(this);
 
   /// Creates a new reference.
   ///
@@ -278,7 +278,7 @@ class Repository {
 
     if (isDirect) {
       return Reference.createDirect(
-        repo: _repoPointer,
+        repo: this,
         name: name,
         oid: oid.pointer,
         force: force,
@@ -286,7 +286,7 @@ class Repository {
       );
     } else {
       return Reference.createSymbolic(
-        repo: _repoPointer,
+        repo: this,
         name: name,
         target: target as String,
         force: force,
@@ -318,6 +318,6 @@ class Repository {
     } else {
       throw ArgumentError.value('$sha is not a valid sha hex string');
     }
-    return Commit.lookup(_repoPointer, oid.pointer);
+    return Commit.lookup(this, oid);
   }
 }

@@ -96,13 +96,14 @@ class Index {
     late final Oid oid;
     late final Tree tree;
     if (target is Oid) {
-      tree = Tree.lookup(bindings.owner(_indexPointer), target.pointer);
+      final repo = Repository(bindings.owner(_indexPointer));
+      tree = Tree.lookup(repo, target);
     } else if (target is Tree) {
       tree = target;
     } else if (isValidShaHex(target as String)) {
       final repo = Repository(bindings.owner(_indexPointer));
       oid = Oid.fromSHA(repo, target);
-      tree = Tree.lookup(repo.pointer, oid.pointer);
+      tree = Tree.lookup(repo, oid);
     } else {
       throw ArgumentError.value(
           '$target should be either Oid object, SHA hex string or Tree object');

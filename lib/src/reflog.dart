@@ -14,7 +14,7 @@ class RefLog {
 
     final repo = ref.owner;
     final name = ref.name;
-    _reflogPointer = bindings.read(repo, name);
+    _reflogPointer = bindings.read(repo.pointer, name);
   }
 
   /// Pointer to memory address for allocated reflog object.

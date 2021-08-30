@@ -9,10 +9,13 @@ import 'util.dart';
 
 class References {
   /// Initializes a new instance of the [References] class
-  /// from provided pointer to repository object in memory.
-  References(this._repoPointer);
+  /// from provided [Repository] object.
+  References(Repository repo) {
+    _repoPointer = repo.pointer;
+  }
 
-  final Pointer<git_repository> _repoPointer;
+  /// Pointer to memory address for allocated repository object.
+  late final Pointer<git_repository> _repoPointer;
 
   /// Returns a list of all the references that can be found in a repository.
   ///
@@ -58,14 +61,20 @@ class Reference {
   /// The message for the reflog will be ignored if the reference does not belong in the
   /// standard set (HEAD, branches and remote-tracking branches) and it does not have a reflog.
   Reference.createDirect({
-    required Pointer<git_repository> repo,
+    required Repository repo,
     required String name,
     required Pointer<git_oid> oid,
     required bool force,
     String? logMessage,
   }) {
-    _repoPointer = repo;
-    _refPointer = bindings.createDirect(repo, name, oid, force, logMessage);
+    _repoPointer = repo.pointer;
+    _refPointer = bindings.createDirect(
+      repo.pointer,
+      name,
+      oid,
+      force,
+      logMessage,
+    );
   }
 
   /// Initializes a new instance of the [Reference] class by creating a new symbolic reference.
@@ -91,20 +100,26 @@ class Reference {
   /// The message for the reflog will be ignored if the reference does not belong in the standard
   /// set (HEAD, branches and remote-tracking branches) and it does not have a reflog.
   Reference.createSymbolic({
-    required Pointer<git_repository> repo,
+    required Repository repo,
     required String name,
     required String target,
     required bool force,
     String? logMessage,
   }) {
-    _repoPointer = repo;
-    _refPointer =
-        bindings.createSymbolic(repo, name, target, force, logMessage);
+    _repoPointer = repo.pointer;
+    _refPointer = bindings.createSymbolic(
+      repo.pointer,
+      name,
+      target,
+      force,
+      logMessage,
+    );
   }
 
   /// Pointer to memory address for allocated reference object.
   late Pointer<git_reference> _refPointer;
 
+  /// Pointer to memory address for allocated repository object.
   late final Pointer<git_repository> _repoPointer;
 
   /// Returns the type of the reference.
@@ -138,7 +153,7 @@ class Reference {
     late final Oid oid;
 
     if (isValidShaHex(target)) {
-      final repo = Repository(bindings.owner(_refPointer));
+      final repo = Repository(_repoPointer);
       oid = Oid.fromSHA(repo, target);
     } else {
       final ref = Reference(
@@ -205,7 +220,7 @@ class Reference {
   bool get isTag => bindings.isTag(_refPointer);
 
   /// Returns the repository where a reference resides.
-  Pointer<git_repository> get owner => bindings.owner(_refPointer);
+  Repository get owner => Repository(bindings.owner(_refPointer));
 
   /// Delete an existing reference.
   ///

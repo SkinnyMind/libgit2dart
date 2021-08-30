@@ -18,13 +18,13 @@ class Commit {
     libgit2.git_libgit2_init();
   }
 
-  /// Initializes a new instance of [Commit] class from provided pointer to [Repository]
-  /// object in memory and pointer to [Oid] object in memory.
+  /// Initializes a new instance of [Commit] class from provided [Repository]
+  /// and [Oid] objects.
   ///
   /// Should be freed with `free()` to release allocated memory.
-  Commit.lookup(Pointer<git_repository> repo, Pointer<git_oid> oid) {
+  Commit.lookup(Repository repo, Oid oid) {
     libgit2.git_libgit2_init();
-    _commitPointer = bindings.lookup(repo, oid);
+    _commitPointer = bindings.lookup(repo.pointer, oid.pointer);
   }
 
   /// Pointer to memory address for allocated commit object.

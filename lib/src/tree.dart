@@ -1,6 +1,9 @@
 import 'dart:ffi';
+import 'package:libgit2dart/src/repository.dart';
+
 import 'bindings/libgit2_bindings.dart';
 import 'bindings/tree.dart' as bindings;
+import 'oid.dart';
 import 'util.dart';
 
 class Tree {
@@ -11,12 +14,12 @@ class Tree {
   }
 
   /// Initializes a new instance of [Tree] class from provided
-  /// pointers to repository object and oid object in memory.
+  /// [Repository] and [Oid] objects.
   ///
   /// Should be freed with `free()` to release allocated memory.
-  Tree.lookup(Pointer<git_repository> repo, Pointer<git_oid> id) {
+  Tree.lookup(Repository repo, Oid id) {
     libgit2.git_libgit2_init();
-    _treePointer = bindings.lookup(repo, id);
+    _treePointer = bindings.lookup(repo.pointer, id.pointer);
   }
 
   late final Pointer<git_tree> _treePointer;
