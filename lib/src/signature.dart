@@ -68,6 +68,5 @@ class Signature {
   /// Releases memory allocated for signature object.
   void free() {
     bindings.free(_signaturePointer);
-    libgit2.git_libgit2_shutdown();
   }
 }

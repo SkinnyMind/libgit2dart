@@ -27,6 +27,5 @@ class Tree {
   /// Releases memory allocated for tree object.
   void free() {
     bindings.free(_treePointer);
-    libgit2.git_libgit2_shutdown();
   }
 }

@@ -1,7 +1,8 @@
 import 'dart:ffi';
-
 import 'bindings/libgit2_bindings.dart';
 import 'bindings/commit.dart' as bindings;
+import 'bindings/oid.dart' as oid_bindings;
+import 'bindings/tree.dart' as tree_bindings;
 import 'repository.dart';
 import 'oid.dart';
 import 'signature.dart';
@@ -38,30 +39,13 @@ class Commit {
     required Signature author,
     required Signature commiter,
     required String treeSHA,
-    required List<String> parentsSHA,
+    required List<String> parents,
     String? updateRef,
     String? messageEncoding,
   }) {
-    libgit2.git_libgit2_init();
-
-    final parentCount = parentsSHA.length;
-    late final Tree tree;
-
-    if (treeSHA.length == 40) {
-      final treeOid = Oid.fromSHA(treeSHA);
-      tree = Tree.lookup(
-        repo.pointer,
-        treeOid.pointer,
-      );
-    } else {
-      final odb = repo.odb;
-      final treeOid = Oid.fromShortSHA(treeSHA, odb);
-      tree = Tree.lookup(
-        repo.pointer,
-        treeOid.pointer,
-      );
-      odb.free();
-    }
+    final treeOid = oid_bindings.fromStrN(treeSHA);
+    final tree =
+        Tree(tree_bindings.lookupPrefix(repo.pointer, treeOid, treeSHA.length));
 
     final result = Oid(bindings.create(
       repo.pointer,
@@ -71,12 +55,11 @@ class Commit {
       messageEncoding,
       message,
       tree.pointer,
-      parentCount,
-      parentsSHA,
+      parents.length,
+      parents,
     ));
 
     tree.free();
-    libgit2.git_libgit2_init();
 
     return result;
   }
@@ -105,18 +88,13 @@ class Commit {
   /// Returns list of parent commits.
   ///
   /// Throws a [LibGit2Error] if error occured.
-  List<Commit> get parents {
-    var parents = <Commit>[];
+  List<Oid> get parents {
+    var parents = <Oid>[];
     final parentCount = bindings.parentCount(_commitPointer);
 
     for (var i = 0; i < parentCount; i++) {
       final parentOid = bindings.parentId(_commitPointer, i);
-
-      if (parentOid != nullptr) {
-        final owner = bindings.owner(_commitPointer);
-        final commit = bindings.lookup(owner, parentOid);
-        parents.add(Commit(commit));
-      }
+      parents.add(Oid(parentOid));
     }
 
     return parents;
@@ -128,6 +106,5 @@ class Commit {
   /// Releases memory allocated for commit object.
   void free() {
     bindings.free(_commitPointer);
-    libgit2.git_libgit2_shutdown();
   }
 }

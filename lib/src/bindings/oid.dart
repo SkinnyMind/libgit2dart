@@ -38,6 +38,26 @@ Pointer<git_oid> fromSHA(String hex) {
   }
 }
 
+/// Copy an already raw oid into a git_oid structure.
+///
+/// Throws a [LibGit2Error] if error occured.
+Pointer<git_oid> fromRaw(Array<Uint8> raw) {
+  final out = calloc<git_oid>();
+  var rawC = calloc<Uint8>(20);
+  for (var i = 0; i < 20; i++) {
+    rawC[i] = raw[i];
+  }
+  final error = libgit2.git_oid_fromraw(out, rawC);
+
+  calloc.free(rawC);
+
+  if (error < 0) {
+    throw LibGit2Error(libgit2.git_error_last());
+  } else {
+    return out;
+  }
+}
+
 /// Format a git_oid into a hex string.
 ///
 /// Throws a [LibGit2Error] if error occured.

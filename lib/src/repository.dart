@@ -10,6 +10,14 @@ import 'bindings/repository.dart' as bindings;
 import 'util.dart';
 
 class Repository {
+  /// Initializes a new instance of the [Repository] class from provided
+  /// pointer to repository object in memory.
+  ///
+  /// Should be freed with `free()` to release allocated memory.
+  Repository(this._repoPointer) {
+    libgit2.git_libgit2_init();
+  }
+
   /// Initializes a new instance of the [Repository] class by creating a new
   /// Git repository in the given folder.
   ///
@@ -119,13 +127,7 @@ class Repository {
     late final Oid oid;
 
     if (isValidShaHex(target)) {
-      if (target.length == 40) {
-        oid = Oid.fromSHA(target);
-      } else {
-        final odb = this.odb;
-        oid = Oid.fromShortSHA(target, odb);
-        odb.free();
-      }
+      oid = Oid.fromSHA(this, target);
       bindings.setHeadDetached(_repoPointer, oid.pointer);
     } else {
       bindings.setHead(_repoPointer, target);
@@ -208,7 +210,6 @@ class Repository {
   /// Releases memory allocated for repository object.
   void free() {
     bindings.free(_repoPointer);
-    libgit2.git_libgit2_shutdown();
   }
 
   /// Returns the configuration file for this repository.
@@ -269,7 +270,7 @@ class Repository {
       oid = target as Oid;
       isDirect = true;
     } else if (isValidShaHex(target as String)) {
-      oid = _getOid(target);
+      oid = Oid.fromSHA(this, target);
       isDirect = true;
     } else {
       isDirect = false;
@@ -313,24 +314,10 @@ class Repository {
     late final Oid oid;
 
     if (isValidShaHex(sha)) {
-      oid = _getOid(sha);
+      oid = Oid.fromSHA(this, sha);
     } else {
       throw ArgumentError.value('$sha is not a valid sha hex string');
     }
     return Commit.lookup(_repoPointer, oid.pointer);
-  }
-
-  /// Returns [Oid] for provided sha hex that is 40 characters long or less.
-  Oid _getOid(String sha) {
-    late final Oid oid;
-
-    if (sha.length == 40) {
-      oid = Oid.fromSHA(sha);
-    } else {
-      final odb = this.odb;
-      oid = Oid.fromShortSHA(sha, odb);
-      odb.free();
-    }
-    return oid;
   }
 }

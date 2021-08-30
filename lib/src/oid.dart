@@ -1,7 +1,7 @@
 import 'dart:ffi';
 import 'bindings/libgit2_bindings.dart';
 import 'bindings/oid.dart' as bindings;
-import 'odb.dart';
+import 'repository.dart';
 import 'util.dart';
 
 class Oid {
@@ -11,24 +11,26 @@ class Oid {
     libgit2.git_libgit2_init();
   }
 
-  /// Initializes a new instance of [Oid] class from provided
-  /// hexadecimal [sha] string.
+  /// Initializes a new instance of [Oid] class by determining if an object can be found
+  /// in the ODB of [repository] with provided hexadecimal [sha] string that is 40 characters
+  /// long or shorter.
   ///
   /// Throws a [LibGit2Error] if error occured.
-  Oid.fromSHA(String sha) {
+  Oid.fromSHA(Repository repository, String sha) {
     libgit2.git_libgit2_init();
-
-    _oidPointer = bindings.fromSHA(sha);
+    if (sha.length == 40) {
+      _oidPointer = bindings.fromSHA(sha);
+    } else {
+      final odb = repository.odb;
+      _oidPointer = odb.existsPrefix(bindings.fromStrN(sha), sha.length);
+      odb.free();
+    }
   }
 
-  /// Initializes a new instance of [Oid] class by determining if an object can be found
-  /// in the object database of repository with provided hexadecimal [sha] string that is
-  /// lesser than 40 characters long and [Odb] object.
-  ///
-  /// Throws a [LibGit2Error] if error occured.
-  Oid.fromShortSHA(String sha, Odb odb) {
+  /// Initializes a new instance of [Oid] class from provided raw git_oid.
+  Oid.fromRaw(git_oid raw) {
     libgit2.git_libgit2_init();
-    _oidPointer = odb.existsPrefix(bindings.fromStrN(sha), sha.length);
+    _oidPointer = bindings.fromRaw(raw.id);
   }
 
   late final Pointer<git_oid> _oidPointer;

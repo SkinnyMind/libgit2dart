@@ -142,6 +142,5 @@ class Config {
   /// Releases memory allocated for config object.
   void free() {
     bindings.free(_configPointer);
-    libgit2.git_libgit2_shutdown();
   }
 }

@@ -3,10 +3,9 @@ import 'package:ffi/ffi.dart';
 import 'package:libgit2dart/src/tree.dart';
 import 'bindings/libgit2_bindings.dart';
 import 'bindings/index.dart' as bindings;
-import 'bindings/repository.dart' as repo_bindings;
-import 'odb.dart';
 import 'oid.dart';
 import 'enums.dart';
+import 'repository.dart';
 import 'util.dart';
 
 class Index {
@@ -101,15 +100,9 @@ class Index {
     } else if (target is Tree) {
       tree = target;
     } else if (isValidShaHex(target as String)) {
-      if (target.length == 40) {
-        oid = Oid.fromSHA(target);
-        tree = Tree.lookup(bindings.owner(_indexPointer), oid.pointer);
-      } else {
-        final odb = Odb(repo_bindings.odb(bindings.owner(_indexPointer)));
-        oid = Oid.fromShortSHA(target, odb);
-        odb.free();
-        tree = Tree.lookup(bindings.owner(_indexPointer), oid.pointer);
-      }
+      final repo = Repository(bindings.owner(_indexPointer));
+      oid = Oid.fromSHA(repo, target);
+      tree = Tree.lookup(repo.pointer, oid.pointer);
     } else {
       throw ArgumentError.value(
           '$target should be either Oid object, SHA hex string or Tree object');
@@ -146,7 +139,6 @@ class Index {
   /// Releases memory allocated for index object.
   void free() {
     bindings.free(_indexPointer);
-    libgit2.git_libgit2_shutdown();
   }
 }
 
@@ -158,7 +150,7 @@ class IndexEntry {
   late final Pointer<git_index_entry> _indexEntryPointer;
 
   /// Unique identity of the index entry.
-  Oid get id => Oid.fromSHA(sha);
+  Oid get id => Oid.fromRaw(_indexEntryPointer.ref.id);
 
   set id(Oid oid) => _indexEntryPointer.ref.id = oid.pointer.ref;
 

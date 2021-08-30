@@ -58,19 +58,19 @@ Pointer<git_oid> create(
   final messageEncodingC =
       messageEncoding?.toNativeUtf8().cast<Int8>() ?? nullptr;
   final messageC = message.toNativeUtf8().cast<Int8>();
-  late final Pointer<Pointer<git_commit>> parentsC;
+  Pointer<Pointer<git_commit>> parentsC =
+      calloc.call<Pointer<git_commit>>(parentCount);
 
   if (parents.isNotEmpty) {
-    parentsC = calloc(parentCount);
-
     for (var i = 0; i < parentCount; i++) {
       final oid = oid_bindings.fromSHA(parents[i]);
-      final commit = lookup(repo, oid);
-      parentsC[i] = commit;
+      var commit = calloc<IntPtr>();
+      commit = lookup(repo, oid).cast();
+      parentsC[i] = commit.cast();
     }
   } else {
-    throw UnimplementedError(
-        'Writing commit without parents is not implemented');
+    final commit = calloc<IntPtr>();
+    parentsC[0] = commit.cast();
   }
 
   final error = libgit2.git_commit_create(
@@ -89,6 +89,9 @@ Pointer<git_oid> create(
   calloc.free(updateRefC);
   calloc.free(messageEncodingC);
   calloc.free(messageC);
+  for (var i = 0; i < parentCount; i++) {
+    free(parentsC[i]);
+  }
   calloc.free(parentsC);
 
   if (error < 0) {
@@ -134,7 +137,7 @@ int parentCount(Pointer<git_commit> commit) =>
 Pointer<git_oid> parentId(Pointer<git_commit> commit, int n) {
   final parentOid = libgit2.git_commit_parent_id(commit, n);
 
-  if (parentOid is int && parentOid as int < 0) {
+  if (parentOid == nullptr) {
     throw LibGit2Error(libgit2.git_error_last());
   } else {
     return parentOid;
@@ -163,8 +166,5 @@ Pointer<git_oid> tree(Pointer<git_commit> commit) {
 Pointer<git_repository> owner(Pointer<git_commit> commit) =>
     libgit2.git_commit_owner(commit);
 
-/// Close an open commit.
-///
-/// IMPORTANT: It is necessary to call this method when you stop using a commit.
-/// Failure to do so will cause a memory leak.
+/// Close an open commit to release memory.
 void free(Pointer<git_commit> commit) => libgit2.git_commit_free(commit);

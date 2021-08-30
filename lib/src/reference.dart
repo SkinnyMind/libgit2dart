@@ -1,11 +1,10 @@
 import 'dart:ffi';
 import 'bindings/libgit2_bindings.dart';
 import 'bindings/reference.dart' as bindings;
-import 'bindings/repository.dart' as repo_bindings;
-import 'odb.dart';
 import 'oid.dart';
 import 'reflog.dart';
 import 'enums.dart';
+import 'repository.dart';
 import 'util.dart';
 
 class References {
@@ -139,13 +138,8 @@ class Reference {
     late final Oid oid;
 
     if (isValidShaHex(target)) {
-      if (target.length == 40) {
-        oid = Oid.fromSHA(target);
-      } else {
-        final odb = Odb(repo_bindings.odb(owner));
-        oid = Oid.fromShortSHA(target, odb);
-        odb.free();
-      }
+      final repo = Repository(bindings.owner(_refPointer));
+      oid = Oid.fromSHA(repo, target);
     } else {
       final ref = Reference(
         _repoPointer,
@@ -233,6 +227,5 @@ class Reference {
   /// Releases memory allocated for reference object.
   void free() {
     bindings.free(_refPointer);
-    libgit2.git_libgit2_shutdown();
   }
 }

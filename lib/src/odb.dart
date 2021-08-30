@@ -10,8 +10,10 @@ class Odb {
     libgit2.git_libgit2_init();
   }
 
-  /// Pointer to memory address for allocated oid object.
   late final Pointer<git_odb> _odbPointer;
+
+  /// Pointer to memory address for allocated oid object.
+  Pointer<git_odb> get pointer => _odbPointer;
 
   /// Determine if an object can be found in the object database by an abbreviated object ID.
   ///
@@ -26,6 +28,5 @@ class Odb {
   /// Releases memory allocated for odb object.
   void free() {
     bindings.free(_odbPointer);
-    libgit2.git_libgit2_shutdown();
   }
 }

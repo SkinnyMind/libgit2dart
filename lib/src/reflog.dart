@@ -45,7 +45,6 @@ class RefLog {
   /// Releases memory allocated for reflog object.
   void free() {
     bindings.free(_reflogPointer);
-    libgit2.git_libgit2_shutdown();
   }
 }
 

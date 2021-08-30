@@ -11,6 +11,11 @@ void main() {
     late Repository repo;
     final tmpDir = '${Directory.systemTemp.path}/commit_testrepo/';
 
+    const message = "Commit message.\n\nSome description.\n";
+    const tree = '7796359a96eb722939c24bafdb1afe9f07f2f628';
+    late Signature author;
+    late Signature commiter;
+
     setUp(() async {
       if (await Directory(tmpDir).exists()) {
         await Directory(tmpDir).delete(recursive: true);
@@ -20,152 +25,135 @@ void main() {
         to: await Directory(tmpDir).create(),
       );
       repo = Repository.open(tmpDir);
+      author = Signature.create(
+        name: 'Author Name',
+        email: 'author@email.com',
+        time: 123,
+      );
+      commiter = Signature.create(
+        name: 'Commiter',
+        email: 'commiter@email.com',
+        time: 124,
+      );
     });
 
     tearDown(() async {
+      author.free();
+      commiter.free();
       repo.free();
       await Directory(tmpDir).delete(recursive: true);
     });
 
-    group('lookup', () {
-      test('successful when 40 char sha hex is provided', () {
-        final commit = repo[mergeCommit];
-        expect(commit, isA<Commit>());
-        commit.free();
-      });
-
-      test('successful when sha hex is short', () {
-        final commit = repo[mergeCommit.substring(0, 5)];
-        expect(commit, isA<Commit>());
-        commit.free();
-      });
-
-      test('throws when provided sha hex is invalid', () {
-        expect(() => repo['invalid'], throwsA(isA<ArgumentError>()));
-      });
-
-      test('throws when nothing found', () {
-        expect(() => repo['970ae5c'], throwsA(isA<LibGit2Error>()));
-      });
-
-      test('returns with correct fields', () {
-        final signature = Signature.create(
-          name: 'Aleksey Kulikov',
-          email: 'skinny.mind@gmail.com',
-          time: 1626091184,
-          offset: 180,
-        );
-
-        final commit = repo[mergeCommit];
-        final parents = commit.parents;
-
-        expect(commit.messageEncoding, 'utf-8');
-        expect(commit.message, 'Merge branch \'feature\'\n');
-        expect(commit.id.sha, mergeCommit);
-        expect(parents.length, 2);
-        expect(
-          parents[0].id.sha,
-          'c68ff54aabf660fcdd9a2838d401583fe31249e3',
-        );
-        expect(commit.time, 1626091184);
-        expect(commit.committer, signature);
-        expect(commit.author, signature);
-        expect(commit.tree.sha, '7796359a96eb722939c24bafdb1afe9f07f2f628');
-
-        for (var p in parents) {
-          p.free();
-        }
-        signature.free();
-        commit.free();
-      });
+    test('successfully returns when 40 char sha hex is provided', () {
+      final commit = repo[mergeCommit];
+      expect(commit, isA<Commit>());
+      commit.free();
     });
 
-    group('.create()', () {
-      test('successfuly creates commit', () {
-        const message = "Commit message.\n\nSome description.\n";
-        const tree = '7796359a96eb722939c24bafdb1afe9f07f2f628';
-        final author = Signature.create(
-          name: 'Author Name',
-          email: 'author@email.com',
-          time: 123,
-        );
-        final commiter = Signature.create(
-          name: 'Commiter',
-          email: 'commiter@email.com',
-          time: 124,
-        );
+    test('successfully returns when sha hex is short', () {
+      final commit = repo[mergeCommit.substring(0, 5)];
+      expect(commit, isA<Commit>());
+      commit.free();
+    });
 
-        final oid = Commit.create(
-          repo: repo,
-          message: message,
-          author: author,
-          commiter: commiter,
-          treeSHA: tree,
-          parentsSHA: [mergeCommit],
-        );
+    test('successfully creates commit', () {
+      final oid = Commit.create(
+        repo: repo,
+        message: message,
+        author: author,
+        commiter: commiter,
+        treeSHA: tree,
+        parents: [mergeCommit],
+      );
 
-        final commit = repo[oid.sha];
-        final parents = commit.parents;
+      final commit = repo[oid.sha];
 
-        expect(commit.id.sha, oid.sha);
-        expect(commit.message, message);
-        expect(commit.author, author);
-        expect(commit.committer, commiter);
-        expect(commit.time, 124);
-        expect(commit.tree.sha, tree);
-        expect(parents.length, 1);
-        expect(parents[0].id.sha, mergeCommit);
+      expect(commit.id.sha, oid.sha);
+      expect(commit.message, message);
+      expect(commit.messageEncoding, 'utf-8');
+      expect(commit.author, author);
+      expect(commit.committer, commiter);
+      expect(commit.time, 124);
+      expect(commit.tree.sha, tree);
+      expect(commit.parents.length, 1);
+      expect(commit.parents[0].sha, mergeCommit);
 
-        for (var p in parents) {
-          p.free();
-        }
-        author.free();
-        commiter.free();
-        commit.free();
-      });
+      commit.free();
+    });
 
-      test('successfuly creates commit with short sha of tree', () {
-        const message = "Commit message.\n\nSome description.\n";
-        const tree = '7796359a96eb722939c24bafdb1afe9f07f2f628';
-        final author = Signature.create(
-          name: 'Author Name',
-          email: 'author@email.com',
-          time: 123,
-        );
-        final commiter = Signature.create(
-          name: 'Commiter',
-          email: 'commiter@email.com',
-          time: 124,
-        );
+    test('successfully creates commit without parents', () {
+      final oid = Commit.create(
+        repo: repo,
+        message: message,
+        author: author,
+        commiter: commiter,
+        treeSHA: tree,
+        parents: [],
+      );
 
-        final oid = Commit.create(
-          repo: repo,
-          message: message,
-          author: author,
-          commiter: commiter,
-          treeSHA: tree.substring(0, 5),
-          parentsSHA: [mergeCommit],
-        );
+      final commit = repo[oid.sha];
 
-        final commit = repo[oid.sha];
-        final parents = commit.parents;
+      expect(commit.id.sha, oid.sha);
+      expect(commit.message, message);
+      expect(commit.messageEncoding, 'utf-8');
+      expect(commit.author, author);
+      expect(commit.committer, commiter);
+      expect(commit.time, 124);
+      expect(commit.tree.sha, tree);
+      expect(commit.parents.length, 0);
 
-        expect(commit.id.sha, oid.sha);
-        expect(commit.message, message);
-        expect(commit.author, author);
-        expect(commit.committer, commiter);
-        expect(commit.time, 124);
-        expect(commit.tree.sha, tree);
-        expect(parents.length, 1);
-        expect(parents[0].id.sha, mergeCommit);
+      commit.free();
+    });
 
-        for (var p in parents) {
-          p.free();
-        }
-        author.free();
-        commiter.free();
-        commit.free();
-      });
+    test('successfully creates commit with 2 parents', () {
+      final oid = Commit.create(
+        repo: repo,
+        message: message,
+        author: author,
+        commiter: commiter,
+        treeSHA: tree,
+        parents: [mergeCommit, 'fc38877b2552ab554752d9a77e1f48f738cca79b'],
+      );
+
+      final commit = repo[oid.sha];
+
+      expect(commit.id.sha, oid.sha);
+      expect(commit.message, message);
+      expect(commit.messageEncoding, 'utf-8');
+      expect(commit.author, author);
+      expect(commit.committer, commiter);
+      expect(commit.time, 124);
+      expect(commit.tree.sha, tree);
+      expect(commit.parents.length, 2);
+      expect(commit.parents[0].sha, mergeCommit);
+      expect(commit.parents[1].sha, 'fc38877b2552ab554752d9a77e1f48f738cca79b');
+
+      commit.free();
+    });
+
+    test('successfully creates commit with short sha of tree', () {
+      final oid = Commit.create(
+        repo: repo,
+        message: message,
+        author: author,
+        commiter: commiter,
+        treeSHA: tree.substring(0, 5),
+        parents: [mergeCommit],
+      );
+
+      final commit = repo[oid.sha];
+
+      expect(commit.id.sha, oid.sha);
+      expect(commit.message, message);
+      expect(commit.messageEncoding, 'utf-8');
+      expect(commit.author, author);
+      expect(commit.committer, commiter);
+      expect(commit.time, 124);
+      expect(commit.tree.sha, tree);
+      expect(commit.parents.length, 1);
+      expect(commit.parents[0].sha, mergeCommit);
+
+      commit.free();
     });
   });
 }

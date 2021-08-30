@@ -1,5 +1,5 @@
 import 'dart:io';
-
+import 'dart:ffi';
 import 'package:test/test.dart';
 import 'package:libgit2dart/libgit2dart.dart';
 import 'helpers/util.dart';
@@ -30,46 +30,50 @@ void main() {
     });
     group('fromSHA()', () {
       test('initializes successfully', () {
-        final oid = Oid.fromSHA(sha);
+        final oid = Oid.fromSHA(repo, sha);
+        expect(oid, isA<Oid>());
+        expect(oid.sha, sha);
+      });
+
+      test('initializes successfully from short hex string', () {
+        final oid = Oid.fromSHA(repo, sha.substring(0, 5));
+
         expect(oid, isA<Oid>());
         expect(oid.sha, sha);
       });
     });
 
-    group('fromShortSHA()', () {
-      test('initializes successfully from short hex string', () {
-        final odb = repo.odb;
-        final oid = Oid.fromShortSHA(sha.substring(0, 5), odb);
-
+    group('fromRaw()', () {
+      test('initializes successfully', () {
+        final sourceOid = Oid.fromSHA(repo, sha);
+        final oid = Oid.fromRaw(sourceOid.pointer.ref);
         expect(oid, isA<Oid>());
         expect(oid.sha, sha);
-
-        odb.free();
       });
     });
 
     test('returns sha hex string', () {
-      final oid = Oid.fromSHA(sha);
+      final oid = Oid.fromSHA(repo, sha);
       expect(oid.sha, equals(sha));
     });
 
     group('compare', () {
       test('< and <=', () {
-        final oid1 = Oid.fromSHA(sha);
-        final oid2 = Oid.fromSHA(biggerSha);
+        final oid1 = Oid.fromSHA(repo, sha);
+        final oid2 = Oid.fromSHA(repo, biggerSha);
         expect(oid1 < oid2, true);
         expect(oid1 <= oid2, true);
       });
 
       test('==', () {
-        final oid1 = Oid.fromSHA(sha);
-        final oid2 = Oid.fromSHA(sha);
+        final oid1 = Oid.fromSHA(repo, sha);
+        final oid2 = Oid.fromSHA(repo, sha);
         expect(oid1 == oid2, true);
       });
 
       test('> and >=', () {
-        final oid1 = Oid.fromSHA(sha);
-        final oid2 = Oid.fromSHA(lesserSha);
+        final oid1 = Oid.fromSHA(repo, sha);
+        final oid2 = Oid.fromSHA(repo, lesserSha);
         expect(oid1 > oid2, true);
         expect(oid1 >= oid2, true);
       });
