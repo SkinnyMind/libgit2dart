@@ -179,6 +179,26 @@ void main() {
         config.free();
       });
 
+      test('returns list of commits by walking from provided starting oid', () {
+        const log = [
+          '78b8bf123e3952c970ae5c1ce0a3ea1d1336f6e8',
+          'c68ff54aabf660fcdd9a2838d401583fe31249e3',
+          'fc38877b2552ab554752d9a77e1f48f738cca79b',
+          '6cbc22e509d72758ab4c8d9f287ea846b90c448b',
+          'f17d0d48eae3aa08cecf29128a35e310c97b3521',
+        ];
+        final start = Oid.fromSHA(repo, lastCommit);
+        final commits = repo.log(start);
+
+        for (var i = 0; i < commits.length; i++) {
+          expect(commits[i].id.sha, log[i]);
+        }
+
+        for (var c in commits) {
+          c.free();
+        }
+      });
+
       group('.discover()', () {
         test('discovers repository', () async {
           final subDir = '${tmpDir}subdir1/subdir2/';

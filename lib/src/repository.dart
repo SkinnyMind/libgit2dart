@@ -1,4 +1,7 @@
 import 'dart:ffi';
+import 'package:libgit2dart/src/enums.dart';
+import 'package:libgit2dart/src/revwalk.dart';
+
 import 'commit.dart';
 import 'config.dart';
 import 'index.dart';
@@ -319,5 +322,20 @@ class Repository {
       throw ArgumentError.value('$sha is not a valid sha hex string');
     }
     return Commit.lookup(this, oid);
+  }
+
+  /// Returns the list of commits starting from provided [oid].
+  ///
+  /// If [sorting] isn't provided default will be used (reverse chronological order, like in git).
+  List<Commit> log(Oid oid, [GitSort sorting = GitSort.none]) {
+    final walker = RevWalk(this);
+    if (sorting != GitSort.none) {
+      walker.sorting(sorting);
+    }
+    walker.push(oid);
+    final result = walker.walk();
+    walker.free();
+
+    return result;
   }
 }
