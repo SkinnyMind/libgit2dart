@@ -18,7 +18,6 @@ class Tree {
   ///
   /// Should be freed with `free()` to release allocated memory.
   Tree.lookup(Repository repo, Oid id) {
-    libgit2.git_libgit2_init();
     _treePointer = bindings.lookup(repo.pointer, id.pointer);
   }
 

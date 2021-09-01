@@ -23,7 +23,6 @@ class Commit {
   ///
   /// Should be freed with `free()` to release allocated memory.
   Commit.lookup(Repository repo, Oid oid) {
-    libgit2.git_libgit2_init();
     _commitPointer = bindings.lookup(repo.pointer, oid.pointer);
   }
 

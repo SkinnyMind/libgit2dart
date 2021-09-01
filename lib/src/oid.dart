@@ -17,7 +17,6 @@ class Oid {
   ///
   /// Throws a [LibGit2Error] if error occured.
   Oid.fromSHA(Repository repository, String sha) {
-    libgit2.git_libgit2_init();
     if (sha.length == 40) {
       _oidPointer = bindings.fromSHA(sha);
     } else {

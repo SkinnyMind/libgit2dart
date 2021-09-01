@@ -5,13 +5,11 @@ import 'commit.dart';
 import 'oid.dart';
 import 'repository.dart';
 import 'enums.dart';
-import 'util.dart';
 
 class RevWalk {
   /// Initializes a new instance of the [RevWalk] class.
   /// Should be freed with `free()` to release allocated memory.
   RevWalk(Repository repo) {
-    libgit2.git_libgit2_init();
     _revWalkPointer = bindings.create(repo.pointer);
   }
 

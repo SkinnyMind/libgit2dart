@@ -38,9 +38,7 @@ class References {
 class Reference {
   /// Initializes a new instance of the [Reference] class.
   /// Should be freed with `free()` to release allocated memory.
-  Reference(this._repoPointer, this._refPointer) {
-    libgit2.git_libgit2_init();
-  }
+  Reference(this._repoPointer, this._refPointer);
 
   /// Initializes a new instance of the [Reference] class by creating a new direct reference.
   ///
