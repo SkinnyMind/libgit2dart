@@ -199,6 +199,24 @@ void main() {
         }
       });
 
+      test('returns commit with different spec strings', () {
+        const headSHA = '78b8bf123e3952c970ae5c1ce0a3ea1d1336f6e8';
+        const parentSHA = 'c68ff54aabf660fcdd9a2838d401583fe31249e3';
+
+        final headCommit = repo.revParseSingle('HEAD');
+        expect(headCommit.id.sha, headSHA);
+
+        final parentCommit = repo.revParseSingle('HEAD^');
+        expect(parentCommit.id.sha, parentSHA);
+
+        final initCommit = repo.revParseSingle('@{-1}');
+        expect(initCommit.id.sha, '5aecfa0fb97eadaac050ccb99f03c3fb65460ad4');
+
+        headCommit.free();
+        parentCommit.free();
+        initCommit.free();
+      });
+
       group('.discover()', () {
         test('discovers repository', () async {
           final subDir = '${tmpDir}subdir1/subdir2/';

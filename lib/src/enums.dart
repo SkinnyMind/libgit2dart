@@ -17,3 +17,5 @@ enum GitFilemode { undreadable, tree, blob, blobExecutable, link, commit }
 /// [reverse] Iterate through the repository contents in reverse
 /// order; this sorting mode can be combined with any of the above.
 enum GitSort { none, topological, time, reverse }
+
+enum GitObject { commit, tree, blob, tag }

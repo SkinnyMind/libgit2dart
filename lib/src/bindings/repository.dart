@@ -511,6 +511,8 @@ Pointer<git_repository> wrapODB(Pointer<git_odb> odb) {
 }
 
 /// Find a single object, as specified by a [spec] string.
+/// See `man gitrevisions`, or https://git-scm.com/docs/git-rev-parse.html#_specifying_revisions
+/// for information on the syntax accepted.
 ///
 /// The returned object should be released when no longer needed.
 ///

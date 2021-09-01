@@ -1,15 +1,14 @@
 import 'dart:ffi';
-import 'package:libgit2dart/src/enums.dart';
-import 'package:libgit2dart/src/revwalk.dart';
-
+import 'bindings/libgit2_bindings.dart';
+import 'bindings/repository.dart' as bindings;
 import 'commit.dart';
 import 'config.dart';
 import 'index.dart';
 import 'odb.dart';
 import 'oid.dart';
 import 'reference.dart';
-import 'bindings/libgit2_bindings.dart';
-import 'bindings/repository.dart' as bindings;
+import 'revwalk.dart';
+import 'enums.dart';
 import 'util.dart';
 
 class Repository {
@@ -322,6 +321,17 @@ class Repository {
       throw ArgumentError.value('$sha is not a valid sha hex string');
     }
     return Commit.lookup(this, oid);
+  }
+
+  /// Find a single object, as specified by a [spec] string.
+  /// See `man gitrevisions`, or https://git-scm.com/docs/git-rev-parse.html#_specifying_revisions
+  /// for information on the syntax accepted.
+  ///
+  /// The returned object should be released when no longer needed.
+  ///
+  /// Throws a [LibGit2Error] if error occured.
+  Commit revParseSingle(String spec) {
+    return Commit(bindings.revParseSingle(_repoPointer, spec).cast());
   }
 
   /// Returns the list of commits starting from provided [oid].
