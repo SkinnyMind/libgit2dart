@@ -19,3 +19,12 @@ enum GitFilemode { undreadable, tree, blob, blobExecutable, link, commit }
 enum GitSort { none, topological, time, reverse }
 
 enum GitObject { commit, tree, blob, tag }
+
+/// Revparse flags, indicate the intended behavior of the spec.
+///
+/// [single]: the spec targeted a single object.
+///
+/// [range]: the spec targeted a range of commits.
+///
+/// [mergeBase]: the spec used the '...' operator, which invokes special semantics.
+enum GitRevParse { single, range, mergeBase }

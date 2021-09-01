@@ -1,6 +1,7 @@
 import 'dart:ffi';
 import 'bindings/libgit2_bindings.dart';
 import 'bindings/repository.dart' as bindings;
+import 'bindings/merge.dart' as merge_bindings;
 import 'commit.dart';
 import 'config.dart';
 import 'index.dart';
@@ -8,6 +9,7 @@ import 'odb.dart';
 import 'oid.dart';
 import 'reference.dart';
 import 'revwalk.dart';
+import 'revparse.dart';
 import 'enums.dart';
 import 'util.dart';
 
@@ -323,17 +325,6 @@ class Repository {
     return Commit.lookup(this, oid);
   }
 
-  /// Find a single object, as specified by a [spec] string.
-  /// See `man gitrevisions`, or https://git-scm.com/docs/git-rev-parse.html#_specifying_revisions
-  /// for information on the syntax accepted.
-  ///
-  /// The returned object should be released when no longer needed.
-  ///
-  /// Throws a [LibGit2Error] if error occured.
-  Commit revParseSingle(String spec) {
-    return Commit(bindings.revParseSingle(_repoPointer, spec).cast());
-  }
-
   /// Returns the list of commits starting from provided [oid].
   ///
   /// If [sorting] isn't provided default will be used (reverse chronological order, like in git).
@@ -347,5 +338,47 @@ class Repository {
     walker.free();
 
     return result;
+  }
+
+  /// Finds a single object, as specified by a [spec] revision string.
+  /// See `man gitrevisions`, or https://git-scm.com/docs/git-rev-parse.html#_specifying_revisions
+  /// for information on the syntax accepted.
+  ///
+  /// The returned object should be released when no longer needed.
+  ///
+  /// Throws a [LibGit2Error] if error occured.
+  Commit revParseSingle(String spec) => RevParse.single(this, spec);
+
+  /// Finds a single object and intermediate reference (if there is one) by a [spec] revision string.
+  ///
+  /// See `man gitrevisions`, or https://git-scm.com/docs/git-rev-parse.html#_specifying_revisions
+  /// for information on the syntax accepted.
+  ///
+  /// In some cases (@{<-n>} or <branchname>@{upstream}), the expression may point to an
+  /// intermediate reference. When such expressions are being passed in, reference_out will be
+  /// valued as well.
+  ///
+  /// The returned object and reference should be released when no longer needed.
+  ///
+  /// Throws a [LibGit2Error] if error occured.
+  RevParse revParseExt(String spec) => RevParse.ext(this, spec);
+
+  /// Parses a revision string for from, to, and intent.
+  ///
+  /// See `man gitrevisions` or https://git-scm.com/docs/git-rev-parse.html#_specifying_revisions
+  /// for information on the syntax accepted.
+  ///
+  /// Throws a [LibGit2Error] if error occured.
+  RevSpec revParse(String spec) => RevParse.range(this, spec);
+
+  /// Finds a merge base between two commits.
+  ///
+  /// Throws a [LibGit2Error] if error occured.
+  Oid mergeBase(Oid one, Oid two) {
+    return Oid(merge_bindings.mergeBase(
+      _repoPointer,
+      one.pointer,
+      two.pointer,
+    ));
   }
 }
