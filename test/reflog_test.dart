@@ -34,22 +34,19 @@ void main() {
     });
 
     test('returns correct number of log entries', () {
-      expect(reflog.count, 3);
+      expect(reflog.count, 4);
     });
 
     test('returns the log message', () {
       final entry = reflog.entryAt(0);
-      expect(
-        entry.message,
-        "merge feature: Merge made by the 'recursive' strategy.",
-      );
+      expect(entry.message, "commit: add subdirectory file");
     });
 
     test('returns the committer of the entry', () {
       final entry = reflog.entryAt(0);
       expect(entry.committer.name, 'Aleksey Kulikov');
       expect(entry.committer.email, 'skinny.mind@gmail.com');
-      expect(entry.committer.time, 1626091184);
+      expect(entry.committer.time, 1630568461);
     });
   });
 }

@@ -77,7 +77,7 @@ int entryCount(Pointer<git_index> index) => libgit2.git_index_entrycount(index);
 ///
 /// The entry is not modifiable and should not be freed.
 ///
-/// Throws error if position is out of bounds.
+/// Throws [RangeError] when provided index is outside of valid range.
 Pointer<git_index_entry> getByIndex(Pointer<git_index> index, int n) {
   final result = libgit2.git_index_get_byindex(index, n);
 
@@ -92,7 +92,7 @@ Pointer<git_index_entry> getByIndex(Pointer<git_index> index, int n) {
 ///
 ///The entry is not modifiable and should not be freed.
 ///
-/// Throws error if entry isn't found.
+/// Throws [ArgumentError] if nothing found for provided path.
 Pointer<git_index_entry> getByPath(
   Pointer<git_index> index,
   String path,

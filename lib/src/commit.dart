@@ -1,8 +1,6 @@
 import 'dart:ffi';
 import 'bindings/libgit2_bindings.dart';
 import 'bindings/commit.dart' as bindings;
-import 'bindings/oid.dart' as oid_bindings;
-import 'bindings/tree.dart' as tree_bindings;
 import 'repository.dart';
 import 'oid.dart';
 import 'signature.dart';
@@ -42,9 +40,8 @@ class Commit {
     String? updateRef,
     String? messageEncoding,
   }) {
-    final treeOid = oid_bindings.fromStrN(treeSHA);
-    final tree =
-        Tree(tree_bindings.lookupPrefix(repo.pointer, treeOid, treeSHA.length));
+    final treeOid = Oid.fromSHA(repo, treeSHA);
+    final tree = Tree.lookup(repo, treeOid);
 
     final result = Oid(bindings.create(
       repo.pointer,

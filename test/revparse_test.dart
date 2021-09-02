@@ -7,8 +7,8 @@ import 'helpers/util.dart';
 void main() {
   late Repository repo;
   final tmpDir = '${Directory.systemTemp.path}/revparse_testrepo/';
-  const headSHA = '78b8bf123e3952c970ae5c1ce0a3ea1d1336f6e8';
-  const parentSHA = 'c68ff54aabf660fcdd9a2838d401583fe31249e3';
+  const headSHA = '821ed6e80627b8769d170a293862f9fc60825226';
+  const parentSHA = '78b8bf123e3952c970ae5c1ce0a3ea1d1336f6e8';
 
   setUp(() async {
     if (await Directory(tmpDir).exists()) {

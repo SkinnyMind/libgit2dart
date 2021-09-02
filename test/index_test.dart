@@ -32,7 +32,7 @@ void main() {
     const featureFileSha = '9c78c21d6680a7ffebc76f7ac68cacc11d8f48bc';
 
     test('returns number of entries', () {
-      expect(index.count, 3);
+      expect(index.count, 4);
     });
 
     test('returns mode of index entry', () {
@@ -40,7 +40,7 @@ void main() {
     });
 
     test('returns index entry at provided position', () {
-      expect(index[2].path, 'file');
+      expect(index[2].path, 'feature_file');
       expect(index['file'].sha, fileSha);
     });
 
@@ -74,7 +74,7 @@ void main() {
     });
 
     test('clears the contents', () {
-      expect(index.count, 3);
+      expect(index.count, 4);
       index.clear();
       expect(index.count, 0);
     });
@@ -85,13 +85,13 @@ void main() {
 
         index.add(entry);
         expect(index['file'].sha, fileSha);
-        expect(index.count, 3);
+        expect(index.count, 4);
       });
 
       test('successfully adds with provided path string', () {
         index.add('file');
         expect(index['file'].sha, fileSha);
-        expect(index.count, 3);
+        expect(index.count, 4);
       });
 
       test('throws if file not found at provided path', () {
@@ -134,7 +134,7 @@ void main() {
     });
 
     test('writes to disk', () {
-      expect(index.count, 3);
+      expect(index.count, 4);
 
       File('$tmpDir/new_file').createSync();
 
@@ -144,7 +144,7 @@ void main() {
       index.clear();
       index.read();
       expect(index['new_file'].path, 'new_file');
-      expect(index.count, 4);
+      expect(index.count, 5);
     });
 
     test('removes an entry', () {
@@ -166,18 +166,18 @@ void main() {
     group('read tree', () {
       const treeSha = 'df2b8fc99e1c1d4dbc0a854d9f72157f1d6ea078';
       test('successfully reads with provided SHA hex', () {
-        expect(index.count, 3);
+        expect(index.count, 4);
         index.readTree(treeSha);
 
         expect(index.count, 1);
 
         // make sure the index is only modified in memory
         index.read();
-        expect(index.count, 3);
+        expect(index.count, 4);
       });
 
       test('successfully reads with provided short SHA hex', () {
-        expect(index.count, 3);
+        expect(index.count, 4);
         index.readTree(treeSha.substring(0, 5));
 
         expect(index.count, 1);
@@ -186,7 +186,7 @@ void main() {
 
     test('successfully writes tree', () {
       final oid = index.writeTree();
-      expect(oid.sha, '7796359a96eb722939c24bafdb1afe9f07f2f628');
+      expect(oid.sha, 'a8ae3dd59e6e1802c6f78e05e301bfd57c9f334f');
     });
   });
 }

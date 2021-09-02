@@ -150,7 +150,7 @@ void main() {
     });
 
     group('testrepo', () {
-      const lastCommit = '78b8bf123e3952c970ae5c1ce0a3ea1d1336f6e8';
+      const lastCommit = '821ed6e80627b8769d170a293862f9fc60825226';
       const featureCommit = '5aecfa0fb97eadaac050ccb99f03c3fb65460ad4';
 
       final tmpDir = '${Directory.systemTemp.path}/testrepo/';
@@ -181,6 +181,7 @@ void main() {
 
       test('returns list of commits by walking from provided starting oid', () {
         const log = [
+          '821ed6e80627b8769d170a293862f9fc60825226',
           '78b8bf123e3952c970ae5c1ce0a3ea1d1336f6e8',
           'c68ff54aabf660fcdd9a2838d401583fe31249e3',
           'fc38877b2552ab554752d9a77e1f48f738cca79b',

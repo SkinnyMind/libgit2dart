@@ -5,7 +5,7 @@ import 'package:libgit2dart/libgit2dart.dart';
 import 'helpers/util.dart';
 
 void main() {
-  const lastCommit = '78b8bf123e3952c970ae5c1ce0a3ea1d1336f6e8';
+  const lastCommit = '821ed6e80627b8769d170a293862f9fc60825226';
   const newCommit = 'c68ff54aabf660fcdd9a2838d401583fe31249e3';
 
   group('Reference', () {
