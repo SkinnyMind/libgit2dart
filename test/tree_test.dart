@@ -34,19 +34,10 @@ void main() {
       expect(tree, isA<Tree>());
     });
 
-    test('returns number of entries', () {
+    test('returns correct values', () {
       expect(tree.entries.length, 4);
-    });
-
-    test('returns sha of tree entry', () {
       expect(tree.entries.first.id.sha, fileSHA);
-    });
-
-    test('returns name of tree entry', () {
       expect(tree.entries[0].name, '.gitignore');
-    });
-
-    test('returns filemode of tree entry', () {
       expect(tree.entries[0].filemode, GitFilemode.blob);
     });
 
