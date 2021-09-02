@@ -34,7 +34,7 @@ int entryCount(Pointer<git_reflog> reflog) =>
 ///
 /// Requesting the reflog entry with an index of 0 (zero) will return
 /// the most recently created entry.
-Pointer<git_reflog_entry> entryByIndex(Pointer<git_reflog> reflog, int idx) {
+Pointer<git_reflog_entry> getByIndex(Pointer<git_reflog> reflog, int idx) {
   return libgit2.git_reflog_entry_byindex(reflog, idx);
 }
 

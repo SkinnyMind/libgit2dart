@@ -21,11 +21,11 @@ class RefLog {
   late final Pointer<git_reflog> _reflogPointer;
 
   /// Returns a list with entries of reference log.
-  List<RefLogEntry> list() {
+  List<RefLogEntry> get entries {
     var log = <RefLogEntry>[];
 
     for (var i = 0; i < count; i++) {
-      log.add(entryAt(i));
+      log.add(RefLogEntry(bindings.getByIndex(_reflogPointer, i)));
     }
 
     return log;
@@ -38,8 +38,8 @@ class RefLog {
   ///
   /// Requesting the reflog entry with an index of 0 (zero) will return
   /// the most recently created entry.
-  RefLogEntry entryAt(int index) {
-    return RefLogEntry(bindings.entryByIndex(_reflogPointer, index));
+  RefLogEntry operator [](int index) {
+    return RefLogEntry(bindings.getByIndex(_reflogPointer, index));
   }
 
   /// Releases memory allocated for reflog object.

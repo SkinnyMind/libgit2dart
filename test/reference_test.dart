@@ -162,7 +162,7 @@ void main() {
         );
 
         final reflog = ref.log;
-        final reflogEntry = reflog.entryAt(0);
+        final reflogEntry = reflog[0];
 
         expect(reflogEntry.message, 'log message');
         expect(reflogEntry.committer.name, 'name');
@@ -297,7 +297,7 @@ void main() {
         );
 
         final reflog = ref.log;
-        final reflogEntry = reflog.entryAt(0);
+        final reflogEntry = reflog[0];
 
         expect(reflogEntry.message, 'log message');
         expect(reflogEntry.committer.name, 'name');
@@ -338,7 +338,7 @@ void main() {
     test('returns log for reference', () {
       final ref = repo.references['refs/heads/master'];
       final reflog = ref.log;
-      expect(reflog.list().last.message, 'commit (initial): init');
+      expect(reflog.entries.last.message, 'commit (initial): init');
 
       reflog.free();
       ref.free();
@@ -379,9 +379,9 @@ void main() {
         ref.setTarget('refs/heads/feature', 'log message');
         expect(ref.target.sha, '5aecfa0fb97eadaac050ccb99f03c3fb65460ad4');
         final reflog = ref.log;
-        expect(reflog.list().first.message, 'log message');
-        expect(reflog.list().first.committer.name, 'name');
-        expect(reflog.list().first.committer.email, 'email');
+        expect(reflog.entries.first.message, 'log message');
+        expect(reflog.entries.first.committer.name, 'name');
+        expect(reflog.entries.first.committer.email, 'email');
 
         reflog.free();
         ref.free();

@@ -38,15 +38,13 @@ void main() {
     });
 
     test('returns the log message', () {
-      final entry = reflog.entryAt(0);
-      expect(entry.message, "commit: add subdirectory file");
+      expect(reflog[0].message, "commit: add subdirectory file");
     });
 
     test('returns the committer of the entry', () {
-      final entry = reflog.entryAt(0);
-      expect(entry.committer.name, 'Aleksey Kulikov');
-      expect(entry.committer.email, 'skinny.mind@gmail.com');
-      expect(entry.committer.time, 1630568461);
+      expect(reflog[0].committer.name, 'Aleksey Kulikov');
+      expect(reflog[0].committer.email, 'skinny.mind@gmail.com');
+      expect(reflog[0].committer.time, 1630568461);
     });
   });
 }
