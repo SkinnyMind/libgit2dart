@@ -18,17 +18,17 @@ void main() {
 
   late Config config;
 
+  setUp(() {
+    File('$tmpDir/$configFileName').writeAsStringSync(contents);
+    config = Config.open('$tmpDir/$configFileName');
+  });
+
+  tearDown(() {
+    config.free();
+    File('$tmpDir/$configFileName').deleteSync();
+  });
+
   group('Config', () {
-    setUp(() {
-      File('$tmpDir/$configFileName').writeAsStringSync(contents);
-      config = Config.open('$tmpDir/$configFileName');
-    });
-
-    tearDown(() {
-      config.free();
-      File('$tmpDir/$configFileName').deleteSync();
-    });
-
     test('opens file successfully with provided path', () {
       expect(config, isA<Config>());
     });

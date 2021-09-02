@@ -5,30 +5,29 @@ import 'package:libgit2dart/libgit2dart.dart';
 import 'helpers/util.dart';
 
 void main() {
-  group('RefLog', () {
-    late Repository repo;
-    late RefLog reflog;
-    final tmpDir = '${Directory.systemTemp.path}/reflog_testrepo/';
+  late Repository repo;
+  late RefLog reflog;
+  final tmpDir = '${Directory.systemTemp.path}/reflog_testrepo/';
 
-    setUp(() async {
-      if (await Directory(tmpDir).exists()) {
-        await Directory(tmpDir).delete(recursive: true);
-      }
-      await copyRepo(
-        from: Directory('test/assets/testrepo/'),
-        to: await Directory(tmpDir).create(),
-      );
-      repo = Repository.open(tmpDir);
-      reflog = RefLog(repo.head);
-    });
-
-    tearDown(() async {
-      repo.head.free();
-      reflog.free();
-      repo.free();
+  setUp(() async {
+    if (await Directory(tmpDir).exists()) {
       await Directory(tmpDir).delete(recursive: true);
-    });
+    }
+    await copyRepo(
+      from: Directory('test/assets/testrepo/'),
+      to: await Directory(tmpDir).create(),
+    );
+    repo = Repository.open(tmpDir);
+    reflog = RefLog(repo.head);
+  });
 
+  tearDown(() async {
+    repo.head.free();
+    reflog.free();
+    repo.free();
+    await Directory(tmpDir).delete(recursive: true);
+  });
+  group('RefLog', () {
     test('initializes successfully', () {
       expect(reflog, isA<RefLog>());
     });

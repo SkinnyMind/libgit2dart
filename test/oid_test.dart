@@ -8,26 +8,26 @@ void main() {
   const sha = '78b8bf123e3952c970ae5c1ce0a3ea1d1336f6e8';
   const biggerSha = '78b8bf123e3952c970ae5c1ce0a3ea1d1336f6e9';
   const lesserSha = '78b8bf123e3952c970ae5c1ce0a3ea1d1336f6e7';
+  late Repository repo;
+  final tmpDir = '${Directory.systemTemp.path}/oid_testrepo/';
+
+  setUp(() async {
+    if (await Directory(tmpDir).exists()) {
+      await Directory(tmpDir).delete(recursive: true);
+    }
+    await copyRepo(
+      from: Directory('test/assets/testrepo/'),
+      to: await Directory(tmpDir).create(),
+    );
+    repo = Repository.open(tmpDir);
+  });
+
+  tearDown(() async {
+    repo.free();
+    await Directory(tmpDir).delete(recursive: true);
+  });
 
   group('Oid', () {
-    late Repository repo;
-    final tmpDir = '${Directory.systemTemp.path}/oid_testrepo/';
-
-    setUp(() async {
-      if (await Directory(tmpDir).exists()) {
-        await Directory(tmpDir).delete(recursive: true);
-      }
-      await copyRepo(
-        from: Directory('test/assets/testrepo/'),
-        to: await Directory(tmpDir).create(),
-      );
-      repo = Repository.open(tmpDir);
-    });
-
-    tearDown(() async {
-      repo.free();
-      await Directory(tmpDir).delete(recursive: true);
-    });
     group('fromSHA()', () {
       test('initializes successfully', () {
         final oid = Oid.fromSHA(repo, sha);

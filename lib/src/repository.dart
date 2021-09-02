@@ -10,6 +10,7 @@ import 'oid.dart';
 import 'reference.dart';
 import 'revwalk.dart';
 import 'revparse.dart';
+import 'blob.dart';
 import 'enums.dart';
 import 'util.dart';
 
@@ -379,4 +380,21 @@ class Repository {
       two.pointer,
     ));
   }
+
+  /// Creates a new blob from a [content] string and writes it to ODB.
+  ///
+  /// Throws a [LibGit2Error] if error occured.
+  Oid createBlob(String content) => Blob.create(this, content);
+
+  /// Creates a new blob from the file in working directory of a repository and writes
+  /// it to the ODB. Provided [path] should be relative to the working directory.
+  ///
+  /// Throws a [LibGit2Error] if error occured.
+  Oid createBlobFromWorkdir(String relativePath) =>
+      Blob.createFromWorkdir(this, relativePath);
+
+  /// Creates a new blob from the file in filesystem and writes it to the ODB.
+  ///
+  /// Throws a [LibGit2Error] if error occured.
+  Oid createBlobFromDisk(String path) => Blob.createFromDisk(this, path);
 }

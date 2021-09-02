@@ -8,12 +8,6 @@ import 'util.dart';
 
 class Tree {
   /// Initializes a new instance of [Tree] class from provided
-  /// pointer to tree object in memory.
-  Tree(this._treePointer) {
-    libgit2.git_libgit2_init();
-  }
-
-  /// Initializes a new instance of [Tree] class from provided
   /// [Repository] and [Oid] objects.
   ///
   /// Should be freed with `free()` to release allocated memory.

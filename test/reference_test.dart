@@ -7,27 +7,26 @@ import 'helpers/util.dart';
 void main() {
   const lastCommit = '821ed6e80627b8769d170a293862f9fc60825226';
   const newCommit = 'c68ff54aabf660fcdd9a2838d401583fe31249e3';
+  late Repository repo;
+  final tmpDir = '${Directory.systemTemp.path}/ref_testrepo/';
+
+  setUp(() async {
+    if (await Directory(tmpDir).exists()) {
+      await Directory(tmpDir).delete(recursive: true);
+    }
+    await copyRepo(
+      from: Directory('test/assets/testrepo/'),
+      to: await Directory(tmpDir).create(),
+    );
+    repo = Repository.open(tmpDir);
+  });
+
+  tearDown(() async {
+    repo.free();
+    await Directory(tmpDir).delete(recursive: true);
+  });
 
   group('Reference', () {
-    late Repository repo;
-    final tmpDir = '${Directory.systemTemp.path}/ref_testrepo/';
-
-    setUp(() async {
-      if (await Directory(tmpDir).exists()) {
-        await Directory(tmpDir).delete(recursive: true);
-      }
-      await copyRepo(
-        from: Directory('test/assets/testrepo/'),
-        to: await Directory(tmpDir).create(),
-      );
-      repo = Repository.open(tmpDir);
-    });
-
-    tearDown(() async {
-      repo.free();
-      await Directory(tmpDir).delete(recursive: true);
-    });
-
     test('returns a list', () {
       expect(
         repo.references.list(),

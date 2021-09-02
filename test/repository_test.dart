@@ -269,6 +269,41 @@ void main() {
           expect(repo.isBranchUnborn, true);
         });
       });
+
+      group('createBlob', () {
+        const newBlobContent = 'New blob\n';
+
+        test('successfully creates new blob', () {
+          final oid = repo.createBlob(newBlobContent);
+          final newBlob = Blob.lookup(repo, oid);
+
+          expect(newBlob, isA<Blob>());
+
+          newBlob.free();
+        });
+
+        test(
+            'successfully creates new blob from file at provided relative path',
+            () {
+          final oid = repo.createBlobFromWorkdir('feature_file');
+          final newBlob = Blob.lookup(repo, oid);
+
+          expect(newBlob, isA<Blob>());
+
+          newBlob.free();
+        });
+
+        test('successfully creates new blob from file at provided path', () {
+          final outsideFile =
+              File('${Directory.current.absolute.path}/test/blob_test.dart');
+          final oid = repo.createBlobFromDisk(outsideFile.path);
+          final newBlob = Blob.lookup(repo, oid);
+
+          expect(newBlob, isA<Blob>());
+
+          newBlob.free();
+        });
+      });
     });
   });
 }
