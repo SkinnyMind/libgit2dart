@@ -138,9 +138,7 @@ class Index {
   void removeAll(List<String> path) => bindings.removeAll(_indexPointer, path);
 
   /// Releases memory allocated for index object.
-  void free() {
-    bindings.free(_indexPointer);
-  }
+  void free() => bindings.free(_indexPointer);
 }
 
 class IndexEntry {

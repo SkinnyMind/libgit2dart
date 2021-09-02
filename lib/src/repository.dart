@@ -212,9 +212,7 @@ class Repository {
   }
 
   /// Releases memory allocated for repository object.
-  void free() {
-    bindings.free(_repoPointer);
-  }
+  void free() => bindings.free(_repoPointer);
 
   /// Returns the configuration file for this repository.
   ///

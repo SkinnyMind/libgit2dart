@@ -238,7 +238,5 @@ class Reference {
   int get hashCode => _refPointer.address.hashCode;
 
   /// Releases memory allocated for reference object.
-  void free() {
-    bindings.free(_refPointer);
-  }
+  void free() => bindings.free(_refPointer);
 }

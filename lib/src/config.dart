@@ -140,7 +140,5 @@ class Config {
   }
 
   /// Releases memory allocated for config object.
-  void free() {
-    bindings.free(_configPointer);
-  }
+  void free() => bindings.free(_configPointer);
 }

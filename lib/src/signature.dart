@@ -66,7 +66,5 @@ class Signature {
   int get hashCode => _signaturePointer.address.hashCode;
 
   /// Releases memory allocated for signature object.
-  void free() {
-    bindings.free(_signaturePointer);
-  }
+  void free() => bindings.free(_signaturePointer);
 }

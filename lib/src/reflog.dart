@@ -43,9 +43,7 @@ class RefLog {
   }
 
   /// Releases memory allocated for reflog object.
-  void free() {
-    bindings.free(_reflogPointer);
-  }
+  void free() => bindings.free(_reflogPointer);
 }
 
 class RefLogEntry {

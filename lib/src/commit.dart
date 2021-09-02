@@ -100,7 +100,5 @@ class Commit {
   Oid get tree => Oid(bindings.tree(_commitPointer));
 
   /// Releases memory allocated for commit object.
-  void free() {
-    bindings.free(_commitPointer);
-  }
+  void free() => bindings.free(_commitPointer);
 }

@@ -81,7 +81,5 @@ class RevWalk {
   void simplifyFirstParent() => bindings.simplifyFirstParent(_revWalkPointer);
 
   /// Releases memory allocated for [RevWalk] object.
-  void free() {
-    bindings.free(_revWalkPointer);
-  }
+  void free() => bindings.free(_revWalkPointer);
 }

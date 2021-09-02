@@ -26,7 +26,5 @@ class Odb {
   }
 
   /// Releases memory allocated for odb object.
-  void free() {
-    bindings.free(_odbPointer);
-  }
+  void free() => bindings.free(_odbPointer);
 }
