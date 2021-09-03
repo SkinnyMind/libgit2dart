@@ -1,4 +1,6 @@
 import 'dart:ffi';
+import 'package:libgit2dart/libgit2dart.dart';
+
 import 'bindings/libgit2_bindings.dart';
 import 'bindings/repository.dart' as bindings;
 import 'bindings/merge.dart' as merge_bindings;
@@ -329,11 +331,9 @@ class Repository {
   /// Returns the list of commits starting from provided [oid].
   ///
   /// If [sorting] isn't provided default will be used (reverse chronological order, like in git).
-  List<Commit> log(Oid oid, [GitSort sorting = GitSort.none]) {
+  List<Commit> log(Oid oid, [List<GitSort>? sorting]) {
     final walker = RevWalk(this);
-    if (sorting != GitSort.none) {
-      walker.sorting(sorting);
-    }
+    walker.sorting(sorting ?? [GitSort.none]);
     walker.push(oid);
     final result = walker.walk();
     walker.free();

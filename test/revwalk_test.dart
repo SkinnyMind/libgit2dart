@@ -53,7 +53,7 @@ void main() {
       final start = Oid.fromSHA(repo, log.first);
 
       walker.push(start);
-      walker.sorting(GitSort.reverse);
+      walker.sorting([GitSort.reverse]);
       final commits = walker.walk();
 
       for (var i = 0; i < commits.length; i++) {
@@ -77,7 +77,7 @@ void main() {
         expect(timeSortedCommits[i].id.sha, log[i]);
       }
 
-      walker.sorting(GitSort.reverse);
+      walker.sorting([GitSort.time, GitSort.reverse]);
       final reverseSortedCommits = walker.walk();
       for (var i = 0; i < reverseSortedCommits.length; i++) {
         expect(reverseSortedCommits[i].id.sha, log.reversed.toList()[i]);
