@@ -10,5 +10,6 @@ export 'src/tree.dart';
 export 'src/signature.dart';
 export 'src/revwalk.dart';
 export 'src/blob.dart';
+export 'src/tag.dart';
 export 'src/error.dart';
 export 'src/enums.dart';

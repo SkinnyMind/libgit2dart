@@ -12,6 +12,8 @@ import 'revwalk.dart';
 import 'revparse.dart';
 import 'blob.dart';
 import 'enums.dart';
+import 'signature.dart';
+import 'tag.dart';
 import 'util.dart';
 
 class Repository {
@@ -397,4 +399,34 @@ class Repository {
   ///
   /// Throws a [LibGit2Error] if error occured.
   Oid createBlobFromDisk(String path) => Blob.createFromDisk(this, path);
+
+  /// Creates a new tag in the repository from provided Oid object.
+  ///
+  /// A new reference will also be created pointing to this tag object. If force is true
+  /// and a reference already exists with the given name, it'll be replaced.
+  ///
+  /// The message will not be cleaned up.
+  ///
+  /// The tag name will be checked for validity. You must avoid the characters
+  /// '~', '^', ':', '\', '?', '[', and '*', and the sequences ".." and "@{" which have
+  /// special meaning to revparse.
+  ///
+  /// Throws a [LibGit2Error] if error occured.
+  Oid createTag({
+    required String tagName,
+    required Oid target,
+    required GitObject targetType,
+    required Signature tagger,
+    required String message,
+    bool force = false,
+  }) {
+    return Tag.create(
+        repository: this,
+        tagName: tagName,
+        target: target,
+        targetType: targetType,
+        tagger: tagger,
+        message: message,
+        force: force);
+  }
 }

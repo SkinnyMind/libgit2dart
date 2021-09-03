@@ -30,7 +30,12 @@ void main() {
     test('returns a list', () {
       expect(
         repo.references.list(),
-        ['refs/heads/feature', 'refs/heads/master', 'refs/tags/v0.1'],
+        [
+          'refs/heads/feature',
+          'refs/heads/master',
+          'refs/tags/v0.1',
+          'refs/tags/v0.2',
+        ],
       );
     });
 

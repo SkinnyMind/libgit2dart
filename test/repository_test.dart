@@ -304,6 +304,41 @@ void main() {
           newBlob.free();
         });
       });
+
+      test('successfully creates tag with provided Oid', () {
+        final signature = Signature.create(
+          name: 'Author',
+          email: 'author@email.com',
+          time: 1234,
+        );
+        const tagName = 'tag';
+        final target =
+            Oid.fromSHA(repo, 'f17d0d48eae3aa08cecf29128a35e310c97b3521');
+        const message = 'init tag\n';
+
+        final oid = Tag.create(
+          repository: repo,
+          tagName: tagName,
+          target: target,
+          targetType: GitObject.commit,
+          tagger: signature,
+          message: message,
+        );
+
+        final newTag = Tag.lookup(repo, oid);
+        final tagger = newTag.tagger;
+        final newTagTarget = newTag.target;
+
+        expect(newTag.id.sha, '131a5eb6b7a880b5096c550ee7351aeae7b95a42');
+        expect(newTag.name, tagName);
+        expect(newTag.message, message);
+        expect(tagger, signature);
+        expect(newTagTarget.id, target);
+
+        newTag.free();
+        newTagTarget.free();
+        signature.free();
+      });
     });
   });
 }
