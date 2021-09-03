@@ -35,7 +35,7 @@ void main() {
     });
 
     test('returns correct values', () {
-      expect(tree.entries.length, 4);
+      expect(tree.length, 4);
       expect(tree.entries.first.id.sha, fileSHA);
       expect(tree.entries[0].name, '.gitignore');
       expect(tree.entries[0].filemode, GitFilemode.blob);

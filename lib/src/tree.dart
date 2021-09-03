@@ -52,6 +52,12 @@ class Tree {
     }
   }
 
+  /// Returns the Oid of a tree.
+  Oid get id => Oid(bindings.id(_treePointer));
+
+  /// Get the number of entries listed in a tree.
+  int get length => bindings.entryCount(_treePointer);
+
   /// Releases memory allocated for tree object.
   void free() => bindings.free(_treePointer);
 }
