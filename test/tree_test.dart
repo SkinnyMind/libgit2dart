@@ -67,5 +67,23 @@ void main() {
     test('throws when nothing found for provided path', () {
       expect(() => tree['invalid/path'], throwsA(isA<LibGit2Error>()));
     });
+
+    test('successfully creates tree', () {
+      final fileOid = repo.createBlob('blob content');
+      final builder = TreeBuilder(repo);
+
+      builder.add('filename', fileOid, GitFilemode.blob);
+      final newTree = Tree.lookup(repo, builder.write());
+
+      final entry = newTree['filename'];
+      expect(newTree.length, 1);
+      expect(entry.name, 'filename');
+      expect(entry.filemode, GitFilemode.blob);
+      expect(entry.id, fileOid);
+
+      builder.free();
+      entry.free();
+      newTree.free();
+    });
   });
 }

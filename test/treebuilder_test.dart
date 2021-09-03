@@ -2,7 +2,6 @@ import 'dart:io';
 
 import 'package:test/test.dart';
 import 'package:libgit2dart/libgit2dart.dart';
-import 'package:libgit2dart/src/treebuilder.dart';
 import 'helpers/util.dart';
 
 void main() {
