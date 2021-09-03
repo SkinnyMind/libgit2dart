@@ -4,7 +4,7 @@ import 'bindings/revwalk.dart' as bindings;
 import 'commit.dart';
 import 'oid.dart';
 import 'repository.dart';
-import 'enums.dart';
+import 'git_types.dart';
 
 class RevWalk {
   /// Initializes a new instance of the [RevWalk] class.
@@ -36,13 +36,8 @@ class RevWalk {
   /// Changing the sorting mode resets the walker.
   ///
   /// Throws a [LibGit2Error] if error occured.
-  void sorting(GitSort sorting) {
-    bindings.sorting(
-      _revWalkPointer,
-      // in libgit2 GIT_SORT_REVERSE flag is integer 4 so we are adding 1 to our enum index
-      sorting == GitSort.reverse ? sorting.index + 1 : sorting.index,
-    );
-  }
+  void sorting(GitSort sorting) =>
+      bindings.sorting(_revWalkPointer, sorting.value);
 
   /// Adds a new root for the traversal.
   ///

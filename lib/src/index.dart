@@ -4,7 +4,7 @@ import 'package:libgit2dart/src/tree.dart';
 import 'bindings/libgit2_bindings.dart';
 import 'bindings/index.dart' as bindings;
 import 'oid.dart';
-import 'enums.dart';
+import 'git_types.dart';
 import 'repository.dart';
 import 'util.dart';
 
@@ -166,9 +166,7 @@ class IndexEntry {
   GitFilemode get mode => intToGitFilemode(_indexEntryPointer.ref.mode);
 
   /// Sets the UNIX file attributes of a index entry.
-  set mode(GitFilemode mode) {
-    _indexEntryPointer.ref.mode = gitFilemodeToInt(mode);
-  }
+  set mode(GitFilemode mode) => _indexEntryPointer.ref.mode = mode.value;
 
   String _oidToHex(git_oid oid) {
     var hex = StringBuffer();

@@ -7,7 +7,7 @@ import 'commit.dart';
 import 'oid.dart';
 import 'repository.dart';
 import 'signature.dart';
-import 'enums.dart';
+import 'git_types.dart';
 
 class Tag {
   /// Initializes a new instance of [Tag] class from provided
@@ -39,16 +39,15 @@ class Tag {
     required Repository repository,
     required String tagName,
     required Oid target,
-    required GitObject targetType,
+    required GitObjectType targetType,
     required Signature tagger,
     required String message,
     bool force = false,
   }) {
-    // add 1 to GitObject enum index to match libgit2
     final object = object_bindings.lookup(
       repository.pointer,
       target.pointer,
-      targetType.index + 1,
+      targetType.value,
     );
     final result = bindings.create(
       repository.pointer,

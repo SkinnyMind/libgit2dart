@@ -11,7 +11,7 @@ import 'reference.dart';
 import 'revwalk.dart';
 import 'revparse.dart';
 import 'blob.dart';
-import 'enums.dart';
+import 'git_types.dart';
 import 'signature.dart';
 import 'tag.dart';
 import 'util.dart';
@@ -415,7 +415,7 @@ class Repository {
   Oid createTag({
     required String tagName,
     required Oid target,
-    required GitObject targetType,
+    required GitObjectType targetType,
     required Signature tagger,
     required String message,
     bool force = false,

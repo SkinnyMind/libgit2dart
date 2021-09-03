@@ -68,7 +68,7 @@ void main() {
         repository: repo,
         tagName: tagName,
         target: target,
-        targetType: GitObject.commit,
+        targetType: GitObjectType.commit,
         tagger: signature,
         message: message,
       );

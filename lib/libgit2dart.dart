@@ -13,4 +13,4 @@ export 'src/blob.dart';
 export 'src/tag.dart';
 export 'src/treebuilder.dart';
 export 'src/error.dart';
-export 'src/enums.dart';
+export 'src/git_types.dart';

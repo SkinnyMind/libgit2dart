@@ -3,7 +3,7 @@ import 'bindings/libgit2_bindings.dart';
 import 'bindings/reference.dart' as bindings;
 import 'oid.dart';
 import 'reflog.dart';
-import 'enums.dart';
+import 'git_types.dart';
 import 'repository.dart';
 import 'util.dart';
 

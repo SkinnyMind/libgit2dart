@@ -1,7 +1,7 @@
 import 'dart:io';
 import 'dart:ffi';
 import 'bindings/libgit2_bindings.dart';
-import 'enums.dart';
+import 'git_types.dart';
 
 DynamicLibrary loadLibrary() {
   if (Platform.isLinux || Platform.isAndroid || Platform.isFuchsia) {
@@ -30,7 +30,7 @@ bool isValidShaHex(String str) {
 GitFilemode intToGitFilemode(int i) {
   switch (i) {
     case 0:
-      return GitFilemode.undreadable;
+      return GitFilemode.unreadable;
     case 16384:
       return GitFilemode.tree;
     case 33188:
@@ -42,23 +42,6 @@ GitFilemode intToGitFilemode(int i) {
     case 57344:
       return GitFilemode.commit;
     default:
-      return GitFilemode.undreadable;
-  }
-}
-
-int gitFilemodeToInt(GitFilemode filemode) {
-  switch (filemode) {
-    case GitFilemode.undreadable:
-      return 0;
-    case GitFilemode.tree:
-      return 16384;
-    case GitFilemode.blob:
-      return 33188;
-    case GitFilemode.blobExecutable:
-      return 33261;
-    case GitFilemode.link:
-      return 40960;
-    case GitFilemode.commit:
-      return 57344;
+      return GitFilemode.unreadable;
   }
 }

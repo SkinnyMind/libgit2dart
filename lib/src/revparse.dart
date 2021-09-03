@@ -4,7 +4,7 @@ import 'bindings/revparse.dart' as bindings;
 import 'commit.dart';
 import 'reference.dart';
 import 'repository.dart';
-import 'enums.dart';
+import 'git_types.dart';
 
 class RevParse {
   /// Finds a single object and intermediate reference (if there is one) by a [spec] revision string.

@@ -5,6 +5,8 @@ import 'libgit2_bindings.dart';
 import '../util.dart';
 
 /// Get the type of a reference.
+///
+/// Either direct or symbolic.
 int referenceType(Pointer<git_reference> ref) =>
     libgit2.git_reference_type(ref);
 

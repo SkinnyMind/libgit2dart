@@ -3,7 +3,7 @@ import 'bindings/libgit2_bindings.dart';
 import 'bindings/tree.dart' as bindings;
 import 'repository.dart';
 import 'oid.dart';
-import 'enums.dart';
+import 'git_types.dart';
 import 'util.dart';
 
 class Tree {

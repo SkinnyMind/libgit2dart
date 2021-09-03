@@ -3,9 +3,8 @@ import 'bindings/libgit2_bindings.dart';
 import 'bindings/treebuilder.dart' as bindings;
 import 'repository.dart';
 import 'oid.dart';
-import 'enums.dart';
+import 'git_types.dart';
 import 'tree.dart';
-import 'util.dart';
 
 class TreeBuilder {
   /// Initializes a new instance of [TreeBuilder] class from provided
@@ -62,7 +61,7 @@ class TreeBuilder {
       _treeBuilderPointer,
       filename,
       id.pointer,
-      gitFilemodeToInt(filemode),
+      filemode.value,
     );
   }
 
