@@ -19,7 +19,7 @@ void main() {
       to: await Directory(tmpDir).create(),
     );
     repo = Repository.open(tmpDir);
-    tree = Tree.lookup(repo, Oid.fromSHA(repo, treeSHA));
+    tree = Tree.lookup(repo, treeSHA);
   });
 
   tearDown(() async {

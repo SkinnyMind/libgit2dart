@@ -8,13 +8,23 @@ import 'oid.dart';
 import 'repository.dart';
 import 'signature.dart';
 import 'git_types.dart';
+import 'util.dart';
 
 class Tag {
-  /// Initializes a new instance of [Tag] class from provided
-  /// [Repository] and [Oid] objects.
+  /// Initializes a new instance of [Tag] class from provided pointer to
+  /// tag object in memory.
   ///
   /// Should be freed with `free()` to release allocated memory.
-  Tag.lookup(Repository repo, Oid oid) {
+  Tag(this._tagPointer) {
+    libgit2.git_libgit2_init();
+  }
+
+  /// Initializes a new instance of [Tag] class from provided
+  /// [Repository] object and [sha] hex string.
+  ///
+  /// Should be freed with `free()` to release allocated memory.
+  Tag.lookup(Repository repo, String sha) {
+    final oid = Oid.fromSHA(repo, sha);
     _tagPointer = bindings.lookup(repo.pointer, oid.pointer);
   }
 
@@ -39,7 +49,7 @@ class Tag {
     required Repository repository,
     required String tagName,
     required Oid target,
-    required GitObjectType targetType,
+    required GitObject targetType,
     required Signature tagger,
     required String message,
     bool force = false,

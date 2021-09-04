@@ -21,7 +21,7 @@ void main() {
       to: await Directory(tmpDir).create(),
     );
     repo = Repository.open(tmpDir);
-    blob = Blob.lookup(repo, Oid.fromSHA(repo, blobSHA));
+    blob = Blob.lookup(repo, blobSHA);
   });
 
   tearDown(() async {
@@ -44,7 +44,7 @@ void main() {
 
     test('successfully creates new blob', () {
       final oid = Blob.create(repo, newBlobContent);
-      final newBlob = Blob.lookup(repo, oid);
+      final newBlob = Blob.lookup(repo, oid.sha);
 
       expect(newBlob.id.sha, '18fdaeef018e57a92bcad2d4a35b577f34089af6');
       expect(newBlob.isBinary, false);
@@ -57,7 +57,7 @@ void main() {
     test('successfully creates new blob from file at provided relative path',
         () {
       final oid = Blob.createFromWorkdir(repo, 'feature_file');
-      final newBlob = Blob.lookup(repo, oid);
+      final newBlob = Blob.lookup(repo, oid.sha);
 
       expect(newBlob.id.sha, blobSHA);
       expect(newBlob.isBinary, false);
@@ -89,7 +89,7 @@ void main() {
       final outsideFile =
           File('${Directory.current.absolute.path}/test/blob_test.dart');
       final oid = Blob.createFromDisk(repo, outsideFile.path);
-      final newBlob = Blob.lookup(repo, oid);
+      final newBlob = Blob.lookup(repo, oid.sha);
 
       expect(newBlob, isA<Blob>());
       expect(newBlob.isBinary, false);

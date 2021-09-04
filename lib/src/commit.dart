@@ -16,11 +16,12 @@ class Commit {
     libgit2.git_libgit2_init();
   }
 
-  /// Initializes a new instance of [Commit] class from provided [Repository]
-  /// and [Oid] objects.
+  /// Initializes a new instance of [Commit] class from provided [Repository] object
+  /// and [sha] hex string.
   ///
   /// Should be freed with `free()` to release allocated memory.
-  Commit.lookup(Repository repo, Oid oid) {
+  Commit.lookup(Repository repo, String sha) {
+    final oid = Oid.fromSHA(repo, sha);
     _commitPointer = bindings.lookup(repo.pointer, oid.pointer);
   }
 
@@ -40,8 +41,7 @@ class Commit {
     String? updateRef,
     String? messageEncoding,
   }) {
-    final treeOid = Oid.fromSHA(repo, treeSHA);
-    final tree = Tree.lookup(repo, treeOid);
+    final tree = Tree.lookup(repo, treeSHA);
 
     final result = Oid(bindings.create(
       repo.pointer,

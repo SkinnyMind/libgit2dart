@@ -3,13 +3,23 @@ import 'bindings/libgit2_bindings.dart';
 import 'bindings/blob.dart' as bindings;
 import 'oid.dart';
 import 'repository.dart';
+import 'util.dart';
 
 class Blob {
-  /// Initializes a new instance of [Blob] class from provided
-  /// [Repository] and [Oid] objects.
+  /// Initializes a new instance of [Blob] class from provided pointer to
+  /// blob object in memory.
   ///
   /// Should be freed with `free()` to release allocated memory.
-  Blob.lookup(Repository repo, Oid oid) {
+  Blob(this._blobPointer) {
+    libgit2.git_libgit2_init();
+  }
+
+  /// Initializes a new instance of [Blob] class from provided
+  /// [Repository] object and [sha] hex string.
+  ///
+  /// Should be freed with `free()` to release allocated memory.
+  Blob.lookup(Repository repo, String sha) {
+    final oid = Oid.fromSHA(repo, sha);
     _blobPointer = bindings.lookup(repo.pointer, oid.pointer);
   }
 

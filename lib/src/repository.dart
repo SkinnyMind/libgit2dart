@@ -4,6 +4,7 @@ import 'package:libgit2dart/libgit2dart.dart';
 import 'bindings/libgit2_bindings.dart';
 import 'bindings/repository.dart' as bindings;
 import 'bindings/merge.dart' as merge_bindings;
+import 'bindings/object.dart' as object_bindings;
 import 'commit.dart';
 import 'config.dart';
 import 'index.dart';
@@ -273,8 +274,8 @@ class Repository {
     late final Oid oid;
     late final bool isDirect;
 
-    if (target.runtimeType == Oid) {
-      oid = target as Oid;
+    if (target is Oid) {
+      oid = target;
       isDirect = true;
     } else if (isValidShaHex(target as String)) {
       oid = Oid.fromSHA(this, target);
@@ -314,18 +315,39 @@ class Repository {
   /// Throws a [LibGit2Error] if error occured.
   Odb get odb => Odb(bindings.odb(_repoPointer));
 
-  /// Looksup [Commit] for provided [sha] hex string.
+  /// Looksup git object (commit, tree, blob, tag) for provided [sha] hex string.
   ///
-  /// Throws [ArgumentError] if provided [sha] is not valid sha hex string.
-  Commit operator [](String sha) {
-    late final Oid oid;
+  /// Returned object should be explicitly downcasted to one of four of git object types.
+  ///
+  /// ```dart
+  /// final commit = repo['s0m3sh4'] as Commit;
+  /// final tree = repo['s0m3sh4'] as Tree;
+  /// final blob = repo['s0m3sh4'] as Blob;
+  /// final tag = repo['s0m3sh4'] as Tag;
+  /// ```
+  ///
+  /// Throws [ArgumentError] if provided [sha] is not pointing to commit, tree, blob or tag.
+  Object operator [](String sha) {
+    final oid = Oid.fromSHA(this, sha);
+    final object = object_bindings.lookup(
+      _repoPointer,
+      oid.pointer,
+      GitObject.any.value,
+    );
+    final type = object_bindings.type(object);
 
-    if (isValidShaHex(sha)) {
-      oid = Oid.fromSHA(this, sha);
+    if (type == GitObject.commit.value) {
+      return Commit(object.cast());
+    } else if (type == GitObject.tree.value) {
+      return Tree(object.cast());
+    } else if (type == GitObject.blob.value) {
+      return Blob(object.cast());
+    } else if (type == GitObject.tag.value) {
+      return Tag(object.cast());
     } else {
-      throw ArgumentError.value('$sha is not a valid sha hex string');
+      throw ArgumentError.value(
+          '$sha should be pointing to either commit, tree, blob or a tag');
     }
-    return Commit.lookup(this, oid);
   }
 
   /// Returns the list of commits starting from provided [oid].
@@ -415,7 +437,7 @@ class Repository {
   Oid createTag({
     required String tagName,
     required Oid target,
-    required GitObjectType targetType,
+    required GitObject targetType,
     required Signature tagger,
     required String message,
     bool force = false,

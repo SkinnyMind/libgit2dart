@@ -20,7 +20,7 @@ void main() {
       to: await Directory(tmpDir).create(),
     );
     repo = Repository.open(tmpDir);
-    tree = Tree.lookup(repo, Oid.fromSHA(repo, treeSHA));
+    tree = Tree.lookup(repo, treeSHA);
   });
 
   tearDown(() async {
@@ -73,7 +73,7 @@ void main() {
       final builder = TreeBuilder(repo);
 
       builder.add('filename', fileOid, GitFilemode.blob);
-      final newTree = Tree.lookup(repo, builder.write());
+      final newTree = Tree.lookup(repo, builder.write().sha);
 
       final entry = newTree['filename'];
       expect(newTree.length, 1);

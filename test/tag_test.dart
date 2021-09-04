@@ -19,7 +19,7 @@ void main() {
       to: await Directory(tmpDir).create(),
     );
     repo = Repository.open(tmpDir);
-    tag = Tag.lookup(repo, Oid.fromSHA(repo, tagSHA));
+    tag = Tag.lookup(repo, tagSHA);
   });
 
   tearDown(() async {
@@ -68,12 +68,12 @@ void main() {
         repository: repo,
         tagName: tagName,
         target: target,
-        targetType: GitObjectType.commit,
+        targetType: GitObject.commit,
         tagger: signature,
         message: message,
       );
 
-      final newTag = Tag.lookup(repo, oid);
+      final newTag = Tag.lookup(repo, oid.sha);
       final tagger = newTag.tagger;
       final newTagTarget = newTag.target;
 

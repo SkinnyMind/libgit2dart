@@ -7,11 +7,20 @@ import 'git_types.dart';
 import 'util.dart';
 
 class Tree {
-  /// Initializes a new instance of [Tree] class from provided
-  /// [Repository] and [Oid] objects.
+  /// Initializes a new instance of [Tree] class from provided pointer to
+  /// tree object in memory.
   ///
   /// Should be freed with `free()` to release allocated memory.
-  Tree.lookup(Repository repo, Oid oid) {
+  Tree(this._treePointer) {
+    libgit2.git_libgit2_init();
+  }
+
+  /// Initializes a new instance of [Tree] class from provided
+  /// [Repository] object and [sha] hex string.
+  ///
+  /// Should be freed with `free()` to release allocated memory.
+  Tree.lookup(Repository repo, String sha) {
+    final oid = Oid.fromSHA(repo, sha);
     _treePointer = bindings.lookup(repo.pointer, oid.pointer);
   }
 

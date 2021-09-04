@@ -93,21 +93,21 @@ class Index {
   /// Updates the contents of an existing index object in memory by reading from the
   /// specified tree.
   void readTree(Object target) {
-    late final Oid oid;
     late final Tree tree;
+
     if (target is Oid) {
       final repo = Repository(bindings.owner(_indexPointer));
-      tree = Tree.lookup(repo, target);
+      tree = Tree.lookup(repo, target.sha);
     } else if (target is Tree) {
       tree = target;
-    } else if (isValidShaHex(target as String)) {
+    } else if (target is String) {
       final repo = Repository(bindings.owner(_indexPointer));
-      oid = Oid.fromSHA(repo, target);
-      tree = Tree.lookup(repo, oid);
+      tree = Tree.lookup(repo, target);
     } else {
       throw ArgumentError.value(
           '$target should be either Oid object, SHA hex string or Tree object');
     }
+
     bindings.readTree(_indexPointer, tree.pointer);
     tree.free();
   }

@@ -275,7 +275,7 @@ void main() {
 
         test('successfully creates new blob', () {
           final oid = repo.createBlob(newBlobContent);
-          final newBlob = Blob.lookup(repo, oid);
+          final newBlob = repo[oid.sha] as Blob;
 
           expect(newBlob, isA<Blob>());
 
@@ -286,7 +286,7 @@ void main() {
             'successfully creates new blob from file at provided relative path',
             () {
           final oid = repo.createBlobFromWorkdir('feature_file');
-          final newBlob = Blob.lookup(repo, oid);
+          final newBlob = repo[oid.sha] as Blob;
 
           expect(newBlob, isA<Blob>());
 
@@ -297,7 +297,7 @@ void main() {
           final outsideFile =
               File('${Directory.current.absolute.path}/test/blob_test.dart');
           final oid = repo.createBlobFromDisk(outsideFile.path);
-          final newBlob = Blob.lookup(repo, oid);
+          final newBlob = repo[oid.sha] as Blob;
 
           expect(newBlob, isA<Blob>());
 
@@ -320,12 +320,12 @@ void main() {
           repository: repo,
           tagName: tagName,
           target: target,
-          targetType: GitObjectType.commit,
+          targetType: GitObject.commit,
           tagger: signature,
           message: message,
         );
 
-        final newTag = Tag.lookup(repo, oid);
+        final newTag = repo[oid.sha] as Tag;
         final tagger = newTag.tagger;
         final newTagTarget = newTag.target;
 

@@ -63,33 +63,33 @@ class GitSort {
 }
 
 /// Basic type (loose or packed) of any Git object.
-class GitObjectType {
-  const GitObjectType._(this._value);
+class GitObject {
+  const GitObject._(this._value);
   final int _value;
 
   /// Object can be any of the following.
-  static const any = GitObjectType._(-2);
+  static const any = GitObject._(-2);
 
   /// Object is invalid.
-  static const invalid = GitObjectType._(-1);
+  static const invalid = GitObject._(-1);
 
   /// A commit object.
-  static const commit = GitObjectType._(1);
+  static const commit = GitObject._(1);
 
   /// A tree (directory listing) object.
-  static const tree = GitObjectType._(2);
+  static const tree = GitObject._(2);
 
   /// A file revision object.
-  static const blob = GitObjectType._(3);
+  static const blob = GitObject._(3);
 
   /// An annotated tag object.
-  static const tag = GitObjectType._(4);
+  static const tag = GitObject._(4);
 
   /// A delta, base is given by an offset.
-  static const offsetDelta = GitObjectType._(6);
+  static const offsetDelta = GitObject._(6);
 
   /// A delta, base is given by object id.
-  static const refDelta = GitObjectType._(7);
+  static const refDelta = GitObject._(7);
 
   int get value => _value;
 }

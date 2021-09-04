@@ -45,13 +45,13 @@ void main() {
 
   group('Commit', () {
     test('successfully returns when 40 char sha hex is provided', () {
-      final commit = repo[mergeCommit];
+      final commit = repo[mergeCommit] as Commit;
       expect(commit, isA<Commit>());
       commit.free();
     });
 
     test('successfully returns when sha hex is short', () {
-      final commit = repo[mergeCommit.substring(0, 5)];
+      final commit = repo[mergeCommit.substring(0, 5)] as Commit;
       expect(commit, isA<Commit>());
       commit.free();
     });
@@ -66,7 +66,7 @@ void main() {
         parents: [mergeCommit],
       );
 
-      final commit = repo[oid.sha];
+      final commit = repo[oid.sha] as Commit;
 
       expect(commit.id.sha, oid.sha);
       expect(commit.message, message);
@@ -91,7 +91,7 @@ void main() {
         parents: [],
       );
 
-      final commit = repo[oid.sha];
+      final commit = repo[oid.sha] as Commit;
 
       expect(commit.id.sha, oid.sha);
       expect(commit.message, message);
@@ -115,7 +115,7 @@ void main() {
         parents: [mergeCommit, 'fc38877b2552ab554752d9a77e1f48f738cca79b'],
       );
 
-      final commit = repo[oid.sha];
+      final commit = repo[oid.sha] as Commit;
 
       expect(commit.id.sha, oid.sha);
       expect(commit.message, message);
@@ -141,7 +141,7 @@ void main() {
         parents: [mergeCommit],
       );
 
-      final commit = repo[oid.sha];
+      final commit = repo[oid.sha] as Commit;
 
       expect(commit.id.sha, oid.sha);
       expect(commit.message, message);
