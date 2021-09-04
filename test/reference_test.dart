@@ -514,5 +514,17 @@ void main() {
       tree.free();
       ref.free();
     });
+
+    test('successfully compresses references', () {
+      final packedRefsFile = File('$tmpDir.git/packed-refs');
+      expect(packedRefsFile.existsSync(), false);
+      final oldRefs = repo.references.list();
+
+      repo.references.compress();
+
+      expect(packedRefsFile.existsSync(), true);
+      final newRefs = repo.references.list();
+      expect(newRefs, oldRefs);
+    });
   });
 }

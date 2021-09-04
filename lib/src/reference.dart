@@ -4,6 +4,8 @@ import 'package:libgit2dart/libgit2dart.dart';
 import 'bindings/libgit2_bindings.dart';
 import 'bindings/reference.dart' as bindings;
 import 'bindings/object.dart' as object_bindings;
+import 'bindings/refdb.dart' as refdb_bindings;
+import 'bindings/repository.dart' as repository_bindings;
 import 'blob.dart';
 import 'commit.dart';
 import 'oid.dart';
@@ -39,6 +41,17 @@ class References {
   Reference operator [](String name) {
     final refPointer = bindings.lookup(_repoPointer, name);
     return Reference(_repoPointer, refPointer);
+  }
+
+  /// Suggests that the given refdb compress or optimize its references.
+  /// This mechanism is implementation specific. For on-disk reference databases,
+  /// for example, this may pack all loose references.
+  ///
+  /// Throws a [LibGit2Error] if error occured.
+  void compress() {
+    final refdb = repository_bindings.refdb(_repoPointer);
+    refdb_bindings.compress(refdb);
+    refdb_bindings.free(refdb);
   }
 }
 
