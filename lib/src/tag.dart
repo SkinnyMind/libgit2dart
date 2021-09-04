@@ -81,6 +81,13 @@ class Tag {
   ///
   /// Returned object should be explicitly downcasted to one of four of git object types.
   ///
+  /// ```dart
+  /// final commit = tag.target as Commit;
+  /// final tree = tag.target as Tree;
+  /// final blob = tag.target as Blob;
+  /// final tag = tag.target as Tag;
+  /// ```
+  ///
   /// Throws a [LibGit2Error] if error occured.
   Object get target {
     final type = bindings.targetType(_tagPointer);

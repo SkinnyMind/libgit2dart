@@ -1,10 +1,17 @@
 import 'dart:ffi';
+import 'package:libgit2dart/libgit2dart.dart';
+
 import 'bindings/libgit2_bindings.dart';
 import 'bindings/reference.dart' as bindings;
+import 'bindings/object.dart' as object_bindings;
+import 'blob.dart';
+import 'commit.dart';
 import 'oid.dart';
 import 'reflog.dart';
 import 'git_types.dart';
 import 'repository.dart';
+import 'tag.dart';
+import 'tree.dart';
 import 'util.dart';
 
 class References {
@@ -166,6 +173,35 @@ class Reference {
       _refPointer = bindings.setTarget(_refPointer, oid.pointer, logMessage);
     } else {
       _refPointer = bindings.setTargetSymbolic(_refPointer, target, logMessage);
+    }
+  }
+
+  /// Recursively peel reference until object of the specified [type] is found.
+  ///
+  /// The retrieved peeled object is owned by the repository and should be closed to release memory.
+  ///
+  /// If no [type] is provided, then the object will be peeled until a non-tag object is met.
+  ///
+  /// Returned object should be explicitly downcasted to one of four of git object types.
+  ///
+  /// ```dart
+  /// final commit = ref.peel(GitObject.commit) as Commit;
+  /// final tree = ref.peel(GitObject.tree) as Tree;
+  /// ```
+  ///
+  /// Throws a [LibGit2Error] if error occured.
+  Object peel([GitObject type = GitObject.any]) {
+    final object = bindings.peel(_refPointer, type.value);
+    final objectType = object_bindings.type(object);
+
+    if (objectType == GitObject.commit.value) {
+      return Commit(object.cast());
+    } else if (objectType == GitObject.tree.value) {
+      return Tree(object.cast());
+    } else if (objectType == GitObject.blob.value) {
+      return Blob(object.cast());
+    } else {
+      return Tag(object.cast());
     }
   }
 

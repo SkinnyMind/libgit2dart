@@ -395,6 +395,25 @@ bool compare(Pointer<git_reference> ref1, Pointer<git_reference> ref2) {
   return result == 0 ? true : false;
 }
 
+/// Recursively peel reference until object of the specified type is found.
+///
+/// The retrieved peeled object is owned by the repository and should be closed to release memory.
+///
+/// If you pass GIT_OBJECT_ANY as the target type, then the object will be peeled until a
+/// non-tag object is met.
+///
+/// Throws a [LibGit2Error] if error occured.
+Pointer<git_object> peel(Pointer<git_reference> ref, int type) {
+  final out = calloc<Pointer<git_object>>();
+  final error = libgit2.git_reference_peel(out, ref, type);
+
+  if (error < 0) {
+    throw LibGit2Error(libgit2.git_error_last());
+  } else {
+    return out.value;
+  }
+}
+
 /// Ensure the reference name is well-formed.
 ///
 /// Valid reference names must follow one of two patterns:

@@ -1,5 +1,6 @@
 import 'dart:io';
 
+import 'package:libgit2dart/src/git_types.dart';
 import 'package:test/test.dart';
 import 'package:libgit2dart/libgit2dart.dart';
 import 'helpers/util.dart';
@@ -484,6 +485,34 @@ void main() {
       ref1.free();
       ref2.free();
       ref3.free();
+    });
+
+    test('successfully peels to non-tag object when no type is provided', () {
+      final ref = repo.references['refs/heads/master'];
+      final commit = repo[ref.target.sha] as Commit;
+      final peeled = ref.peel() as Commit;
+
+      expect(peeled.id, commit.id);
+
+      peeled.free();
+      commit.free();
+      ref.free();
+    });
+
+    test('successfully peels to object of provided type', () {
+      final ref = repo.references['refs/heads/master'];
+      final commit = repo[ref.target.sha] as Commit;
+      final tree = repo[commit.tree.sha] as Tree;
+      final peeledCommit = ref.peel(GitObject.commit) as Commit;
+      final peeledTree = ref.peel(GitObject.tree) as Tree;
+
+      expect(peeledCommit.id, commit.id);
+      expect(peeledTree.id, tree.id);
+
+      peeledCommit.free();
+      commit.free();
+      tree.free();
+      ref.free();
     });
   });
 }
