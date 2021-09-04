@@ -188,8 +188,7 @@ void main() {
           '6cbc22e509d72758ab4c8d9f287ea846b90c448b',
           'f17d0d48eae3aa08cecf29128a35e310c97b3521',
         ];
-        final start = Oid.fromSHA(repo, lastCommit);
-        final commits = repo.log(start);
+        final commits = repo.log(lastCommit);
 
         for (var i = 0; i < commits.length; i++) {
           expect(commits[i].id.sha, log[i]);
@@ -305,15 +304,14 @@ void main() {
         });
       });
 
-      test('successfully creates tag with provided Oid', () {
+      test('successfully creates tag with provided sha', () {
         final signature = Signature.create(
           name: 'Author',
           email: 'author@email.com',
           time: 1234,
         );
         const tagName = 'tag';
-        final target =
-            Oid.fromSHA(repo, 'f17d0d48eae3aa08cecf29128a35e310c97b3521');
+        const target = 'f17d0d48eae3aa08cecf29128a35e310c97b3521';
         const message = 'init tag\n';
 
         final oid = Tag.create(
@@ -333,7 +331,7 @@ void main() {
         expect(newTag.name, tagName);
         expect(newTag.message, message);
         expect(tagger, signature);
-        expect(newTagTarget.id, target);
+        expect(newTagTarget.id.sha, target);
 
         newTag.free();
         newTagTarget.free();

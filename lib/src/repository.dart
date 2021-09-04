@@ -350,14 +350,17 @@ class Repository {
     }
   }
 
-  /// Returns the list of commits starting from provided [oid].
+  /// Returns the list of commits starting from provided [sha] hex string.
   ///
   /// If [sorting] isn't provided default will be used (reverse chronological order, like in git).
-  List<Commit> log(Oid oid, [List<GitSort>? sorting]) {
+  List<Commit> log(String sha, [List<GitSort>? sorting]) {
+    final oid = Oid.fromSHA(this, sha);
     final walker = RevWalk(this);
+
     walker.sorting(sorting ?? [GitSort.none]);
     walker.push(oid);
     final result = walker.walk();
+
     walker.free();
 
     return result;
@@ -397,11 +400,13 @@ class Repository {
   /// Finds a merge base between two commits.
   ///
   /// Throws a [LibGit2Error] if error occured.
-  Oid mergeBase(Oid one, Oid two) {
+  Oid mergeBase(String one, String two) {
+    final oidOne = Oid.fromSHA(this, one);
+    final oidTwo = Oid.fromSHA(this, two);
     return Oid(merge_bindings.mergeBase(
       _repoPointer,
-      one.pointer,
-      two.pointer,
+      oidOne.pointer,
+      oidTwo.pointer,
     ));
   }
 
@@ -436,7 +441,7 @@ class Repository {
   /// Throws a [LibGit2Error] if error occured.
   Oid createTag({
     required String tagName,
-    required Oid target,
+    required String target,
     required GitObject targetType,
     required Signature tagger,
     required String message,

@@ -29,7 +29,7 @@ void main() {
   });
 
   group('Tag', () {
-    test('successfully initializes tag from provided Oid', () {
+    test('successfully initializes tag from provided sha', () {
       expect(tag, isA<Tag>());
     });
 
@@ -60,8 +60,7 @@ void main() {
         time: 1234,
       );
       const tagName = 'tag';
-      final target =
-          Oid.fromSHA(repo, 'f17d0d48eae3aa08cecf29128a35e310c97b3521');
+      final target = 'f17d0d48eae3aa08cecf29128a35e310c97b3521';
       const message = 'init tag\n';
 
       final oid = Tag.create(
@@ -81,7 +80,7 @@ void main() {
       expect(newTag.name, tagName);
       expect(newTag.message, message);
       expect(tagger, signature);
-      expect(newTagTarget.id, target);
+      expect(newTagTarget.id.sha, target);
 
       newTag.free();
       newTagTarget.free();

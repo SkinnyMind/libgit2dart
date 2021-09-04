@@ -48,15 +48,16 @@ class Tag {
   static Oid create({
     required Repository repository,
     required String tagName,
-    required Oid target,
+    required String target,
     required GitObject targetType,
     required Signature tagger,
     required String message,
     bool force = false,
   }) {
+    final targetOid = Oid.fromSHA(repository, target);
     final object = object_bindings.lookup(
       repository.pointer,
-      target.pointer,
+      targetOid.pointer,
       targetType.value,
     );
     final result = bindings.create(
