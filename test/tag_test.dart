@@ -40,7 +40,7 @@ void main() {
         time: 1630599723,
         offset: 180,
       );
-      final target = tag.target;
+      final target = tag.target as Commit;
       final tagger = tag.tagger;
 
       expect(tag.id.sha, tagSHA);
@@ -74,7 +74,7 @@ void main() {
 
       final newTag = Tag.lookup(repo, oid.sha);
       final tagger = newTag.tagger;
-      final newTagTarget = newTag.target;
+      final newTagTarget = newTag.target as Commit;
 
       expect(newTag.id.sha, '131a5eb6b7a880b5096c550ee7351aeae7b95a42');
       expect(newTag.name, tagName);

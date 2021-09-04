@@ -1,5 +1,7 @@
 import 'dart:ffi';
 
+import 'package:libgit2dart/libgit2dart.dart';
+
 import 'bindings/libgit2_bindings.dart';
 import 'bindings/tag.dart' as bindings;
 import 'bindings/object.dart' as object_bindings;
@@ -73,12 +75,27 @@ class Tag {
     return Oid(result);
   }
 
-  /// Get the tagged object of a tag.
+  /// Get the tagged object (commit, tree, blob, tag) of a tag.
   ///
   /// This method performs a repository lookup for the given object and returns it.
   ///
+  /// Returned object should be explicitly downcasted to one of four of git object types.
+  ///
   /// Throws a [LibGit2Error] if error occured.
-  Commit get target => Commit(bindings.target(_tagPointer).cast());
+  Object get target {
+    final type = bindings.targetType(_tagPointer);
+    final object = bindings.target(_tagPointer);
+
+    if (type == GitObject.commit.value) {
+      return Commit(object.cast());
+    } else if (type == GitObject.tree.value) {
+      return Tree(object.cast());
+    } else if (type == GitObject.blob.value) {
+      return Blob(object.cast());
+    } else {
+      return Tag(object.cast());
+    }
+  }
 
   /// Get the id of a tag.
   Oid get id => Oid(bindings.id(_tagPointer));
