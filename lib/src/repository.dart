@@ -456,4 +456,7 @@ class Repository {
         message: message,
         force: force);
   }
+
+  /// Returns a [Branches] object.
+  Branches get branches => Branches(this);
 }

@@ -110,3 +110,17 @@ class GitRevParse {
 
   int get value => _value;
 }
+
+/// Basic type of any Git branch.
+class GitBranch {
+  const GitBranch._(this._value);
+  final int _value;
+
+  static const local = GitBranch._(1);
+
+  static const remote = GitBranch._(2);
+
+  static const all = GitBranch._(3);
+
+  int get value => _value;
+}

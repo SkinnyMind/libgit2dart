@@ -25,8 +25,10 @@ class Commit {
     _commitPointer = bindings.lookup(repo.pointer, oid.pointer);
   }
 
-  /// Pointer to memory address for allocated commit object.
   late final Pointer<git_commit> _commitPointer;
+
+  /// Pointer to memory address for allocated commit object.
+  Pointer<git_commit> get pointer => _commitPointer;
 
   /// Creates new commit in the repository.
   ///
