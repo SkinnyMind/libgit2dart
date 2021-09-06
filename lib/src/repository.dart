@@ -1,10 +1,9 @@
 import 'dart:ffi';
-import 'package:libgit2dart/libgit2dart.dart';
-
 import 'bindings/libgit2_bindings.dart';
 import 'bindings/repository.dart' as bindings;
 import 'bindings/merge.dart' as merge_bindings;
 import 'bindings/object.dart' as object_bindings;
+import 'branch.dart';
 import 'commit.dart';
 import 'config.dart';
 import 'index.dart';
@@ -17,6 +16,7 @@ import 'blob.dart';
 import 'git_types.dart';
 import 'signature.dart';
 import 'tag.dart';
+import 'tree.dart';
 import 'util.dart';
 
 class Repository {

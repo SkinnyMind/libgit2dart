@@ -13,5 +13,6 @@ export 'src/blob.dart';
 export 'src/tag.dart';
 export 'src/treebuilder.dart';
 export 'src/branch.dart';
+export 'src/worktree.dart';
 export 'src/error.dart';
 export 'src/git_types.dart';
