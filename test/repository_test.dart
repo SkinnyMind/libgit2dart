@@ -337,6 +337,31 @@ void main() {
         newTagTarget.free();
         signature.free();
       });
+
+      test('returns status of a repository', () {
+        File('${tmpDir}new_file.txt').createSync();
+        final index = repo.index;
+        index.remove('file');
+        index.add('new_file.txt');
+        expect(repo.status, {'file': 132, 'new_file.txt': 1});
+
+        index.free();
+      });
+
+      test('returns status of a single file for provided path', () {
+        final index = repo.index;
+        index.remove('file');
+        expect(repo.statusFile('file'), 132);
+
+        index.free();
+      });
+
+      test('throws when checking status of a single file for invalid path', () {
+        expect(
+          () => repo.statusFile('not-there'),
+          throwsA(isA<LibGit2Error>()),
+        );
+      });
     });
   });
 }

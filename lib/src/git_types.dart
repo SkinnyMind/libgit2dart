@@ -23,15 +23,10 @@ class GitFilemode {
   final int _value;
 
   static const unreadable = GitFilemode._(0);
-
   static const tree = GitFilemode._(16384);
-
   static const blob = GitFilemode._(33188);
-
   static const blobExecutable = GitFilemode._(33261);
-
   static const link = GitFilemode._(40960);
-
   static const commit = GitFilemode._(57344);
 
   int get value => _value;
@@ -117,10 +112,38 @@ class GitBranch {
   final int _value;
 
   static const local = GitBranch._(1);
-
   static const remote = GitBranch._(2);
-
   static const all = GitBranch._(3);
+
+  int get value => _value;
+}
+
+/// Status flags for a single file.
+///
+/// A combination of these values will be returned to indicate the status of
+/// a file.  Status compares the working directory, the index, and the
+/// current HEAD of the repository.  The `GitStatus.index` set of flags
+/// represents the status of file in the index relative to the HEAD, and the
+/// `GitStatus.wt` set of flags represent the status of the file in the
+/// working directory relative to the index.
+class GitStatus {
+  const GitStatus._(this._value);
+  final int _value;
+
+  static const current = GitStatus._(0);
+  static const indexNew = GitStatus._(1);
+  static const indexModified = GitStatus._(2);
+  static const indexDeleted = GitStatus._(4);
+  static const indexRenamed = GitStatus._(8);
+  static const indexTypeChange = GitStatus._(16);
+  static const wtNew = GitStatus._(128);
+  static const wtModified = GitStatus._(256);
+  static const wtDeleted = GitStatus._(512);
+  static const wtTypeChange = GitStatus._(1024);
+  static const wtRenamed = GitStatus._(2048);
+  static const wtUnreadable = GitStatus._(4096);
+  static const ignored = GitStatus._(16384);
+  static const conflicted = GitStatus._(32768);
 
   int get value => _value;
 }

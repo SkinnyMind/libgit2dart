@@ -1,8 +1,10 @@
 import 'dart:ffi';
+import 'package:ffi/ffi.dart';
 import 'bindings/libgit2_bindings.dart';
 import 'bindings/repository.dart' as bindings;
 import 'bindings/merge.dart' as merge_bindings;
 import 'bindings/object.dart' as object_bindings;
+import 'bindings/status.dart' as status_bindings;
 import 'branch.dart';
 import 'commit.dart';
 import 'config.dart';
@@ -459,4 +461,37 @@ class Repository {
 
   /// Returns a [Branches] object.
   Branches get branches => Branches(this);
+
+  /// Checks status of the repository and returns map of file paths and their statuses.
+  ///
+  /// Returns empty map if there are no changes in statuses.
+  Map<String, int> get status {
+    var result = <String, int>{};
+    var list = status_bindings.listNew(_repoPointer);
+    var count = status_bindings.listEntryCount(list);
+
+    for (var i = 0; i < count; i++) {
+      final entry = status_bindings.getByIndex(list, i);
+      if (entry.ref.head_to_index != nullptr) {
+        final path = entry.ref.head_to_index.ref.old_file.path
+            .cast<Utf8>()
+            .toDartString();
+        result[path] = entry.ref.status;
+      }
+    }
+
+    status_bindings.listFree(list);
+
+    return result;
+  }
+
+  /// Returns file status for a single file.
+  ///
+  /// This does not do any sort of rename detection. Renames require a set of targets and because
+  /// of the path filtering, there is not enough information to check renames correctly. To check
+  /// file status with rename detection, there is no choice but to do a full [status] and scan
+  /// through looking for the path that you are interested in.
+  ///
+  /// Throws a [LibGit2Error] if error occured.
+  int statusFile(String path) => status_bindings.file(_repoPointer, path);
 }
