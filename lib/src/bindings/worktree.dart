@@ -15,14 +15,23 @@ Pointer<git_worktree> create(
   Pointer<git_repository> repo,
   String name,
   String path,
+  Pointer<git_reference>? ref,
 ) {
   final out = calloc<Pointer<git_worktree>>();
   final nameC = name.toNativeUtf8().cast<Int8>();
   final pathC = path.toNativeUtf8().cast<Int8>();
-  final error = libgit2.git_worktree_add(out, repo, nameC, pathC, nullptr);
+  final opts =
+      calloc<git_worktree_add_options>(sizeOf<git_worktree_add_options>());
+  opts.ref.version = 1;
+  opts.ref.lock = 0;
+  if (ref != null) {
+    opts.ref.ref = ref;
+  }
+  final error = libgit2.git_worktree_add(out, repo, nameC, pathC, opts);
 
   calloc.free(nameC);
   calloc.free(pathC);
+  calloc.free(opts);
 
   if (error < 0) {
     throw LibGit2Error(libgit2.git_error_last());

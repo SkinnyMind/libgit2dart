@@ -52,6 +52,40 @@ void main() {
       worktree.free();
     });
 
+    test(
+        'successfully creates worktree at provided path from provided reference',
+        () {
+      const worktreeName = 'worktree';
+      final head = repo.revParseSingle('HEAD');
+      final worktreeRef = repo.branches.create(name: 'v1', target: head);
+      final worktreeBranch = repo.branches['v1'];
+      expect(Worktree.list(repo), []);
+
+      final worktree = Worktree.create(
+        repo: repo,
+        name: worktreeName,
+        path: worktreeDir,
+        ref: worktreeRef,
+      );
+
+      expect(Worktree.list(repo), [worktreeName]);
+      expect(repo.branches.list(), contains('v1'));
+      expect(repo.branches.list(), isNot(contains(worktreeName)));
+      expect(worktreeBranch.isCheckedOut, true);
+
+      Directory(worktreeDir).deleteSync(recursive: true);
+      worktree.prune();
+
+      expect(Worktree.list(repo), []);
+      expect(worktreeBranch.isCheckedOut, false);
+      expect(repo.branches.list(), contains('v1'));
+
+      worktreeBranch.free();
+      worktreeRef.free();
+      head.free();
+      worktree.free();
+    });
+
     test('successfully prunes worktree', () {
       const worktreeName = 'worktree';
       expect(Worktree.list(repo), []);

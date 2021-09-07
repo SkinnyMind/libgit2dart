@@ -115,10 +115,18 @@ class Branch {
     return Branch(bindings.rename(_branchPointer, newName, force));
   }
 
-  /// Determines if HEAD points to the given branch.
+  /// Checks if HEAD points to the given branch.
   ///
   /// Throws a [LibGit2Error] if error occured.
   bool get isHead => bindings.isHead(_branchPointer);
+
+  /// Checks if any HEAD points to the current branch.
+  ///
+  /// This will iterate over all known linked repositories (usually in the form of worktrees)
+  /// and report whether any HEAD is pointing at the current branch.
+  ///
+  /// Throws a [LibGit2Error] if error occured.
+  bool get isCheckedOut => bindings.isCheckedOut(_branchPointer);
 
   /// Returns the branch name.
   ///

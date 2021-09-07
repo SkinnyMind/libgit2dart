@@ -1,11 +1,16 @@
 import 'dart:ffi';
 import 'bindings/libgit2_bindings.dart';
 import 'bindings/worktree.dart' as bindings;
+import 'reference.dart';
 import 'repository.dart';
 
 class Worktree {
   /// Initializes a new instance of [Worktree] class by creating new worktree
-  /// with provided [Repository] object worktree [name] and [path].
+  /// with provided [Repository] object worktree [name], [path] and optional [ref]
+  /// [Reference] object.
+  ///
+  /// If [ref] is provided, no new branch will be created but specified [ref] will
+  /// be used instead.
   ///
   /// Should be freed with `free()` to release allocated memory.
   ///
@@ -14,8 +19,9 @@ class Worktree {
     required Repository repo,
     required String name,
     required String path,
+    Reference? ref,
   }) {
-    _worktreePointer = bindings.create(repo.pointer, name, path);
+    _worktreePointer = bindings.create(repo.pointer, name, path, ref?.pointer);
   }
 
   /// Initializes a new instance of [Worktree] class by looking up existing worktree

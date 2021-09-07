@@ -134,11 +134,13 @@ class Reference {
     );
   }
 
-  /// Pointer to memory address for allocated reference object.
   late Pointer<git_reference> _refPointer;
 
   /// Pointer to memory address for allocated repository object.
   late final Pointer<git_repository> _repoPointer;
+
+  /// Pointer to memory address for allocated reference object.
+  Pointer<git_reference> get pointer => _refPointer;
 
   /// Returns the type of the reference.
   ReferenceType get type {

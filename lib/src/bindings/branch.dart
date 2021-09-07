@@ -158,6 +158,22 @@ bool isHead(Pointer<git_reference> branch) {
   }
 }
 
+/// Determine if any HEAD points to the current branch.
+///
+/// This will iterate over all known linked repositories (usually in the form of worktrees)
+/// and report whether any HEAD is pointing at the current branch.
+///
+/// Throws a [LibGit2Error] if error occured.
+bool isCheckedOut(Pointer<git_reference> branch) {
+  final result = libgit2.git_branch_is_checked_out(branch);
+
+  if (result < 0) {
+    throw LibGit2Error(libgit2.git_error_last());
+  } else {
+    return result == 1 ? true : false;
+  }
+}
+
 /// Get the branch name.
 ///
 /// Given a reference object, this will check that it really is a branch
