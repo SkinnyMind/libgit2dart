@@ -5,6 +5,7 @@ import 'bindings/repository.dart' as bindings;
 import 'bindings/merge.dart' as merge_bindings;
 import 'bindings/object.dart' as object_bindings;
 import 'bindings/status.dart' as status_bindings;
+import 'bindings/commit.dart' as commit_bindings;
 import 'branch.dart';
 import 'commit.dart';
 import 'config.dart';
@@ -399,19 +400,6 @@ class Repository {
   /// Throws a [LibGit2Error] if error occured.
   RevSpec revParse(String spec) => RevParse.range(this, spec);
 
-  /// Finds a merge base between two commits.
-  ///
-  /// Throws a [LibGit2Error] if error occured.
-  Oid mergeBase(String one, String two) {
-    final oidOne = Oid.fromSHA(this, one);
-    final oidTwo = Oid.fromSHA(this, two);
-    return Oid(merge_bindings.mergeBase(
-      _repoPointer,
-      oidOne.pointer,
-      oidTwo.pointer,
-    ));
-  }
-
   /// Creates a new blob from a [content] string and writes it to ODB.
   ///
   /// Throws a [LibGit2Error] if error occured.
@@ -494,4 +482,39 @@ class Repository {
   ///
   /// Throws a [LibGit2Error] if error occured.
   int statusFile(String path) => status_bindings.file(_repoPointer, path);
+
+  /// Finds a merge base between two commits.
+  ///
+  /// Throws a [LibGit2Error] if error occured.
+  Oid mergeBase(String one, String two) {
+    final oidOne = Oid.fromSHA(this, one);
+    final oidTwo = Oid.fromSHA(this, two);
+    return Oid(merge_bindings.mergeBase(
+      _repoPointer,
+      oidOne.pointer,
+      oidTwo.pointer,
+    ));
+  }
+
+  /// Analyzes the given branch(es) and determines the opportunities for merging them
+  /// into a reference (default is 'HEAD').
+  ///
+  /// Returns list with analysis result and preference for fast forward merge values
+  /// respectively.
+  ///
+  /// Throws a [LibGit2Error] if error occured.
+  List<int> mergeAnalysis(Oid theirHead, [String ourRef = 'HEAD']) {
+    final ref = references[ourRef];
+    final head = commit_bindings.annotatedLookup(
+      _repoPointer,
+      theirHead.pointer,
+    );
+
+    final result = merge_bindings.analysis(_repoPointer, ref.pointer, head, 1);
+
+    commit_bindings.annotatedFree(head.value);
+    ref.free();
+
+    return result;
+  }
 }

@@ -147,3 +147,51 @@ class GitStatus {
 
   int get value => _value;
 }
+
+/// The results of `mergeAnalysis` indicate the merge opportunities.
+class GitMergeAnalysis {
+  const GitMergeAnalysis._(this._value);
+  final int _value;
+
+  /// No merge is possible (unused).
+  static const none = GitMergeAnalysis._(0);
+
+  /// A "normal" merge; both HEAD and the given merge input have diverged
+  /// from their common ancestor.  The divergent commits must be merged.
+  static const normal = GitMergeAnalysis._(1);
+
+  /// All given merge inputs are reachable from HEAD, meaning the
+  /// repository is up-to-date and no merge needs to be performed.
+  static const upToDate = GitMergeAnalysis._(2);
+
+  /// The given merge input is a fast-forward from HEAD and no merge
+  /// needs to be performed.  Instead, the client can check out the
+  /// given merge input.
+  static const fastForward = GitMergeAnalysis._(4);
+
+  /// The HEAD of the current repository is "unborn" and does not point to
+  /// a valid commit.  No merge can be performed, but the caller may wish
+  /// to simply set HEAD to the target commit(s).
+  static const unborn = GitMergeAnalysis._(8);
+
+  int get value => _value;
+}
+
+/// The user's stated preference for merges.
+class GitMergePreference {
+  const GitMergePreference._(this._value);
+  final int _value;
+
+  /// No configuration was found that suggests a preferred behavior for merge.
+  static const none = GitMergePreference._(0);
+
+  /// There is a `merge.ff=false` configuration setting, suggesting that
+  /// the user does not want to allow a fast-forward merge.
+  static const noFastForward = GitMergePreference._(1);
+
+  /// There is a `merge.ff=only` configuration setting, suggesting that
+  /// the user only wants fast-forward merges.
+  static const fastForwardOnly = GitMergePreference._(2);
+
+  int get value => _value;
+}
