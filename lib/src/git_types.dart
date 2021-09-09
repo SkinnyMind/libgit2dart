@@ -195,3 +195,117 @@ class GitMergePreference {
 
   int get value => _value;
 }
+
+/// Repository state.
+///
+/// These values represent possible states for the repository to be in,
+/// based on the current operation which is ongoing.
+class GitRepositoryState {
+  const GitRepositoryState._(this._value);
+  final int _value;
+
+  static const none = GitRepositoryState._(0);
+  static const merge = GitRepositoryState._(1);
+  static const revert = GitRepositoryState._(2);
+  static const reverSequence = GitRepositoryState._(3);
+  static const cherrypick = GitRepositoryState._(4);
+  static const cherrypickSequence = GitRepositoryState._(5);
+  static const bisect = GitRepositoryState._(6);
+  static const rebase = GitRepositoryState._(7);
+  static const rebaseInteractive = GitRepositoryState._(8);
+  static const rebaseMerge = GitRepositoryState._(9);
+  static const applyMailbox = GitRepositoryState._(10);
+  static const applyMailboxOrRebase = GitRepositoryState._(11);
+
+  int get value => _value;
+}
+
+/// Flags for merge options.
+class GitMergeFlag {
+  const GitMergeFlag._(this._value);
+  final int _value;
+
+  /// Detect renames that occur between the common ancestor and the "ours"
+  /// side or the common ancestor and the "theirs" side.  This will enable
+  /// the ability to merge between a modified and renamed file.
+  static const findRenames = GitMergeFlag._(1);
+
+  /// If a conflict occurs, exit immediately instead of attempting to
+  /// continue resolving conflicts.  The merge operation will fail with
+  /// and no index will be returned.
+  static const failOnConflict = GitMergeFlag._(2);
+
+  /// Do not write the REUC extension on the generated index.
+  static const skipREUC = GitMergeFlag._(4);
+
+  /// If the commits being merged have multiple merge bases, do not build
+  /// a recursive merge base (by merging the multiple merge bases),
+  /// instead simply use the first base.
+  static const noRecursive = GitMergeFlag._(8);
+
+  int get value => _value;
+}
+
+/// Merge file favor options to instruct the file-level merging functionality
+/// on how to deal with conflicting regions of the files.
+class GitMergeFileFavor {
+  const GitMergeFileFavor._(this._value);
+  final int _value;
+
+  /// When a region of a file is changed in both branches, a conflict
+  /// will be recorded in the index. This is the default.
+  static const normal = GitMergeFileFavor._(0);
+
+  /// When a region of a file is changed in both branches, the file
+  /// created in the index will contain the "ours" side of any conflicting
+  /// region. The index will not record a conflict.
+  static const ours = GitMergeFileFavor._(1);
+
+  /// When a region of a file is changed in both branches, the file
+  /// created in the index will contain the "theirs" side of any conflicting
+  /// region. The index will not record a conflict.
+  static const theirs = GitMergeFileFavor._(2);
+
+  /// When a region of a file is changed in both branches, the file
+  /// created in the index will contain each unique line from each side,
+  /// which has the result of combining both files. The index will not
+  /// record a conflict.
+  static const union = GitMergeFileFavor._(3);
+
+  int get value => _value;
+}
+
+/// File merging flags.
+class GitMergeFileFlag {
+  const GitMergeFileFlag._(this._value);
+  final int _value;
+
+  /// Defaults.
+  static const defaults = GitMergeFileFlag._(0);
+
+  /// Create standard conflicted merge files.
+  static const styleMerge = GitMergeFileFlag._(1);
+
+  /// Create diff3-style files.
+  static const styleDiff3 = GitMergeFileFlag._(2);
+
+  /// Condense non-alphanumeric regions for simplified diff file.
+  static const simplifyAlnum = GitMergeFileFlag._(4);
+
+  /// Ignore all whitespace.
+  static const ignoreWhitespace = GitMergeFileFlag._(8);
+
+  /// Ignore changes in amount of whitespace.
+  static const ignoreWhitespaceChange = GitMergeFileFlag._(16);
+
+  /// Ignore whitespace at end of line.
+  static const ignoreWhitespaceEOL = GitMergeFileFlag._(32);
+
+  /// Use the "patience diff" algorithm.
+  static const diffPatience = GitMergeFileFlag._(64);
+
+  /// Take extra time to find minimal diff.
+  static const diffMinimal = GitMergeFileFlag._(128);
+
+  int get value => _value;
+}

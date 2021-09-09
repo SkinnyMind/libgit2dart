@@ -1,5 +1,6 @@
 import 'dart:ffi';
 import 'package:ffi/ffi.dart';
+import 'package:libgit2dart/libgit2dart.dart';
 import 'bindings/libgit2_bindings.dart';
 import 'bindings/repository.dart' as bindings;
 import 'bindings/merge.dart' as merge_bindings;
@@ -192,7 +193,6 @@ class Repository {
 
   /// Returns the status of a git repository - ie, whether an operation
   /// (merge, cherry-pick, etc) is in progress.
-  // git_repository_state_t from libgit2_bindings.dart represents possible states
   int get state => bindings.state(_repoPointer);
 
   /// Removes all the metadata associated with an ongoing command like
@@ -516,5 +516,96 @@ class Repository {
     ref.free();
 
     return result;
+  }
+
+  /// Merges the given commit(s) oid into HEAD, writing the results into the working directory.
+  /// Any changes are staged for commit and any conflicts are written to the index. Callers
+  /// should inspect the repository's index after this completes, resolve any conflicts and
+  /// prepare a commit.
+  ///
+  /// Throws a [LibGit2Error] if error occured.
+  void merge(Oid oid) {
+    final theirHead = commit_bindings.annotatedLookup(
+      _repoPointer,
+      oid.pointer,
+    );
+
+    merge_bindings.merge(_repoPointer, theirHead, 1);
+
+    commit_bindings.annotatedFree(theirHead.value);
+  }
+
+  /// Merges two commits, producing a git_index that reflects the result of the merge.
+  /// The index may be written as-is to the working directory or checked out. If the index
+  /// is to be converted to a tree, the caller should resolve any conflicts that arose as
+  /// part of the merge.
+  ///
+  /// The returned index must be freed explicitly.
+  ///
+  /// Throws a [LibGit2Error] if error occured.
+  Index mergeCommits({
+    required Commit ourCommit,
+    required Commit theirCommit,
+    GitMergeFileFavor favor = GitMergeFileFavor.normal,
+    List<GitMergeFlag> mergeFlags = const [GitMergeFlag.findRenames],
+    List<GitMergeFileFlag> fileFlags = const [GitMergeFileFlag.defaults],
+  }) {
+    var opts = <String, int>{};
+    opts['favor'] = favor.value;
+    opts['mergeFlags'] = mergeFlags.fold(
+      0,
+      (previousValue, element) => previousValue + element.value,
+    );
+    opts['fileFlags'] = fileFlags.fold(
+      0,
+      (previousValue, element) => previousValue + element.value,
+    );
+
+    final result = merge_bindings.mergeCommits(
+      _repoPointer,
+      ourCommit.pointer,
+      theirCommit.pointer,
+      opts,
+    );
+
+    return Index(result);
+  }
+
+  /// Merge two trees, producing a git_index that reflects the result of the merge.
+  /// The index may be written as-is to the working directory or checked out. If the index
+  /// is to be converted to a tree, the caller should resolve any conflicts that arose as part
+  /// of the merge.
+  ///
+  /// The returned index must be freed explicitly.
+  ///
+  /// Throws a [LibGit2Error] if error occured.
+  Index mergeTrees({
+    required Tree ancestorTree,
+    required Tree ourTree,
+    required Tree theirTree,
+    GitMergeFileFavor favor = GitMergeFileFavor.normal,
+    List<GitMergeFlag> mergeFlags = const [GitMergeFlag.findRenames],
+    List<GitMergeFileFlag> fileFlags = const [GitMergeFileFlag.defaults],
+  }) {
+    var opts = <String, int>{};
+    opts['favor'] = favor.value;
+    opts['mergeFlags'] = mergeFlags.fold(
+      0,
+      (previousValue, element) => previousValue + element.value,
+    );
+    opts['fileFlags'] = fileFlags.fold(
+      0,
+      (previousValue, element) => previousValue + element.value,
+    );
+
+    final result = merge_bindings.mergeTrees(
+      _repoPointer,
+      ancestorTree.pointer,
+      ourTree.pointer,
+      theirTree.pointer,
+      opts,
+    );
+
+    return Index(result);
   }
 }

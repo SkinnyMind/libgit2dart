@@ -60,6 +60,28 @@ Pointer<git_oid> writeTree(Pointer<git_index> index) {
   }
 }
 
+/// Write the index as a tree to the given repository.
+///
+/// This method will do the same as [writeTree], but letting the user choose the repository
+/// where the tree will be written.
+///
+/// The index must not contain any file in conflict.
+///
+/// Throws a [LibGit2Error] if error occured.
+Pointer<git_oid> writeTreeTo(
+  Pointer<git_index> index,
+  Pointer<git_repository> repo,
+) {
+  final out = calloc<git_oid>();
+  final error = libgit2.git_index_write_tree_to(out, index, repo);
+
+  if (error < 0) {
+    throw LibGit2Error(libgit2.git_error_last());
+  } else {
+    return out;
+  }
+}
+
 /// Find the first position of any entries which point to given path in the Git index.
 bool find(Pointer<git_index> index, String path) {
   final pathC = path.toNativeUtf8().cast<Int8>();
@@ -256,6 +278,69 @@ void removeAll(Pointer<git_index> index, List<String> pathspec) {
     calloc.free(p);
   }
   calloc.free(strArray);
+
+  if (error < 0) {
+    throw LibGit2Error(libgit2.git_error_last());
+  }
+}
+
+/// Determine if the index contains entries representing file conflicts.
+bool hasConflicts(Pointer<git_index> index) {
+  return libgit2.git_index_has_conflicts(index) == 1 ? true : false;
+}
+
+/// Return list of conflicts in the index.
+///
+/// Throws a [LibGit2Error] if error occured.
+List<Map<String, Pointer<git_index_entry>>> conflictList(
+    Pointer<git_index> index) {
+  final iterator = calloc<Pointer<git_index_conflict_iterator>>();
+  final iteratorError =
+      libgit2.git_index_conflict_iterator_new(iterator, index);
+
+  if (iteratorError < 0) {
+    throw LibGit2Error(libgit2.git_error_last());
+  }
+
+  var result = <Map<String, Pointer<git_index_entry>>>[];
+  var error = 0;
+
+  while (error >= 0) {
+    final ancestorOut = calloc<Pointer<git_index_entry>>();
+    final ourOut = calloc<Pointer<git_index_entry>>();
+    final theirOut = calloc<Pointer<git_index_entry>>();
+    error = libgit2.git_index_conflict_next(
+      ancestorOut,
+      ourOut,
+      theirOut,
+      iterator.value,
+    );
+    if (error >= 0) {
+      result.add({
+        'ancestor': ancestorOut.value,
+        'our': ourOut.value,
+        'their': theirOut.value,
+      });
+      calloc.free(ancestorOut);
+      calloc.free(ourOut);
+      calloc.free(theirOut);
+    } else {
+      break;
+    }
+  }
+
+  libgit2.git_index_conflict_iterator_free(iterator.value);
+  return result;
+}
+
+/// Removes the index entries that represent a conflict of a single file.
+///
+/// Throws a [LibGit2Error] if error occured.
+void conflictRemove(Pointer<git_index> index, String path) {
+  final pathC = path.toNativeUtf8().cast<Int8>();
+  final error = libgit2.git_index_conflict_remove(index, pathC);
+
+  calloc.free(pathC);
 
   if (error < 0) {
     throw LibGit2Error(libgit2.git_error_last());

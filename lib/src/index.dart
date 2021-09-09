@@ -37,6 +37,43 @@ class Index {
   /// Returns the count of entries currently in the index.
   int get count => bindings.entryCount(_indexPointer);
 
+  /// Checks if the index contains entries representing file conflicts.
+  bool get hasConflicts => bindings.hasConflicts(_indexPointer);
+
+  /// Returns map of conflicts in the index with key as conflicted file path and
+  /// value as [ConflictEntry] object.
+  ///
+  /// Throws a [LibGit2Error] if error occured.
+  Map<String, ConflictEntry> get conflicts {
+    final conflicts = bindings.conflictList(_indexPointer);
+    var result = <String, ConflictEntry>{};
+
+    for (var entry in conflicts) {
+      IndexEntry? ancestor, our, their;
+      String path;
+
+      entry['ancestor'] == nullptr
+          ? ancestor = null
+          : ancestor = IndexEntry(entry['ancestor']!);
+      entry['our'] == nullptr ? our = null : our = IndexEntry(entry['our']!);
+      entry['their'] == nullptr
+          ? their = null
+          : their = IndexEntry(entry['their']!);
+
+      if (ancestor != null) {
+        path = ancestor.path;
+      } else if (our != null) {
+        path = our.path;
+      } else {
+        path = their!.path;
+      }
+
+      result[path] = ConflictEntry(_indexPointer, path, ancestor, our, their);
+    }
+
+    return result;
+  }
+
   /// Clears the contents (all the entries) of an index object.
   ///
   /// This clears the index object in memory; changes must be explicitly written to
@@ -124,7 +161,15 @@ class Index {
   /// returns the OID of the root tree. This is the OID that can be used e.g. to create a commit.
   ///
   /// The index must not contain any file in conflict.
-  Oid writeTree() => Oid(bindings.writeTree(_indexPointer));
+  ///
+  /// Throws a [LibGit2Error] if error occured or there is no associated repository and no [repo] passed.
+  Oid writeTree([Repository? repo]) {
+    if (repo == null) {
+      return Oid(bindings.writeTree(_indexPointer));
+    } else {
+      return Oid(bindings.writeTreeTo(_indexPointer, repo.pointer));
+    }
+  }
 
   /// Removes an entry from the index.
   ///
@@ -175,4 +220,35 @@ class IndexEntry {
     }
     return hex.toString();
   }
+}
+
+class ConflictEntry {
+  /// Initializes a new instance of [ConflictEntry] class.
+  const ConflictEntry(
+    this._indexPointer,
+    this._path,
+    this.ancestor,
+    this.our,
+    this.their,
+  );
+
+  /// Common ancestor.
+  final IndexEntry? ancestor;
+
+  /// "Our" side of the conflict.
+  final IndexEntry? our;
+
+  /// "Their" side of the conflict.
+  final IndexEntry? their;
+
+  /// Pointer to memory address for allocated index object.
+  final Pointer<git_index> _indexPointer;
+
+  /// Path to conflicted file.
+  final String _path;
+
+  /// Removes the index entry that represent a conflict of a single file.
+  ///
+  /// Throws a [LibGit2Error] if error occured.
+  void remove() => bindings.conflictRemove(_indexPointer, _path);
 }
