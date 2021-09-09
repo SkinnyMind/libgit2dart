@@ -7,6 +7,7 @@ import 'bindings/merge.dart' as merge_bindings;
 import 'bindings/object.dart' as object_bindings;
 import 'bindings/status.dart' as status_bindings;
 import 'bindings/commit.dart' as commit_bindings;
+import 'bindings/checkout.dart' as checkout_bindings;
 import 'branch.dart';
 import 'commit.dart';
 import 'config.dart';
@@ -459,13 +460,18 @@ class Repository {
     var count = status_bindings.listEntryCount(list);
 
     for (var i = 0; i < count; i++) {
+      late String path;
       final entry = status_bindings.getByIndex(list, i);
       if (entry.ref.head_to_index != nullptr) {
-        final path = entry.ref.head_to_index.ref.old_file.path
+        path = entry.ref.head_to_index.ref.old_file.path
             .cast<Utf8>()
             .toDartString();
-        result[path] = entry.ref.status;
+      } else {
+        path = entry.ref.index_to_workdir.ref.old_file.path
+            .cast<Utf8>()
+            .toDartString();
       }
+      result[path] = entry.ref.status;
     }
 
     status_bindings.listFree(list);
@@ -535,7 +541,7 @@ class Repository {
     commit_bindings.annotatedFree(theirHead.value);
   }
 
-  /// Merges two commits, producing a git_index that reflects the result of the merge.
+  /// Merges two commits, producing an index that reflects the result of the merge.
   /// The index may be written as-is to the working directory or checked out. If the index
   /// is to be converted to a tree, the caller should resolve any conflicts that arose as
   /// part of the merge.
@@ -571,7 +577,7 @@ class Repository {
     return Index(result);
   }
 
-  /// Merge two trees, producing a git_index that reflects the result of the merge.
+  /// Merges two trees, producing an index that reflects the result of the merge.
   /// The index may be written as-is to the working directory or checked out. If the index
   /// is to be converted to a tree, the caller should resolve any conflicts that arose as part
   /// of the merge.
@@ -609,7 +615,7 @@ class Repository {
     return Index(result);
   }
 
-  /// Cherry-picks the given commit, producing changes in the index and working directory.
+  /// Cherry-picks the provided commit, producing changes in the index and working directory.
   ///
   /// Any changes are staged for commit and any conflicts are written to the index. Callers
   /// should inspect the repository's index after this completes, resolve any conflicts and
@@ -618,4 +624,47 @@ class Repository {
   /// Throws a [LibGit2Error] if error occured.
   void cherryPick(Commit commit) =>
       merge_bindings.cherryPick(_repoPointer, commit.pointer);
+
+  /// Checkouts the provided reference [refName] using the given strategy, and update the HEAD.
+  ///
+  /// If no reference [refName] is given, checkouts from the index.
+  ///
+  /// Default checkout strategy is combination of [GitCheckout.safe] and
+  /// [GitCheckout.recreateMissing].
+  ///
+  /// [directory] is alternative checkout path to workdir.
+  ///
+  /// [paths] is list of files to checkout from provided reference [refName]. If paths are provided
+  /// HEAD will not be set to the reference [refName].
+  void checkout({
+    String refName = '',
+    List<GitCheckout> strategy = const [
+      GitCheckout.safe,
+      GitCheckout.recreateMissing
+    ],
+    String? directory,
+    List<String>? paths,
+  }) {
+    final int strat = strategy.fold(
+      0,
+      (previousValue, element) => previousValue + element.value,
+    );
+
+    if (refName.isEmpty) {
+      checkout_bindings.index(_repoPointer, strat, directory, paths);
+    } else if (refName == 'HEAD') {
+      checkout_bindings.head(_repoPointer, strat, directory, paths);
+    } else {
+      final ref = references[refName];
+      final treeish = object_bindings.lookup(
+          _repoPointer, ref.target.pointer, GitObject.any.value);
+      checkout_bindings.tree(_repoPointer, treeish, strat, directory, paths);
+      if (paths == null) {
+        setHead(refName);
+      }
+
+      object_bindings.free(treeish);
+      ref.free();
+    }
+  }
 }

@@ -309,3 +309,84 @@ class GitMergeFileFlag {
 
   int get value => _value;
 }
+
+/// Checkout behavior flags.
+///
+/// In libgit2, checkout is used to update the working directory and index
+/// to match a target tree.  Unlike git checkout, it does not move the HEAD
+/// commit for you - use `setHead` or the like to do that.
+class GitCheckout {
+  const GitCheckout._(this._value);
+  final int _value;
+
+  /// Default is a dry run, no actual updates.
+  static const none = GitCheckout._(0);
+
+  /// Allow safe updates that cannot overwrite uncommitted data.
+  /// If the uncommitted changes don't conflict with the checked out files,
+  /// the checkout will still proceed, leaving the changes intact.
+  ///
+  /// Mutually exclusive with [GitCheckout.force].
+  /// [GitCheckout.force] takes precedence over [GitCheckout.safe].
+  static const safe = GitCheckout._(1);
+
+  /// Allow all updates to force working directory to look like index.
+  ///
+  /// Mutually exclusive with [GitCheckout.safe].
+  /// [GitCheckout.force] takes precedence over [GitCheckout.safe].
+  static const force = GitCheckout._(2);
+
+  /// Allow checkout to recreate missing files.
+  static const recreateMissing = GitCheckout._(4);
+
+  /// Allow checkout to make safe updates even if conflicts are found.
+  static const allowConflicts = GitCheckout._(16);
+
+  /// Remove untracked files not in index (that are not ignored).
+  static const removeUntracked = GitCheckout._(32);
+
+  /// Remove ignored files not in index.
+  static const removeIgnored = GitCheckout._(64);
+
+  /// Only update existing files, don't create new ones.
+  static const updateOnly = GitCheckout._(128);
+
+  /// Normally checkout updates index entries as it goes; this stops that.
+  /// Implies [GitCheckout.dontWriteIndex].
+  static const dontUpdateIndex = GitCheckout._(256);
+
+  /// Don't refresh index/config/etc before doing checkout.
+  static const noRefresh = GitCheckout._(512);
+
+  /// Allow checkout to skip unmerged files.
+  static const skipUnmerged = GitCheckout._(1024);
+
+  /// For unmerged files, checkout stage 2 from index.
+  static const useOurs = GitCheckout._(2048);
+
+  /// For unmerged files, checkout stage 3 from index.
+  static const useTheirs = GitCheckout._(4096);
+
+  /// Treat pathspec as simple list of exact match file paths.
+  static const disablePathspecMatch = GitCheckout._(8192);
+
+  /// Ignore directories in use, they will be left empty.
+  static const skipLockedDirectories = GitCheckout._(262144);
+
+  /// Don't overwrite ignored files that exist in the checkout target.
+  static const dontOverwriteIgnored = GitCheckout._(524288);
+
+  /// Write normal merge files for conflicts.
+  static const conflictStyleMerge = GitCheckout._(1048576);
+
+  /// Include common ancestor data in diff3 format files for conflicts.
+  static const conflictStyleDiff3 = GitCheckout._(2097152);
+
+  /// Don't overwrite existing files or folders.
+  static const dontRemoveExisting = GitCheckout._(4194304);
+
+  /// Normally checkout writes the index upon completion; this prevents that.
+  static const dontWriteIndex = GitCheckout._(8388608);
+
+  int get value => _value;
+}
