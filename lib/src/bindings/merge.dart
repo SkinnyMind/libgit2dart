@@ -67,11 +67,11 @@ void merge(
   int theirHeadsLen,
 ) {
   final mergeOpts = calloc<git_merge_options>(sizeOf<git_merge_options>());
-  libgit2.git_merge_options_init(mergeOpts, 1);
+  libgit2.git_merge_options_init(mergeOpts, GIT_MERGE_OPTIONS_VERSION);
 
   final checkoutOpts =
       calloc<git_checkout_options>(sizeOf<git_checkout_options>());
-  libgit2.git_checkout_options_init(checkoutOpts, 1);
+  libgit2.git_checkout_options_init(checkoutOpts, GIT_CHECKOUT_OPTIONS_VERSION);
   checkoutOpts.ref.checkout_strategy =
       git_checkout_strategy_t.GIT_CHECKOUT_SAFE +
           git_checkout_strategy_t.GIT_CHECKOUT_RECREATE_MISSING;
@@ -164,5 +164,21 @@ Pointer<git_index> mergeTrees(
     throw LibGit2Error(libgit2.git_error_last());
   } else {
     return out.value;
+  }
+}
+
+/// Cherry-pick the given commit, producing changes in the index and working directory.
+///
+/// Throws a [LibGit2Error] if error occured.
+void cherryPick(Pointer<git_repository> repo, Pointer<git_commit> commit) {
+  final opts = calloc<git_cherrypick_options>(sizeOf<git_cherrypick_options>());
+  libgit2.git_cherrypick_options_init(opts, GIT_CHERRYPICK_OPTIONS_VERSION);
+  opts.ref.checkout_opts.checkout_strategy =
+      git_checkout_strategy_t.GIT_CHECKOUT_SAFE;
+
+  final error = libgit2.git_cherrypick(repo, commit, opts);
+
+  if (error < 0) {
+    throw LibGit2Error(libgit2.git_error_last());
   }
 }

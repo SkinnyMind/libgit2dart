@@ -608,4 +608,14 @@ class Repository {
 
     return Index(result);
   }
+
+  /// Cherry-picks the given commit, producing changes in the index and working directory.
+  ///
+  /// Any changes are staged for commit and any conflicts are written to the index. Callers
+  /// should inspect the repository's index after this completes, resolve any conflicts and
+  /// prepare a commit.
+  ///
+  /// Throws a [LibGit2Error] if error occured.
+  void cherryPick(Commit commit) =>
+      merge_bindings.cherryPick(_repoPointer, commit.pointer);
 }

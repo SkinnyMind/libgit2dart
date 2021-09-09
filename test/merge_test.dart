@@ -242,5 +242,15 @@ void main() {
         theirCommit.free();
       });
     });
+
+    test('successfully cherry-picks commit', () {
+      final cherry = repo['5aecfa0fb97eadaac050ccb99f03c3fb65460ad4'] as Commit;
+      repo.cherryPick(cherry);
+      expect(repo.state, GitRepositoryState.cherrypick.value);
+      final index = repo.index;
+      expect(index.conflicts, isEmpty);
+
+      index.free();
+    });
   });
 }
