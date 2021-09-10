@@ -502,7 +502,7 @@ void main() {
     test('successfully peels to object of provided type', () {
       final ref = repo.references['refs/heads/master'];
       final commit = repo[ref.target.sha] as Commit;
-      final tree = repo[commit.tree.sha] as Tree;
+      final tree = commit.tree;
       final peeledCommit = ref.peel(GitObject.commit) as Commit;
       final peeledTree = ref.peel(GitObject.tree) as Tree;
 

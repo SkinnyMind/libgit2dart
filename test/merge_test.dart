@@ -183,9 +183,9 @@ void main() {
         final baseCommit =
             repo[repo.mergeBase(ourCommit.id.sha, theirCommit.id.sha).sha]
                 as Commit;
-        final theirTree = repo[theirCommit.tree.sha] as Tree;
-        final ourTree = repo[ourCommit.tree.sha] as Tree;
-        final ancestorTree = repo[baseCommit.tree.sha] as Tree;
+        final theirTree = theirCommit.tree;
+        final ourTree = ourCommit.tree;
+        final ancestorTree = baseCommit.tree;
 
         final mergeIndex = repo.mergeTrees(
           ancestorTree: ancestorTree,
@@ -221,9 +221,9 @@ void main() {
         final baseCommit =
             repo[repo.mergeBase(ourCommit.id.sha, theirCommit.id.sha).sha]
                 as Commit;
-        final theirTree = repo[theirCommit.tree.sha] as Tree;
-        final ourTree = repo[ourCommit.tree.sha] as Tree;
-        final ancestorTree = repo[baseCommit.tree.sha] as Tree;
+        final theirTree = theirCommit.tree;
+        final ourTree = ourCommit.tree;
+        final ancestorTree = baseCommit.tree;
 
         final mergeIndex = repo.mergeTrees(
           ancestorTree: ancestorTree,

@@ -44,7 +44,7 @@ void main() {
     test('successfully checkouts tree', () {
       final masterHead =
           repo['821ed6e80627b8769d170a293862f9fc60825226'] as Commit;
-      final masterTree = repo[masterHead.tree.sha] as Tree;
+      final masterTree = masterHead.tree;
       expect(
         masterTree.entries.any((e) => e.name == 'another_feature_file'),
         false,
@@ -53,7 +53,7 @@ void main() {
       repo.checkout(refName: 'refs/heads/feature');
       final featureHead =
           repo['5aecfa0fb97eadaac050ccb99f03c3fb65460ad4'] as Commit;
-      final featureTree = repo[featureHead.tree.sha] as Tree;
+      final featureTree = featureHead.tree;
       final repoHead = repo.head;
       expect(repoHead.target.sha, featureHead.id.sha);
       expect(repo.status, isEmpty);

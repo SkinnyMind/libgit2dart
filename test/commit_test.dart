@@ -74,7 +74,7 @@ void main() {
       expect(commit.author, author);
       expect(commit.committer, commiter);
       expect(commit.time, 124);
-      expect(commit.tree.sha, tree);
+      expect(commit.tree.id.sha, tree);
       expect(commit.parents.length, 1);
       expect(commit.parents[0].sha, mergeCommit);
 
@@ -99,7 +99,7 @@ void main() {
       expect(commit.author, author);
       expect(commit.committer, commiter);
       expect(commit.time, 124);
-      expect(commit.tree.sha, tree);
+      expect(commit.tree.id.sha, tree);
       expect(commit.parents.length, 0);
 
       commit.free();
@@ -123,7 +123,7 @@ void main() {
       expect(commit.author, author);
       expect(commit.committer, commiter);
       expect(commit.time, 124);
-      expect(commit.tree.sha, tree);
+      expect(commit.tree.id.sha, tree);
       expect(commit.parents.length, 2);
       expect(commit.parents[0].sha, mergeCommit);
       expect(commit.parents[1].sha, 'fc38877b2552ab554752d9a77e1f48f738cca79b');
@@ -149,7 +149,7 @@ void main() {
       expect(commit.author, author);
       expect(commit.committer, commiter);
       expect(commit.time, 124);
-      expect(commit.tree.sha, tree);
+      expect(commit.tree.id.sha, tree);
       expect(commit.parents.length, 1);
       expect(commit.parents[0].sha, mergeCommit);
 

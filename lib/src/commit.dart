@@ -1,6 +1,7 @@
 import 'dart:ffi';
 import 'bindings/libgit2_bindings.dart';
 import 'bindings/commit.dart' as bindings;
+import 'bindings/tree.dart' as tree_bindings;
 import 'repository.dart';
 import 'oid.dart';
 import 'signature.dart';
@@ -98,8 +99,12 @@ class Commit {
     return parents;
   }
 
-  /// Get the id of the tree pointed to by a commit.
-  Oid get tree => Oid(bindings.tree(_commitPointer));
+  /// Get the tree pointed to by a commit.
+  Tree get tree {
+    final repo = bindings.owner(_commitPointer);
+    final oid = bindings.tree(_commitPointer);
+    return Tree(tree_bindings.lookup(repo, oid));
+  }
 
   /// Releases memory allocated for commit object.
   void free() => bindings.free(_commitPointer);
