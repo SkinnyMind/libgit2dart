@@ -120,4 +120,7 @@ class TreeEntry {
 
   /// Releases memory allocated for tree entry object.
   void free() => bindings.entryFree(_treeEntryPointer);
+
+  @override
+  String toString() => 'TreeEntry{id: $id, name: $name}';
 }

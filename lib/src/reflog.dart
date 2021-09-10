@@ -58,4 +58,7 @@ class RefLogEntry {
 
   /// Returns the committer of this entry.
   Signature get committer => Signature(bindings.entryCommiter(_entryPointer));
+
+  @override
+  String toString() => 'ReflogEntry{message: $message}';
 }

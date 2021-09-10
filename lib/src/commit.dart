@@ -103,4 +103,7 @@ class Commit {
 
   /// Releases memory allocated for commit object.
   void free() => bindings.free(_commitPointer);
+
+  @override
+  String toString() => 'Commit{id: $id}';
 }

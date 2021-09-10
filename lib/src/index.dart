@@ -251,4 +251,8 @@ class ConflictEntry {
   ///
   /// Throws a [LibGit2Error] if error occured.
   void remove() => bindings.conflictRemove(_indexPointer, _path);
+
+  @override
+  String toString() =>
+      'ConflictEntry{ancestor: $ancestor, our: $our, their: $their}';
 }

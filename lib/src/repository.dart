@@ -357,11 +357,11 @@ class Repository {
   /// Returns the list of commits starting from provided [sha] hex string.
   ///
   /// If [sorting] isn't provided default will be used (reverse chronological order, like in git).
-  List<Commit> log(String sha, [List<GitSort>? sorting]) {
+  List<Commit> log(String sha, [List<GitSort> sorting = const [GitSort.none]]) {
     final oid = Oid.fromSHA(this, sha);
     final walker = RevWalk(this);
 
-    walker.sorting(sorting ?? [GitSort.none]);
+    walker.sorting(sorting);
     walker.push(oid);
     final result = walker.walk();
 

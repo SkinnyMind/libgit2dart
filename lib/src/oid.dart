@@ -74,4 +74,7 @@ class Oid {
 
   @override
   int get hashCode => _oidPointer.address.hashCode;
+
+  @override
+  String toString() => 'Oid{sha: $sha}';
 }
