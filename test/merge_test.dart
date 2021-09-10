@@ -247,8 +247,12 @@ void main() {
       final cherry = repo['5aecfa0fb97eadaac050ccb99f03c3fb65460ad4'] as Commit;
       repo.cherryPick(cherry);
       expect(repo.state, GitRepositoryState.cherrypick.value);
+      expect(repo.message, 'add another feature file\n');
       final index = repo.index;
       expect(index.conflicts, isEmpty);
+      // pretend we've done commit
+      repo.removeMessage();
+      expect(() => repo.message, throwsA(isA<LibGit2Error>()));
 
       index.free();
     });
