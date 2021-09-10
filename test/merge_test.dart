@@ -31,7 +31,8 @@ void main() {
             repo['c68ff54aabf660fcdd9a2838d401583fe31249e3'] as Commit;
 
         final result = repo.mergeAnalysis(commit.id);
-        expect(result[0], GitMergeAnalysis.upToDate.value);
+        expect(result[0], {GitMergeAnalysis.upToDate});
+        expect(result[1], {GitMergePreference.none});
         expect(repo.status, isEmpty);
 
         commit.free();
@@ -42,7 +43,7 @@ void main() {
             repo['c68ff54aabf660fcdd9a2838d401583fe31249e3'] as Commit;
 
         final result = repo.mergeAnalysis(commit.id, 'refs/tags/v0.1');
-        expect(result[0], GitMergeAnalysis.upToDate.value);
+        expect(result[0], {GitMergeAnalysis.upToDate});
         expect(repo.status, isEmpty);
 
         commit.free();
@@ -61,7 +62,7 @@ void main() {
         final result = repo.mergeAnalysis(theirHead.id, ffBranch.name);
         expect(
           result[0],
-          GitMergeAnalysis.fastForward.value + GitMergeAnalysis.normal.value,
+          {GitMergeAnalysis.fastForward, GitMergeAnalysis.normal},
         );
         expect(repo.status, isEmpty);
 
@@ -75,7 +76,7 @@ void main() {
             repo['5aecfa0fb97eadaac050ccb99f03c3fb65460ad4'] as Commit;
 
         final result = repo.mergeAnalysis(commit.id);
-        expect(result[0], GitMergeAnalysis.normal.value);
+        expect(result[0], {GitMergeAnalysis.normal});
         expect(repo.status, isEmpty);
 
         commit.free();
@@ -87,13 +88,18 @@ void main() {
       final index = repo.index;
 
       final result = repo.mergeAnalysis(conflictBranch.target);
-      expect(result[0], GitMergeAnalysis.normal.value);
+      expect(result[0], {GitMergeAnalysis.normal});
 
       repo.merge(conflictBranch.target);
       expect(index.hasConflicts, true);
       expect(index.conflicts.length, 1);
-      expect(repo.state, GitRepositoryState.merge.value);
-      expect(repo.status, {'conflict_file': GitStatus.conflicted.value});
+      expect(repo.state, GitRepositoryState.merge);
+      expect(
+        repo.status,
+        {
+          'conflict_file': {GitStatus.conflicted}
+        },
+      );
 
       final conflictedFile = index.conflicts['conflict_file']!;
       expect(conflictedFile.ancestor, null);
@@ -104,7 +110,12 @@ void main() {
       index.write();
       expect(index.hasConflicts, false);
       expect(index.conflicts, isEmpty);
-      expect(repo.status, {'conflict_file': GitStatus.indexModified.value});
+      expect(
+        repo.status,
+        {
+          'conflict_file': {GitStatus.indexModified}
+        },
+      );
 
       index.free();
       conflictBranch.free();
@@ -165,6 +176,32 @@ void main() {
           ourCommit: ourCommit,
           theirCommit: theirCommit,
           favor: GitMergeFileFavor.ours,
+        );
+        expect(mergeIndex.conflicts, isEmpty);
+
+        mergeIndex.free();
+        ourCommit.free();
+        theirCommit.free();
+      });
+
+      test('successfully merges with provided merge and file flags', () {
+        final theirCommit =
+            repo['5aecfa0fb97eadaac050ccb99f03c3fb65460ad4'] as Commit;
+        final ourCommit =
+            repo['14905459d775f3f56a39ebc2ff081163f7da3529'] as Commit;
+
+        final mergeIndex = repo.mergeCommits(
+          ourCommit: ourCommit,
+          theirCommit: theirCommit,
+          mergeFlags: {
+            GitMergeFlag.findRenames,
+            GitMergeFlag.noRecursive,
+          },
+          fileFlags: {
+            GitMergeFileFlag.ignoreWhitespace,
+            GitMergeFileFlag.ignoreWhitespaceEOL,
+            GitMergeFileFlag.styleMerge,
+          },
         );
         expect(mergeIndex.conflicts, isEmpty);
 
@@ -246,7 +283,7 @@ void main() {
     test('successfully cherry-picks commit', () {
       final cherry = repo['5aecfa0fb97eadaac050ccb99f03c3fb65460ad4'] as Commit;
       repo.cherryPick(cherry);
-      expect(repo.state, GitRepositoryState.cherrypick.value);
+      expect(repo.state, GitRepositoryState.cherrypick);
       expect(repo.message, 'add another feature file\n');
       final index = repo.index;
       expect(index.conflicts, isEmpty);

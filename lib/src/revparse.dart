@@ -78,14 +78,14 @@ class RevSpec {
   }
 
   /// The intent of the revspec.
-  GitRevParse get flags {
-    final flag = _revSpecPointer.ref.flags;
-    if (flag == 1) {
-      return GitRevParse.single;
-    } else if (flag == 2) {
-      return GitRevParse.range;
-    } else {
-      return GitRevParse.mergeBase;
+  Set<GitRevParse> get flags {
+    final flagInt = _revSpecPointer.ref.flags;
+    var flags = <GitRevParse>{};
+    for (var flag in GitRevParse.values) {
+      if (flagInt & flag.value == flag.value) {
+        flags.add(flag);
+      }
     }
+    return flags;
   }
 }

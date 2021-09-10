@@ -208,7 +208,10 @@ class IndexEntry {
   String get sha => _oidToHex(_indexEntryPointer.ref.id);
 
   /// Returns the UNIX file attributes of a index entry.
-  GitFilemode get mode => intToGitFilemode(_indexEntryPointer.ref.mode);
+  GitFilemode get mode {
+    final modeInt = _indexEntryPointer.ref.mode;
+    return GitFilemode.values.singleWhere((mode) => modeInt == mode.value);
+  }
 
   /// Sets the UNIX file attributes of a index entry.
   set mode(GitFilemode mode) => _indexEntryPointer.ref.mode = mode.value;

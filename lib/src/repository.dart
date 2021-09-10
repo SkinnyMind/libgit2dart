@@ -194,7 +194,11 @@ class Repository {
 
   /// Returns the status of a git repository - ie, whether an operation
   /// (merge, cherry-pick, etc) is in progress.
-  int get state => bindings.state(_repoPointer);
+  GitRepositoryState get state {
+    final stateInt = bindings.state(_repoPointer);
+    return GitRepositoryState.values
+        .singleWhere((flag) => stateInt == flag.value);
+  }
 
   /// Removes all the metadata associated with an ongoing command like
   /// merge, revert, cherry-pick, etc. For example: MERGE_HEAD, MERGE_MSG, etc.
@@ -357,7 +361,7 @@ class Repository {
   /// Returns the list of commits starting from provided [sha] hex string.
   ///
   /// If [sorting] isn't provided default will be used (reverse chronological order, like in git).
-  List<Commit> log(String sha, [List<GitSort> sorting = const [GitSort.none]]) {
+  List<Commit> log(String sha, [Set<GitSort> sorting = const {GitSort.none}]) {
     final oid = Oid.fromSHA(this, sha);
     final walker = RevWalk(this);
 
@@ -454,8 +458,8 @@ class Repository {
   /// Checks status of the repository and returns map of file paths and their statuses.
   ///
   /// Returns empty map if there are no changes in statuses.
-  Map<String, int> get status {
-    var result = <String, int>{};
+  Map<String, Set<GitStatus>> get status {
+    var result = <String, Set<GitStatus>>{};
     var list = status_bindings.listNew(_repoPointer);
     var count = status_bindings.listEntryCount(list);
 
@@ -471,7 +475,15 @@ class Repository {
             .cast<Utf8>()
             .toDartString();
       }
-      result[path] = entry.ref.status;
+      var statuses = <GitStatus>{};
+      // Skipping GitStatus.current because entry that is in the list can't be without changes
+      // but `&` on `0` value falsly adds it to the set of flags
+      for (var flag in GitStatus.values.skip(1)) {
+        if (entry.ref.status & flag.value == flag.value) {
+          statuses.add(flag);
+        }
+      }
+      result[path] = statuses;
     }
 
     status_bindings.listFree(list);
@@ -487,7 +499,23 @@ class Repository {
   /// through looking for the path that you are interested in.
   ///
   /// Throws a [LibGit2Error] if error occured.
-  int statusFile(String path) => status_bindings.file(_repoPointer, path);
+  Set<GitStatus> statusFile(String path) {
+    final statusInt = status_bindings.file(_repoPointer, path);
+    var statuses = <GitStatus>{};
+
+    if (statusInt == GitStatus.current.value) {
+      statuses.add(GitStatus.current);
+    } else {
+      // Skipping GitStatus.current because `&` on `0` value falsly adds it to the set of flags
+      for (var flag in GitStatus.values.skip(1)) {
+        if (statusInt & flag.value == flag.value) {
+          statuses.add(flag);
+        }
+      }
+    }
+
+    return statuses;
+  }
 
   /// Finds a merge base between two commits.
   ///
@@ -509,14 +537,30 @@ class Repository {
   /// respectively.
   ///
   /// Throws a [LibGit2Error] if error occured.
-  List<int> mergeAnalysis(Oid theirHead, [String ourRef = 'HEAD']) {
+  List<Set<dynamic>> mergeAnalysis(Oid theirHead, [String ourRef = 'HEAD']) {
     final ref = references[ourRef];
     final head = commit_bindings.annotatedLookup(
       _repoPointer,
       theirHead.pointer,
     );
 
-    final result = merge_bindings.analysis(_repoPointer, ref.pointer, head, 1);
+    var result = <Set<dynamic>>[];
+    var analysisSet = <GitMergeAnalysis>{};
+    final analysisInt = merge_bindings.analysis(
+      _repoPointer,
+      ref.pointer,
+      head,
+      1,
+    );
+    for (var analysis in GitMergeAnalysis.values) {
+      if (analysisInt[0] & analysis.value == analysis.value) {
+        analysisSet.add(analysis);
+      }
+    }
+    result.add(analysisSet);
+    result.add(
+      {GitMergePreference.values.singleWhere((e) => analysisInt[1] == e.value)},
+    );
 
     commit_bindings.annotatedFree(head.value);
     ref.free();
@@ -553,19 +597,15 @@ class Repository {
     required Commit ourCommit,
     required Commit theirCommit,
     GitMergeFileFavor favor = GitMergeFileFavor.normal,
-    List<GitMergeFlag> mergeFlags = const [GitMergeFlag.findRenames],
-    List<GitMergeFileFlag> fileFlags = const [GitMergeFileFlag.defaults],
+    Set<GitMergeFlag> mergeFlags = const {GitMergeFlag.findRenames},
+    Set<GitMergeFileFlag> fileFlags = const {GitMergeFileFlag.defaults},
   }) {
     var opts = <String, int>{};
     opts['favor'] = favor.value;
-    opts['mergeFlags'] = mergeFlags.fold(
-      0,
-      (previousValue, element) => previousValue + element.value,
-    );
-    opts['fileFlags'] = fileFlags.fold(
-      0,
-      (previousValue, element) => previousValue + element.value,
-    );
+    opts['mergeFlags'] =
+        mergeFlags.fold(0, (previousValue, e) => previousValue | e.value);
+    opts['fileFlags'] =
+        fileFlags.fold(0, (previousValue, e) => previousValue | e.value);
 
     final result = merge_bindings.mergeCommits(
       _repoPointer,
@@ -638,17 +678,15 @@ class Repository {
   /// HEAD will not be set to the reference [refName].
   void checkout({
     String refName = '',
-    List<GitCheckout> strategy = const [
+    Set<GitCheckout> strategy = const {
       GitCheckout.safe,
       GitCheckout.recreateMissing
-    ],
+    },
     String? directory,
     List<String>? paths,
   }) {
-    final int strat = strategy.fold(
-      0,
-      (previousValue, element) => previousValue + element.value,
-    );
+    final int strat =
+        strategy.fold(0, (previousValue, e) => previousValue | e.value);
 
     if (refName.isEmpty) {
       checkout_bindings.index(_repoPointer, strat, directory, paths);

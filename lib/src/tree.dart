@@ -86,7 +86,8 @@ class TreeEntry {
 
   /// Returns the UNIX file attributes of a tree entry.
   GitFilemode get filemode {
-    return intToGitFilemode(bindings.entryFilemode(_treeEntryPointer));
+    final modeInt = bindings.entryFilemode(_treeEntryPointer);
+    return GitFilemode.values.singleWhere((mode) => modeInt == mode.value);
   }
 
   @override

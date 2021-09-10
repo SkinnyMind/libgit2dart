@@ -36,8 +36,11 @@ class RevWalk {
   /// Changing the sorting mode resets the walker.
   ///
   /// Throws a [LibGit2Error] if error occured.
-  void sorting(List<GitSort> sorting) {
-    final sort = sorting.fold(0, (previousValue, e) => e.value);
+  void sorting(Set<GitSort> sorting) {
+    final int sort = sorting.fold(
+      0,
+      (previousValue, e) => previousValue | e.value,
+    );
     bindings.sorting(_revWalkPointer, sort);
   }
 

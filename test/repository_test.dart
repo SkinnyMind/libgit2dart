@@ -343,7 +343,13 @@ void main() {
         final index = repo.index;
         index.remove('file');
         index.add('new_file.txt');
-        expect(repo.status, {'file': 132, 'new_file.txt': 1});
+        expect(
+          repo.status,
+          {
+            'file': {GitStatus.indexDeleted, GitStatus.wtNew},
+            'new_file.txt': {GitStatus.indexNew}
+          },
+        );
 
         index.free();
       });
@@ -351,7 +357,11 @@ void main() {
       test('returns status of a single file for provided path', () {
         final index = repo.index;
         index.remove('file');
-        expect(repo.statusFile('file'), 132);
+        expect(
+          repo.statusFile('file'),
+          {GitStatus.indexDeleted, GitStatus.wtNew},
+        );
+        expect(repo.statusFile('.gitignore'), {GitStatus.current});
 
         index.free();
       });

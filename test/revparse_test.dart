@@ -81,7 +81,7 @@ void main() {
 
       expect(revspec.from.id.sha, headSHA);
       expect(revspec.to, isNull);
-      expect(revspec.flags, GitRevParse.single);
+      expect(revspec.flags, {GitRevParse.single});
 
       revspec.from.free();
 
@@ -89,7 +89,7 @@ void main() {
 
       expect(revspec.from.id.sha, parentSHA);
       expect(revspec.to?.id.sha, '5aecfa0fb97eadaac050ccb99f03c3fb65460ad4');
-      expect(revspec.flags, GitRevParse.range);
+      expect(revspec.flags, {GitRevParse.range});
 
       revspec.from.free();
       revspec.to?.free();
@@ -98,7 +98,7 @@ void main() {
 
       expect(revspec.from.id.sha, headSHA);
       expect(revspec.to?.id.sha, '5aecfa0fb97eadaac050ccb99f03c3fb65460ad4');
-      expect(revspec.flags, GitRevParse.mergeBase);
+      expect(revspec.flags, {GitRevParse.range, GitRevParse.mergeBase});
       expect(
         repo.mergeBase(revspec.from.id.sha, revspec.to!.id.sha),
         isA<Oid>(),

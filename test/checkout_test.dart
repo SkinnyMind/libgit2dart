@@ -29,7 +29,7 @@ void main() {
       File('${tmpDir}feature_file').writeAsStringSync('edit');
       expect(repo.status, contains('feature_file'));
 
-      repo.checkout(refName: 'HEAD', strategy: [GitCheckout.force]);
+      repo.checkout(refName: 'HEAD', strategy: {GitCheckout.force});
       expect(repo.status, isEmpty);
     });
 
@@ -37,7 +37,10 @@ void main() {
       File('${repo.workdir}feature_file').writeAsStringSync('edit');
       expect(repo.status, contains('feature_file'));
 
-      repo.checkout(strategy: [GitCheckout.force]);
+      repo.checkout(strategy: {
+        GitCheckout.force,
+        GitCheckout.conflictStyleMerge,
+      });
       expect(repo.status, isEmpty);
     });
 
@@ -90,7 +93,12 @@ void main() {
         refName: 'refs/heads/feature',
         paths: ['another_feature_file'],
       );
-      expect(repo.status, {'another_feature_file': GitStatus.indexNew.value});
+      expect(
+        repo.status,
+        {
+          'another_feature_file': {GitStatus.indexNew}
+        },
+      );
     });
   });
 }
