@@ -578,3 +578,26 @@ class GitCheckout {
   @override
   String toString() => 'GitCheckout.$_name';
 }
+
+/// Kinds of reset operation.
+class GitReset {
+  const GitReset._(this._value, this._name);
+  final int _value;
+  final String _name;
+
+  /// Move the head to the given commit.
+  static const soft = GitReset._(1, 'soft');
+
+  /// [GitReset.soft] plus reset index to the commit.
+  static const mixed = GitReset._(2, 'mixed');
+
+  /// [GitReset.mixed] plus changes in working tree discarded.
+  static const hard = GitReset._(3, 'hard');
+
+  static const List<GitReset> values = [soft, mixed, hard];
+
+  int get value => _value;
+
+  @override
+  String toString() => 'GitReset.$_name';
+}

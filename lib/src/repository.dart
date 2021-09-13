@@ -8,6 +8,7 @@ import 'bindings/object.dart' as object_bindings;
 import 'bindings/status.dart' as status_bindings;
 import 'bindings/commit.dart' as commit_bindings;
 import 'bindings/checkout.dart' as checkout_bindings;
+import 'bindings/reset.dart' as reset_bindings;
 import 'branch.dart';
 import 'commit.dart';
 import 'config.dart';
@@ -704,5 +705,22 @@ class Repository {
       object_bindings.free(treeish);
       ref.free();
     }
+  }
+
+  /// Sets the current head to the specified commit and optionally resets the index
+  /// and working tree to match.
+  ///
+  /// Throws a [LibGit2Error] if error occured.
+  void reset(String target, GitReset resetType) {
+    final oid = Oid.fromSHA(this, target);
+    final object = object_bindings.lookup(
+      _repoPointer,
+      oid.pointer,
+      GitObject.any.value,
+    );
+
+    reset_bindings.reset(_repoPointer, object, resetType.value, nullptr);
+
+    object_bindings.free(object);
   }
 }
