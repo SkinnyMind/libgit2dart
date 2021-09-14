@@ -1,6 +1,9 @@
 import 'dart:ffi';
 import 'bindings/libgit2_bindings.dart';
 import 'bindings/tree.dart' as bindings;
+import 'bindings/diff.dart' as diff_bindings;
+import 'diff.dart';
+import 'index.dart';
 import 'repository.dart';
 import 'oid.dart';
 import 'git_types.dart';
@@ -66,6 +69,73 @@ class Tree {
 
   /// Get the number of entries listed in a tree.
   int get length => bindings.entryCount(_treePointer);
+
+  /// Creates a diff between a tree and the working directory.
+  ///
+  /// Throws a [LibGit2Error] if error occured.
+  Diff diffToWorkdir({
+    Set<GitDiff> flags = const {GitDiff.normal},
+    int contextLines = 3,
+    int interhunkLines = 0,
+  }) {
+    final repo = bindings.owner(_treePointer);
+    final int flagsInt =
+        flags.fold(0, (previousValue, e) => previousValue | e.value);
+
+    return Diff(diff_bindings.treeToWorkdir(
+      repo,
+      _treePointer,
+      flagsInt,
+      contextLines,
+      interhunkLines,
+    ));
+  }
+
+  /// Creates a diff between a tree and repository index.
+  ///
+  /// Throws a [LibGit2Error] if error occured.
+  Diff diffToIndex({
+    required Index index,
+    Set<GitDiff> flags = const {GitDiff.normal},
+    int contextLines = 3,
+    int interhunkLines = 0,
+  }) {
+    final repo = bindings.owner(_treePointer);
+    final int flagsInt =
+        flags.fold(0, (previousValue, e) => previousValue | e.value);
+
+    return Diff(diff_bindings.treeToIndex(
+      repo,
+      _treePointer,
+      index.pointer,
+      flagsInt,
+      contextLines,
+      interhunkLines,
+    ));
+  }
+
+  /// Creates a diff with the difference between two tree objects.
+  ///
+  /// Throws a [LibGit2Error] if error occured.
+  Diff diffToTree({
+    required Tree tree,
+    Set<GitDiff> flags = const {GitDiff.normal},
+    int contextLines = 3,
+    int interhunkLines = 0,
+  }) {
+    final repo = bindings.owner(_treePointer);
+    final int flagsInt =
+        flags.fold(0, (previousValue, e) => previousValue | e.value);
+
+    return Diff(diff_bindings.treeToTree(
+      repo,
+      _treePointer,
+      tree.pointer,
+      flagsInt,
+      contextLines,
+      interhunkLines,
+    ));
+  }
 
   /// Releases memory allocated for tree object.
   void free() => bindings.free(_treePointer);

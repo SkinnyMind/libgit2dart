@@ -43,15 +43,27 @@ void main() {
       repo.reset(sha, GitReset.soft);
       contents = file.readAsStringSync();
       expect(contents, 'Feature edit\n');
+
+      final index = repo.index;
+      final diff = index.diffToWorkdir();
+      expect(diff.deltas, isEmpty);
+
+      index.free();
     });
 
-    test('successfully resets with soft', () {
+    test('successfully resets with mixed', () {
       var contents = file.readAsStringSync();
       expect(contents, 'Feature edit\n');
 
       repo.reset(sha, GitReset.mixed);
       contents = file.readAsStringSync();
       expect(contents, 'Feature edit\n');
+
+      final index = repo.index;
+      final diff = index.diffToWorkdir();
+      expect(diff.deltas.length, 1);
+
+      index.free();
     });
   });
 }

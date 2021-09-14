@@ -601,3 +601,405 @@ class GitReset {
   @override
   String toString() => 'GitReset.$_name';
 }
+
+/// Flags for diff options.  A combination of these flags can be passed.
+class GitDiff {
+  const GitDiff._(this._value, this._name);
+  final int _value;
+  final String _name;
+
+  /// Normal diff, the default.
+  static const normal = GitDiff._(0, 'normal');
+
+  /// Reverse the sides of the diff.
+  static const reverse = GitDiff._(1, 'reverse');
+
+  /// Include ignored files in the diff.
+  static const includeIgnored = GitDiff._(2, 'includeIgnored');
+
+  /// Even with [GitDiff.includeUntracked], an entire ignored directory
+  /// will be marked with only a single entry in the diff; this flag
+  /// adds all files under the directory as IGNORED entries, too.
+  static const recurseIgnoredDirs = GitDiff._(4, 'recurseIgnoredDirs');
+
+  /// Include untracked files in the diff.
+  static const includeUntracked = GitDiff._(8, 'includeUntracked');
+
+  /// Even with [GitDiff.includeUntracked], an entire untracked
+  /// directory will be marked with only a single entry in the diff
+  /// (a la what core Git does in `git status`); this flag adds *all*
+  /// files under untracked directories as UNTRACKED entries, too.
+  static const recurseUntrackedDirs = GitDiff._(16, 'recurseUntrackedDirs');
+
+  /// Include unmodified files in the diff.
+  static const includeUnmodified = GitDiff._(32, 'includeUnmodified');
+
+  /// Normally, a type change between files will be converted into a
+  /// DELETED record for the old and an ADDED record for the new; this
+  /// options enabled the generation of TYPECHANGE delta records.
+  static const includeTypechange = GitDiff._(64, 'includeTypechange');
+
+  /// Even with [GitDiff.includeTypechange], blob->tree changes still
+  /// generally show as a DELETED blob.  This flag tries to correctly
+  /// label blob->tree transitions as TYPECHANGE records with new_file's
+  /// mode set to tree. Note: the tree SHA will not be available.
+  static const includeTypechangeTrees =
+      GitDiff._(128, 'includeTypechangeTrees');
+
+  /// Ignore file mode changes.
+  static const ignoreFilemode = GitDiff._(256, 'ignoreFilemode');
+
+  /// Treat all submodules as unmodified.
+  static const ignoreSubmodules = GitDiff._(512, 'ignoreSubmodules');
+
+  /// Use case insensitive filename comparisons.
+  static const ignoreCase = GitDiff._(1024, 'ignoreCase');
+
+  /// May be combined with [GitDiff.ignoreCase] to specify that a file
+  /// that has changed case will be returned as an add/delete pair.
+  static const includeCaseChange = GitDiff._(2048, 'includeCaseChange');
+
+  /// If the pathspec is set in the diff options, this flags indicates
+  /// that the paths will be treated as literal paths instead of
+  /// fnmatch patterns. Each path in the list must either be a full
+  /// path to a file or a directory. (A trailing slash indicates that
+  /// the path will _only_ match a directory). If a directory is
+  /// specified, all children will be included.
+  static const disablePathspecMatch = GitDiff._(4096, 'disablePathspecMatch');
+
+  /// Disable updating of the `binary` flag in delta records.  This is
+  /// useful when iterating over a diff if you don't need hunk and data
+  /// callbacks and want to avoid having to load file completely.
+  static const skipBinaryCheck = GitDiff._(8192, 'skipBinaryCheck');
+
+  /// When diff finds an untracked directory, to match the behavior of
+  /// core Git, it scans the contents for IGNORED and UNTRACKED files.
+  /// If *all* contents are IGNORED, then the directory is IGNORED; if
+  /// any contents are not IGNORED, then the directory is UNTRACKED.
+  /// This is extra work that may not matter in many cases.  This flag
+  /// turns off that scan and immediately labels an untracked directory
+  /// as UNTRACKED (changing the behavior to not match core Git).
+  static const enableFastUntrackedDirs =
+      GitDiff._(16384, 'enableFastUntrackedDirs');
+
+  /// When diff finds a file in the working directory with stat
+  /// information different from the index, but the OID ends up being the
+  /// same, write the correct stat information into the index. Note:
+  /// without this flag, diff will always leave the index untouched.
+  static const updateIndex = GitDiff._(32768, 'updateIndex');
+
+  /// Include unreadable files in the diff.
+  static const includeUnreadable = GitDiff._(65536, 'includeUnreadable');
+
+  /// Include unreadable files in the diff.
+  static const includeUnreadableAsUntracked =
+      GitDiff._(131072, 'includeUnreadableAsUntracked');
+
+  /// Use a heuristic that takes indentation and whitespace into account
+  /// which generally can produce better diffs when dealing with ambiguous
+  /// diff hunks.
+  static const indentHeuristic = GitDiff._(262144, 'indentHeuristic');
+
+  /// Treat all files as text, disabling binary attributes & detection.
+  static const forceText = GitDiff._(1048576, 'forceText');
+
+  /// Treat all files as binary, disabling text diffs.
+  static const forceBinary = GitDiff._(2097152, 'forceBinary');
+
+  /// Ignore all whitespace.
+  static const ignoreWhitespace = GitDiff._(4194304, 'ignoreWhitespace');
+
+  /// Ignore changes in amount of whitespace.
+  static const ignoreWhitespaceChange =
+      GitDiff._(8388608, 'ignoreWhitespaceChange');
+
+  /// Ignore whitespace at end of line.
+  static const ignoreWhitespaceEOL = GitDiff._(16777216, 'ignoreWhitespaceEOL');
+
+  /// When generating patch text, include the content of untracked
+  /// files. This automatically turns on [GitDiff.includeUntracked] but
+  /// it does not turn on [GitDiff.recurseUntrackedDirs]. Add that
+  /// flag if you want the content of every single UNTRACKED file.
+  static const showUntrackedContent =
+      GitDiff._(33554432, 'showUntrackedContent');
+
+  /// When generating output, include the names of unmodified files if
+  /// they are included in the git diff.  Normally these are skipped in
+  /// the formats that list files (e.g. name-only, name-status, raw).
+  /// Even with this, these will not be included in patch format.
+  static const showUnmodified = GitDiff._(67108864, 'showUnmodified');
+
+  /// Use the "patience diff" algorithm.
+  static const patience = GitDiff._(268435456, 'patience');
+
+  /// Take extra time to find minimal diff.
+  static const minimal = GitDiff._(536870912, 'minimal');
+
+  /// Include the necessary deflate / delta information so that `git-apply`
+  /// can apply given diff information to binary files.
+  static const showBinary = GitDiff._(1073741824, 'showBinary');
+
+  static const List<GitDiff> values = [
+    normal,
+    reverse,
+    includeIgnored,
+    recurseIgnoredDirs,
+    includeUntracked,
+    recurseUntrackedDirs,
+    includeUnmodified,
+    includeTypechange,
+    includeTypechangeTrees,
+    ignoreFilemode,
+    ignoreSubmodules,
+    ignoreCase,
+    includeCaseChange,
+    disablePathspecMatch,
+    skipBinaryCheck,
+    enableFastUntrackedDirs,
+    updateIndex,
+    includeUnreadable,
+    includeUnreadableAsUntracked,
+    indentHeuristic,
+    forceText,
+    forceBinary,
+    ignoreWhitespace,
+    ignoreWhitespaceChange,
+    ignoreWhitespaceEOL,
+    showUntrackedContent,
+    showUnmodified,
+    patience,
+    minimal,
+    showBinary,
+  ];
+
+  int get value => _value;
+
+  @override
+  String toString() => 'GitDiff.$_name';
+}
+
+/// What type of change is described by a git_diff_delta?
+///
+/// [GitDelta.renamed] and [GitDelta.copied] will only show up if you run
+/// `findSimilar()` on the diff object.
+///
+/// [GitDelta.typechange] only shows up given [GitDiff.includeTypechange]
+/// in the option flags (otherwise type changes will be split into ADDED /
+/// DELETED pairs).
+class GitDelta {
+  const GitDelta._(this._value, this._name);
+  final int _value;
+  final String _name;
+
+  /// No changes.
+  static const unmodified = GitDelta._(0, 'unmodified');
+
+  /// Entry does not exist in old version.
+  static const added = GitDelta._(1, 'added');
+
+  /// Entry does not exist in new version.
+  static const deleted = GitDelta._(2, 'deleted');
+
+  /// Entry content changed between old and new.
+  static const modified = GitDelta._(3, 'modified');
+
+  /// Entry was renamed between old and new.
+  static const renamed = GitDelta._(4, 'renamed');
+
+  /// Entry was copied from another old entry.
+  static const copied = GitDelta._(5, 'copied');
+
+  /// Entry is ignored item in workdir.
+  static const ignored = GitDelta._(6, 'ignored');
+
+  /// Entry is is untracked item in workdir.
+  static const untracked = GitDelta._(7, 'untracked');
+
+  /// Type of entry changed between old and new.
+  static const typechange = GitDelta._(8, 'typechange');
+
+  /// Entry is unreadable.
+  static const unreadable = GitDelta._(9, 'unreadable');
+
+  /// Entry in the index is conflicted.
+  static const conflicted = GitDelta._(10, 'conflicted');
+
+  static const List<GitDelta> values = [
+    unmodified,
+    added,
+    deleted,
+    modified,
+    renamed,
+    copied,
+    ignored,
+    untracked,
+    typechange,
+    unreadable,
+    conflicted,
+  ];
+
+  int get value => _value;
+
+  @override
+  String toString() => 'GitDelta.$_name';
+}
+
+/// Flags for the delta object and the file objects on each side.
+class GitDiffFlag {
+  const GitDiffFlag._(this._value, this._name);
+  final int _value;
+  final String _name;
+
+  /// File(s) treated as binary data.
+  static const binary = GitDiffFlag._(1, 'binary');
+
+  /// File(s) treated as text data.
+  static const notBinary = GitDiffFlag._(2, 'notBinary');
+
+  /// `id` value is known correct.
+  static const validId = GitDiffFlag._(4, 'validId');
+
+  /// File exists at this side of the delta.
+  static const exists = GitDiffFlag._(8, 'exists');
+
+  static const List<GitDiffFlag> values = [binary, notBinary, validId, exists];
+
+  int get value => _value;
+
+  @override
+  String toString() => 'GitDiffFlag.$_name';
+}
+
+/// Formatting options for diff stats.
+class GitDiffStats {
+  const GitDiffStats._(this._value, this._name);
+  final int _value;
+  final String _name;
+
+  /// No stats.
+  static const none = GitDiffStats._(0, 'none');
+
+  /// Full statistics, equivalent of `--stat`.
+  static const full = GitDiffStats._(1, 'full');
+
+  /// Short statistics, equivalent of `--shortstat`.
+  static const short = GitDiffStats._(2, 'short');
+
+  /// Number statistics, equivalent of `--numstat`.
+  static const number = GitDiffStats._(4, 'number');
+
+  /// Extended header information such as creations, renames and mode changes,
+  /// equivalent of `--summary`.
+  static const includeSummary = GitDiffStats._(8, 'includeSummary');
+
+  static const List<GitDiffStats> values = [
+    none,
+    full,
+    short,
+    number,
+    includeSummary,
+  ];
+
+  int get value => _value;
+
+  @override
+  String toString() => 'GitDiffStats.$_name';
+}
+
+/// Formatting options for diff stats.
+class GitDiffFind {
+  const GitDiffFind._(this._value, this._name);
+  final int _value;
+  final String _name;
+
+  /// Obey `diff.renames`. Overridden by any other [GitDiffFind] flag.
+  static const byConfig = GitDiffFind._(0, 'byConfig');
+
+  /// Look for renames? (`--find-renames`)
+  static const renames = GitDiffFind._(1, 'renames');
+
+  /// Consider old side of MODIFIED for renames? (`--break-rewrites=N`)
+  static const renamesFromRewrites = GitDiffFind._(2, 'renamesFromRewrites');
+
+  /// Look for copies? (a la `--find-copies`)
+  static const copies = GitDiffFind._(4, 'copies');
+
+  /// Consider UNMODIFIED as copy sources? (`--find-copies-harder`)
+  ///
+  /// For this to work correctly, use [GitDiff.includeUnmodified] when
+  /// the initial git diff is being generated.
+  static const copiesFromUnmodified = GitDiffFind._(8, 'copiesFromUnmodified');
+
+  /// Mark significant rewrites for split (`--break-rewrites=/M`)
+  static const rewrites = GitDiffFind._(16, 'rewrites');
+
+  /// Actually split large rewrites into delete/add pairs.
+  static const breakRewrites = GitDiffFind._(32, 'breakRewrites');
+
+  /// Mark rewrites for split and break into delete/add pairs.
+  static const andBreakRewrites = GitDiffFind._(48, 'andBreakRewrites');
+
+  /// Find renames/copies for UNTRACKED items in working directory.
+  ///
+  /// For this to work correctly, use [GitDiff.includeUntracked] when the
+  /// initial git diff is being generated (and obviously the diff must
+  /// be against the working directory for this to make sense).
+  static const forUntracked = GitDiffFind._(64, 'forUntracked');
+
+  /// Turn on all finding features.
+  static const all = GitDiffFind._(255, 'all');
+
+  /// Measure similarity ignoring all whitespace.
+  static const ignoreWhitespace = GitDiffFind._(4096, 'ignoreWhitespace');
+
+  /// Measure similarity including all data.
+  static const dontIgnoreWhitespace =
+      GitDiffFind._(8192, 'dontIgnoreWhitespace');
+
+  /// Measure similarity only by comparing SHAs (fast and cheap).
+  static const exactMatchOnly = GitDiffFind._(16384, 'exactMatchOnly');
+
+  /// Do not break rewrites unless they contribute to a rename.
+  ///
+  /// Normally, [GitDiffFind.andBreakRewrites] will measure the self-
+  /// similarity of modified files and split the ones that have changed a
+  /// lot into a DELETE / ADD pair.  Then the sides of that pair will be
+  /// considered candidates for rename and copy detection.
+  ///
+  /// If you add this flag in and the split pair is *not* used for an
+  /// actual rename or copy, then the modified record will be restored to
+  /// a regular MODIFIED record instead of being split.
+  static const breakRewritesForRenamesOnly =
+      GitDiffFind._(32768, 'breakRewritesForRenamesOnly');
+
+  /// Remove any UNMODIFIED deltas after find_similar is done.
+  ///
+  /// Using [GitDiffFind.copiesFromUnmodified] to emulate the
+  /// --find-copies-harder behavior requires building a diff with the
+  /// [GitDiff.includeUnmodified] flag. If you do not want UNMODIFIED
+  /// records in the final result, pass this flag to have them removed.
+  static const removeUnmodified = GitDiffFind._(65536, 'removeUnmodified');
+
+  static const List<GitDiffFind> values = [
+    byConfig,
+    renames,
+    renamesFromRewrites,
+    copies,
+    copiesFromUnmodified,
+    rewrites,
+    breakRewrites,
+    andBreakRewrites,
+    forUntracked,
+    all,
+    ignoreWhitespace,
+    dontIgnoreWhitespace,
+    exactMatchOnly,
+    breakRewritesForRenamesOnly,
+    removeUnmodified,
+  ];
+
+  int get value => _value;
+
+  @override
+  String toString() => 'GitDiffFind.$_name';
+}

@@ -1,8 +1,10 @@
 import 'dart:ffi';
 import 'package:ffi/ffi.dart';
+import 'package:libgit2dart/libgit2dart.dart';
 import 'package:libgit2dart/src/tree.dart';
 import 'bindings/libgit2_bindings.dart';
 import 'bindings/index.dart' as bindings;
+import 'bindings/diff.dart' as diff_bindings;
 import 'oid.dart';
 import 'git_types.dart';
 import 'repository.dart';
@@ -17,8 +19,10 @@ class Index {
     libgit2.git_libgit2_init();
   }
 
-  /// Pointer to memory address for allocated index object.
   late final Pointer<git_index> _indexPointer;
+
+  /// Pointer to memory address for allocated index object.
+  Pointer<git_index> get pointer => _indexPointer;
 
   /// Returns index entry located at provided 0-based position or string path.
   ///
@@ -154,7 +158,7 @@ class Index {
   /// Throws a [LibGit2Error] if error occured.
   void write() => bindings.write(_indexPointer);
 
-  /// Write the index as a tree.
+  /// Writes the index as a tree.
   ///
   /// This method will scan the index and write a representation of its current state back to disk;
   /// it recursively creates tree objects for each of the subtrees stored in the index, but only
@@ -177,10 +181,54 @@ class Index {
   void remove(String path, [int stage = 0]) =>
       bindings.remove(_indexPointer, path, stage);
 
-  /// Remove all matching index entries.
+  /// Removes all matching index entries.
   ///
   /// Throws a [LibGit2Error] if error occured.
   void removeAll(List<String> path) => bindings.removeAll(_indexPointer, path);
+
+  /// Creates a diff between the repository index and the workdir directory.
+  ///
+  /// Throws a [LibGit2Error] if error occured.
+  Diff diffToWorkdir({
+    Set<GitDiff> flags = const {GitDiff.normal},
+    int contextLines = 3,
+    int interhunkLines = 0,
+  }) {
+    final repo = bindings.owner(_indexPointer);
+    final int flagsInt =
+        flags.fold(0, (previousValue, e) => previousValue | e.value);
+
+    return Diff(diff_bindings.indexToWorkdir(
+      repo,
+      _indexPointer,
+      flagsInt,
+      contextLines,
+      interhunkLines,
+    ));
+  }
+
+  /// Creates a diff between a tree and repository index.
+  ///
+  /// Throws a [LibGit2Error] if error occured.
+  Diff diffToTree({
+    required Tree tree,
+    Set<GitDiff> flags = const {GitDiff.normal},
+    int contextLines = 3,
+    int interhunkLines = 0,
+  }) {
+    final repo = bindings.owner(_indexPointer);
+    final int flagsInt =
+        flags.fold(0, (previousValue, e) => previousValue | e.value);
+
+    return Diff(diff_bindings.treeToIndex(
+      repo,
+      tree.pointer,
+      _indexPointer,
+      flagsInt,
+      contextLines,
+      interhunkLines,
+    ));
+  }
 
   /// Releases memory allocated for index object.
   void free() => bindings.free(_indexPointer);
