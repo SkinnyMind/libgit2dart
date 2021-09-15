@@ -75,6 +75,18 @@ class Diff {
     );
   }
 
+  /// Calculate the patch ID for the given patch.
+  ///
+  /// Calculate a stable patch ID for the given patch by summing the hash of the file diffs,
+  /// ignoring whitespace and line numbers. This can be used to derive whether two diffs are
+  /// the same with a high probability.
+  ///
+  /// Currently, this function only calculates stable patch IDs, as defined in `git-patch-id(1)`,
+  /// and should in fact generate the same IDs as the upstream git project does.
+  ///
+  /// Throws a [LibGit2Error] if error occured.
+  Oid get patchId => Oid(bindings.patchId(_diffPointer));
+
   /// Releases memory allocated for diff object.
   void free() => bindings.free(_diffPointer);
 }

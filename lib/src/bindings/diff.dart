@@ -199,6 +199,27 @@ void findSimilar(
   calloc.free(opts);
 }
 
+/// Calculate the patch ID for the given patch.
+///
+/// Calculate a stable patch ID for the given patch by summing the hash of the file diffs,
+/// ignoring whitespace and line numbers. This can be used to derive whether two diffs are
+/// the same with a high probability.
+///
+/// Currently, this function only calculates stable patch IDs, as defined in `git-patch-id(1)`,
+/// and should in fact generate the same IDs as the upstream git project does.
+///
+/// Throws a [LibGit2Error] if error occured.
+Pointer<git_oid> patchId(Pointer<git_diff> diff) {
+  final out = calloc<git_oid>();
+  final error = libgit2.git_diff_patchid(out, diff, nullptr);
+
+  if (error < 0) {
+    throw LibGit2Error(libgit2.git_error_last());
+  } else {
+    return out;
+  }
+}
+
 /// Return the diff delta for an entry in the diff list.
 ///
 /// Throws [RangeError] if index out of range.

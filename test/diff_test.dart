@@ -188,6 +188,7 @@ index e69de29..c217c63 100644
       expect(diff.length, 1);
       expect(stats.filesChanged, 1);
       expect(stats.insertions, 1);
+      expect(diff.patchId.sha, '699556913185bc38632ae20a49d5c18b9233335e');
 
       stats.free();
       diff.free();
