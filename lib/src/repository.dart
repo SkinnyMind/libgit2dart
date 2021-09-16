@@ -798,4 +798,25 @@ class Repository {
   }) {
     return a.diff(newBlob: b, oldAsPath: aPath, newAsPath: bPath);
   }
+
+  /// Applies the [diff] to the given repository, making changes directly in the working directory.
+  ///
+  /// Throws a [LibGit2Error] if error occured.
+  void apply(Diff diff) {
+    diff_bindings.apply(
+      _repoPointer,
+      diff.pointer,
+      GitApplyLocation.workdir.value,
+    );
+  }
+
+  /// Checks if the [diff] will apply to HEAD.
+  bool applies(Diff diff) {
+    return diff_bindings.apply(
+      _repoPointer,
+      diff.pointer,
+      GitApplyLocation.index.value,
+      true,
+    );
+  }
 }

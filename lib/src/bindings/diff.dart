@@ -267,6 +267,32 @@ Pointer<git_buf> addToBuf(Pointer<git_patch> patch, Pointer<git_buf> buffer) {
   }
 }
 
+/// Apply a diff to the given repository, making changes directly in the working directory,
+/// the index, or both.
+///
+/// Throws a [LibGit2Error] if error occured.
+bool apply(
+  Pointer<git_repository> repo,
+  Pointer<git_diff> diff,
+  int location, [
+  bool check = false,
+]) {
+  final opts = calloc<git_apply_options>();
+  libgit2.git_apply_options_init(opts, GIT_APPLY_OPTIONS_VERSION);
+  if (check) {
+    opts.ref.flags = git_apply_flags_t.GIT_APPLY_CHECK;
+  }
+  final error = libgit2.git_apply(repo, diff, location, opts);
+
+  calloc.free(opts);
+
+  if (error < 0) {
+    return check ? false : throw LibGit2Error(libgit2.git_error_last());
+  } else {
+    return true;
+  }
+}
+
 /// Free a previously allocated diff stats.
 void statsFree(Pointer<git_diff_stats> stats) =>
     libgit2.git_diff_stats_free(stats);

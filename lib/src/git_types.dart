@@ -1046,3 +1046,29 @@ class GitDiffLine {
   @override
   String toString() => 'GitDiffLine.$_name';
 }
+
+/// Possible application locations for `apply()`
+class GitApplyLocation {
+  const GitApplyLocation._(this._value, this._name);
+  final int _value;
+  final String _name;
+
+  /// Apply the patch to the workdir, leaving the index untouched.
+  /// This is the equivalent of `git apply` with no location argument.
+  static const workdir = GitApplyLocation._(0, 'workdir');
+
+  /// Apply the patch to the index, leaving the working directory
+  /// untouched. This is the equivalent of `git apply --cached`.
+  static const index = GitApplyLocation._(1, 'index');
+
+  /// Apply the patch to both the working directory and the index.
+  /// This is the equivalent of `git apply --index`.
+  static const both = GitApplyLocation._(2, 'both');
+
+  static const List<GitApplyLocation> values = [workdir, index, both];
+
+  int get value => _value;
+
+  @override
+  String toString() => 'GitApplyLocation.$_name';
+}

@@ -194,6 +194,22 @@ index e69de29..c217c63 100644
       diff.free();
     });
 
+    test(
+        'checks if diff can be applied to repository and successfully applies it',
+        () {
+      final diff = Diff.parse(patchText);
+      final file = File('${tmpDir}subdir/modified_file');
+
+      repo.reset('a763aa560953e7cfb87ccbc2f536d665aa4dff22', GitReset.hard);
+      expect(file.readAsStringSync(), '');
+
+      expect(repo.applies(diff), true);
+      repo.apply(diff);
+      expect(file.readAsStringSync(), 'Modified content\n');
+
+      diff.free();
+    });
+
     test('successfully creates patch from entry index in diff', () {
       final diff = Diff.parse(patchText);
       final patch = Patch.fromDiff(diff, 0);
