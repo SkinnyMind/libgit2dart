@@ -56,6 +56,21 @@ void main() {
       commit.free();
     });
 
+    test('successfully reverts commit', () {
+      final to = repo['78b8bf123e3952c970ae5c1ce0a3ea1d1336f6e8'] as Commit;
+      final from = repo['821ed6e80627b8769d170a293862f9fc60825226'] as Commit;
+      final index = repo.index;
+      expect(index.contains('dir/dir_file.txt'), true);
+
+      final revertIndex = repo.revertCommit(revertCommit: from, ourCommit: to);
+      expect(revertIndex.contains('dir/dir_file.txt'), false);
+
+      revertIndex.free();
+      index.free();
+      to.free();
+      from.free();
+    });
+
     test('successfully creates commit', () {
       final oid = Commit.create(
         repo: repo,

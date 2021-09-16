@@ -619,6 +619,24 @@ class Repository {
     return Index(result);
   }
 
+  /// Reverts the given commit against the given "our" commit, producing an index that
+  /// reflects the result of the revert.
+  ///
+  /// [mainline] is parent of the [revertCommit] if it is a merge (i.e. 1, 2).
+  ///
+  /// The returned index must be freed explicitly with `free()`.
+  ///
+  /// Throws a [LibGit2Error] if error occured.
+  Index revertCommit(
+      {required Commit revertCommit, required Commit ourCommit, mainline = 0}) {
+    return Index(commit_bindings.revertCommit(
+      _repoPointer,
+      revertCommit.pointer,
+      ourCommit.pointer,
+      mainline,
+    ));
+  }
+
   /// Merges two trees, producing an index that reflects the result of the merge.
   /// The index may be written as-is to the working directory or checked out. If the index
   /// is to be converted to a tree, the caller should resolve any conflicts that arose as part

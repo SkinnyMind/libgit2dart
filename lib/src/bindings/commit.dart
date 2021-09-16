@@ -191,6 +191,45 @@ Pointer<git_oid> tree(Pointer<git_commit> commit) {
   return libgit2.git_commit_tree_id(commit);
 }
 
+/// Reverts the given commit against the given "our" commit, producing an index that
+/// reflects the result of the revert.
+///
+/// The returned index must be freed explicitly with `free()`.
+///
+/// Throws a [LibGit2Error] if error occured.
+Pointer<git_index> revertCommit(
+  Pointer<git_repository> repo,
+  Pointer<git_commit> revertCommit,
+  Pointer<git_commit> ourCommit,
+  int mainline,
+) {
+  final out = calloc<Pointer<git_index>>();
+  final opts = calloc<git_merge_options>();
+  final optsError =
+      libgit2.git_merge_options_init(opts, GIT_MERGE_OPTIONS_VERSION);
+
+  if (optsError < 0) {
+    throw LibGit2Error(libgit2.git_error_last());
+  }
+
+  final error = libgit2.git_revert_commit(
+    out,
+    repo,
+    revertCommit,
+    ourCommit,
+    mainline,
+    opts,
+  );
+
+  calloc.free(opts);
+
+  if (error < 0) {
+    throw LibGit2Error(libgit2.git_error_last());
+  } else {
+    return out.value;
+  }
+}
+
 /// Get the repository that contains the commit.
 Pointer<git_repository> owner(Pointer<git_commit> commit) =>
     libgit2.git_commit_owner(commit);
