@@ -1,6 +1,9 @@
 import 'dart:ffi';
 import 'bindings/libgit2_bindings.dart';
 import 'bindings/blob.dart' as bindings;
+import 'bindings/patch.dart' as patch_bindings;
+import 'git_types.dart';
+import 'patch.dart';
 import 'oid.dart';
 import 'repository.dart';
 import 'util.dart';
@@ -65,6 +68,64 @@ class Blob {
 
   /// Returns the size in bytes of the contents of a blob.
   int get size => bindings.size(_blobPointer);
+
+  /// Directly generate a [Patch] from the difference between two blobs.
+  ///
+  /// Should be freed with `free()` to release allocated memory.
+  ///
+  /// Throws a [LibGit2Error] if error occured.
+  Patch diff({
+    required Blob? newBlob,
+    String? oldAsPath,
+    String? newAsPath,
+    Set<GitDiff> flags = const {GitDiff.normal},
+    int contextLines = 3,
+    int interhunkLines = 0,
+  }) {
+    final int flagsInt =
+        flags.fold(0, (previousValue, e) => previousValue | e.value);
+
+    final result = patch_bindings.fromBlobs(
+      _blobPointer,
+      oldAsPath,
+      newBlob?.pointer,
+      newAsPath,
+      flagsInt,
+      contextLines,
+      interhunkLines,
+    );
+
+    return Patch(result['patch'], result['a'], result['b']);
+  }
+
+  /// Directly generate a [Patch] from the difference between the blob and a buffer.
+  ///
+  /// Should be freed with `free()` to release allocated memory.
+  ///
+  /// Throws a [LibGit2Error] if error occured.
+  Patch diffToBuffer({
+    required String? buffer,
+    String? oldAsPath,
+    String? bufferAsPath,
+    Set<GitDiff> flags = const {GitDiff.normal},
+    int contextLines = 3,
+    int interhunkLines = 0,
+  }) {
+    final int flagsInt =
+        flags.fold(0, (previousValue, e) => previousValue | e.value);
+
+    final result = patch_bindings.fromBlobAndBuffer(
+      _blobPointer,
+      oldAsPath,
+      buffer,
+      bufferAsPath,
+      flagsInt,
+      contextLines,
+      interhunkLines,
+    );
+
+    return Patch(result['patch'], result['a'], result['b']);
+  }
 
   /// Releases memory allocated for blob object.
   void free() => bindings.free(_blobPointer);

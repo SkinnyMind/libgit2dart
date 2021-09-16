@@ -9,6 +9,7 @@ import 'bindings/status.dart' as status_bindings;
 import 'bindings/commit.dart' as commit_bindings;
 import 'bindings/checkout.dart' as checkout_bindings;
 import 'bindings/reset.dart' as reset_bindings;
+import 'bindings/diff.dart' as diff_bindings;
 import 'branch.dart';
 import 'commit.dart';
 import 'config.dart';
@@ -722,5 +723,79 @@ class Repository {
     reset_bindings.reset(_repoPointer, object, resetType.value, nullptr);
 
     object_bindings.free(object);
+  }
+
+  /// Returns a [Diff] with changes between the trees, tree and index, tree and workdir or
+  /// index and workdir.
+  ///
+  /// If [b] is null, by default the [a] tree compared to working directory. If [cached] is
+  /// set to true the [a] tree compared to index/staging area.
+  ///
+  /// Throws a [LibGit2Error] if error occured.
+  Diff diff({
+    Tree? a,
+    Tree? b,
+    bool cached = false,
+    Set<GitDiff> flags = const {GitDiff.normal},
+    int contextLines = 3,
+    int interhunkLines = 0,
+  }) {
+    final int flagsInt =
+        flags.fold(0, (previousValue, e) => previousValue | e.value);
+
+    if (a is Tree && b is Tree) {
+      return Diff(diff_bindings.treeToTree(
+        _repoPointer,
+        a.pointer,
+        b.pointer,
+        flagsInt,
+        contextLines,
+        interhunkLines,
+      ));
+    } else if (a is Tree && b == null) {
+      if (cached) {
+        return Diff(diff_bindings.treeToIndex(
+          _repoPointer,
+          a.pointer,
+          index.pointer,
+          flagsInt,
+          contextLines,
+          interhunkLines,
+        ));
+      } else {
+        return Diff(diff_bindings.treeToWorkdir(
+          _repoPointer,
+          a.pointer,
+          flagsInt,
+          contextLines,
+          interhunkLines,
+        ));
+      }
+    } else if (a == null && b == null) {
+      return Diff(diff_bindings.indexToWorkdir(
+        _repoPointer,
+        index.pointer,
+        flagsInt,
+        contextLines,
+        interhunkLines,
+      ));
+    } else {
+      throw ArgumentError.notNull('a');
+    }
+  }
+
+  /// Returns a [Patch] with changes between the blobs.
+  ///
+  /// Throws a [LibGit2Error] if error occured.
+  Patch diffBlobs({
+    required Blob a,
+    required Blob b,
+    String? aPath,
+    String? bPath,
+    Set<GitDiff> flags = const {GitDiff.normal},
+    int contextLines = 3,
+    int interhunkLines = 0,
+  }) {
+    return a.diff(newBlob: b, oldAsPath: aPath, newAsPath: bPath);
   }
 }

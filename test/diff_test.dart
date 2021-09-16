@@ -54,7 +54,7 @@ void main() {
     'subdir/modified_file',
   ];
 
-  const patch = """
+  const patchText = """
 diff --git a/subdir/modified_file b/subdir/modified_file
 index e69de29..c217c63 100644
 --- a/subdir/modified_file
@@ -94,7 +94,7 @@ index e69de29..c217c63 100644
   group('Diff', () {
     test('successfully returns diff between index and workdir', () {
       final index = repo.index;
-      final diff = index.diffToWorkdir();
+      final diff = repo.diff();
 
       expect(diff.length, 8);
       for (var i = 0; i < diff.deltas.length; i++) {
@@ -122,7 +122,7 @@ index e69de29..c217c63 100644
 
     test('successfully returns diff between tree and workdir', () {
       final tree = (repo[repo.head.target.sha] as Commit).tree;
-      final diff = tree.diffToWorkdir();
+      final diff = repo.diff(a: tree);
 
       expect(diff.length, 9);
       for (var i = 0; i < diff.deltas.length; i++) {
@@ -136,7 +136,7 @@ index e69de29..c217c63 100644
     test('successfully returns diff between tree and index', () {
       final index = repo.index;
       final tree = (repo[repo.head.target.sha] as Commit).tree;
-      final diff = tree.diffToIndex(index: index);
+      final diff = repo.diff(a: tree, cached: true);
 
       expect(diff.length, 8);
       for (var i = 0; i < diff.deltas.length; i++) {
@@ -151,7 +151,7 @@ index e69de29..c217c63 100644
     test('successfully returns diff between tree and tree', () {
       final tree1 = (repo[repo.head.target.sha] as Commit).tree;
       final tree2 = repo['b85d53c9236e89aff2b62558adaa885fd1d6ff1c'] as Tree;
-      final diff = tree1.diffToTree(tree: tree2);
+      final diff = repo.diff(a: tree1, b: tree2);
 
       expect(diff.length, 10);
       for (var i = 0; i < diff.deltas.length; i++) {
@@ -182,7 +182,7 @@ index e69de29..c217c63 100644
     });
 
     test('successfully parses provided diff', () {
-      final diff = Diff.parse(patch);
+      final diff = Diff.parse(patchText);
       final stats = diff.stats;
 
       expect(diff.length, 1);
@@ -191,6 +191,17 @@ index e69de29..c217c63 100644
       expect(diff.patchId.sha, '699556913185bc38632ae20a49d5c18b9233335e');
 
       stats.free();
+      diff.free();
+    });
+
+    test('successfully creates patch from entry index in diff', () {
+      final diff = Diff.parse(patchText);
+      final patch = Patch.fromDiff(diff, 0);
+
+      expect(diff.length, 1);
+      expect(patch.text, patchText);
+
+      patch.free();
       diff.free();
     });
 
@@ -217,7 +228,7 @@ index e69de29..c217c63 100644
       newTree.free();
     });
 
-    test('returns deltas and patches', () {
+    test('returns deltas', () {
       final index = repo.index;
       final diff = index.diffToWorkdir();
 
@@ -267,6 +278,49 @@ index e69de29..c217c63 100644
       stats.free();
       diff.free();
       index.free();
+    });
+
+    test('returns patch diff string', () {
+      final diff = Diff.parse(patchText);
+
+      expect(diff.patch, patchText);
+
+      diff.free();
+    });
+
+    test('returns hunks in a patch', () {
+      final diff = Diff.parse(patchText);
+      final patch = Patch.fromDiff(diff, 0);
+      final hunk = patch.hunks[0];
+
+      expect(patch.hunks.length, 1);
+      expect(hunk.linesCount, 1);
+      expect(hunk.oldStart, 0);
+      expect(hunk.oldLines, 0);
+      expect(hunk.newStart, 1);
+      expect(hunk.newLines, 1);
+      expect(hunk.header, '\x00\x00\x00\x00@@ -0,0 +1');
+
+      patch.free();
+      diff.free();
+    });
+
+    test('returns lines in a hunk', () {
+      final diff = Diff.parse(patchText);
+      final patch = Patch.fromDiff(diff, 0);
+      final hunk = patch.hunks[0];
+      final line = hunk.lines[0];
+
+      expect(hunk.lines.length, 1);
+      expect(line.origin, GitDiffLine.addition);
+      expect(line.oldLineNumber, -1);
+      expect(line.newLineNumber, 1);
+      expect(line.numLines, 1);
+      expect(line.contentOffset, 155);
+      expect(line.content, 'Modified content\n');
+
+      patch.free();
+      diff.free();
     });
   });
 }

@@ -2,8 +2,10 @@ import 'dart:ffi';
 import 'package:ffi/ffi.dart';
 import 'bindings/libgit2_bindings.dart';
 import 'bindings/diff.dart' as bindings;
+import 'bindings/patch.dart' as patch_bindings;
 import 'git_types.dart';
 import 'oid.dart';
+import 'patch.dart';
 import 'util.dart';
 
 class Diff {
@@ -36,6 +38,22 @@ class Diff {
       deltas.add(DiffDelta(bindings.getDeltaByIndex(_diffPointer, i)));
     }
     return deltas;
+  }
+
+  /// Returns a patch diff string.
+  String get patch {
+    final length = bindings.length(_diffPointer);
+    var buffer = calloc<git_buf>(sizeOf<git_buf>());
+
+    for (var i = 0; i < length; i++) {
+      final patch = Patch.fromDiff(this, i);
+      buffer = bindings.addToBuf(patch.pointer, buffer);
+      patch.free();
+    }
+
+    final result = buffer.ref.ptr.cast<Utf8>().toDartString();
+    calloc.free(buffer);
+    return result;
   }
 
   /// Accumulates diff statistics for all patches.
@@ -222,4 +240,96 @@ class DiffStats {
 
   /// Releases memory allocated for diff stats object.
   void free() => bindings.statsFree(_diffStatsPointer);
+}
+
+class DiffHunk {
+  /// Initializes a new instance of [DiffHunk] class from provided
+  /// pointers to patch object and diff hunk object in memory and number of lines in hunk.
+  DiffHunk(
+    this._patchPointer,
+    this._diffHunkPointer,
+    this.linesCount,
+    this.index,
+  );
+
+  /// Pointer to memory address for allocated diff hunk object.
+  final Pointer<git_diff_hunk> _diffHunkPointer;
+
+  /// Pointer to memory address for allocated patch object.
+  final Pointer<git_patch> _patchPointer;
+
+  /// Returns count of total lines in this hunk.
+  late final int linesCount;
+
+  /// Returns index of this hunk in the patch.
+  late final int index;
+
+  /// Returns starting line number in 'old file'.
+  int get oldStart => _diffHunkPointer.ref.old_start;
+
+  /// Returns number of lines in 'old file'.
+  int get oldLines => _diffHunkPointer.ref.old_lines;
+
+  /// Returns starting line number in 'new file'.
+  int get newStart => _diffHunkPointer.ref.new_start;
+
+  /// Returns number of lines in 'new file'.
+  int get newLines => _diffHunkPointer.ref.new_lines;
+
+  /// Returns header of a hunk.
+  String get header {
+    var list = <int>[];
+    for (var i = 0; i < _diffHunkPointer.ref.header_len; i++) {
+      list.add(_diffHunkPointer.ref.header[i]);
+    }
+    return String.fromCharCodes(list);
+  }
+
+  /// Returns list of lines in a hunk of a patch.
+  ///
+  /// Throws a [LibGit2Error] if error occured.
+  List<DiffLine> get lines {
+    var lines = <DiffLine>[];
+    for (var i = 0; i < linesCount; i++) {
+      lines.add(DiffLine(patch_bindings.lines(_patchPointer, index, i)));
+    }
+    return lines;
+  }
+}
+
+class DiffLine {
+  /// Initializes a new instance of [DiffLine] class from provided
+  /// pointer to diff line object in memory.
+  DiffLine(this._diffLinePointer);
+
+  /// Pointer to memory address for allocated diff line object.
+  final Pointer<git_diff_line> _diffLinePointer;
+
+  /// Returns type of the line.
+  GitDiffLine get origin {
+    final originInt = _diffLinePointer.ref.origin;
+    late final GitDiffLine result;
+    for (var flag in GitDiffLine.values) {
+      if (originInt == flag.value) {
+        result = flag;
+      }
+    }
+    return result;
+  }
+
+  /// Returns line number in old file or -1 for added line.
+  int get oldLineNumber => _diffLinePointer.ref.old_lineno;
+
+  /// Returns line number in new file or -1 for deleted line.
+  int get newLineNumber => _diffLinePointer.ref.new_lineno;
+
+  /// Returns number of newline characters in content.
+  int get numLines => _diffLinePointer.ref.num_lines;
+
+  /// Returns offset in the original file to the content.
+  int get contentOffset => _diffLinePointer.ref.content_offset;
+
+  /// Returns content of the diff line.
+  String get content =>
+      _diffLinePointer.ref.content.cast<Utf8>().toDartString();
 }

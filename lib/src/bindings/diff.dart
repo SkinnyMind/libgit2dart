@@ -15,16 +15,7 @@ Pointer<git_diff> indexToWorkdir(
   int interhunkLines,
 ) {
   final out = calloc<Pointer<git_diff>>();
-  final opts = calloc<git_diff_options>();
-  final optsError =
-      libgit2.git_diff_options_init(opts, GIT_DIFF_OPTIONS_VERSION);
-  opts.ref.flags = flags;
-  opts.ref.context_lines = contextLines;
-  opts.ref.interhunk_lines = interhunkLines;
-
-  if (optsError < 0) {
-    throw LibGit2Error(libgit2.git_error_last());
-  }
+  final opts = _diffOptionsInit(flags, contextLines, interhunkLines);
 
   libgit2.git_diff_index_to_workdir(out, repo, index, opts);
 
@@ -45,16 +36,7 @@ Pointer<git_diff> treeToIndex(
   int interhunkLines,
 ) {
   final out = calloc<Pointer<git_diff>>();
-  final opts = calloc<git_diff_options>();
-  final optsError =
-      libgit2.git_diff_options_init(opts, GIT_DIFF_OPTIONS_VERSION);
-  opts.ref.flags = flags;
-  opts.ref.context_lines = contextLines;
-  opts.ref.interhunk_lines = interhunkLines;
-
-  if (optsError < 0) {
-    throw LibGit2Error(libgit2.git_error_last());
-  }
+  final opts = _diffOptionsInit(flags, contextLines, interhunkLines);
 
   libgit2.git_diff_tree_to_index(out, repo, oldTree, index, opts);
 
@@ -74,16 +56,7 @@ Pointer<git_diff> treeToWorkdir(
   int interhunkLines,
 ) {
   final out = calloc<Pointer<git_diff>>();
-  final opts = calloc<git_diff_options>();
-  final optsError =
-      libgit2.git_diff_options_init(opts, GIT_DIFF_OPTIONS_VERSION);
-  opts.ref.flags = flags;
-  opts.ref.context_lines = contextLines;
-  opts.ref.interhunk_lines = interhunkLines;
-
-  if (optsError < 0) {
-    throw LibGit2Error(libgit2.git_error_last());
-  }
+  final opts = _diffOptionsInit(flags, contextLines, interhunkLines);
 
   libgit2.git_diff_tree_to_workdir(out, repo, oldTree, opts);
 
@@ -104,16 +77,7 @@ Pointer<git_diff> treeToTree(
   int interhunkLines,
 ) {
   final out = calloc<Pointer<git_diff>>();
-  final opts = calloc<git_diff_options>();
-  final optsError =
-      libgit2.git_diff_options_init(opts, GIT_DIFF_OPTIONS_VERSION);
-  opts.ref.flags = flags;
-  opts.ref.context_lines = contextLines;
-  opts.ref.interhunk_lines = interhunkLines;
-
-  if (optsError < 0) {
-    throw LibGit2Error(libgit2.git_error_last());
-  }
+  final opts = _diffOptionsInit(flags, contextLines, interhunkLines);
 
   libgit2.git_diff_tree_to_tree(out, repo, oldTree, newTree, opts);
 
@@ -290,9 +254,41 @@ String statsPrint(
   }
 }
 
+/// Add patch to buffer.
+///
+/// Throws a [LibGit2Error] if error occured.
+Pointer<git_buf> addToBuf(Pointer<git_patch> patch, Pointer<git_buf> buffer) {
+  final error = libgit2.git_patch_to_buf(buffer, patch);
+
+  if (error < 0) {
+    throw LibGit2Error(libgit2.git_error_last());
+  } else {
+    return buffer;
+  }
+}
+
 /// Free a previously allocated diff stats.
 void statsFree(Pointer<git_diff_stats> stats) =>
     libgit2.git_diff_stats_free(stats);
 
 /// Free a previously allocated diff.
 void free(Pointer<git_diff> diff) => libgit2.git_diff_free(diff);
+
+Pointer<git_diff_options> _diffOptionsInit(
+  int flags,
+  int contextLines,
+  int interhunkLines,
+) {
+  final opts = calloc<git_diff_options>();
+  final optsError =
+      libgit2.git_diff_options_init(opts, GIT_DIFF_OPTIONS_VERSION);
+  opts.ref.flags = flags;
+  opts.ref.context_lines = contextLines;
+  opts.ref.interhunk_lines = interhunkLines;
+
+  if (optsError < 0) {
+    throw LibGit2Error(libgit2.git_error_last());
+  } else {
+    return opts;
+  }
+}

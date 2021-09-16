@@ -1003,3 +1003,46 @@ class GitDiffFind {
   @override
   String toString() => 'GitDiffFind.$_name';
 }
+
+/// Line origin, describing where a line came from.
+class GitDiffLine {
+  const GitDiffLine._(this._value, this._name);
+  final int _value;
+  final String _name;
+
+  static const context = GitDiffLine._(32, 'context');
+  static const addition = GitDiffLine._(43, 'addition');
+  static const deletion = GitDiffLine._(45, 'deletion');
+
+  /// Both files have no LF at end.
+  static const contextEOFNL = GitDiffLine._(61, 'contextEOFNL');
+
+  /// Old has no LF at end, new does.
+  static const addEOFNL = GitDiffLine._(62, 'addEOFNL');
+
+  /// Old has LF at end, new does not.
+  static const delEOFNL = GitDiffLine._(60, 'delEOFNL');
+
+  static const fileHeader = GitDiffLine._(70, 'fileHeader');
+  static const hunkHeader = GitDiffLine._(72, 'hunkHeader');
+
+  /// For "Binary files x and y differ"
+  static const binary = GitDiffLine._(66, 'binary');
+
+  static const List<GitDiffLine> values = [
+    context,
+    addition,
+    deletion,
+    contextEOFNL,
+    addEOFNL,
+    delEOFNL,
+    fileHeader,
+    hunkHeader,
+    binary,
+  ];
+
+  int get value => _value;
+
+  @override
+  String toString() => 'GitDiffLine.$_name';
+}
