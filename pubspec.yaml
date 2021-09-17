@@ -23,7 +23,3 @@ ffigen:
   comments:
     style: any
     length: full
-  llvm-path:
-    - "/usr/lib64/libclang.so"
-  compiler-opts:
-    - "-I/lib64/clang/12.0.1/include"
