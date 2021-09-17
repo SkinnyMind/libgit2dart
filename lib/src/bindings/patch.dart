@@ -193,7 +193,8 @@ int numHunks(Pointer<git_patch> patch) => libgit2.git_patch_num_hunks(patch);
 Map<String, dynamic> hunk(Pointer<git_patch> patch, int hunkIdx) {
   final out = calloc<Pointer<git_diff_hunk>>();
   final linesInHunk = calloc<Int32>();
-  final error = libgit2.git_patch_get_hunk(out, linesInHunk, patch, hunkIdx);
+  final error =
+      libgit2.git_patch_get_hunk(out, linesInHunk.cast(), patch, hunkIdx);
   final result = <String, dynamic>{};
 
   if (error < 0) {

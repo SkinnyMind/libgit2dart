@@ -315,7 +315,7 @@ index e69de29..c217c63 100644
       expect(hunk.oldLines, 0);
       expect(hunk.newStart, 1);
       expect(hunk.newLines, 1);
-      expect(hunk.header, '\x00\x00\x00\x00@@ -0,0 +1');
+      expect(hunk.header, '@@ -0,0 +1 @@\n');
 
       patch.free();
       diff.free();

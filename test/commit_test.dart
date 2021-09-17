@@ -94,7 +94,7 @@ void main() {
       expect(commit.parents[0].sha, mergeCommit);
 
       commit.free();
-    }, skip: 'skipped because of flaky segfaults');
+    });
 
     test('successfully creates commit without parents', () {
       final oid = Commit.create(
@@ -118,7 +118,7 @@ void main() {
       expect(commit.parents.length, 0);
 
       commit.free();
-    }, skip: 'skipped because of flaky segfaults');
+    });
 
     test('successfully creates commit with 2 parents', () {
       final oid = Commit.create(
@@ -144,7 +144,7 @@ void main() {
       expect(commit.parents[1].sha, 'fc38877b2552ab554752d9a77e1f48f738cca79b');
 
       commit.free();
-    }, skip: 'skipped because of flaky segfaults');
+    });
 
     test('successfully creates commit with short sha of tree', () {
       final oid = Commit.create(
@@ -169,6 +169,6 @@ void main() {
       expect(commit.parents[0].sha, mergeCommit);
 
       commit.free();
-    }, skip: 'skipped because of flaky segfaults');
+    });
   });
 }
