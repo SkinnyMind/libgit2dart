@@ -78,10 +78,10 @@ class RevSpec {
   }
 
   /// The intent of the revspec.
-  Set<GitRevParse> get flags {
+  Set<GitRevSpec> get flags {
     final flagInt = _revSpecPointer.ref.flags;
-    var flags = <GitRevParse>{};
-    for (var flag in GitRevParse.values) {
+    var flags = <GitRevSpec>{};
+    for (var flag in GitRevSpec.values) {
       if (flagInt & flag.value == flag.value) {
         flags.add(flag);
       }

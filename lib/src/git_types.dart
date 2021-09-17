@@ -130,26 +130,26 @@ class GitObject {
 }
 
 /// Revparse flags, indicate the intended behavior of the spec.
-class GitRevParse {
-  const GitRevParse._(this._value, this._name);
+class GitRevSpec {
+  const GitRevSpec._(this._value, this._name);
   final int _value;
   final String _name;
 
   /// The spec targeted a single object.
-  static const single = GitRevParse._(1, 'single');
+  static const single = GitRevSpec._(1, 'single');
 
   /// The spec targeted a range of commits.
-  static const range = GitRevParse._(2, 'range');
+  static const range = GitRevSpec._(2, 'range');
 
   /// The spec used the '...' operator, which invokes special semantics.
-  static const mergeBase = GitRevParse._(4, 'mergeBase');
+  static const mergeBase = GitRevSpec._(4, 'mergeBase');
 
-  static const List<GitRevParse> values = [single, range, mergeBase];
+  static const List<GitRevSpec> values = [single, range, mergeBase];
 
   int get value => _value;
 
   @override
-  String toString() => 'GitRevParse.$_name';
+  String toString() => 'GitRevSpec.$_name';
 }
 
 /// Basic type of any Git branch.
