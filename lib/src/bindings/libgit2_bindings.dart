@@ -2080,6 +2080,14 @@ class Libgit2 {
   /// > authentication, use expect/continue when POSTing data.
   /// > This option is not available on Windows.
   ///
+  /// opts(GIT_OPT_SET_ODB_PACKED_PRIORITY, int priority)
+  /// > Override the default priority of the packed ODB backend which
+  /// > is added when default backends are assigned to a repository
+  ///
+  /// opts(GIT_OPT_SET_ODB_LOOSE_PRIORITY, int priority)
+  /// > Override the default priority of the loose ODB backend which
+  /// > is added when default backends are assigned to a repository
+  ///
   /// @param option Option key
   /// @param ... value to set the option
   /// @return 0 on success, <0 on failure
@@ -4991,35 +4999,6 @@ class Libgit2 {
   late final _dart_git_treebuilder_write _git_treebuilder_write =
       _git_treebuilder_write_ptr.asFunction<_dart_git_treebuilder_write>();
 
-  /// Write the contents of the tree builder as a tree object
-  /// using a shared git_buf.
-  ///
-  /// @see git_treebuilder_write
-  ///
-  /// @param oid Pointer to store the OID of the newly written tree
-  /// @param bld Tree builder to write
-  /// @param tree Shared buffer for writing the tree. Will be grown as necessary.
-  /// @return 0 or an error code
-  int git_treebuilder_write_with_buffer(
-    ffi.Pointer<git_oid> oid,
-    ffi.Pointer<git_treebuilder> bld,
-    ffi.Pointer<git_buf> tree,
-  ) {
-    return _git_treebuilder_write_with_buffer(
-      oid,
-      bld,
-      tree,
-    );
-  }
-
-  late final _git_treebuilder_write_with_buffer_ptr =
-      _lookup<ffi.NativeFunction<_c_git_treebuilder_write_with_buffer>>(
-          'git_treebuilder_write_with_buffer');
-  late final _dart_git_treebuilder_write_with_buffer
-      _git_treebuilder_write_with_buffer =
-      _git_treebuilder_write_with_buffer_ptr
-          .asFunction<_dart_git_treebuilder_write_with_buffer>();
-
   /// Traverse the entries in a tree and its subtrees in post or pre order.
   ///
   /// The entries will be traversed in the specified order, children subtrees
@@ -5275,6 +5254,9 @@ class Libgit2 {
   /// It will return GIT_EMODIFIED if the reference's value at the time
   /// of updating does not match the one passed through `current_value`
   /// (i.e. if the ref has changed since the user read it).
+  ///
+  /// If `current_value` is all zeros, this function will return GIT_EMODIFIED
+  /// if the ref already exists.
   ///
   /// @param out Pointer to the newly created reference
   /// @param repo Repository where that reference will live
@@ -6308,22 +6290,25 @@ class Libgit2 {
   /// the characters '~', '^', ':', '\\', '?', '[', and '*', and the
   /// sequences ".." and "@{" which have special meaning to revparse.
   ///
+  /// @param valid output pointer to set with validity of given reference name
   /// @param refname name to be checked.
-  /// @return 1 if the reference name is acceptable; 0 if it isn't
-  int git_reference_is_valid_name(
+  /// @return 0 on success or an error code
+  int git_reference_name_is_valid(
+    ffi.Pointer<ffi.Int32> valid,
     ffi.Pointer<ffi.Int8> refname,
   ) {
-    return _git_reference_is_valid_name(
+    return _git_reference_name_is_valid(
+      valid,
       refname,
     );
   }
 
-  late final _git_reference_is_valid_name_ptr =
-      _lookup<ffi.NativeFunction<_c_git_reference_is_valid_name>>(
-          'git_reference_is_valid_name');
-  late final _dart_git_reference_is_valid_name _git_reference_is_valid_name =
-      _git_reference_is_valid_name_ptr
-          .asFunction<_dart_git_reference_is_valid_name>();
+  late final _git_reference_name_is_valid_ptr =
+      _lookup<ffi.NativeFunction<_c_git_reference_name_is_valid>>(
+          'git_reference_name_is_valid');
+  late final _dart_git_reference_name_is_valid _git_reference_name_is_valid =
+      _git_reference_name_is_valid_ptr
+          .asFunction<_dart_git_reference_name_is_valid>();
 
   /// Get the reference's short name
   ///
@@ -7508,6 +7493,40 @@ class Libgit2 {
   late final _dart_git_attr_get _git_attr_get =
       _git_attr_get_ptr.asFunction<_dart_git_attr_get>();
 
+  /// Look up the value of one git attribute for path with extended options.
+  ///
+  /// @param value_out Output of the value of the attribute.  Use the GIT_ATTR_...
+  /// macros to test for TRUE, FALSE, UNSPECIFIED, etc. or just
+  /// use the string value for attributes set to a value.  You
+  /// should NOT modify or free this value.
+  /// @param repo The repository containing the path.
+  /// @param opts The `git_attr_options` to use when querying these attributes.
+  /// @param path The path to check for attributes.  Relative paths are
+  /// interpreted relative to the repo root.  The file does
+  /// not have to exist, but if it does not, then it will be
+  /// treated as a plain file (not a directory).
+  /// @param name The name of the attribute to look up.
+  int git_attr_get_ext(
+    ffi.Pointer<ffi.Pointer<ffi.Int8>> value_out,
+    ffi.Pointer<git_repository> repo,
+    ffi.Pointer<git_attr_options> opts,
+    ffi.Pointer<ffi.Int8> path,
+    ffi.Pointer<ffi.Int8> name,
+  ) {
+    return _git_attr_get_ext(
+      value_out,
+      repo,
+      opts,
+      path,
+      name,
+    );
+  }
+
+  late final _git_attr_get_ext_ptr =
+      _lookup<ffi.NativeFunction<_c_git_attr_get_ext>>('git_attr_get_ext');
+  late final _dart_git_attr_get_ext _git_attr_get_ext =
+      _git_attr_get_ext_ptr.asFunction<_dart_git_attr_get_ext>();
+
   /// Look up a list of git attributes for path.
   ///
   /// Use this if you have a known list of attributes that you want to
@@ -7558,6 +7577,44 @@ class Libgit2 {
   late final _dart_git_attr_get_many _git_attr_get_many =
       _git_attr_get_many_ptr.asFunction<_dart_git_attr_get_many>();
 
+  /// Look up a list of git attributes for path with extended options.
+  ///
+  /// @param values_out An array of num_attr entries that will have string
+  /// pointers written into it for the values of the attributes.
+  /// You should not modify or free the values that are written
+  /// into this array (although of course, you should free the
+  /// array itself if you allocated it).
+  /// @param repo The repository containing the path.
+  /// @param opts The `git_attr_options` to use when querying these attributes.
+  /// @param path The path inside the repo to check attributes.  This
+  /// does not have to exist, but if it does not, then
+  /// it will be treated as a plain file (i.e. not a directory).
+  /// @param num_attr The number of attributes being looked up
+  /// @param names An array of num_attr strings containing attribute names.
+  int git_attr_get_many_ext(
+    ffi.Pointer<ffi.Pointer<ffi.Int8>> values_out,
+    ffi.Pointer<git_repository> repo,
+    ffi.Pointer<git_attr_options> opts,
+    ffi.Pointer<ffi.Int8> path,
+    int num_attr,
+    ffi.Pointer<ffi.Pointer<ffi.Int8>> names,
+  ) {
+    return _git_attr_get_many_ext(
+      values_out,
+      repo,
+      opts,
+      path,
+      num_attr,
+      names,
+    );
+  }
+
+  late final _git_attr_get_many_ext_ptr =
+      _lookup<ffi.NativeFunction<_c_git_attr_get_many_ext>>(
+          'git_attr_get_many_ext');
+  late final _dart_git_attr_get_many_ext _git_attr_get_many_ext =
+      _git_attr_get_many_ext_ptr.asFunction<_dart_git_attr_get_many_ext>();
+
   /// Loop over all the git attributes for a path.
   ///
   /// @param repo The repository containing the path.
@@ -7589,6 +7646,39 @@ class Libgit2 {
       _lookup<ffi.NativeFunction<_c_git_attr_foreach>>('git_attr_foreach');
   late final _dart_git_attr_foreach _git_attr_foreach =
       _git_attr_foreach_ptr.asFunction<_dart_git_attr_foreach>();
+
+  /// Loop over all the git attributes for a path with extended options.
+  ///
+  /// @param repo The repository containing the path.
+  /// @param opts The `git_attr_options` to use when querying these attributes.
+  /// @param path Path inside the repo to check attributes.  This does not have
+  /// to exist, but if it does not, then it will be treated as a
+  /// plain file (i.e. not a directory).
+  /// @param callback Function to invoke on each attribute name and value.
+  /// See git_attr_foreach_cb.
+  /// @param payload Passed on as extra parameter to callback function.
+  /// @return 0 on success, non-zero callback return value, or error code
+  int git_attr_foreach_ext(
+    ffi.Pointer<git_repository> repo,
+    ffi.Pointer<git_attr_options> opts,
+    ffi.Pointer<ffi.Int8> path,
+    ffi.Pointer<ffi.NativeFunction<git_attr_foreach_cb>> callback,
+    ffi.Pointer<ffi.Void> payload,
+  ) {
+    return _git_attr_foreach_ext(
+      repo,
+      opts,
+      path,
+      callback,
+      payload,
+    );
+  }
+
+  late final _git_attr_foreach_ext_ptr =
+      _lookup<ffi.NativeFunction<_c_git_attr_foreach_ext>>(
+          'git_attr_foreach_ext');
+  late final _dart_git_attr_foreach_ext _git_attr_foreach_ext =
+      _git_attr_foreach_ext_ptr.asFunction<_dart_git_attr_foreach_ext>();
 
   /// Flush the gitattributes cache.
   ///
@@ -7755,7 +7845,7 @@ class Libgit2 {
   /// time.
   ///
   /// @param blob pointer to the blob
-  /// @return the pointer
+  /// @return the pointer, or NULL on error
   ffi.Pointer<ffi.Void> git_blob_rawcontent(
     ffi.Pointer<git_blob> blob,
   ) {
@@ -8662,6 +8752,59 @@ class Libgit2 {
   late final _dart_git_branch_upstream_remote _git_branch_upstream_remote =
       _git_branch_upstream_remote_ptr
           .asFunction<_dart_git_branch_upstream_remote>();
+
+  /// Retrieve the upstream merge of a local branch
+  ///
+  /// This will return the currently configured "branch.*.merge" for a given
+  /// branch. This branch must be local.
+  ///
+  /// @param buf the buffer into which to write the name
+  /// @param repo the repository in which to look
+  /// @param refname the full name of the branch
+  /// @return 0 or an error code
+  int git_branch_upstream_merge(
+    ffi.Pointer<git_buf> buf,
+    ffi.Pointer<git_repository> repo,
+    ffi.Pointer<ffi.Int8> refname,
+  ) {
+    return _git_branch_upstream_merge(
+      buf,
+      repo,
+      refname,
+    );
+  }
+
+  late final _git_branch_upstream_merge_ptr =
+      _lookup<ffi.NativeFunction<_c_git_branch_upstream_merge>>(
+          'git_branch_upstream_merge');
+  late final _dart_git_branch_upstream_merge _git_branch_upstream_merge =
+      _git_branch_upstream_merge_ptr
+          .asFunction<_dart_git_branch_upstream_merge>();
+
+  /// Determine whether a branch name is valid, meaning that (when prefixed
+  /// with `refs/heads/`) that it is a valid reference name, and that any
+  /// additional branch name restrictions are imposed (eg, it cannot start
+  /// with a `-`).
+  ///
+  /// @param valid output pointer to set with validity of given branch name
+  /// @param name a branch name to test
+  /// @return 0 on success or an error code
+  int git_branch_name_is_valid(
+    ffi.Pointer<ffi.Int32> valid,
+    ffi.Pointer<ffi.Int8> name,
+  ) {
+    return _git_branch_name_is_valid(
+      valid,
+      name,
+    );
+  }
+
+  late final _git_branch_name_is_valid_ptr =
+      _lookup<ffi.NativeFunction<_c_git_branch_name_is_valid>>(
+          'git_branch_name_is_valid');
+  late final _dart_git_branch_name_is_valid _git_branch_name_is_valid =
+      _git_branch_name_is_valid_ptr
+          .asFunction<_dart_git_branch_name_is_valid>();
 
   /// Initialize git_checkout_options structure
   ///
@@ -9794,7 +9937,7 @@ class Libgit2 {
   /// @param at_pos the address to which the position of the index entry is written (optional)
   /// @param index an existing index object
   /// @param path path to search
-  /// @return 0 with valid value in at_pos; an error code otherwise
+  /// @return 0 or an error code
   int git_index_find(
     ffi.Pointer<ffi.Int32> at_pos,
     ffi.Pointer<git_index> index,
@@ -9818,7 +9961,7 @@ class Libgit2 {
   /// @param at_pos the address to which the position of the index entry is written (optional)
   /// @param index an existing index object
   /// @param prefix the prefix to search for
-  /// @return 0 with valid value in at_pos; an error code otherwise
+  /// @return 0 or an error code
   int git_index_find_prefix(
     ffi.Pointer<ffi.Int32> at_pos,
     ffi.Pointer<git_index> index,
@@ -11725,7 +11868,8 @@ class Libgit2 {
   /// Get the remote's url
   ///
   /// If url.*.insteadOf has been configured for this URL, it will
-  /// return the modified URL.
+  /// return the modified URL.  If `git_remote_set_instance_pushurl`
+  /// has been called for this remote, then that URL will be returned.
   ///
   /// @param remote the remote
   /// @return a pointer to the url
@@ -11742,10 +11886,11 @@ class Libgit2 {
   late final _dart_git_remote_url _git_remote_url =
       _git_remote_url_ptr.asFunction<_dart_git_remote_url>();
 
-  /// Get the remote's url for pushing
+  /// Get the remote's url for pushing.
   ///
   /// If url.*.pushInsteadOf has been configured for this URL, it
-  /// will return the modified URL.
+  /// will return the modified URL.  If `git_remote_set_instance_pushurl`
+  /// has been called for this remote, then that URL will be returned.
   ///
   /// @param remote the remote
   /// @return a pointer to the url or NULL if no special url for pushing is set
@@ -11797,6 +11942,7 @@ class Libgit2 {
   /// @param repo the repository in which to perform the change
   /// @param remote the remote's name
   /// @param url the url to set
+  /// @return 0, or an error code
   int git_remote_set_pushurl(
     ffi.Pointer<git_repository> repo,
     ffi.Pointer<ffi.Int8> remote,
@@ -11814,6 +11960,52 @@ class Libgit2 {
           'git_remote_set_pushurl');
   late final _dart_git_remote_set_pushurl _git_remote_set_pushurl =
       _git_remote_set_pushurl_ptr.asFunction<_dart_git_remote_set_pushurl>();
+
+  /// Set the url for this particular url instance.  The URL in the
+  /// configuration will be ignored, and will not be changed.
+  ///
+  /// @param remote the remote's name
+  /// @param url the url to set
+  /// @return 0 or an error value
+  int git_remote_set_instance_url(
+    ffi.Pointer<git_remote> remote,
+    ffi.Pointer<ffi.Int8> url,
+  ) {
+    return _git_remote_set_instance_url(
+      remote,
+      url,
+    );
+  }
+
+  late final _git_remote_set_instance_url_ptr =
+      _lookup<ffi.NativeFunction<_c_git_remote_set_instance_url>>(
+          'git_remote_set_instance_url');
+  late final _dart_git_remote_set_instance_url _git_remote_set_instance_url =
+      _git_remote_set_instance_url_ptr
+          .asFunction<_dart_git_remote_set_instance_url>();
+
+  /// Set the push url for this particular url instance.  The URL in the
+  /// configuration will be ignored, and will not be changed.
+  ///
+  /// @param remote the remote's name
+  /// @param url the url to set
+  /// @return 0 or an error value
+  int git_remote_set_instance_pushurl(
+    ffi.Pointer<git_remote> remote,
+    ffi.Pointer<ffi.Int8> url,
+  ) {
+    return _git_remote_set_instance_pushurl(
+      remote,
+      url,
+    );
+  }
+
+  late final _git_remote_set_instance_pushurl_ptr =
+      _lookup<ffi.NativeFunction<_c_git_remote_set_instance_pushurl>>(
+          'git_remote_set_instance_pushurl');
+  late final _dart_git_remote_set_instance_pushurl
+      _git_remote_set_instance_pushurl = _git_remote_set_instance_pushurl_ptr
+          .asFunction<_dart_git_remote_set_instance_pushurl>();
 
   /// Add a fetch refspec to the remote's configuration
   ///
@@ -12407,6 +12599,7 @@ class Libgit2 {
   /// @param repo the repository in which to make the change
   /// @param remote the name of the remote
   /// @param value the new value to take.
+  /// @return 0, or an error code.
   int git_remote_set_autotag(
     ffi.Pointer<git_repository> repo,
     ffi.Pointer<ffi.Int8> remote,
@@ -12482,22 +12675,25 @@ class Libgit2 {
 
   /// Ensure the remote name is well-formed.
   ///
+  /// @param valid output pointer to set with validity of given remote name
   /// @param remote_name name to be checked.
-  /// @return 1 if the reference name is acceptable; 0 if it isn't
-  int git_remote_is_valid_name(
+  /// @return 0 on success or an error code
+  int git_remote_name_is_valid(
+    ffi.Pointer<ffi.Int32> valid,
     ffi.Pointer<ffi.Int8> remote_name,
   ) {
-    return _git_remote_is_valid_name(
+    return _git_remote_name_is_valid(
+      valid,
       remote_name,
     );
   }
 
-  late final _git_remote_is_valid_name_ptr =
-      _lookup<ffi.NativeFunction<_c_git_remote_is_valid_name>>(
-          'git_remote_is_valid_name');
-  late final _dart_git_remote_is_valid_name _git_remote_is_valid_name =
-      _git_remote_is_valid_name_ptr
-          .asFunction<_dart_git_remote_is_valid_name>();
+  late final _git_remote_name_is_valid_ptr =
+      _lookup<ffi.NativeFunction<_c_git_remote_name_is_valid>>(
+          'git_remote_name_is_valid');
+  late final _dart_git_remote_name_is_valid _git_remote_name_is_valid =
+      _git_remote_name_is_valid_ptr
+          .asFunction<_dart_git_remote_name_is_valid>();
 
   /// Delete an existing persisted remote.
   ///
@@ -12532,7 +12728,7 @@ class Libgit2 {
   ///
   /// This function must only be called after connecting.
   ///
-  /// @param out the buffern in which to store the reference name
+  /// @param out the buffer in which to store the reference name
   /// @param remote the remote
   /// @return 0, GIT_ENOTFOUND if the remote does not have any references
   /// or none of them point to HEAD's commit, or an error message.
@@ -14873,6 +15069,284 @@ class Libgit2 {
   late final _dart_git_error_set_oom _git_error_set_oom =
       _git_error_set_oom_ptr.asFunction<_dart_git_error_set_oom>();
 
+  /// Load the filter list for a given path.
+  ///
+  /// This will return 0 (success) but set the output git_filter_list to NULL
+  /// if no filters are requested for the given file.
+  ///
+  /// @param filters Output newly created git_filter_list (or NULL)
+  /// @param repo Repository object that contains `path`
+  /// @param blob The blob to which the filter will be applied (if known)
+  /// @param path Relative path of the file to be filtered
+  /// @param mode Filtering direction (WT->ODB or ODB->WT)
+  /// @param flags Combination of `git_filter_flag_t` flags
+  /// @return 0 on success (which could still return NULL if no filters are
+  /// needed for the requested file), <0 on error
+  int git_filter_list_load(
+    ffi.Pointer<ffi.Pointer<git_filter_list>> filters,
+    ffi.Pointer<git_repository> repo,
+    ffi.Pointer<git_blob> blob,
+    ffi.Pointer<ffi.Int8> path,
+    int mode,
+    int flags,
+  ) {
+    return _git_filter_list_load(
+      filters,
+      repo,
+      blob,
+      path,
+      mode,
+      flags,
+    );
+  }
+
+  late final _git_filter_list_load_ptr =
+      _lookup<ffi.NativeFunction<_c_git_filter_list_load>>(
+          'git_filter_list_load');
+  late final _dart_git_filter_list_load _git_filter_list_load =
+      _git_filter_list_load_ptr.asFunction<_dart_git_filter_list_load>();
+
+  /// Load the filter list for a given path.
+  ///
+  /// This will return 0 (success) but set the output git_filter_list to NULL
+  /// if no filters are requested for the given file.
+  ///
+  /// @param filters Output newly created git_filter_list (or NULL)
+  /// @param repo Repository object that contains `path`
+  /// @param blob The blob to which the filter will be applied (if known)
+  /// @param path Relative path of the file to be filtered
+  /// @param mode Filtering direction (WT->ODB or ODB->WT)
+  /// @param opts The `git_filter_options` to use when loading filters
+  /// @return 0 on success (which could still return NULL if no filters are
+  /// needed for the requested file), <0 on error
+  int git_filter_list_load_ext(
+    ffi.Pointer<ffi.Pointer<git_filter_list>> filters,
+    ffi.Pointer<git_repository> repo,
+    ffi.Pointer<git_blob> blob,
+    ffi.Pointer<ffi.Int8> path,
+    int mode,
+    ffi.Pointer<git_filter_options> opts,
+  ) {
+    return _git_filter_list_load_ext(
+      filters,
+      repo,
+      blob,
+      path,
+      mode,
+      opts,
+    );
+  }
+
+  late final _git_filter_list_load_ext_ptr =
+      _lookup<ffi.NativeFunction<_c_git_filter_list_load_ext>>(
+          'git_filter_list_load_ext');
+  late final _dart_git_filter_list_load_ext _git_filter_list_load_ext =
+      _git_filter_list_load_ext_ptr
+          .asFunction<_dart_git_filter_list_load_ext>();
+
+  /// Query the filter list to see if a given filter (by name) will run.
+  /// The built-in filters "crlf" and "ident" can be queried, otherwise this
+  /// is the name of the filter specified by the filter attribute.
+  ///
+  /// This will return 0 if the given filter is not in the list, or 1 if
+  /// the filter will be applied.
+  ///
+  /// @param filters A loaded git_filter_list (or NULL)
+  /// @param name The name of the filter to query
+  /// @return 1 if the filter is in the list, 0 otherwise
+  int git_filter_list_contains(
+    ffi.Pointer<git_filter_list> filters,
+    ffi.Pointer<ffi.Int8> name,
+  ) {
+    return _git_filter_list_contains(
+      filters,
+      name,
+    );
+  }
+
+  late final _git_filter_list_contains_ptr =
+      _lookup<ffi.NativeFunction<_c_git_filter_list_contains>>(
+          'git_filter_list_contains');
+  late final _dart_git_filter_list_contains _git_filter_list_contains =
+      _git_filter_list_contains_ptr
+          .asFunction<_dart_git_filter_list_contains>();
+
+  /// Apply filter list to a data buffer.
+  ///
+  /// @param out Buffer to store the result of the filtering
+  /// @param filters A loaded git_filter_list (or NULL)
+  /// @param in Buffer containing the data to filter
+  /// @param in_len The length of the input buffer
+  /// @return 0 on success, an error code otherwise
+  int git_filter_list_apply_to_buffer(
+    ffi.Pointer<git_buf> out,
+    ffi.Pointer<git_filter_list> filters,
+    ffi.Pointer<ffi.Int8> in_1,
+    int in_len,
+  ) {
+    return _git_filter_list_apply_to_buffer(
+      out,
+      filters,
+      in_1,
+      in_len,
+    );
+  }
+
+  late final _git_filter_list_apply_to_buffer_ptr =
+      _lookup<ffi.NativeFunction<_c_git_filter_list_apply_to_buffer>>(
+          'git_filter_list_apply_to_buffer');
+  late final _dart_git_filter_list_apply_to_buffer
+      _git_filter_list_apply_to_buffer = _git_filter_list_apply_to_buffer_ptr
+          .asFunction<_dart_git_filter_list_apply_to_buffer>();
+
+  /// Apply a filter list to the contents of a file on disk
+  ///
+  /// @param out buffer into which to store the filtered file
+  /// @param filters the list of filters to apply
+  /// @param repo the repository in which to perform the filtering
+  /// @param path the path of the file to filter, a relative path will be
+  /// taken as relative to the workdir
+  int git_filter_list_apply_to_file(
+    ffi.Pointer<git_buf> out,
+    ffi.Pointer<git_filter_list> filters,
+    ffi.Pointer<git_repository> repo,
+    ffi.Pointer<ffi.Int8> path,
+  ) {
+    return _git_filter_list_apply_to_file(
+      out,
+      filters,
+      repo,
+      path,
+    );
+  }
+
+  late final _git_filter_list_apply_to_file_ptr =
+      _lookup<ffi.NativeFunction<_c_git_filter_list_apply_to_file>>(
+          'git_filter_list_apply_to_file');
+  late final _dart_git_filter_list_apply_to_file
+      _git_filter_list_apply_to_file = _git_filter_list_apply_to_file_ptr
+          .asFunction<_dart_git_filter_list_apply_to_file>();
+
+  /// Apply a filter list to the contents of a blob
+  ///
+  /// @param out buffer into which to store the filtered file
+  /// @param filters the list of filters to apply
+  /// @param blob the blob to filter
+  int git_filter_list_apply_to_blob(
+    ffi.Pointer<git_buf> out,
+    ffi.Pointer<git_filter_list> filters,
+    ffi.Pointer<git_blob> blob,
+  ) {
+    return _git_filter_list_apply_to_blob(
+      out,
+      filters,
+      blob,
+    );
+  }
+
+  late final _git_filter_list_apply_to_blob_ptr =
+      _lookup<ffi.NativeFunction<_c_git_filter_list_apply_to_blob>>(
+          'git_filter_list_apply_to_blob');
+  late final _dart_git_filter_list_apply_to_blob
+      _git_filter_list_apply_to_blob = _git_filter_list_apply_to_blob_ptr
+          .asFunction<_dart_git_filter_list_apply_to_blob>();
+
+  /// Apply a filter list to an arbitrary buffer as a stream
+  ///
+  /// @param filters the list of filters to apply
+  /// @param buffer the buffer to filter
+  /// @param len the size of the buffer
+  /// @param target the stream into which the data will be written
+  int git_filter_list_stream_buffer(
+    ffi.Pointer<git_filter_list> filters,
+    ffi.Pointer<ffi.Int8> buffer,
+    int len,
+    ffi.Pointer<git_writestream> target,
+  ) {
+    return _git_filter_list_stream_buffer(
+      filters,
+      buffer,
+      len,
+      target,
+    );
+  }
+
+  late final _git_filter_list_stream_buffer_ptr =
+      _lookup<ffi.NativeFunction<_c_git_filter_list_stream_buffer>>(
+          'git_filter_list_stream_buffer');
+  late final _dart_git_filter_list_stream_buffer
+      _git_filter_list_stream_buffer = _git_filter_list_stream_buffer_ptr
+          .asFunction<_dart_git_filter_list_stream_buffer>();
+
+  /// Apply a filter list to a file as a stream
+  ///
+  /// @param filters the list of filters to apply
+  /// @param repo the repository in which to perform the filtering
+  /// @param path the path of the file to filter, a relative path will be
+  /// taken as relative to the workdir
+  /// @param target the stream into which the data will be written
+  int git_filter_list_stream_file(
+    ffi.Pointer<git_filter_list> filters,
+    ffi.Pointer<git_repository> repo,
+    ffi.Pointer<ffi.Int8> path,
+    ffi.Pointer<git_writestream> target,
+  ) {
+    return _git_filter_list_stream_file(
+      filters,
+      repo,
+      path,
+      target,
+    );
+  }
+
+  late final _git_filter_list_stream_file_ptr =
+      _lookup<ffi.NativeFunction<_c_git_filter_list_stream_file>>(
+          'git_filter_list_stream_file');
+  late final _dart_git_filter_list_stream_file _git_filter_list_stream_file =
+      _git_filter_list_stream_file_ptr
+          .asFunction<_dart_git_filter_list_stream_file>();
+
+  /// Apply a filter list to a blob as a stream
+  ///
+  /// @param filters the list of filters to apply
+  /// @param blob the blob to filter
+  /// @param target the stream into which the data will be written
+  int git_filter_list_stream_blob(
+    ffi.Pointer<git_filter_list> filters,
+    ffi.Pointer<git_blob> blob,
+    ffi.Pointer<git_writestream> target,
+  ) {
+    return _git_filter_list_stream_blob(
+      filters,
+      blob,
+      target,
+    );
+  }
+
+  late final _git_filter_list_stream_blob_ptr =
+      _lookup<ffi.NativeFunction<_c_git_filter_list_stream_blob>>(
+          'git_filter_list_stream_blob');
+  late final _dart_git_filter_list_stream_blob _git_filter_list_stream_blob =
+      _git_filter_list_stream_blob_ptr
+          .asFunction<_dart_git_filter_list_stream_blob>();
+
+  /// Free a git_filter_list
+  ///
+  /// @param filters A git_filter_list created by `git_filter_list_load`
+  void git_filter_list_free(
+    ffi.Pointer<git_filter_list> filters,
+  ) {
+    return _git_filter_list_free(
+      filters,
+    );
+  }
+
+  late final _git_filter_list_free_ptr =
+      _lookup<ffi.NativeFunction<_c_git_filter_list_free>>(
+          'git_filter_list_free');
+  late final _dart_git_filter_list_free _git_filter_list_free =
+      _git_filter_list_free_ptr.asFunction<_dart_git_filter_list_free>();
+
   /// Initialize git_rebase_options structure
   ///
   /// Initializes a `git_rebase_options` with default values. Equivalent to
@@ -15342,6 +15816,103 @@ class Libgit2 {
       _lookup<ffi.NativeFunction<_c_git_revert>>('git_revert');
   late final _dart_git_revert _git_revert =
       _git_revert_ptr.asFunction<_dart_git_revert>();
+
+  /// Find a single object, as specified by a revision string.
+  ///
+  /// See `man gitrevisions`, or
+  /// http://git-scm.com/docs/git-rev-parse.html#_specifying_revisions for
+  /// information on the syntax accepted.
+  ///
+  /// The returned object should be released with `git_object_free` when no
+  /// longer needed.
+  ///
+  /// @param out pointer to output object
+  /// @param repo the repository to search in
+  /// @param spec the textual specification for an object
+  /// @return 0 on success, GIT_ENOTFOUND, GIT_EAMBIGUOUS, GIT_EINVALIDSPEC or an error code
+  int git_revparse_single(
+    ffi.Pointer<ffi.Pointer<git_object>> out,
+    ffi.Pointer<git_repository> repo,
+    ffi.Pointer<ffi.Int8> spec,
+  ) {
+    return _git_revparse_single(
+      out,
+      repo,
+      spec,
+    );
+  }
+
+  late final _git_revparse_single_ptr =
+      _lookup<ffi.NativeFunction<_c_git_revparse_single>>(
+          'git_revparse_single');
+  late final _dart_git_revparse_single _git_revparse_single =
+      _git_revparse_single_ptr.asFunction<_dart_git_revparse_single>();
+
+  /// Find a single object and intermediate reference by a revision string.
+  ///
+  /// See `man gitrevisions`, or
+  /// http://git-scm.com/docs/git-rev-parse.html#_specifying_revisions for
+  /// information on the syntax accepted.
+  ///
+  /// In some cases (`@{<-n>}` or `<branchname>@{upstream}`), the expression may
+  /// point to an intermediate reference. When such expressions are being passed
+  /// in, `reference_out` will be valued as well.
+  ///
+  /// The returned object should be released with `git_object_free` and the
+  /// returned reference with `git_reference_free` when no longer needed.
+  ///
+  /// @param object_out pointer to output object
+  /// @param reference_out pointer to output reference or NULL
+  /// @param repo the repository to search in
+  /// @param spec the textual specification for an object
+  /// @return 0 on success, GIT_ENOTFOUND, GIT_EAMBIGUOUS, GIT_EINVALIDSPEC
+  /// or an error code
+  int git_revparse_ext(
+    ffi.Pointer<ffi.Pointer<git_object>> object_out,
+    ffi.Pointer<ffi.Pointer<git_reference>> reference_out,
+    ffi.Pointer<git_repository> repo,
+    ffi.Pointer<ffi.Int8> spec,
+  ) {
+    return _git_revparse_ext(
+      object_out,
+      reference_out,
+      repo,
+      spec,
+    );
+  }
+
+  late final _git_revparse_ext_ptr =
+      _lookup<ffi.NativeFunction<_c_git_revparse_ext>>('git_revparse_ext');
+  late final _dart_git_revparse_ext _git_revparse_ext =
+      _git_revparse_ext_ptr.asFunction<_dart_git_revparse_ext>();
+
+  /// Parse a revision string for `from`, `to`, and intent.
+  ///
+  /// See `man gitrevisions` or
+  /// http://git-scm.com/docs/git-rev-parse.html#_specifying_revisions for
+  /// information on the syntax accepted.
+  ///
+  /// @param revspec Pointer to an user-allocated git_revspec struct where
+  /// the result of the rev-parse will be stored
+  /// @param repo the repository to search in
+  /// @param spec the rev-parse spec to parse
+  /// @return 0 on success, GIT_INVALIDSPEC, GIT_ENOTFOUND, GIT_EAMBIGUOUS or an error code
+  int git_revparse(
+    ffi.Pointer<git_revspec> revspec,
+    ffi.Pointer<git_repository> repo,
+    ffi.Pointer<ffi.Int8> spec,
+  ) {
+    return _git_revparse(
+      revspec,
+      repo,
+      spec,
+    );
+  }
+
+  late final _git_revparse_ptr =
+      _lookup<ffi.NativeFunction<_c_git_revparse>>('git_revparse');
+  late final _dart_git_revparse _git_revparse =
+      _git_revparse_ptr.asFunction<_dart_git_revparse>();
 
   /// Save the local modifications to a new stash.
   ///
@@ -15882,6 +16453,26 @@ class Libgit2 {
           'git_submodule_lookup');
   late final _dart_git_submodule_lookup _git_submodule_lookup =
       _git_submodule_lookup_ptr.asFunction<_dart_git_submodule_lookup>();
+
+  /// Create an in-memory copy of a submodule. The copy must be explicitly
+  /// free'd or it will leak.
+  ///
+  /// @param out Pointer to store the copy of the submodule.
+  /// @param source Original submodule to copy.
+  int git_submodule_dup(
+    ffi.Pointer<ffi.Pointer<git_submodule>> out,
+    ffi.Pointer<git_submodule> source,
+  ) {
+    return _git_submodule_dup(
+      out,
+      source,
+    );
+  }
+
+  late final _git_submodule_dup_ptr =
+      _lookup<ffi.NativeFunction<_c_git_submodule_dup>>('git_submodule_dup');
+  late final _dart_git_submodule_dup _git_submodule_dup =
+      _git_submodule_dup_ptr.asFunction<_dart_git_submodule_dup>();
 
   /// Release a submodule
   ///
@@ -17022,15 +17613,6 @@ class Libgit2 {
   late final _dart_git_credential_userpass _git_credential_userpass =
       _git_credential_userpass_ptr.asFunction<_dart_git_credential_userpass>();
 
-  /// @name Deprecated Blob Functions
-  ///
-  /// These functions are retained for backward compatibility.  The newer
-  /// versions of these functions should be preferred in all new code.
-  ///
-  /// There is no plan to remove these backward compatibility values at
-  /// this time.
-  /// /
-  /// /**@{
   int git_blob_create_fromworkdir(
     ffi.Pointer<git_oid> id,
     ffi.Pointer<git_repository> repo,
@@ -17151,6 +17733,81 @@ class Libgit2 {
   late final _dart_git_blob_filtered_content _git_blob_filtered_content =
       _git_blob_filtered_content_ptr
           .asFunction<_dart_git_blob_filtered_content>();
+
+  /// Deprecated in favor of `git_filter_list_stream_buffer`.
+  ///
+  /// @deprecated Use git_filter_list_stream_buffer
+  /// @see Use git_filter_list_stream_buffer
+  int git_filter_list_stream_data(
+    ffi.Pointer<git_filter_list> filters,
+    ffi.Pointer<git_buf> data,
+    ffi.Pointer<git_writestream> target,
+  ) {
+    return _git_filter_list_stream_data(
+      filters,
+      data,
+      target,
+    );
+  }
+
+  late final _git_filter_list_stream_data_ptr =
+      _lookup<ffi.NativeFunction<_c_git_filter_list_stream_data>>(
+          'git_filter_list_stream_data');
+  late final _dart_git_filter_list_stream_data _git_filter_list_stream_data =
+      _git_filter_list_stream_data_ptr
+          .asFunction<_dart_git_filter_list_stream_data>();
+
+  /// Deprecated in favor of `git_filter_list_apply_to_buffer`.
+  ///
+  /// @deprecated Use git_filter_list_apply_to_buffer
+  /// @see Use git_filter_list_apply_to_buffer
+  int git_filter_list_apply_to_data(
+    ffi.Pointer<git_buf> out,
+    ffi.Pointer<git_filter_list> filters,
+    ffi.Pointer<git_buf> in_1,
+  ) {
+    return _git_filter_list_apply_to_data(
+      out,
+      filters,
+      in_1,
+    );
+  }
+
+  late final _git_filter_list_apply_to_data_ptr =
+      _lookup<ffi.NativeFunction<_c_git_filter_list_apply_to_data>>(
+          'git_filter_list_apply_to_data');
+  late final _dart_git_filter_list_apply_to_data
+      _git_filter_list_apply_to_data = _git_filter_list_apply_to_data_ptr
+          .asFunction<_dart_git_filter_list_apply_to_data>();
+
+  /// Write the contents of the tree builder as a tree object.
+  /// This is an alias of `git_treebuilder_write` and is preserved
+  /// for backward compatibility.
+  ///
+  /// This function is deprecated, but there is no plan to remove this
+  /// function at this time.
+  ///
+  /// @deprecated Use git_treebuilder_write
+  /// @see git_treebuilder_write
+  int git_treebuilder_write_with_buffer(
+    ffi.Pointer<git_oid> oid,
+    ffi.Pointer<git_treebuilder> bld,
+    ffi.Pointer<git_buf> tree,
+  ) {
+    return _git_treebuilder_write_with_buffer(
+      oid,
+      bld,
+      tree,
+    );
+  }
+
+  late final _git_treebuilder_write_with_buffer_ptr =
+      _lookup<ffi.NativeFunction<_c_git_treebuilder_write_with_buffer>>(
+          'git_treebuilder_write_with_buffer');
+  late final _dart_git_treebuilder_write_with_buffer
+      _git_treebuilder_write_with_buffer =
+      _git_treebuilder_write_with_buffer_ptr
+          .asFunction<_dart_git_treebuilder_write_with_buffer>();
 
   /// Free the memory referred to by the git_buf.  This is an alias of
   /// `git_buf_dispose` and is preserved for backward compatibility.
@@ -17291,6 +17948,54 @@ class Libgit2 {
       _lookup<ffi.NativeFunction<_c_git_object__size>>('git_object__size');
   late final _dart_git_object__size _git_object__size =
       _git_object__size_ptr.asFunction<_dart_git_object__size>();
+
+  /// Ensure the remote name is well-formed.
+  ///
+  /// @deprecated Use git_remote_name_is_valid
+  /// @param remote_name name to be checked.
+  /// @return 1 if the reference name is acceptable; 0 if it isn't
+  int git_remote_is_valid_name(
+    ffi.Pointer<ffi.Int8> remote_name,
+  ) {
+    return _git_remote_is_valid_name(
+      remote_name,
+    );
+  }
+
+  late final _git_remote_is_valid_name_ptr =
+      _lookup<ffi.NativeFunction<_c_git_remote_is_valid_name>>(
+          'git_remote_is_valid_name');
+  late final _dart_git_remote_is_valid_name _git_remote_is_valid_name =
+      _git_remote_is_valid_name_ptr
+          .asFunction<_dart_git_remote_is_valid_name>();
+
+  /// Ensure the reference name is well-formed.
+  ///
+  /// Valid reference names must follow one of two patterns:
+  ///
+  /// 1. Top-level names must contain only capital letters and underscores,
+  /// and must begin and end with a letter. (e.g. "HEAD", "ORIG_HEAD").
+  /// 2. Names prefixed with "refs/" can be almost anything.  You must avoid
+  /// the characters '~', '^', ':', '\\', '?', '[', and '*', and the
+  /// sequences ".." and "@{" which have special meaning to revparse.
+  ///
+  /// @deprecated Use git_reference_name_is_valid
+  /// @param refname name to be checked.
+  /// @return 1 if the reference name is acceptable; 0 if it isn't
+  int git_reference_is_valid_name(
+    ffi.Pointer<ffi.Int8> refname,
+  ) {
+    return _git_reference_is_valid_name(
+      refname,
+    );
+  }
+
+  late final _git_reference_is_valid_name_ptr =
+      _lookup<ffi.NativeFunction<_c_git_reference_is_valid_name>>(
+          'git_reference_is_valid_name');
+  late final _dart_git_reference_is_valid_name _git_reference_is_valid_name =
+      _git_reference_is_valid_name_ptr
+          .asFunction<_dart_git_reference_is_valid_name>();
 
   int git_tag_create_frombuffer(
     ffi.Pointer<git_oid> oid,
@@ -18018,252 +18723,6 @@ class Libgit2 {
       _git_worktree_prune_init_options = _git_worktree_prune_init_options_ptr
           .asFunction<_dart_git_worktree_prune_init_options>();
 
-  /// Load the filter list for a given path.
-  ///
-  /// This will return 0 (success) but set the output git_filter_list to NULL
-  /// if no filters are requested for the given file.
-  ///
-  /// @param filters Output newly created git_filter_list (or NULL)
-  /// @param repo Repository object that contains `path`
-  /// @param blob The blob to which the filter will be applied (if known)
-  /// @param path Relative path of the file to be filtered
-  /// @param mode Filtering direction (WT->ODB or ODB->WT)
-  /// @param flags Combination of `git_filter_flag_t` flags
-  /// @return 0 on success (which could still return NULL if no filters are
-  /// needed for the requested file), <0 on error
-  int git_filter_list_load(
-    ffi.Pointer<ffi.Pointer<git_filter_list>> filters,
-    ffi.Pointer<git_repository> repo,
-    ffi.Pointer<git_blob> blob,
-    ffi.Pointer<ffi.Int8> path,
-    int mode,
-    int flags,
-  ) {
-    return _git_filter_list_load(
-      filters,
-      repo,
-      blob,
-      path,
-      mode,
-      flags,
-    );
-  }
-
-  late final _git_filter_list_load_ptr =
-      _lookup<ffi.NativeFunction<_c_git_filter_list_load>>(
-          'git_filter_list_load');
-  late final _dart_git_filter_list_load _git_filter_list_load =
-      _git_filter_list_load_ptr.asFunction<_dart_git_filter_list_load>();
-
-  /// Query the filter list to see if a given filter (by name) will run.
-  /// The built-in filters "crlf" and "ident" can be queried, otherwise this
-  /// is the name of the filter specified by the filter attribute.
-  ///
-  /// This will return 0 if the given filter is not in the list, or 1 if
-  /// the filter will be applied.
-  ///
-  /// @param filters A loaded git_filter_list (or NULL)
-  /// @param name The name of the filter to query
-  /// @return 1 if the filter is in the list, 0 otherwise
-  int git_filter_list_contains(
-    ffi.Pointer<git_filter_list> filters,
-    ffi.Pointer<ffi.Int8> name,
-  ) {
-    return _git_filter_list_contains(
-      filters,
-      name,
-    );
-  }
-
-  late final _git_filter_list_contains_ptr =
-      _lookup<ffi.NativeFunction<_c_git_filter_list_contains>>(
-          'git_filter_list_contains');
-  late final _dart_git_filter_list_contains _git_filter_list_contains =
-      _git_filter_list_contains_ptr
-          .asFunction<_dart_git_filter_list_contains>();
-
-  /// Apply filter list to a data buffer.
-  ///
-  /// See `git2/buffer.h` for background on `git_buf` objects.
-  ///
-  /// If the `in` buffer holds data allocated by libgit2 (i.e. `in->asize` is
-  /// not zero), then it will be overwritten when applying the filters.  If
-  /// not, then it will be left untouched.
-  ///
-  /// If there are no filters to apply (or `filters` is NULL), then the `out`
-  /// buffer will reference the `in` buffer data (with `asize` set to zero)
-  /// instead of allocating data.  This keeps allocations to a minimum, but
-  /// it means you have to be careful about freeing the `in` data since `out`
-  /// may be pointing to it!
-  ///
-  /// @param out Buffer to store the result of the filtering
-  /// @param filters A loaded git_filter_list (or NULL)
-  /// @param in Buffer containing the data to filter
-  /// @return 0 on success, an error code otherwise
-  int git_filter_list_apply_to_data(
-    ffi.Pointer<git_buf> out,
-    ffi.Pointer<git_filter_list> filters,
-    ffi.Pointer<git_buf> in_1,
-  ) {
-    return _git_filter_list_apply_to_data(
-      out,
-      filters,
-      in_1,
-    );
-  }
-
-  late final _git_filter_list_apply_to_data_ptr =
-      _lookup<ffi.NativeFunction<_c_git_filter_list_apply_to_data>>(
-          'git_filter_list_apply_to_data');
-  late final _dart_git_filter_list_apply_to_data
-      _git_filter_list_apply_to_data = _git_filter_list_apply_to_data_ptr
-          .asFunction<_dart_git_filter_list_apply_to_data>();
-
-  /// Apply a filter list to the contents of a file on disk
-  ///
-  /// @param out buffer into which to store the filtered file
-  /// @param filters the list of filters to apply
-  /// @param repo the repository in which to perform the filtering
-  /// @param path the path of the file to filter, a relative path will be
-  /// taken as relative to the workdir
-  int git_filter_list_apply_to_file(
-    ffi.Pointer<git_buf> out,
-    ffi.Pointer<git_filter_list> filters,
-    ffi.Pointer<git_repository> repo,
-    ffi.Pointer<ffi.Int8> path,
-  ) {
-    return _git_filter_list_apply_to_file(
-      out,
-      filters,
-      repo,
-      path,
-    );
-  }
-
-  late final _git_filter_list_apply_to_file_ptr =
-      _lookup<ffi.NativeFunction<_c_git_filter_list_apply_to_file>>(
-          'git_filter_list_apply_to_file');
-  late final _dart_git_filter_list_apply_to_file
-      _git_filter_list_apply_to_file = _git_filter_list_apply_to_file_ptr
-          .asFunction<_dart_git_filter_list_apply_to_file>();
-
-  /// Apply a filter list to the contents of a blob
-  ///
-  /// @param out buffer into which to store the filtered file
-  /// @param filters the list of filters to apply
-  /// @param blob the blob to filter
-  int git_filter_list_apply_to_blob(
-    ffi.Pointer<git_buf> out,
-    ffi.Pointer<git_filter_list> filters,
-    ffi.Pointer<git_blob> blob,
-  ) {
-    return _git_filter_list_apply_to_blob(
-      out,
-      filters,
-      blob,
-    );
-  }
-
-  late final _git_filter_list_apply_to_blob_ptr =
-      _lookup<ffi.NativeFunction<_c_git_filter_list_apply_to_blob>>(
-          'git_filter_list_apply_to_blob');
-  late final _dart_git_filter_list_apply_to_blob
-      _git_filter_list_apply_to_blob = _git_filter_list_apply_to_blob_ptr
-          .asFunction<_dart_git_filter_list_apply_to_blob>();
-
-  /// Apply a filter list to an arbitrary buffer as a stream
-  ///
-  /// @param filters the list of filters to apply
-  /// @param data the buffer to filter
-  /// @param target the stream into which the data will be written
-  int git_filter_list_stream_data(
-    ffi.Pointer<git_filter_list> filters,
-    ffi.Pointer<git_buf> data,
-    ffi.Pointer<git_writestream> target,
-  ) {
-    return _git_filter_list_stream_data(
-      filters,
-      data,
-      target,
-    );
-  }
-
-  late final _git_filter_list_stream_data_ptr =
-      _lookup<ffi.NativeFunction<_c_git_filter_list_stream_data>>(
-          'git_filter_list_stream_data');
-  late final _dart_git_filter_list_stream_data _git_filter_list_stream_data =
-      _git_filter_list_stream_data_ptr
-          .asFunction<_dart_git_filter_list_stream_data>();
-
-  /// Apply a filter list to a file as a stream
-  ///
-  /// @param filters the list of filters to apply
-  /// @param repo the repository in which to perform the filtering
-  /// @param path the path of the file to filter, a relative path will be
-  /// taken as relative to the workdir
-  /// @param target the stream into which the data will be written
-  int git_filter_list_stream_file(
-    ffi.Pointer<git_filter_list> filters,
-    ffi.Pointer<git_repository> repo,
-    ffi.Pointer<ffi.Int8> path,
-    ffi.Pointer<git_writestream> target,
-  ) {
-    return _git_filter_list_stream_file(
-      filters,
-      repo,
-      path,
-      target,
-    );
-  }
-
-  late final _git_filter_list_stream_file_ptr =
-      _lookup<ffi.NativeFunction<_c_git_filter_list_stream_file>>(
-          'git_filter_list_stream_file');
-  late final _dart_git_filter_list_stream_file _git_filter_list_stream_file =
-      _git_filter_list_stream_file_ptr
-          .asFunction<_dart_git_filter_list_stream_file>();
-
-  /// Apply a filter list to a blob as a stream
-  ///
-  /// @param filters the list of filters to apply
-  /// @param blob the blob to filter
-  /// @param target the stream into which the data will be written
-  int git_filter_list_stream_blob(
-    ffi.Pointer<git_filter_list> filters,
-    ffi.Pointer<git_blob> blob,
-    ffi.Pointer<git_writestream> target,
-  ) {
-    return _git_filter_list_stream_blob(
-      filters,
-      blob,
-      target,
-    );
-  }
-
-  late final _git_filter_list_stream_blob_ptr =
-      _lookup<ffi.NativeFunction<_c_git_filter_list_stream_blob>>(
-          'git_filter_list_stream_blob');
-  late final _dart_git_filter_list_stream_blob _git_filter_list_stream_blob =
-      _git_filter_list_stream_blob_ptr
-          .asFunction<_dart_git_filter_list_stream_blob>();
-
-  /// Free a git_filter_list
-  ///
-  /// @param filters A git_filter_list created by `git_filter_list_load`
-  void git_filter_list_free(
-    ffi.Pointer<git_filter_list> filters,
-  ) {
-    return _git_filter_list_free(
-      filters,
-    );
-  }
-
-  late final _git_filter_list_free_ptr =
-      _lookup<ffi.NativeFunction<_c_git_filter_list_free>>(
-          'git_filter_list_free');
-  late final _dart_git_filter_list_free _git_filter_list_free =
-      _git_filter_list_free_ptr.asFunction<_dart_git_filter_list_free>();
-
   /// Init the global state
   ///
   /// This function must be called before any other libgit2 function in
@@ -18341,8 +18800,9 @@ class Libgit2 {
   /// Note that a commit is not considered a descendant of itself, in contrast
   /// to `git merge-base --is-ancestor`.
   ///
-  /// @param commit a previously loaded commit.
-  /// @param ancestor a potential ancestor commit.
+  /// @param repo the repository where the commits exist
+  /// @param commit a previously loaded commit
+  /// @param ancestor a potential ancestor commit
   /// @return 1 if the given commit is a descendant of the potential ancestor,
   /// 0 if not, error code otherwise.
   int git_graph_descendant_of(
@@ -18362,6 +18822,36 @@ class Libgit2 {
           'git_graph_descendant_of');
   late final _dart_git_graph_descendant_of _git_graph_descendant_of =
       _git_graph_descendant_of_ptr.asFunction<_dart_git_graph_descendant_of>();
+
+  /// Determine if a commit is reachable from any of a list of commits by
+  /// following parent edges.
+  ///
+  /// @param repo the repository where the commits exist
+  /// @param commit a previously loaded commit
+  /// @param length the number of commits in the provided `descendant_array`
+  /// @param descendant_array oids of the commits
+  /// @return 1 if the given commit is an ancestor of any of the given potential
+  /// descendants, 0 if not, error code otherwise.
+  int git_graph_reachable_from_any(
+    ffi.Pointer<git_repository> repo,
+    ffi.Pointer<git_oid> commit,
+    ffi.Pointer<git_oid> descendant_array,
+    int length,
+  ) {
+    return _git_graph_reachable_from_any(
+      repo,
+      commit,
+      descendant_array,
+      length,
+    );
+  }
+
+  late final _git_graph_reachable_from_any_ptr =
+      _lookup<ffi.NativeFunction<_c_git_graph_reachable_from_any>>(
+          'git_graph_reachable_from_any');
+  late final _dart_git_graph_reachable_from_any _git_graph_reachable_from_any =
+      _git_graph_reachable_from_any_ptr
+          .asFunction<_dart_git_graph_reachable_from_any>();
 
   /// Add ignore rules for a repository.
   ///
@@ -19761,6 +20251,30 @@ class Libgit2 {
   late final _dart_git_odb_write_pack _git_odb_write_pack =
       _git_odb_write_pack_ptr.asFunction<_dart_git_odb_write_pack>();
 
+  /// Write a `multi-pack-index` file from all the `.pack` files in the ODB.
+  ///
+  /// If the ODB layer understands pack files, then this will create a file called
+  /// `multi-pack-index` next to the `.pack` and `.idx` files, which will contain
+  /// an index of all objects stored in `.pack` files. This will allow for
+  /// O(log n) lookup for n objects (regardless of how many packfiles there
+  /// exist).
+  ///
+  /// @param db object database where the `multi-pack-index` file will be written.
+  int git_odb_write_multi_pack_index(
+    ffi.Pointer<git_odb> db,
+  ) {
+    return _git_odb_write_multi_pack_index(
+      db,
+    );
+  }
+
+  late final _git_odb_write_multi_pack_index_ptr =
+      _lookup<ffi.NativeFunction<_c_git_odb_write_multi_pack_index>>(
+          'git_odb_write_multi_pack_index');
+  late final _dart_git_odb_write_multi_pack_index
+      _git_odb_write_multi_pack_index = _git_odb_write_multi_pack_index_ptr
+          .asFunction<_dart_git_odb_write_multi_pack_index>();
+
   /// Determine the object-ID (sha1 hash) of a data buffer
   ///
   /// The resulting SHA-1 OID will be the identifier for the data
@@ -20050,6 +20564,34 @@ class Libgit2 {
   late final _dart_git_odb_get_backend _git_odb_get_backend =
       _git_odb_get_backend_ptr.asFunction<_dart_git_odb_get_backend>();
 
+  /// Set the git commit-graph for the ODB.
+  ///
+  /// After a successfull call, the ownership of the cgraph parameter will be
+  /// transferred to libgit2, and the caller should not free it.
+  ///
+  /// The commit-graph can also be unset by explicitly passing NULL as the cgraph
+  /// parameter.
+  ///
+  /// @param odb object database
+  /// @param cgraph the git commit-graph
+  /// @return 0 on success; error code otherwise
+  int git_odb_set_commit_graph(
+    ffi.Pointer<git_odb> odb,
+    ffi.Pointer<git_commit_graph> cgraph,
+  ) {
+    return _git_odb_set_commit_graph(
+      odb,
+      cgraph,
+    );
+  }
+
+  late final _git_odb_set_commit_graph_ptr =
+      _lookup<ffi.NativeFunction<_c_git_odb_set_commit_graph>>(
+          'git_odb_set_commit_graph');
+  late final _dart_git_odb_set_commit_graph _git_odb_set_commit_graph =
+      _git_odb_set_commit_graph_ptr
+          .asFunction<_dart_git_odb_set_commit_graph>();
+
   /// Create a backend for the packfiles.
   ///
   /// @param out location to store the odb backend pointer
@@ -20131,6 +20673,23 @@ class Libgit2 {
   late final _dart_git_odb_backend_one_pack _git_odb_backend_one_pack =
       _git_odb_backend_one_pack_ptr
           .asFunction<_dart_git_odb_backend_one_pack>();
+
+  /// Get the repository associated with this patch. May be NULL.
+  ///
+  /// @param patch the patch
+  /// @return a pointer to the repository
+  ffi.Pointer<git_repository> git_patch_owner(
+    ffi.Pointer<git_patch> patch,
+  ) {
+    return _git_patch_owner(
+      patch,
+    );
+  }
+
+  late final _git_patch_owner_ptr =
+      _lookup<ffi.NativeFunction<_c_git_patch_owner>>('git_patch_owner');
+  late final _dart_git_patch_owner _git_patch_owner =
+      _git_patch_owner_ptr.asFunction<_dart_git_patch_owner>();
 
   /// Return a patch for an entry in the diff list.
   ///
@@ -21376,103 +21935,6 @@ class Libgit2 {
   late final _dart_git_reset_default _git_reset_default =
       _git_reset_default_ptr.asFunction<_dart_git_reset_default>();
 
-  /// Find a single object, as specified by a revision string.
-  ///
-  /// See `man gitrevisions`, or
-  /// http://git-scm.com/docs/git-rev-parse.html#_specifying_revisions for
-  /// information on the syntax accepted.
-  ///
-  /// The returned object should be released with `git_object_free` when no
-  /// longer needed.
-  ///
-  /// @param out pointer to output object
-  /// @param repo the repository to search in
-  /// @param spec the textual specification for an object
-  /// @return 0 on success, GIT_ENOTFOUND, GIT_EAMBIGUOUS, GIT_EINVALIDSPEC or an error code
-  int git_revparse_single(
-    ffi.Pointer<ffi.Pointer<git_object>> out,
-    ffi.Pointer<git_repository> repo,
-    ffi.Pointer<ffi.Int8> spec,
-  ) {
-    return _git_revparse_single(
-      out,
-      repo,
-      spec,
-    );
-  }
-
-  late final _git_revparse_single_ptr =
-      _lookup<ffi.NativeFunction<_c_git_revparse_single>>(
-          'git_revparse_single');
-  late final _dart_git_revparse_single _git_revparse_single =
-      _git_revparse_single_ptr.asFunction<_dart_git_revparse_single>();
-
-  /// Find a single object and intermediate reference by a revision string.
-  ///
-  /// See `man gitrevisions`, or
-  /// http://git-scm.com/docs/git-rev-parse.html#_specifying_revisions for
-  /// information on the syntax accepted.
-  ///
-  /// In some cases (`@{<-n>}` or `<branchname>@{upstream}`), the expression may
-  /// point to an intermediate reference. When such expressions are being passed
-  /// in, `reference_out` will be valued as well.
-  ///
-  /// The returned object should be released with `git_object_free` and the
-  /// returned reference with `git_reference_free` when no longer needed.
-  ///
-  /// @param object_out pointer to output object
-  /// @param reference_out pointer to output reference or NULL
-  /// @param repo the repository to search in
-  /// @param spec the textual specification for an object
-  /// @return 0 on success, GIT_ENOTFOUND, GIT_EAMBIGUOUS, GIT_EINVALIDSPEC
-  /// or an error code
-  int git_revparse_ext(
-    ffi.Pointer<ffi.Pointer<git_object>> object_out,
-    ffi.Pointer<ffi.Pointer<git_reference>> reference_out,
-    ffi.Pointer<git_repository> repo,
-    ffi.Pointer<ffi.Int8> spec,
-  ) {
-    return _git_revparse_ext(
-      object_out,
-      reference_out,
-      repo,
-      spec,
-    );
-  }
-
-  late final _git_revparse_ext_ptr =
-      _lookup<ffi.NativeFunction<_c_git_revparse_ext>>('git_revparse_ext');
-  late final _dart_git_revparse_ext _git_revparse_ext =
-      _git_revparse_ext_ptr.asFunction<_dart_git_revparse_ext>();
-
-  /// Parse a revision string for `from`, `to`, and intent.
-  ///
-  /// See `man gitrevisions` or
-  /// http://git-scm.com/docs/git-rev-parse.html#_specifying_revisions for
-  /// information on the syntax accepted.
-  ///
-  /// @param revspec Pointer to an user-allocated git_revspec struct where
-  /// the result of the rev-parse will be stored
-  /// @param repo the repository to search in
-  /// @param spec the rev-parse spec to parse
-  /// @return 0 on success, GIT_INVALIDSPEC, GIT_ENOTFOUND, GIT_EAMBIGUOUS or an error code
-  int git_revparse(
-    ffi.Pointer<git_revspec> revspec,
-    ffi.Pointer<git_repository> repo,
-    ffi.Pointer<ffi.Int8> spec,
-  ) {
-    return _git_revparse(
-      revspec,
-      repo,
-      spec,
-    );
-  }
-
-  late final _git_revparse_ptr =
-      _lookup<ffi.NativeFunction<_c_git_revparse>>('git_revparse');
-  late final _dart_git_revparse _git_revparse =
-      _git_revparse_ptr.asFunction<_dart_git_revparse>();
-
   /// Allocate a new revision walker to iterate through a repo.
   ///
   /// This revision walker uses a custom memory pool and an internal
@@ -22596,6 +23058,30 @@ class Libgit2 {
   late final _dart_git_tag_dup _git_tag_dup =
       _git_tag_dup_ptr.asFunction<_dart_git_tag_dup>();
 
+  /// Determine whether a tag name is valid, meaning that (when prefixed
+  /// with `refs/tags/`) that it is a valid reference name, and that any
+  /// additional tag name restrictions are imposed (eg, it cannot start
+  /// with a `-`).
+  ///
+  /// @param valid output pointer to set with validity of given tag name
+  /// @param name a tag name to test
+  /// @return 0 on success or an error code
+  int git_tag_name_is_valid(
+    ffi.Pointer<ffi.Int32> valid,
+    ffi.Pointer<ffi.Int8> name,
+  ) {
+    return _git_tag_name_is_valid(
+      valid,
+      name,
+    );
+  }
+
+  late final _git_tag_name_is_valid_ptr =
+      _lookup<ffi.NativeFunction<_c_git_tag_name_is_valid>>(
+          'git_tag_name_is_valid');
+  late final _dart_git_tag_name_is_valid _git_tag_name_is_valid =
+      _git_tag_name_is_valid_ptr.asFunction<_dart_git_tag_name_is_valid>();
+
   /// Create a new transaction object
   ///
   /// This does not lock anything, but sets up the transaction object to
@@ -23193,6 +23679,8 @@ abstract class git_libgit2_opt_t {
   static const int GIT_OPT_ENABLE_HTTP_EXPECT_CONTINUE = 28;
   static const int GIT_OPT_GET_MWINDOW_FILE_LIMIT = 29;
   static const int GIT_OPT_SET_MWINDOW_FILE_LIMIT = 30;
+  static const int GIT_OPT_SET_ODB_PACKED_PRIORITY = 31;
+  static const int GIT_OPT_SET_ODB_LOOSE_PRIORITY = 32;
 }
 
 /// A data buffer for exporting data from libgit2
@@ -23346,9 +23834,15 @@ class git_odb_writepack extends ffi.Struct {
   external ffi.Pointer<ffi.NativeFunction<_typedefC_10>> free;
 }
 
+class git_midx_writer extends ffi.Opaque {}
+
 class git_refdb extends ffi.Opaque {}
 
 class git_refdb_backend extends ffi.Opaque {}
+
+class git_commit_graph extends ffi.Opaque {}
+
+class git_commit_graph_writer extends ffi.Opaque {}
 
 class git_repository extends ffi.Opaque {}
 
@@ -23580,12 +24074,18 @@ class git_remote_callbacks extends ffi.Struct {
   /// to auto-detect.
   external ffi.Pointer<ffi.NativeFunction<git_transport_cb>> transport;
 
+  /// Callback when the remote is ready to connect.
+  external ffi.Pointer<ffi.NativeFunction<git_remote_ready_cb>> remote_ready;
+
   /// This will be passed to each of the callbacks in this struct
   /// as the last parameter.
   external ffi.Pointer<ffi.Void> payload;
 
   /// Resolve URL before connecting to remote.
   /// The returned URL will be used to connect to the remote instead.
+  ///
+  /// This callback is deprecated; users should use
+  /// git_remote_ready_cb and configure the instance URL instead.
   external ffi.Pointer<ffi.NativeFunction<git_url_resolve_cb>> resolve_url;
 }
 
@@ -24065,6 +24565,9 @@ abstract class git_diff_option_t {
   /// Include the necessary deflate / delta information so that `git-apply`
   /// can apply given diff information to binary files.
   static const int GIT_DIFF_SHOW_BINARY = 1073741824;
+
+  /// Ignore blank lines
+  static const int GIT_DIFF_IGNORE_BLANK_LINES = -2147483648;
 }
 
 class git_diff extends ffi.Opaque {}
@@ -24137,39 +24640,33 @@ abstract class git_delta_t {
 /// Although this is called a "file", it could represent a file, a symbolic
 /// link, a submodule commit id, or even a tree (although that only if you
 /// are tracking type changes or ignored/untracked directories).
-///
-/// The `id` is the `git_oid` of the item.  If the entry represents an
-/// absent side of a diff (e.g. the `old_file` of a `GIT_DELTA_ADDED` delta),
-/// then the oid will be zeroes.
-///
-/// `path` is the NUL-terminated path to the entry relative to the working
-/// directory of the repository.
-///
-/// `size` is the size of the entry in bytes.
-///
-/// `flags` is a combination of the `git_diff_flag_t` types
-///
-/// `mode` is, roughly, the stat() `st_mode` value for the item.  This will
-/// be restricted to one of the `git_filemode_t` values.
-///
-/// The `id_abbrev` represents the known length of the `id` field, when
-/// converted to a hex string.  It is generally `GIT_OID_HEXSZ`, unless this
-/// delta was created from reading a patch file, in which case it may be
-/// abbreviated to something reasonable, like 7 characters.
 class git_diff_file extends ffi.Struct {
+  /// The `git_oid` of the item.  If the entry represents an
+  /// absent side of a diff (e.g. the `old_file` of a `GIT_DELTA_ADDED` delta),
+  /// then the oid will be zeroes.
   external git_oid id;
 
+  /// The NUL-terminated path to the entry relative to the working
+  /// directory of the repository.
   external ffi.Pointer<ffi.Int8> path;
 
+  /// The size of the entry in bytes.
   @ffi.Uint64()
   external int size;
 
+  /// A combination of the `git_diff_flag_t` types
   @ffi.Uint32()
   external int flags;
 
+  /// Roughly, the stat() `st_mode` value for the item.  This will
+  /// be restricted to one of the `git_filemode_t` values.
   @ffi.Uint16()
   external int mode;
 
+  /// Represents the known length of the `id` field, when
+  /// converted to a hex string.  It is generally `GIT_OID_HEXSZ`, unless this
+  /// delta was created from reading a patch file, in which case it may be
+  /// abbreviated to something reasonable, like 7 characters.
   @ffi.Uint16()
   external int id_abbrev;
 }
@@ -24743,6 +25240,20 @@ abstract class git_attr_value_t {
   static const int GIT_ATTR_VALUE_STRING = 3;
 }
 
+/// An options structure for querying attributes.
+class git_attr_options extends ffi.Struct {
+  @ffi.Uint32()
+  external int version;
+
+  /// A combination of GIT_ATTR_CHECK flags
+  @ffi.Uint32()
+  external int flags;
+
+  /// The commit to load attributes from, when
+  /// `GIT_ATTR_CHECK_INCLUDE_COMMIT` is specified.
+  external ffi.Pointer<git_oid> commit_id;
+}
+
 /// Flags to control the functionality of `git_blob_filter`.
 abstract class git_blob_filter_flag_t {
   /// When set, filters will not be applied to binary files.
@@ -24754,7 +25265,11 @@ abstract class git_blob_filter_flag_t {
 
   /// When set, filters will be loaded from a `.gitattributes` file
   /// in the HEAD commit.
-  static const int GIT_BLOB_FILTER_ATTTRIBUTES_FROM_HEAD = 4;
+  static const int GIT_BLOB_FILTER_ATTRIBUTES_FROM_HEAD = 4;
+
+  /// When set, filters will be loaded from a `.gitattributes` file
+  /// in the specified commit.
+  static const int GIT_BLOB_FILTER_ATTRIBUTES_FROM_COMMIT = 8;
 }
 
 /// The options used when applying filter options to a file.
@@ -24768,6 +25283,10 @@ class git_blob_filter_options extends ffi.Struct {
   /// Flags to control the filtering process, see `git_blob_filter_flag_t` above
   @ffi.Uint32()
   external int flags;
+
+  /// The commit to load attributes from, when
+  /// `GIT_BLOB_FILTER_ATTRIBUTES_FROM_COMMIT` is specified.
+  external ffi.Pointer<git_oid> commit_id;
 }
 
 /// Flags for indicating option behavior for git_blame APIs.
@@ -24776,30 +25295,36 @@ abstract class git_blame_flag_t {
   static const int GIT_BLAME_NORMAL = 0;
 
   /// Track lines that have moved within a file (like `git blame -M`).
-  /// NOT IMPLEMENTED.
+  ///
+  /// This is not yet implemented and reserved for future use.
   static const int GIT_BLAME_TRACK_COPIES_SAME_FILE = 1;
 
-  /// Track lines that have moved across files in the same commit (like `git blame -C`).
-  /// NOT IMPLEMENTED.
+  /// Track lines that have moved across files in the same commit
+  /// (like `git blame -C`).
+  ///
+  /// This is not yet implemented and reserved for future use.
   static const int GIT_BLAME_TRACK_COPIES_SAME_COMMIT_MOVES = 2;
 
-  /// Track lines that have been copied from another file that exists in the
-  /// same commit (like `git blame -CC`). Implies SAME_FILE.
-  /// NOT IMPLEMENTED.
+  /// Track lines that have been copied from another file that exists
+  /// in the same commit (like `git blame -CC`).  Implies SAME_FILE.
+  ///
+  /// This is not yet implemented and reserved for future use.
   static const int GIT_BLAME_TRACK_COPIES_SAME_COMMIT_COPIES = 4;
 
-  /// Track lines that have been copied from another file that exists in *any*
-  /// commit (like `git blame -CCC`). Implies SAME_COMMIT_COPIES.
-  /// NOT IMPLEMENTED.
+  /// Track lines that have been copied from another file that exists in
+  /// *any* commit (like `git blame -CCC`).  Implies SAME_COMMIT_COPIES.
+  ///
+  /// This is not yet implemented and reserved for future use.
   static const int GIT_BLAME_TRACK_COPIES_ANY_COMMIT_COPIES = 8;
 
-  /// Restrict the search of commits to those reachable following only the
-  /// first parents.
+  /// Restrict the search of commits to those reachable following only
+  /// the first parents.
   static const int GIT_BLAME_FIRST_PARENT = 16;
 
-  /// Use mailmap file to map author and committer names and email addresses
-  /// to canonical real names and email addresses. The mailmap will be read
-  /// from the working directory, or HEAD in a bare repository.
+  /// Use mailmap file to map author and committer names and email
+  /// addresses to canonical real names and email addresses. The
+  /// mailmap will be read from the working directory, or HEAD in a
+  /// bare repository.
   static const int GIT_BLAME_USE_MAILMAP = 32;
 
   /// Ignore whitespace differences
@@ -24818,9 +25343,11 @@ class git_blame_options extends ffi.Struct {
   @ffi.Uint32()
   external int flags;
 
-  /// The lower bound on the number of alphanumeric
-  /// characters that must be detected as moving/copying within a file for it to
-  /// associate those lines with the parent commit. The default value is 20.
+  /// The lower bound on the number of alphanumeric characters that
+  /// must be detected as moving/copying within a file for it to
+  /// associate those lines with the parent commit. The default value
+  /// is 20.
+  ///
   /// This value only takes effect if any of the `GIT_BLAME_TRACK_COPIES_*`
   /// flags are specified.
   @ffi.Uint16()
@@ -24845,48 +25372,43 @@ class git_blame_options extends ffi.Struct {
 }
 
 /// Structure that represents a blame hunk.
-///
-/// - `lines_in_hunk` is the number of lines in this hunk
-/// - `final_commit_id` is the OID of the commit where this line was last
-/// changed.
-/// - `final_start_line_number` is the 1-based line number where this hunk
-/// begins, in the final version of the file
-/// - `final_signature` is the author of `final_commit_id`. If
-/// `GIT_BLAME_USE_MAILMAP` has been specified, it will contain the canonical
-/// real name and email address.
-/// - `orig_commit_id` is the OID of the commit where this hunk was found.  This
-/// will usually be the same as `final_commit_id`, except when
-/// `GIT_BLAME_TRACK_COPIES_ANY_COMMIT_COPIES` has been specified.
-/// - `orig_path` is the path to the file where this hunk originated, as of the
-/// commit specified by `orig_commit_id`.
-/// - `orig_start_line_number` is the 1-based line number where this hunk begins
-/// in the file named by `orig_path` in the commit specified by
-/// `orig_commit_id`.
-/// - `orig_signature` is the author of `orig_commit_id`. If
-/// `GIT_BLAME_USE_MAILMAP` has been specified, it will contain the canonical
-/// real name and email address.
-/// - `boundary` is 1 iff the hunk has been tracked to a boundary commit (the
-/// root, or the commit specified in git_blame_options.oldest_commit)
 class git_blame_hunk extends ffi.Struct {
+  /// The number of lines in this hunk.
   @ffi.Int32()
   external int lines_in_hunk;
 
+  /// The OID of the commit where this line was last changed.
   external git_oid final_commit_id;
 
+  /// The 1-based line number where this hunk begins, in the final version
+  /// of the file.
   @ffi.Int32()
   external int final_start_line_number;
 
+  /// The author of `final_commit_id`. If `GIT_BLAME_USE_MAILMAP` has been
+  /// specified, it will contain the canonical real name and email address.
   external ffi.Pointer<git_signature> final_signature;
 
+  /// The OID of the commit where this hunk was found.
+  /// This will usually be the same as `final_commit_id`, except when
+  /// `GIT_BLAME_TRACK_COPIES_ANY_COMMIT_COPIES` has been specified.
   external git_oid orig_commit_id;
 
+  /// The path to the file where this hunk originated, as of the commit
+  /// specified by `orig_commit_id`.
   external ffi.Pointer<ffi.Int8> orig_path;
 
+  /// The 1-based line number where this hunk begins in the file named by
+  /// `orig_path` in the commit specified by `orig_commit_id`.
   @ffi.Int32()
   external int orig_start_line_number;
 
+  /// The author of `orig_commit_id`. If `GIT_BLAME_USE_MAILMAP` has been
+  /// specified, it will contain the canonical real name and email address.
   external ffi.Pointer<git_signature> orig_signature;
 
+  /// The 1 iff the hunk has been tracked to a boundary commit (the root,
+  /// or the commit specified in git_blame_options.oldest_commit)
   @ffi.Int8()
   external int boundary;
 }
@@ -24926,6 +25448,32 @@ abstract class git_cert_ssh_t {
 
   /// SHA-256 is available
   static const int GIT_CERT_SSH_SHA256 = 4;
+
+  /// Raw hostkey is available
+  static const int GIT_CERT_SSH_RAW = 8;
+}
+
+abstract class git_cert_ssh_raw_type_t {
+  /// The raw key is of an unknown type.
+  static const int GIT_CERT_SSH_RAW_TYPE_UNKNOWN = 0;
+
+  /// The raw key is an RSA key.
+  static const int GIT_CERT_SSH_RAW_TYPE_RSA = 1;
+
+  /// The raw key is a DSS key.
+  static const int GIT_CERT_SSH_RAW_TYPE_DSS = 2;
+
+  /// The raw key is a ECDSA 256 key.
+  static const int GIT_CERT_SSH_RAW_TYPE_KEY_ECDSA_256 = 3;
+
+  /// The raw key is a ECDSA 384 key.
+  static const int GIT_CERT_SSH_RAW_TYPE_KEY_ECDSA_384 = 4;
+
+  /// The raw key is a ECDSA 521 key.
+  static const int GIT_CERT_SSH_RAW_TYPE_KEY_ECDSA_521 = 5;
+
+  /// The raw key is a ED25519 key.
+  static const int GIT_CERT_SSH_RAW_TYPE_KEY_ED25519 = 6;
 }
 
 /// Hostkey information taken from libssh2
@@ -24933,8 +25481,7 @@ class git_cert_hostkey extends ffi.Struct {
   /// < The parent cert
   external git_cert parent;
 
-  /// A hostkey type from libssh2, either
-  /// `GIT_CERT_SSH_MD5` or `GIT_CERT_SSH_SHA1`
+  /// A bitmask containing the available fields.
   @ffi.Int32()
   external int type;
 
@@ -24946,6 +25493,20 @@ class git_cert_hostkey extends ffi.Struct {
 
   @ffi.Array.multi([32])
   external ffi.Array<ffi.Uint8> hash_sha256;
+
+  /// Raw hostkey type. If `type` has `GIT_CERT_SSH_RAW` set, this will
+  /// have the type of the raw hostkey.
+  @ffi.Int32()
+  external int raw_type;
+
+  /// Pointer to the raw hostkey. If `type` has `GIT_CERT_SSH_RAW` set,
+  /// this will have the raw contents of the hostkey.
+  external ffi.Pointer<ffi.Int8> hostkey;
+
+  /// Raw hostkey length. If `type` has `GIT_CERT_SSH_RAW` set, this will
+  /// have the length of the raw contents of the hostkey.
+  @ffi.Int32()
+  external int hostkey_len;
 }
 
 /// X.509 certificate information
@@ -25112,6 +25673,10 @@ abstract class git_checkout_strategy_t {
   /// Normally checkout writes the index upon completion; this prevents that.
   static const int GIT_CHECKOUT_DONT_WRITE_INDEX = 8388608;
 
+  /// Show what would be done by a checkout.  Stop after sending
+  /// notifications; don't update the working directory or index.
+  static const int GIT_CHECKOUT_DRY_RUN = 16777216;
+
   /// Recursively checkout submodules with same options (NOT IMPLEMENTED)
   static const int GIT_CHECKOUT_UPDATE_SUBMODULES = 65536;
 
@@ -25124,18 +25689,6 @@ abstract class git_checkout_strategy_t {
 /// Checkout will invoke an options notification callback (`notify_cb`) for
 /// certain cases - you pick which ones via `notify_flags`:
 ///
-/// - GIT_CHECKOUT_NOTIFY_CONFLICT invokes checkout on conflicting paths.
-///
-/// - GIT_CHECKOUT_NOTIFY_DIRTY notifies about "dirty" files, i.e. those that
-/// do not need an update but no longer match the baseline.  Core git
-/// displays these files when checkout runs, but won't stop the checkout.
-///
-/// - GIT_CHECKOUT_NOTIFY_UPDATED sends notification for any file changed.
-///
-/// - GIT_CHECKOUT_NOTIFY_UNTRACKED notifies about untracked files.
-///
-/// - GIT_CHECKOUT_NOTIFY_IGNORED notifies about ignored files.
-///
 /// Returning a non-zero value from this callback will cancel the checkout.
 /// The non-zero return value will be propagated back and returned by the
 /// git_checkout_... call.
@@ -25145,10 +25698,22 @@ abstract class git_checkout_strategy_t {
 /// being modified.
 abstract class git_checkout_notify_t {
   static const int GIT_CHECKOUT_NOTIFY_NONE = 0;
+
+  /// Invokes checkout on conflicting paths.
   static const int GIT_CHECKOUT_NOTIFY_CONFLICT = 1;
+
+  /// Notifies about "dirty" files, i.e. those that do not need an update
+  /// but no longer match the baseline.  Core git displays these files when
+  /// checkout runs, but won't stop the checkout.
   static const int GIT_CHECKOUT_NOTIFY_DIRTY = 2;
+
+  /// Sends notification for any file changed.
   static const int GIT_CHECKOUT_NOTIFY_UPDATED = 4;
+
+  /// Notifies about untracked files.
   static const int GIT_CHECKOUT_NOTIFY_UNTRACKED = 8;
+
+  /// Notifies about ignored files.
   static const int GIT_CHECKOUT_NOTIFY_IGNORED = 16;
   static const int GIT_CHECKOUT_NOTIFY_ALL = 65535;
 }
@@ -26351,6 +26916,54 @@ abstract class git_error_t {
   static const int GIT_ERROR_INTERNAL = 35;
 }
 
+/// Filters are applied in one of two directions: smudging - which is
+/// exporting a file from the Git object database to the working directory,
+/// and cleaning - which is importing a file from the working directory to
+/// the Git object database.  These values control which direction of
+/// change is being applied.
+abstract class git_filter_mode_t {
+  static const int GIT_FILTER_TO_WORKTREE = 0;
+  static const int GIT_FILTER_SMUDGE = 0;
+  static const int GIT_FILTER_TO_ODB = 1;
+  static const int GIT_FILTER_CLEAN = 1;
+}
+
+/// Filter option flags.
+abstract class git_filter_flag_t {
+  static const int GIT_FILTER_DEFAULT = 0;
+
+  /// Don't error for `safecrlf` violations, allow them to continue.
+  static const int GIT_FILTER_ALLOW_UNSAFE = 1;
+
+  /// Don't load `/etc/gitattributes` (or the system equivalent)
+  static const int GIT_FILTER_NO_SYSTEM_ATTRIBUTES = 2;
+
+  /// Load attributes from `.gitattributes` in the root of HEAD
+  static const int GIT_FILTER_ATTRIBUTES_FROM_HEAD = 4;
+
+  /// Load attributes from `.gitattributes` in a given commit.
+  /// This can only be specified in a `git_filter_options`.
+  static const int GIT_FILTER_ATTRIBUTES_FROM_COMMIT = 8;
+}
+
+/// Filtering options
+class git_filter_options extends ffi.Struct {
+  @ffi.Uint32()
+  external int version;
+
+  /// See `git_filter_flag_t` above
+  @ffi.Uint32()
+  external int flags;
+
+  /// The commit to load attributes from, when
+  /// `GIT_FILTER_ATTRIBUTES_FROM_COMMIT` is specified.
+  external ffi.Pointer<git_oid> commit_id;
+}
+
+class git_filter extends ffi.Opaque {}
+
+class git_filter_list extends ffi.Opaque {}
+
 /// Rebase options
 ///
 /// Use to tell the rebase machinery how to operate.
@@ -26392,12 +27005,31 @@ class git_rebase_options extends ffi.Struct {
   /// `abort` to match git semantics.
   external git_checkout_options checkout_options;
 
+  /// Optional callback that allows users to override commit
+  /// creation in `git_rebase_commit`.  If specified, users can
+  /// create their own commit and provide the commit ID, which
+  /// may be useful for signing commits or otherwise customizing
+  /// the commit creation.
+  ///
+  /// If this callback returns `GIT_PASSTHROUGH`, then
+  /// `git_rebase_commit` will continue to create the commit.
+  external ffi.Pointer<ffi.NativeFunction<git_commit_create_cb>>
+      commit_create_cb;
+
   /// If provided, this will be called with the commit content, allowing
   /// a signature to be added to the rebase commit. Can be skipped with
   /// GIT_PASSTHROUGH. If GIT_PASSTHROUGH is returned, a commit will be made
   /// without a signature.
+  ///
   /// This field is only used when performing git_rebase_commit.
-  external ffi.Pointer<ffi.NativeFunction<git_commit_signing_cb>> signing_cb;
+  ///
+  /// This callback is not invoked if a `git_commit_create_cb` is
+  /// specified.
+  ///
+  /// This callback is deprecated; users should provide a
+  /// creation callback as `commit_create_cb` that produces a
+  /// commit buffer, signs it, and commits it.
+  external ffi.Pointer<ffi.NativeFunction<_typedefC_22>> signing_cb;
 
   /// This will be passed to each of the callbacks in this struct
   /// as the last parameter.
@@ -26488,6 +27120,32 @@ class git_revert_options extends ffi.Struct {
 
   /// < Options for the checkout
   external git_checkout_options checkout_opts;
+}
+
+/// Revparse flags.  These indicate the intended behavior of the spec passed to
+/// git_revparse.
+abstract class git_revspec_t {
+  /// The spec targeted a single object.
+  static const int GIT_REVSPEC_SINGLE = 1;
+
+  /// The spec targeted a range of commits.
+  static const int GIT_REVSPEC_RANGE = 2;
+
+  /// The spec used the '...' operator, which invokes special semantics.
+  static const int GIT_REVSPEC_MERGE_BASE = 4;
+}
+
+/// Git Revision Spec: output of a `git_revparse` operation
+class git_revspec extends ffi.Struct {
+  /// The left element of the revspec; must be freed by the user
+  external ffi.Pointer<git_object> from;
+
+  /// The right element of the revspec; must be freed by the user
+  external ffi.Pointer<git_object> to;
+
+  /// The intent of the revspec (i.e. `git_revspec_mode_t` flags)
+  @ffi.Uint32()
+  external int flags;
 }
 
 /// Stash flags
@@ -26595,86 +27253,100 @@ abstract class git_status_t {
 /// With `git_status_foreach_ext`, this will control which changes get
 /// callbacks.  With `git_status_list_new`, these will control which
 /// changes are included in the list.
-///
-/// - GIT_STATUS_SHOW_INDEX_AND_WORKDIR is the default.  This roughly
-/// matches `git status --porcelain` regarding which files are
-/// included and in what order.
-/// - GIT_STATUS_SHOW_INDEX_ONLY only gives status based on HEAD to index
-/// comparison, not looking at working directory changes.
-/// - GIT_STATUS_SHOW_WORKDIR_ONLY only gives status based on index to
-/// working directory comparison, not comparing the index to the HEAD.
 abstract class git_status_show_t {
+  /// The default. This roughly matches `git status --porcelain` regarding
+  /// which files are included and in what order.
   static const int GIT_STATUS_SHOW_INDEX_AND_WORKDIR = 0;
+
+  /// Only gives status based on HEAD to index comparison, not looking at
+  /// working directory changes.
   static const int GIT_STATUS_SHOW_INDEX_ONLY = 1;
+
+  /// Only gives status based on index to working directory comparison,
+  /// not comparing the index to the HEAD.
   static const int GIT_STATUS_SHOW_WORKDIR_ONLY = 2;
 }
 
 /// Flags to control status callbacks
-///
-/// - GIT_STATUS_OPT_INCLUDE_UNTRACKED says that callbacks should be made
-/// on untracked files.  These will only be made if the workdir files are
-/// included in the status "show" option.
-/// - GIT_STATUS_OPT_INCLUDE_IGNORED says that ignored files get callbacks.
-/// Again, these callbacks will only be made if the workdir files are
-/// included in the status "show" option.
-/// - GIT_STATUS_OPT_INCLUDE_UNMODIFIED indicates that callback should be
-/// made even on unmodified files.
-/// - GIT_STATUS_OPT_EXCLUDE_SUBMODULES indicates that submodules should be
-/// skipped.  This only applies if there are no pending typechanges to
-/// the submodule (either from or to another type).
-/// - GIT_STATUS_OPT_RECURSE_UNTRACKED_DIRS indicates that all files in
-/// untracked directories should be included.  Normally if an entire
-/// directory is new, then just the top-level directory is included (with
-/// a trailing slash on the entry name).  This flag says to include all
-/// of the individual files in the directory instead.
-/// - GIT_STATUS_OPT_DISABLE_PATHSPEC_MATCH indicates that the given path
-/// should be treated as a literal path, and not as a pathspec pattern.
-/// - GIT_STATUS_OPT_RECURSE_IGNORED_DIRS indicates that the contents of
-/// ignored directories should be included in the status.  This is like
-/// doing `git ls-files -o -i --exclude-standard` with core git.
-/// - GIT_STATUS_OPT_RENAMES_HEAD_TO_INDEX indicates that rename detection
-/// should be processed between the head and the index and enables
-/// the GIT_STATUS_INDEX_RENAMED as a possible status flag.
-/// - GIT_STATUS_OPT_RENAMES_INDEX_TO_WORKDIR indicates that rename
-/// detection should be run between the index and the working directory
-/// and enabled GIT_STATUS_WT_RENAMED as a possible status flag.
-/// - GIT_STATUS_OPT_SORT_CASE_SENSITIVELY overrides the native case
-/// sensitivity for the file system and forces the output to be in
-/// case-sensitive order
-/// - GIT_STATUS_OPT_SORT_CASE_INSENSITIVELY overrides the native case
-/// sensitivity for the file system and forces the output to be in
-/// case-insensitive order
-/// - GIT_STATUS_OPT_RENAMES_FROM_REWRITES indicates that rename detection
-/// should include rewritten files
-/// - GIT_STATUS_OPT_NO_REFRESH bypasses the default status behavior of
-/// doing a "soft" index reload (i.e. reloading the index data if the
-/// file on disk has been modified outside libgit2).
-/// - GIT_STATUS_OPT_UPDATE_INDEX tells libgit2 to refresh the stat cache
-/// in the index for files that are unchanged but have out of date stat
-/// information in the index.  It will result in less work being done on
-/// subsequent calls to get status.  This is mutually exclusive with the
-/// NO_REFRESH option.
 ///
 /// Calling `git_status_foreach()` is like calling the extended version
 /// with: GIT_STATUS_OPT_INCLUDE_IGNORED, GIT_STATUS_OPT_INCLUDE_UNTRACKED,
 /// and GIT_STATUS_OPT_RECURSE_UNTRACKED_DIRS.  Those options are bundled
 /// together as `GIT_STATUS_OPT_DEFAULTS` if you want them as a baseline.
 abstract class git_status_opt_t {
+  /// Says that callbacks should be made on untracked files.
+  /// These will only be made if the workdir files are included in the status
+  /// "show" option.
   static const int GIT_STATUS_OPT_INCLUDE_UNTRACKED = 1;
+
+  /// Says that ignored files get callbacks.
+  /// Again, these callbacks will only be made if the workdir files are
+  /// included in the status "show" option.
   static const int GIT_STATUS_OPT_INCLUDE_IGNORED = 2;
+
+  /// Indicates that callback should be made even on unmodified files.
   static const int GIT_STATUS_OPT_INCLUDE_UNMODIFIED = 4;
+
+  /// Indicates that submodules should be skipped.
+  /// This only applies if there are no pending typechanges to the submodule
+  /// (either from or to another type).
   static const int GIT_STATUS_OPT_EXCLUDE_SUBMODULES = 8;
+
+  /// Indicates that all files in untracked directories should be included.
+  /// Normally if an entire directory is new, then just the top-level
+  /// directory is included (with a trailing slash on the entry name).
+  /// This flag says to include all of the individual files in the directory
+  /// instead.
   static const int GIT_STATUS_OPT_RECURSE_UNTRACKED_DIRS = 16;
+
+  /// Indicates that the given path should be treated as a literal path,
+  /// and not as a pathspec pattern.
   static const int GIT_STATUS_OPT_DISABLE_PATHSPEC_MATCH = 32;
+
+  /// Indicates that the contents of ignored directories should be included
+  /// in the status. This is like doing `git ls-files -o -i --exclude-standard`
+  /// with core git.
   static const int GIT_STATUS_OPT_RECURSE_IGNORED_DIRS = 64;
+
+  /// Indicates that rename detection should be processed between the head and
+  /// the index and enables the GIT_STATUS_INDEX_RENAMED as a possible status
+  /// flag.
   static const int GIT_STATUS_OPT_RENAMES_HEAD_TO_INDEX = 128;
+
+  /// Indicates that rename detection should be run between the index and the
+  /// working directory and enabled GIT_STATUS_WT_RENAMED as a possible status
+  /// flag.
   static const int GIT_STATUS_OPT_RENAMES_INDEX_TO_WORKDIR = 256;
+
+  /// Overrides the native case sensitivity for the file system and forces
+  /// the output to be in case-sensitive order.
   static const int GIT_STATUS_OPT_SORT_CASE_SENSITIVELY = 512;
+
+  /// Overrides the native case sensitivity for the file system and forces
+  /// the output to be in case-insensitive order.
   static const int GIT_STATUS_OPT_SORT_CASE_INSENSITIVELY = 1024;
+
+  /// Iindicates that rename detection should include rewritten files.
   static const int GIT_STATUS_OPT_RENAMES_FROM_REWRITES = 2048;
+
+  /// Bypasses the default status behavior of doing a "soft" index reload
+  /// (i.e. reloading the index data if the file on disk has been modified
+  /// outside libgit2).
   static const int GIT_STATUS_OPT_NO_REFRESH = 4096;
+
+  /// Tells libgit2 to refresh the stat cache in the index for files that are
+  /// unchanged but have out of date stat einformation in the index.
+  /// It will result in less work being done on subsequent calls to get status.
+  /// This is mutually exclusive with the NO_REFRESH option.
   static const int GIT_STATUS_OPT_UPDATE_INDEX = 8192;
+
+  /// Normally files that cannot be opened or read are ignored as
+  /// these are often transient files; this option will return
+  /// unreadable files as `GIT_STATUS_WT_UNREADABLE`.
   static const int GIT_STATUS_OPT_INCLUDE_UNREADABLE = 16384;
+
+  /// Unreadable files will be detected and given the status
+  /// untracked instead of unreadable.
   static const int GIT_STATUS_OPT_INCLUDE_UNREADABLE_AS_UNTRACKED = 32768;
 }
 
@@ -26683,7 +27355,7 @@ abstract class git_status_opt_t {
 /// Initialize with `GIT_STATUS_OPTIONS_INIT`. Alternatively, you can
 /// use `git_status_options_init`.
 class git_status_options extends ffi.Struct {
-  /// < The version
+  /// The struct version; pass `GIT_STATUS_OPTIONS_VERSION`.
   @ffi.Uint32()
   external int version;
 
@@ -26692,18 +27364,19 @@ class git_status_options extends ffi.Struct {
   @ffi.Int32()
   external int show_1;
 
-  /// The `flags` value is an OR'ed combination of the `git_status_opt_t`
-  /// values above.
+  /// The `flags` value is an OR'ed combination of the
+  /// `git_status_opt_t` values above.
   @ffi.Uint32()
   external int flags;
 
   /// The `pathspec` is an array of path patterns to match (using
-  /// fnmatch-style matching), or just an array of paths to match exactly if
-  /// `GIT_STATUS_OPT_DISABLE_PATHSPEC_MATCH` is specified in the flags.
+  /// fnmatch-style matching), or just an array of paths to match
+  /// exactly if `GIT_STATUS_OPT_DISABLE_PATHSPEC_MATCH` is specified
+  /// in the flags.
   external git_strarray pathspec;
 
-  /// The `baseline` is the tree to be used for comparison to the working directory
-  /// and index; defaults to HEAD.
+  /// The `baseline` is the tree to be used for comparison to the
+  /// working directory and index; defaults to HEAD.
   external ffi.Pointer<git_tree> baseline;
 }
 
@@ -26849,6 +27522,7 @@ class git_worktree_prune_options extends ffi.Struct {
   @ffi.Uint32()
   external int version;
 
+  /// A combination of `git_worktree_prune_t`
   @ffi.Uint32()
   external int flags;
 }
@@ -26859,36 +27533,6 @@ class git_credential_userpass_payload extends ffi.Struct {
 
   external ffi.Pointer<ffi.Int8> password;
 }
-
-/// Filters are applied in one of two directions: smudging - which is
-/// exporting a file from the Git object database to the working directory,
-/// and cleaning - which is importing a file from the working directory to
-/// the Git object database.  These values control which direction of
-/// change is being applied.
-abstract class git_filter_mode_t {
-  static const int GIT_FILTER_TO_WORKTREE = 0;
-  static const int GIT_FILTER_SMUDGE = 0;
-  static const int GIT_FILTER_TO_ODB = 1;
-  static const int GIT_FILTER_CLEAN = 1;
-}
-
-/// Filter option flags.
-abstract class git_filter_flag_t {
-  static const int GIT_FILTER_DEFAULT = 0;
-
-  /// Don't error for `safecrlf` violations, allow them to continue.
-  static const int GIT_FILTER_ALLOW_UNSAFE = 1;
-
-  /// Don't load `/etc/gitattributes` (or the system equivalent)
-  static const int GIT_FILTER_NO_SYSTEM_ATTRIBUTES = 2;
-
-  /// Load attributes from `.gitattributes` in the root of HEAD
-  static const int GIT_FILTER_ATTRIBUTES_FROM_HEAD = 4;
-}
-
-class git_filter extends ffi.Opaque {}
-
-class git_filter_list extends ffi.Opaque {}
 
 /// Represents a single git message trailer.
 class git_message_trailer extends ffi.Struct {
@@ -26987,32 +27631,6 @@ abstract class git_reset_t {
 
   /// < MIXED plus changes in working tree discarded
   static const int GIT_RESET_HARD = 3;
-}
-
-/// Revparse flags.  These indicate the intended behavior of the spec passed to
-/// git_revparse.
-abstract class git_revparse_mode_t {
-  /// The spec targeted a single object.
-  static const int GIT_REVPARSE_SINGLE = 1;
-
-  /// The spec targeted a range of commits.
-  static const int GIT_REVPARSE_RANGE = 2;
-
-  /// The spec used the '...' operator, which invokes special semantics.
-  static const int GIT_REVPARSE_MERGE_BASE = 4;
-}
-
-/// Git Revision Spec: output of a `git_revparse` operation
-class git_revspec extends ffi.Struct {
-  /// The left element of the revspec; must be freed by the user
-  external ffi.Pointer<git_object> from;
-
-  /// The right element of the revspec; must be freed by the user
-  external ffi.Pointer<git_object> to;
-
-  /// The intent of the revspec (i.e. `git_revparse_mode_t` flags)
-  @ffi.Uint32()
-  external int flags;
 }
 
 /// Flags to specify the sorting which a revwalk should perform.
@@ -27807,6 +28425,10 @@ const int GIT_ATTR_CHECK_NO_SYSTEM = 4;
 
 const int GIT_ATTR_CHECK_INCLUDE_HEAD = 8;
 
+const int GIT_ATTR_CHECK_INCLUDE_COMMIT = 16;
+
+const int GIT_ATTR_OPTIONS_VERSION = 1;
+
 const int GIT_BLOB_FILTER_OPTIONS_VERSION = 1;
 
 const int GIT_BLAME_OPTIONS_VERSION = 1;
@@ -27853,6 +28475,8 @@ const int GIT_DESCRIBE_OPTIONS_VERSION = 1;
 
 const int GIT_DESCRIBE_FORMAT_OPTIONS_VERSION = 1;
 
+const int GIT_FILTER_OPTIONS_VERSION = 1;
+
 const int GIT_REBASE_OPTIONS_VERSION = 1;
 
 const int GIT_REBASE_NO_OPERATION = -1;
@@ -27884,6 +28508,8 @@ const int GIT_ATTR_TRUE_T = 1;
 const int GIT_ATTR_FALSE_T = 2;
 
 const int GIT_ATTR_VALUE_T = 3;
+
+const int GIT_BLOB_FILTER_ATTTRIBUTES_FROM_HEAD = 4;
 
 const int GIT_CVAR_FALSE = 0;
 
@@ -28043,6 +28669,12 @@ const int GIT_REF_FORMAT_REFSPEC_PATTERN = 2;
 
 const int GIT_REF_FORMAT_REFSPEC_SHORTHAND = 4;
 
+const int GIT_REVPARSE_SINGLE = 1;
+
+const int GIT_REVPARSE_RANGE = 2;
+
+const int GIT_REVPARSE_MERGE_BASE = 4;
+
 const int GIT_CREDTYPE_USERPASS_PLAINTEXT = 1;
 
 const int GIT_CREDTYPE_SSH_KEY = 2;
@@ -28057,17 +28689,17 @@ const int GIT_CREDTYPE_USERNAME = 32;
 
 const int GIT_CREDTYPE_SSH_MEMORY = 64;
 
-const String LIBGIT2_VERSION = '1.1.1';
+const String LIBGIT2_VERSION = '1.2.0';
 
 const int LIBGIT2_VER_MAJOR = 1;
 
-const int LIBGIT2_VER_MINOR = 1;
+const int LIBGIT2_VER_MINOR = 2;
 
-const int LIBGIT2_VER_REVISION = 1;
+const int LIBGIT2_VER_REVISION = 0;
 
 const int LIBGIT2_VER_PATCH = 0;
 
-const String LIBGIT2_SOVERSION = '1.1';
+const String LIBGIT2_SOVERSION = '1.2';
 
 typedef _c_clock = ffi.Int64 Function();
 
@@ -30545,18 +31177,6 @@ typedef _dart_git_treebuilder_write = int Function(
   ffi.Pointer<git_treebuilder> bld,
 );
 
-typedef _c_git_treebuilder_write_with_buffer = ffi.Int32 Function(
-  ffi.Pointer<git_oid> oid,
-  ffi.Pointer<git_treebuilder> bld,
-  ffi.Pointer<git_buf> tree,
-);
-
-typedef _dart_git_treebuilder_write_with_buffer = int Function(
-  ffi.Pointer<git_oid> oid,
-  ffi.Pointer<git_treebuilder> bld,
-  ffi.Pointer<git_buf> tree,
-);
-
 typedef git_treewalk_cb = ffi.Int32 Function(
   ffi.Pointer<ffi.Int8>,
   ffi.Pointer<git_tree_entry>,
@@ -31067,11 +31687,13 @@ typedef _dart_git_reference_peel = int Function(
   int type,
 );
 
-typedef _c_git_reference_is_valid_name = ffi.Int32 Function(
+typedef _c_git_reference_name_is_valid = ffi.Int32 Function(
+  ffi.Pointer<ffi.Int32> valid,
   ffi.Pointer<ffi.Int8> refname,
 );
 
-typedef _dart_git_reference_is_valid_name = int Function(
+typedef _dart_git_reference_name_is_valid = int Function(
+  ffi.Pointer<ffi.Int32> valid,
   ffi.Pointer<ffi.Int8> refname,
 );
 
@@ -31614,6 +32236,22 @@ typedef _dart_git_attr_get = int Function(
   ffi.Pointer<ffi.Int8> name,
 );
 
+typedef _c_git_attr_get_ext = ffi.Int32 Function(
+  ffi.Pointer<ffi.Pointer<ffi.Int8>> value_out,
+  ffi.Pointer<git_repository> repo,
+  ffi.Pointer<git_attr_options> opts,
+  ffi.Pointer<ffi.Int8> path,
+  ffi.Pointer<ffi.Int8> name,
+);
+
+typedef _dart_git_attr_get_ext = int Function(
+  ffi.Pointer<ffi.Pointer<ffi.Int8>> value_out,
+  ffi.Pointer<git_repository> repo,
+  ffi.Pointer<git_attr_options> opts,
+  ffi.Pointer<ffi.Int8> path,
+  ffi.Pointer<ffi.Int8> name,
+);
+
 typedef _c_git_attr_get_many = ffi.Int32 Function(
   ffi.Pointer<ffi.Pointer<ffi.Int8>> values_out,
   ffi.Pointer<git_repository> repo,
@@ -31627,6 +32265,24 @@ typedef _dart_git_attr_get_many = int Function(
   ffi.Pointer<ffi.Pointer<ffi.Int8>> values_out,
   ffi.Pointer<git_repository> repo,
   int flags,
+  ffi.Pointer<ffi.Int8> path,
+  int num_attr,
+  ffi.Pointer<ffi.Pointer<ffi.Int8>> names,
+);
+
+typedef _c_git_attr_get_many_ext = ffi.Int32 Function(
+  ffi.Pointer<ffi.Pointer<ffi.Int8>> values_out,
+  ffi.Pointer<git_repository> repo,
+  ffi.Pointer<git_attr_options> opts,
+  ffi.Pointer<ffi.Int8> path,
+  ffi.Int32 num_attr,
+  ffi.Pointer<ffi.Pointer<ffi.Int8>> names,
+);
+
+typedef _dart_git_attr_get_many_ext = int Function(
+  ffi.Pointer<ffi.Pointer<ffi.Int8>> values_out,
+  ffi.Pointer<git_repository> repo,
+  ffi.Pointer<git_attr_options> opts,
   ffi.Pointer<ffi.Int8> path,
   int num_attr,
   ffi.Pointer<ffi.Pointer<ffi.Int8>> names,
@@ -31649,6 +32305,22 @@ typedef _c_git_attr_foreach = ffi.Int32 Function(
 typedef _dart_git_attr_foreach = int Function(
   ffi.Pointer<git_repository> repo,
   int flags,
+  ffi.Pointer<ffi.Int8> path,
+  ffi.Pointer<ffi.NativeFunction<git_attr_foreach_cb>> callback,
+  ffi.Pointer<ffi.Void> payload,
+);
+
+typedef _c_git_attr_foreach_ext = ffi.Int32 Function(
+  ffi.Pointer<git_repository> repo,
+  ffi.Pointer<git_attr_options> opts,
+  ffi.Pointer<ffi.Int8> path,
+  ffi.Pointer<ffi.NativeFunction<git_attr_foreach_cb>> callback,
+  ffi.Pointer<ffi.Void> payload,
+);
+
+typedef _dart_git_attr_foreach_ext = int Function(
+  ffi.Pointer<git_repository> repo,
+  ffi.Pointer<git_attr_options> opts,
   ffi.Pointer<ffi.Int8> path,
   ffi.Pointer<ffi.NativeFunction<git_attr_foreach_cb>> callback,
   ffi.Pointer<ffi.Void> payload,
@@ -32096,6 +32768,28 @@ typedef _dart_git_branch_upstream_remote = int Function(
   ffi.Pointer<git_buf> buf,
   ffi.Pointer<git_repository> repo,
   ffi.Pointer<ffi.Int8> refname,
+);
+
+typedef _c_git_branch_upstream_merge = ffi.Int32 Function(
+  ffi.Pointer<git_buf> buf,
+  ffi.Pointer<git_repository> repo,
+  ffi.Pointer<ffi.Int8> refname,
+);
+
+typedef _dart_git_branch_upstream_merge = int Function(
+  ffi.Pointer<git_buf> buf,
+  ffi.Pointer<git_repository> repo,
+  ffi.Pointer<ffi.Int8> refname,
+);
+
+typedef _c_git_branch_name_is_valid = ffi.Int32 Function(
+  ffi.Pointer<ffi.Int32> valid,
+  ffi.Pointer<ffi.Int8> name,
+);
+
+typedef _dart_git_branch_name_is_valid = int Function(
+  ffi.Pointer<ffi.Int32> valid,
+  ffi.Pointer<ffi.Int8> name,
 );
 
 typedef _c_git_checkout_options_init = ffi.Int32 Function(
@@ -33520,6 +34214,26 @@ typedef _dart_git_remote_set_pushurl = int Function(
   ffi.Pointer<ffi.Int8> url,
 );
 
+typedef _c_git_remote_set_instance_url = ffi.Int32 Function(
+  ffi.Pointer<git_remote> remote,
+  ffi.Pointer<ffi.Int8> url,
+);
+
+typedef _dart_git_remote_set_instance_url = int Function(
+  ffi.Pointer<git_remote> remote,
+  ffi.Pointer<ffi.Int8> url,
+);
+
+typedef _c_git_remote_set_instance_pushurl = ffi.Int32 Function(
+  ffi.Pointer<git_remote> remote,
+  ffi.Pointer<ffi.Int8> url,
+);
+
+typedef _dart_git_remote_set_instance_pushurl = int Function(
+  ffi.Pointer<git_remote> remote,
+  ffi.Pointer<ffi.Int8> url,
+);
+
 typedef _c_git_remote_add_fetch = ffi.Int32 Function(
   ffi.Pointer<git_repository> repo,
   ffi.Pointer<ffi.Int8> remote,
@@ -33808,11 +34522,13 @@ typedef _dart_git_remote_rename = int Function(
   ffi.Pointer<ffi.Int8> new_name,
 );
 
-typedef _c_git_remote_is_valid_name = ffi.Int32 Function(
+typedef _c_git_remote_name_is_valid = ffi.Int32 Function(
+  ffi.Pointer<ffi.Int32> valid,
   ffi.Pointer<ffi.Int8> remote_name,
 );
 
-typedef _dart_git_remote_is_valid_name = int Function(
+typedef _dart_git_remote_name_is_valid = int Function(
+  ffi.Pointer<ffi.Int32> valid,
   ffi.Pointer<ffi.Int8> remote_name,
 );
 
@@ -34795,6 +35511,140 @@ typedef _c_git_error_set_oom = ffi.Void Function();
 
 typedef _dart_git_error_set_oom = void Function();
 
+typedef _c_git_filter_list_load = ffi.Int32 Function(
+  ffi.Pointer<ffi.Pointer<git_filter_list>> filters,
+  ffi.Pointer<git_repository> repo,
+  ffi.Pointer<git_blob> blob,
+  ffi.Pointer<ffi.Int8> path,
+  ffi.Int32 mode,
+  ffi.Uint32 flags,
+);
+
+typedef _dart_git_filter_list_load = int Function(
+  ffi.Pointer<ffi.Pointer<git_filter_list>> filters,
+  ffi.Pointer<git_repository> repo,
+  ffi.Pointer<git_blob> blob,
+  ffi.Pointer<ffi.Int8> path,
+  int mode,
+  int flags,
+);
+
+typedef _c_git_filter_list_load_ext = ffi.Int32 Function(
+  ffi.Pointer<ffi.Pointer<git_filter_list>> filters,
+  ffi.Pointer<git_repository> repo,
+  ffi.Pointer<git_blob> blob,
+  ffi.Pointer<ffi.Int8> path,
+  ffi.Int32 mode,
+  ffi.Pointer<git_filter_options> opts,
+);
+
+typedef _dart_git_filter_list_load_ext = int Function(
+  ffi.Pointer<ffi.Pointer<git_filter_list>> filters,
+  ffi.Pointer<git_repository> repo,
+  ffi.Pointer<git_blob> blob,
+  ffi.Pointer<ffi.Int8> path,
+  int mode,
+  ffi.Pointer<git_filter_options> opts,
+);
+
+typedef _c_git_filter_list_contains = ffi.Int32 Function(
+  ffi.Pointer<git_filter_list> filters,
+  ffi.Pointer<ffi.Int8> name,
+);
+
+typedef _dart_git_filter_list_contains = int Function(
+  ffi.Pointer<git_filter_list> filters,
+  ffi.Pointer<ffi.Int8> name,
+);
+
+typedef _c_git_filter_list_apply_to_buffer = ffi.Int32 Function(
+  ffi.Pointer<git_buf> out,
+  ffi.Pointer<git_filter_list> filters,
+  ffi.Pointer<ffi.Int8> in_1,
+  ffi.Int32 in_len,
+);
+
+typedef _dart_git_filter_list_apply_to_buffer = int Function(
+  ffi.Pointer<git_buf> out,
+  ffi.Pointer<git_filter_list> filters,
+  ffi.Pointer<ffi.Int8> in_1,
+  int in_len,
+);
+
+typedef _c_git_filter_list_apply_to_file = ffi.Int32 Function(
+  ffi.Pointer<git_buf> out,
+  ffi.Pointer<git_filter_list> filters,
+  ffi.Pointer<git_repository> repo,
+  ffi.Pointer<ffi.Int8> path,
+);
+
+typedef _dart_git_filter_list_apply_to_file = int Function(
+  ffi.Pointer<git_buf> out,
+  ffi.Pointer<git_filter_list> filters,
+  ffi.Pointer<git_repository> repo,
+  ffi.Pointer<ffi.Int8> path,
+);
+
+typedef _c_git_filter_list_apply_to_blob = ffi.Int32 Function(
+  ffi.Pointer<git_buf> out,
+  ffi.Pointer<git_filter_list> filters,
+  ffi.Pointer<git_blob> blob,
+);
+
+typedef _dart_git_filter_list_apply_to_blob = int Function(
+  ffi.Pointer<git_buf> out,
+  ffi.Pointer<git_filter_list> filters,
+  ffi.Pointer<git_blob> blob,
+);
+
+typedef _c_git_filter_list_stream_buffer = ffi.Int32 Function(
+  ffi.Pointer<git_filter_list> filters,
+  ffi.Pointer<ffi.Int8> buffer,
+  ffi.Int32 len,
+  ffi.Pointer<git_writestream> target,
+);
+
+typedef _dart_git_filter_list_stream_buffer = int Function(
+  ffi.Pointer<git_filter_list> filters,
+  ffi.Pointer<ffi.Int8> buffer,
+  int len,
+  ffi.Pointer<git_writestream> target,
+);
+
+typedef _c_git_filter_list_stream_file = ffi.Int32 Function(
+  ffi.Pointer<git_filter_list> filters,
+  ffi.Pointer<git_repository> repo,
+  ffi.Pointer<ffi.Int8> path,
+  ffi.Pointer<git_writestream> target,
+);
+
+typedef _dart_git_filter_list_stream_file = int Function(
+  ffi.Pointer<git_filter_list> filters,
+  ffi.Pointer<git_repository> repo,
+  ffi.Pointer<ffi.Int8> path,
+  ffi.Pointer<git_writestream> target,
+);
+
+typedef _c_git_filter_list_stream_blob = ffi.Int32 Function(
+  ffi.Pointer<git_filter_list> filters,
+  ffi.Pointer<git_blob> blob,
+  ffi.Pointer<git_writestream> target,
+);
+
+typedef _dart_git_filter_list_stream_blob = int Function(
+  ffi.Pointer<git_filter_list> filters,
+  ffi.Pointer<git_blob> blob,
+  ffi.Pointer<git_writestream> target,
+);
+
+typedef _c_git_filter_list_free = ffi.Void Function(
+  ffi.Pointer<git_filter_list> filters,
+);
+
+typedef _dart_git_filter_list_free = void Function(
+  ffi.Pointer<git_filter_list> filters,
+);
+
 typedef _c_git_rebase_options_init = ffi.Int32 Function(
   ffi.Pointer<git_rebase_options> opts,
   ffi.Uint32 version,
@@ -35014,6 +35864,44 @@ typedef _dart_git_revert = int Function(
   ffi.Pointer<git_revert_options> given_opts,
 );
 
+typedef _c_git_revparse_single = ffi.Int32 Function(
+  ffi.Pointer<ffi.Pointer<git_object>> out,
+  ffi.Pointer<git_repository> repo,
+  ffi.Pointer<ffi.Int8> spec,
+);
+
+typedef _dart_git_revparse_single = int Function(
+  ffi.Pointer<ffi.Pointer<git_object>> out,
+  ffi.Pointer<git_repository> repo,
+  ffi.Pointer<ffi.Int8> spec,
+);
+
+typedef _c_git_revparse_ext = ffi.Int32 Function(
+  ffi.Pointer<ffi.Pointer<git_object>> object_out,
+  ffi.Pointer<ffi.Pointer<git_reference>> reference_out,
+  ffi.Pointer<git_repository> repo,
+  ffi.Pointer<ffi.Int8> spec,
+);
+
+typedef _dart_git_revparse_ext = int Function(
+  ffi.Pointer<ffi.Pointer<git_object>> object_out,
+  ffi.Pointer<ffi.Pointer<git_reference>> reference_out,
+  ffi.Pointer<git_repository> repo,
+  ffi.Pointer<ffi.Int8> spec,
+);
+
+typedef _c_git_revparse = ffi.Int32 Function(
+  ffi.Pointer<git_revspec> revspec,
+  ffi.Pointer<git_repository> repo,
+  ffi.Pointer<ffi.Int8> spec,
+);
+
+typedef _dart_git_revparse = int Function(
+  ffi.Pointer<git_revspec> revspec,
+  ffi.Pointer<git_repository> repo,
+  ffi.Pointer<ffi.Int8> spec,
+);
+
 typedef _c_git_stash_save = ffi.Int32 Function(
   ffi.Pointer<git_oid> out,
   ffi.Pointer<git_repository> repo,
@@ -35229,6 +36117,16 @@ typedef _dart_git_submodule_lookup = int Function(
   ffi.Pointer<ffi.Pointer<git_submodule>> out,
   ffi.Pointer<git_repository> repo,
   ffi.Pointer<ffi.Int8> name,
+);
+
+typedef _c_git_submodule_dup = ffi.Int32 Function(
+  ffi.Pointer<ffi.Pointer<git_submodule>> out,
+  ffi.Pointer<git_submodule> source,
+);
+
+typedef _dart_git_submodule_dup = int Function(
+  ffi.Pointer<ffi.Pointer<git_submodule>> out,
+  ffi.Pointer<git_submodule> source,
 );
 
 typedef _c_git_submodule_free = ffi.Void Function(
@@ -35775,6 +36673,42 @@ typedef _dart_git_blob_filtered_content = int Function(
   int check_for_binary_data,
 );
 
+typedef _c_git_filter_list_stream_data = ffi.Int32 Function(
+  ffi.Pointer<git_filter_list> filters,
+  ffi.Pointer<git_buf> data,
+  ffi.Pointer<git_writestream> target,
+);
+
+typedef _dart_git_filter_list_stream_data = int Function(
+  ffi.Pointer<git_filter_list> filters,
+  ffi.Pointer<git_buf> data,
+  ffi.Pointer<git_writestream> target,
+);
+
+typedef _c_git_filter_list_apply_to_data = ffi.Int32 Function(
+  ffi.Pointer<git_buf> out,
+  ffi.Pointer<git_filter_list> filters,
+  ffi.Pointer<git_buf> in_1,
+);
+
+typedef _dart_git_filter_list_apply_to_data = int Function(
+  ffi.Pointer<git_buf> out,
+  ffi.Pointer<git_filter_list> filters,
+  ffi.Pointer<git_buf> in_1,
+);
+
+typedef _c_git_treebuilder_write_with_buffer = ffi.Int32 Function(
+  ffi.Pointer<git_oid> oid,
+  ffi.Pointer<git_treebuilder> bld,
+  ffi.Pointer<git_buf> tree,
+);
+
+typedef _dart_git_treebuilder_write_with_buffer = int Function(
+  ffi.Pointer<git_oid> oid,
+  ffi.Pointer<git_treebuilder> bld,
+  ffi.Pointer<git_buf> tree,
+);
+
 typedef _c_git_buf_free = ffi.Void Function(
   ffi.Pointer<git_buf> buffer,
 );
@@ -35825,6 +36759,22 @@ typedef _c_git_object__size = ffi.Int32 Function(
 
 typedef _dart_git_object__size = int Function(
   int type,
+);
+
+typedef _c_git_remote_is_valid_name = ffi.Int32 Function(
+  ffi.Pointer<ffi.Int8> remote_name,
+);
+
+typedef _dart_git_remote_is_valid_name = int Function(
+  ffi.Pointer<ffi.Int8> remote_name,
+);
+
+typedef _c_git_reference_is_valid_name = ffi.Int32 Function(
+  ffi.Pointer<ffi.Int8> refname,
+);
+
+typedef _dart_git_reference_is_valid_name = int Function(
+  ffi.Pointer<ffi.Int8> refname,
 );
 
 typedef _c_git_tag_create_frombuffer = ffi.Int32 Function(
@@ -36263,118 +37213,6 @@ typedef _dart_git_worktree_prune_init_options = int Function(
   int version,
 );
 
-typedef _c_git_filter_list_load = ffi.Int32 Function(
-  ffi.Pointer<ffi.Pointer<git_filter_list>> filters,
-  ffi.Pointer<git_repository> repo,
-  ffi.Pointer<git_blob> blob,
-  ffi.Pointer<ffi.Int8> path,
-  ffi.Int32 mode,
-  ffi.Uint32 flags,
-);
-
-typedef _dart_git_filter_list_load = int Function(
-  ffi.Pointer<ffi.Pointer<git_filter_list>> filters,
-  ffi.Pointer<git_repository> repo,
-  ffi.Pointer<git_blob> blob,
-  ffi.Pointer<ffi.Int8> path,
-  int mode,
-  int flags,
-);
-
-typedef _c_git_filter_list_contains = ffi.Int32 Function(
-  ffi.Pointer<git_filter_list> filters,
-  ffi.Pointer<ffi.Int8> name,
-);
-
-typedef _dart_git_filter_list_contains = int Function(
-  ffi.Pointer<git_filter_list> filters,
-  ffi.Pointer<ffi.Int8> name,
-);
-
-typedef _c_git_filter_list_apply_to_data = ffi.Int32 Function(
-  ffi.Pointer<git_buf> out,
-  ffi.Pointer<git_filter_list> filters,
-  ffi.Pointer<git_buf> in_1,
-);
-
-typedef _dart_git_filter_list_apply_to_data = int Function(
-  ffi.Pointer<git_buf> out,
-  ffi.Pointer<git_filter_list> filters,
-  ffi.Pointer<git_buf> in_1,
-);
-
-typedef _c_git_filter_list_apply_to_file = ffi.Int32 Function(
-  ffi.Pointer<git_buf> out,
-  ffi.Pointer<git_filter_list> filters,
-  ffi.Pointer<git_repository> repo,
-  ffi.Pointer<ffi.Int8> path,
-);
-
-typedef _dart_git_filter_list_apply_to_file = int Function(
-  ffi.Pointer<git_buf> out,
-  ffi.Pointer<git_filter_list> filters,
-  ffi.Pointer<git_repository> repo,
-  ffi.Pointer<ffi.Int8> path,
-);
-
-typedef _c_git_filter_list_apply_to_blob = ffi.Int32 Function(
-  ffi.Pointer<git_buf> out,
-  ffi.Pointer<git_filter_list> filters,
-  ffi.Pointer<git_blob> blob,
-);
-
-typedef _dart_git_filter_list_apply_to_blob = int Function(
-  ffi.Pointer<git_buf> out,
-  ffi.Pointer<git_filter_list> filters,
-  ffi.Pointer<git_blob> blob,
-);
-
-typedef _c_git_filter_list_stream_data = ffi.Int32 Function(
-  ffi.Pointer<git_filter_list> filters,
-  ffi.Pointer<git_buf> data,
-  ffi.Pointer<git_writestream> target,
-);
-
-typedef _dart_git_filter_list_stream_data = int Function(
-  ffi.Pointer<git_filter_list> filters,
-  ffi.Pointer<git_buf> data,
-  ffi.Pointer<git_writestream> target,
-);
-
-typedef _c_git_filter_list_stream_file = ffi.Int32 Function(
-  ffi.Pointer<git_filter_list> filters,
-  ffi.Pointer<git_repository> repo,
-  ffi.Pointer<ffi.Int8> path,
-  ffi.Pointer<git_writestream> target,
-);
-
-typedef _dart_git_filter_list_stream_file = int Function(
-  ffi.Pointer<git_filter_list> filters,
-  ffi.Pointer<git_repository> repo,
-  ffi.Pointer<ffi.Int8> path,
-  ffi.Pointer<git_writestream> target,
-);
-
-typedef _c_git_filter_list_stream_blob = ffi.Int32 Function(
-  ffi.Pointer<git_filter_list> filters,
-  ffi.Pointer<git_blob> blob,
-  ffi.Pointer<git_writestream> target,
-);
-
-typedef _dart_git_filter_list_stream_blob = int Function(
-  ffi.Pointer<git_filter_list> filters,
-  ffi.Pointer<git_blob> blob,
-  ffi.Pointer<git_writestream> target,
-);
-
-typedef _c_git_filter_list_free = ffi.Void Function(
-  ffi.Pointer<git_filter_list> filters,
-);
-
-typedef _dart_git_filter_list_free = void Function(
-  ffi.Pointer<git_filter_list> filters,
-);
-
 typedef _c_git_libgit2_init = ffi.Int32 Function();
 
 typedef _dart_git_libgit2_init = int Function();
@@ -36409,6 +37247,20 @@ typedef _dart_git_graph_descendant_of = int Function(
   ffi.Pointer<git_repository> repo,
   ffi.Pointer<git_oid> commit,
   ffi.Pointer<git_oid> ancestor,
+);
+
+typedef _c_git_graph_reachable_from_any = ffi.Int32 Function(
+  ffi.Pointer<git_repository> repo,
+  ffi.Pointer<git_oid> commit,
+  ffi.Pointer<git_oid> descendant_array,
+  ffi.Int32 length,
+);
+
+typedef _dart_git_graph_reachable_from_any = int Function(
+  ffi.Pointer<git_repository> repo,
+  ffi.Pointer<git_oid> commit,
+  ffi.Pointer<git_oid> descendant_array,
+  int length,
 );
 
 typedef _c_git_ignore_add_rule = ffi.Int32 Function(
@@ -37014,6 +37866,14 @@ typedef _dart_git_odb_write_pack = int Function(
   ffi.Pointer<ffi.Void> progress_payload,
 );
 
+typedef _c_git_odb_write_multi_pack_index = ffi.Int32 Function(
+  ffi.Pointer<git_odb> db,
+);
+
+typedef _dart_git_odb_write_multi_pack_index = int Function(
+  ffi.Pointer<git_odb> db,
+);
+
 typedef _c_git_odb_hash = ffi.Int32 Function(
   ffi.Pointer<git_oid> out,
   ffi.Pointer<ffi.Void> data,
@@ -37134,6 +37994,16 @@ typedef _dart_git_odb_get_backend = int Function(
   int pos,
 );
 
+typedef _c_git_odb_set_commit_graph = ffi.Int32 Function(
+  ffi.Pointer<git_odb> odb,
+  ffi.Pointer<git_commit_graph> cgraph,
+);
+
+typedef _dart_git_odb_set_commit_graph = int Function(
+  ffi.Pointer<git_odb> odb,
+  ffi.Pointer<git_commit_graph> cgraph,
+);
+
 typedef _c_git_odb_backend_pack = ffi.Int32 Function(
   ffi.Pointer<ffi.Pointer<git_odb_backend>> out,
   ffi.Pointer<ffi.Int8> objects_dir,
@@ -37170,6 +38040,14 @@ typedef _c_git_odb_backend_one_pack = ffi.Int32 Function(
 typedef _dart_git_odb_backend_one_pack = int Function(
   ffi.Pointer<ffi.Pointer<git_odb_backend>> out,
   ffi.Pointer<ffi.Int8> index_file,
+);
+
+typedef _c_git_patch_owner = ffi.Pointer<git_repository> Function(
+  ffi.Pointer<git_patch> patch,
+);
+
+typedef _dart_git_patch_owner = ffi.Pointer<git_repository> Function(
+  ffi.Pointer<git_patch> patch,
 );
 
 typedef _c_git_patch_from_diff = ffi.Int32 Function(
@@ -37702,44 +38580,6 @@ typedef _dart_git_reset_default = int Function(
   ffi.Pointer<git_strarray> pathspecs,
 );
 
-typedef _c_git_revparse_single = ffi.Int32 Function(
-  ffi.Pointer<ffi.Pointer<git_object>> out,
-  ffi.Pointer<git_repository> repo,
-  ffi.Pointer<ffi.Int8> spec,
-);
-
-typedef _dart_git_revparse_single = int Function(
-  ffi.Pointer<ffi.Pointer<git_object>> out,
-  ffi.Pointer<git_repository> repo,
-  ffi.Pointer<ffi.Int8> spec,
-);
-
-typedef _c_git_revparse_ext = ffi.Int32 Function(
-  ffi.Pointer<ffi.Pointer<git_object>> object_out,
-  ffi.Pointer<ffi.Pointer<git_reference>> reference_out,
-  ffi.Pointer<git_repository> repo,
-  ffi.Pointer<ffi.Int8> spec,
-);
-
-typedef _dart_git_revparse_ext = int Function(
-  ffi.Pointer<ffi.Pointer<git_object>> object_out,
-  ffi.Pointer<ffi.Pointer<git_reference>> reference_out,
-  ffi.Pointer<git_repository> repo,
-  ffi.Pointer<ffi.Int8> spec,
-);
-
-typedef _c_git_revparse = ffi.Int32 Function(
-  ffi.Pointer<git_revspec> revspec,
-  ffi.Pointer<git_repository> repo,
-  ffi.Pointer<ffi.Int8> spec,
-);
-
-typedef _dart_git_revparse = int Function(
-  ffi.Pointer<git_revspec> revspec,
-  ffi.Pointer<git_repository> repo,
-  ffi.Pointer<ffi.Int8> spec,
-);
-
 typedef _c_git_revwalk_new = ffi.Int32 Function(
   ffi.Pointer<ffi.Pointer<git_revwalk>> out,
   ffi.Pointer<git_repository> repo,
@@ -38209,6 +39049,16 @@ typedef _dart_git_tag_dup = int Function(
   ffi.Pointer<git_tag> source,
 );
 
+typedef _c_git_tag_name_is_valid = ffi.Int32 Function(
+  ffi.Pointer<ffi.Int32> valid,
+  ffi.Pointer<ffi.Int8> name,
+);
+
+typedef _dart_git_tag_name_is_valid = int Function(
+  ffi.Pointer<ffi.Int32> valid,
+  ffi.Pointer<ffi.Int8> name,
+);
+
 typedef _c_git_transaction_new = ffi.Int32 Function(
   ffi.Pointer<ffi.Pointer<git_transaction>> out,
   ffi.Pointer<git_repository> repo,
@@ -38398,6 +39248,12 @@ typedef git_transport_cb = ffi.Int32 Function(
   ffi.Pointer<ffi.Void>,
 );
 
+typedef git_remote_ready_cb = ffi.Int32 Function(
+  ffi.Pointer<git_remote>,
+  ffi.Int32,
+  ffi.Pointer<ffi.Void>,
+);
+
 typedef git_url_resolve_cb = ffi.Int32 Function(
   ffi.Pointer<git_buf>,
   ffi.Pointer<ffi.Int8>,
@@ -38510,7 +39366,19 @@ typedef _typedefC_21 = ffi.Void Function(
   ffi.Pointer<git_config_entry>,
 );
 
-typedef git_commit_signing_cb = ffi.Int32 Function(
+typedef git_commit_create_cb = ffi.Int32 Function(
+  ffi.Pointer<git_oid>,
+  ffi.Pointer<git_signature>,
+  ffi.Pointer<git_signature>,
+  ffi.Pointer<ffi.Int8>,
+  ffi.Pointer<ffi.Int8>,
+  ffi.Pointer<git_tree>,
+  ffi.Int32,
+  ffi.Pointer<ffi.Pointer<git_commit>>,
+  ffi.Pointer<ffi.Void>,
+);
+
+typedef _typedefC_22 = ffi.Int32 Function(
   ffi.Pointer<git_buf>,
   ffi.Pointer<git_buf>,
   ffi.Pointer<ffi.Int8>,
