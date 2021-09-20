@@ -49,8 +49,7 @@ class Tree {
   ///
   /// If string [value] is provided, lookup is done by entry filename.
   ///
-  /// If provided string [value] is a path to file, lookup is done by path. In that case
-  /// returned object should be freed explicitly.
+  /// If provided string [value] is a path to file, lookup is done by path.
   TreeEntry operator [](Object value) {
     if (value is int) {
       return TreeEntry(bindings.getByIndex(_treePointer, value));

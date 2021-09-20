@@ -7,6 +7,7 @@ import 'helpers/util.dart';
 void main() {
   late Repository repo;
   late RefLog reflog;
+  late Reference head;
   final tmpDir = '${Directory.systemTemp.path}/reflog_testrepo/';
 
   setUp(() async {
@@ -18,12 +19,13 @@ void main() {
       to: await Directory(tmpDir).create(),
     );
     repo = Repository.open(tmpDir);
-    reflog = RefLog(repo.head);
+    head = repo.head;
+    reflog = RefLog(head);
   });
 
   tearDown(() async {
-    repo.head.free();
     reflog.free();
+    head.free();
     repo.free();
     await Directory(tmpDir).delete(recursive: true);
   });
@@ -33,7 +35,7 @@ void main() {
     });
 
     test('returns correct number of log entries', () {
-      expect(reflog.count, 4);
+      expect(reflog.length, 4);
     });
 
     test('returns the log message', () {

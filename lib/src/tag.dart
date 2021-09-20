@@ -1,15 +1,14 @@
 import 'dart:ffi';
-
-import 'package:libgit2dart/libgit2dart.dart';
-
 import 'bindings/libgit2_bindings.dart';
 import 'bindings/tag.dart' as bindings;
 import 'bindings/object.dart' as object_bindings;
+import 'blob.dart';
 import 'commit.dart';
 import 'oid.dart';
 import 'repository.dart';
 import 'signature.dart';
 import 'git_types.dart';
+import 'tree.dart';
 import 'util.dart';
 
 class Tag {

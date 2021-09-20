@@ -1,3 +1,4 @@
+import 'dart:collection';
 import 'dart:ffi';
 import 'package:ffi/ffi.dart';
 import 'package:libgit2dart/libgit2dart.dart';
@@ -10,7 +11,7 @@ import 'git_types.dart';
 import 'repository.dart';
 import 'util.dart';
 
-class Index {
+class Index with IterableMixin<IndexEntry> {
   /// Initializes a new instance of [Index] class from provided
   /// pointer to index object in memory.
   ///
@@ -36,10 +37,7 @@ class Index {
   }
 
   /// Checks whether entry at provided [path] is in the git index or not.
-  bool contains(String path) => bindings.find(_indexPointer, path);
-
-  /// Returns the count of entries currently in the index.
-  int get count => bindings.entryCount(_indexPointer);
+  bool find(String path) => bindings.find(_indexPointer, path);
 
   /// Checks if the index contains entries representing file conflicts.
   bool get hasConflicts => bindings.hasConflicts(_indexPointer);
@@ -232,6 +230,9 @@ class Index {
 
   /// Releases memory allocated for index object.
   void free() => bindings.free(_indexPointer);
+
+  @override
+  Iterator<IndexEntry> get iterator => _IndexIterator(_indexPointer);
 }
 
 class IndexEntry {
@@ -306,4 +307,29 @@ class ConflictEntry {
   @override
   String toString() =>
       'ConflictEntry{ancestor: $ancestor, our: $our, their: $their}';
+}
+
+class _IndexIterator implements Iterator<IndexEntry> {
+  _IndexIterator(this._indexPointer) {
+    count = bindings.entryCount(_indexPointer);
+  }
+
+  final Pointer<git_index> _indexPointer;
+  IndexEntry? _currentEntry;
+  int _index = 0;
+  late final int count;
+
+  @override
+  IndexEntry get current => _currentEntry!;
+
+  @override
+  bool moveNext() {
+    if (_index == count) {
+      return false;
+    } else {
+      _currentEntry = IndexEntry(bindings.getByIndex(_indexPointer, _index));
+      _index++;
+      return true;
+    }
+  }
 }

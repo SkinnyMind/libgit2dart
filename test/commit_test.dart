@@ -60,10 +60,10 @@ void main() {
       final to = repo['78b8bf123e3952c970ae5c1ce0a3ea1d1336f6e8'] as Commit;
       final from = repo['821ed6e80627b8769d170a293862f9fc60825226'] as Commit;
       final index = repo.index;
-      expect(index.contains('dir/dir_file.txt'), true);
+      expect(index.find('dir/dir_file.txt'), true);
 
       final revertIndex = repo.revertCommit(revertCommit: from, ourCommit: to);
-      expect(revertIndex.contains('dir/dir_file.txt'), false);
+      expect(revertIndex.find('dir/dir_file.txt'), false);
 
       revertIndex.free();
       index.free();

@@ -1,3 +1,4 @@
+import 'dart:collection';
 import 'dart:ffi';
 import 'bindings/libgit2_bindings.dart';
 import 'bindings/reflog.dart' as bindings;
@@ -5,7 +6,7 @@ import 'reference.dart';
 import 'signature.dart';
 import 'util.dart';
 
-class RefLog {
+class RefLog with IterableMixin<RefLogEntry> {
   /// Initializes a new instance of [RefLog] class from provided [Reference].
   ///
   /// Throws a [LibGit2Error] if error occured.
@@ -20,20 +21,6 @@ class RefLog {
   /// Pointer to memory address for allocated reflog object.
   late final Pointer<git_reflog> _reflogPointer;
 
-  /// Returns a list with entries of reference log.
-  List<RefLogEntry> get entries {
-    var log = <RefLogEntry>[];
-
-    for (var i = 0; i < count; i++) {
-      log.add(RefLogEntry(bindings.getByIndex(_reflogPointer, i)));
-    }
-
-    return log;
-  }
-
-  /// Returns the number of log entries in a reflog.
-  int get count => bindings.entryCount(_reflogPointer);
-
   /// Lookup an entry by its index.
   ///
   /// Requesting the reflog entry with an index of 0 (zero) will return
@@ -44,6 +31,9 @@ class RefLog {
 
   /// Releases memory allocated for reflog object.
   void free() => bindings.free(_reflogPointer);
+
+  @override
+  Iterator<RefLogEntry> get iterator => _RefLogIterator(_reflogPointer);
 }
 
 class RefLogEntry {
@@ -61,4 +51,31 @@ class RefLogEntry {
 
   @override
   String toString() => 'ReflogEntry{message: $message}';
+}
+
+class _RefLogIterator implements Iterator<RefLogEntry> {
+  _RefLogIterator(this._reflogPointer) {
+    _count = bindings.entryCount(_reflogPointer);
+  }
+
+  /// Pointer to memory address for allocated reflog object.
+  final Pointer<git_reflog> _reflogPointer;
+
+  RefLogEntry? _currentEntry;
+  int _index = 0;
+  late final int _count;
+
+  @override
+  RefLogEntry get current => _currentEntry!;
+
+  @override
+  bool moveNext() {
+    if (_index == _count) {
+      return false;
+    } else {
+      _currentEntry = RefLogEntry(bindings.getByIndex(_reflogPointer, _index));
+      _index++;
+      return true;
+    }
+  }
 }

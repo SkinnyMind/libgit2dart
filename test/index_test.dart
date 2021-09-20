@@ -32,7 +32,7 @@ void main() {
     const featureFileSha = '9c78c21d6680a7ffebc76f7ac68cacc11d8f48bc';
 
     test('returns number of entries', () {
-      expect(index.count, 4);
+      expect(index.length, 4);
     });
 
     test('returns mode of index entry', () {
@@ -40,8 +40,8 @@ void main() {
     });
 
     test('returns index entry at provided position', () {
-      expect(index[2].path, 'feature_file');
-      expect(index['file'].sha, fileSha);
+      expect(index[3].path, 'file');
+      expect(index[3].sha, fileSha);
     });
 
     test('returns index entry at provided path', () {
@@ -74,9 +74,9 @@ void main() {
     });
 
     test('clears the contents', () {
-      expect(index.count, 4);
+      expect(index.length, 4);
       index.clear();
-      expect(index.count, 0);
+      expect(index.length, 0);
     });
 
     group('add()', () {
@@ -85,13 +85,13 @@ void main() {
 
         index.add(entry);
         expect(index['file'].sha, fileSha);
-        expect(index.count, 4);
+        expect(index.length, 4);
       });
 
       test('successfully adds with provided path string', () {
         index.add('file');
         expect(index['file'].sha, fileSha);
-        expect(index.count, 4);
+        expect(index.length, 4);
       });
 
       test('throws if file not found at provided path', () {
@@ -114,27 +114,27 @@ void main() {
         index.clear();
         index.addAll(['file', 'feature_file']);
 
-        expect(index.count, 2);
+        expect(index.length, 2);
         expect(index['file'].sha, fileSha);
         expect(index['feature_file'].sha, featureFileSha);
 
         index.clear();
         index.addAll(['[f]*']);
 
-        expect(index.count, 2);
+        expect(index.length, 2);
         expect(index['file'].sha, fileSha);
         expect(index['feature_file'].sha, featureFileSha);
 
         index.clear();
         index.addAll(['feature_f???']);
 
-        expect(index.count, 1);
+        expect(index.length, 1);
         expect(index['feature_file'].sha, featureFileSha);
       });
     });
 
     test('writes to disk', () {
-      expect(index.count, 4);
+      expect(index.length, 4);
 
       File('$tmpDir/new_file').createSync();
 
@@ -144,43 +144,43 @@ void main() {
       index.clear();
       index.read();
       expect(index['new_file'].path, 'new_file');
-      expect(index.count, 5);
+      expect(index.length, 5);
     });
 
     test('removes an entry', () {
-      expect(index.contains('feature_file'), true);
+      expect(index.find('feature_file'), true);
       index.remove('feature_file');
-      expect(index.contains('feature_file'), false);
+      expect(index.find('feature_file'), false);
     });
 
     test('removes all entries with matching pathspec', () {
-      expect(index.contains('file'), true);
-      expect(index.contains('feature_file'), true);
+      expect(index.find('file'), true);
+      expect(index.find('feature_file'), true);
 
       index.removeAll(['[f]*']);
 
-      expect(index.contains('file'), false);
-      expect(index.contains('feature_file'), false);
+      expect(index.find('file'), false);
+      expect(index.find('feature_file'), false);
     });
 
     group('read tree', () {
       const treeSha = 'df2b8fc99e1c1d4dbc0a854d9f72157f1d6ea078';
       test('successfully reads with provided SHA hex', () {
-        expect(index.count, 4);
+        expect(index.length, 4);
         index.readTree(treeSha);
 
-        expect(index.count, 1);
+        expect(index.length, 1);
 
         // make sure the index is only modified in memory
         index.read();
-        expect(index.count, 4);
+        expect(index.length, 4);
       });
 
       test('successfully reads with provided short SHA hex', () {
-        expect(index.count, 4);
+        expect(index.length, 4);
         index.readTree(treeSha.substring(0, 5));
 
-        expect(index.count, 1);
+        expect(index.length, 1);
       });
     });
 
