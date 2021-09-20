@@ -40,6 +40,16 @@ class Diff {
     return deltas;
   }
 
+  /// Returns a list of [Patch]es.
+  List<Patch> get patches {
+    final length = bindings.length(_diffPointer);
+    var patches = <Patch>[];
+    for (var i = 0; i < length; i++) {
+      patches.add(Patch.fromDiff(this, i));
+    }
+    return patches;
+  }
+
   /// Returns a patch diff string.
   String get patch {
     final length = bindings.length(_diffPointer);

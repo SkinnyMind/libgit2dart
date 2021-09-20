@@ -281,6 +281,21 @@ index e69de29..c217c63 100644
       index.free();
     });
 
+    test('returns deltas', () {
+      final index = repo.index;
+      final diff = index.diffToWorkdir();
+      final patches = diff.patches;
+
+      expect(patches.length, 8);
+      expect(patches.first.delta.status, GitDelta.deleted);
+
+      for (var p in patches) {
+        p.free();
+      }
+      diff.free();
+      index.free();
+    });
+
     test('returns stats', () {
       final index = repo.index;
       final diff = index.diffToWorkdir();
