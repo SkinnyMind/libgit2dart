@@ -1,10 +1,13 @@
+import 'dart:collection';
 import 'dart:ffi';
 import 'dart:io';
+import 'package:ffi/ffi.dart';
 import 'bindings/libgit2_bindings.dart';
 import 'bindings/config.dart' as bindings;
+import 'git_types.dart';
 import 'util.dart';
 
-class Config {
+class Config with IterableMixin<ConfigEntry> {
   /// Initializes a new instance of [Config] class from provided
   /// pointer to config object in memory.
   ///
@@ -89,18 +92,15 @@ class Config {
   /// Throws a [LibGit2Error] if error occured.
   Config get snapshot => Config(bindings.snapshot(_configPointer));
 
-  /// Returns map of all the config variables and their values.
-  Map<String, String> get variables => bindings.getEntries(_configPointer);
-
-  /// Returns the value of config [variable].
-  String operator [](String variable) =>
-      bindings.getValue(_configPointer, variable);
+  /// Returns the [ConfigEntry] of a [variable].
+  ConfigEntry operator [](String variable) =>
+      ConfigEntry(bindings.getEntry(_configPointer, variable));
 
   /// Sets the [value] of config [variable].
   void operator []=(String variable, dynamic value) {
-    if (value.runtimeType == bool) {
+    if (value is bool) {
       bindings.setBool(_configPointer, variable, value);
-    } else if (value.runtimeType == int) {
+    } else if (value is int) {
       bindings.setInt(_configPointer, variable, value);
     } else {
       bindings.setString(_configPointer, variable, value);
@@ -141,4 +141,73 @@ class Config {
 
   /// Releases memory allocated for config object.
   void free() => bindings.free(_configPointer);
+
+  @override
+  Iterator<ConfigEntry> get iterator =>
+      ConfigIterator(bindings.iterator(_configPointer));
+}
+
+class ConfigEntry {
+  ConfigEntry(this._configEntryPointer);
+
+  /// Pointer to memory address for allocated config entry object.
+  final Pointer<git_config_entry> _configEntryPointer;
+
+  /// Returns name of the entry (normalised).
+  String get name => _configEntryPointer.ref.name.cast<Utf8>().toDartString();
+
+  /// Returns value of the entry.
+  String get value => _configEntryPointer.ref.value.cast<Utf8>().toDartString();
+
+  /// Returns depth of includes where this variable was found
+  int get includeDepth => _configEntryPointer.ref.include_depth;
+
+  /// Returns which config file this was found in.
+  GitConfigLevel get level {
+    late GitConfigLevel result;
+    for (var level in GitConfigLevel.values) {
+      if (_configEntryPointer.ref.level == level.value) {
+        result = level;
+        break;
+      }
+    }
+    return result;
+  }
+
+  /// Releases memory allocated for config entry object.
+  void free() => bindings.entryFree(_configEntryPointer);
+
+  @override
+  String toString() {
+    return 'ConfigEntry{name: $name, value: $value, includeDepth: $includeDepth, level: $level}';
+  }
+}
+
+class ConfigIterator implements Iterator<ConfigEntry> {
+  ConfigIterator(this._iteratorPointer);
+
+  /// Pointer to memory address for allocated config iterator.
+  final Pointer<git_config_iterator> _iteratorPointer;
+
+  ConfigEntry? _currentEntry;
+  int error = 0;
+  final entry = calloc<Pointer<git_config_entry>>();
+
+  @override
+  ConfigEntry get current => _currentEntry!;
+
+  @override
+  bool moveNext() {
+    if (error < 0) {
+      return false;
+    } else {
+      error = libgit2.git_config_next(entry, _iteratorPointer);
+      if (error != -31) {
+        _currentEntry = ConfigEntry(entry.value);
+        return true;
+      } else {
+        return false;
+      }
+    }
+  }
 }

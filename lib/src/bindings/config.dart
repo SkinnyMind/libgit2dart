@@ -131,10 +131,10 @@ Pointer<git_config> snapshot(Pointer<git_config> config) {
   }
 }
 
-/// Get the value of a config variable.
+/// Get the config entry of a config variable.
 ///
 /// Throws a [LibGit2Error] if error occured.
-String getValue(Pointer<git_config> cfg, String variable) {
+Pointer<git_config_entry> getEntry(Pointer<git_config> cfg, String variable) {
   final out = calloc<Pointer<git_config_entry>>();
   final name = variable.toNativeUtf8().cast<Int8>();
   final error = libgit2.git_config_get_entry(out, cfg, name);
@@ -144,7 +144,7 @@ String getValue(Pointer<git_config> cfg, String variable) {
   if (error < 0) {
     throw LibGit2Error(libgit2.git_error_last());
   } else {
-    return out.value.ref.value.cast<Utf8>().toDartString();
+    return out.value;
   }
 }
 
@@ -197,23 +197,10 @@ void setString(Pointer<git_config> cfg, String variable, String value) {
 }
 
 /// Iterate over all the config variables.
-Map<String, String> getEntries(Pointer<git_config> cfg) {
-  final iterator = calloc<Pointer<git_config_iterator>>();
-  final entry = calloc<Pointer<git_config_entry>>();
-  libgit2.git_config_iterator_new(iterator, cfg);
-  var error = 0;
-  final entries = <String, String>{};
-
-  while (error != -31) {
-    error = libgit2.git_config_next(entry, iterator.value);
-    entries[entry.value.ref.name.cast<Utf8>().toDartString()] =
-        entry.value.ref.value.cast<Utf8>().toDartString();
-  }
-
-  calloc.free(iterator);
-  calloc.free(entry);
-
-  return entries;
+Pointer<git_config_iterator> iterator(Pointer<git_config> cfg) {
+  final out = calloc<Pointer<git_config_iterator>>();
+  libgit2.git_config_iterator_new(out, cfg);
+  return out.value;
 }
 
 /// Delete a config variable from the config file with the highest level
@@ -297,6 +284,14 @@ void deleteMultivar(Pointer<git_config> cfg, String variable, String regexp) {
   calloc.free(name);
   calloc.free(regexpC);
 }
+
+/// Free a config iterator.
+void iteratorFree(Pointer<git_config_iterator> iter) =>
+    libgit2.git_config_iterator_free(iter);
+
+/// Free a config entry.
+void entryFree(Pointer<git_config_entry> entry) =>
+    libgit2.git_config_entry_free(entry);
 
 /// Free the configuration and its associated memory and files.
 void free(Pointer<git_config> cfg) => libgit2.git_config_free(cfg);

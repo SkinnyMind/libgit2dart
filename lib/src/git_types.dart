@@ -1072,3 +1072,51 @@ class GitApplyLocation {
   @override
   String toString() => 'GitApplyLocation.$_name';
 }
+
+/// Priority level of a config file.
+/// These priority levels correspond to the natural escalation logic
+/// (from higher to lower) when searching for config entries in git.
+class GitConfigLevel {
+  const GitConfigLevel._(this._value, this._name);
+  final int _value;
+  final String _name;
+
+  /// System-wide on Windows, for compatibility with portable git.
+  static const programData = GitConfigLevel._(1, 'programData');
+
+  /// System-wide configuration file; /etc/gitconfig on Linux systems.
+  static const system = GitConfigLevel._(2, 'system');
+
+  /// XDG compatible configuration file; typically ~/.config/git/config
+  static const xdg = GitConfigLevel._(3, 'xdg');
+
+  /// User-specific configuration file (also called Global configuration
+  /// file); typically ~/.gitconfig
+  static const global = GitConfigLevel._(4, 'global');
+
+  /// Repository specific configuration file; $WORK_DIR/.git/config on
+  /// non-bare repos.
+  static const local = GitConfigLevel._(5, 'local');
+
+  /// Application specific configuration file; freely defined by applications.
+  static const app = GitConfigLevel._(6, 'app');
+
+  /// Represents the highest level available config file (i.e. the most
+  /// specific config file available that actually is loaded).
+  static const highest = GitConfigLevel._(-1, 'highest');
+
+  static const List<GitConfigLevel> values = [
+    programData,
+    system,
+    xdg,
+    global,
+    local,
+    app,
+    highest,
+  ];
+
+  int get value => _value;
+
+  @override
+  String toString() => 'GitConfigLevel.$_name';
+}

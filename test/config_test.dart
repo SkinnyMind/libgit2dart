@@ -33,13 +33,17 @@ void main() {
       expect(config, isA<Config>());
     });
 
-    test('returns map with variables and values', () {
-      expect(config.variables['remote.origin.url'], equals('someurl'));
+    test('returns config entries and their values', () {
+      expect(config.length, 5);
+      expect(config.last.name, 'remote.origin.url');
+      expect(config.last.value, 'someurl');
+      expect(config.last.includeDepth, 0);
+      expect(config.last.level, GitConfigLevel.local);
     });
 
     group('get value', () {
       test('returns value of variable', () {
-        expect(config['core.bare'], equals('false'));
+        expect(config['core.bare'].value, 'false');
       });
 
       test('throws when variable isn\'t found', () {
@@ -53,25 +57,25 @@ void main() {
     group('set value', () {
       test('sets boolean value for provided variable', () {
         config['core.bare'] = true;
-        expect(config['core.bare'], equals('true'));
+        expect(config['core.bare'].value, 'true');
       });
 
       test('sets integer value for provided variable', () {
         config['core.repositoryformatversion'] = 1;
-        expect(config['core.repositoryformatversion'], equals('1'));
+        expect(config['core.repositoryformatversion'].value, '1');
       });
 
       test('sets string value for provided variable', () {
         config['remote.origin.url'] = 'updated';
-        expect(config['remote.origin.url'], equals('updated'));
+        expect(config['remote.origin.url'].value, 'updated');
       });
     });
 
     group('delete', () {
       test('successfully deletes entry', () {
-        expect(config['core.bare'], equals('false'));
+        expect(config['core.bare'].value, 'false');
         config.delete('core.bare');
-        expect(config.variables['core.bare'], isNull);
+        expect(() => config['core.bare'], throwsA(isA<LibGit2Error>()));
       });
 
       test('throws on deleting non existing variable', () {
@@ -101,7 +105,7 @@ void main() {
       });
 
       test('returns empty list if multivar not found', () {
-        expect(config.multivar('not.there'), equals([]));
+        expect(config.multivar('not.there'), []);
       });
     });
 
@@ -119,7 +123,7 @@ void main() {
         expect(multivarValues, isNot(contains('default-proxy')));
         expect(multivarValues, isNot(contains('proxy-command for kernel.org')));
         expect(multivarValues, contains('updated'));
-        expect(multivarValues.length, equals(2));
+        expect(multivarValues.length, 2);
       });
     });
 

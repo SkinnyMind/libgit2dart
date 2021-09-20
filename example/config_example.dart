@@ -13,8 +13,8 @@ void main() async {
   final config = Config.open();
 
   print('All entries of system/global config:');
-  for (final entry in config.variables.entries) {
-    print('${entry.key}: ${entry.value}');
+  for (final entry in config) {
+    print('${entry.name}: ${entry.value}');
   }
   // free() should be called on object to free memory when done.
   config.free();
@@ -25,8 +25,8 @@ void main() async {
     final repoConfig = Config.open('$tmpDir/.git/config');
 
     print('\nAll entries of repo config:');
-    for (final entry in repoConfig.variables.entries) {
-      print('${entry.key}: ${entry.value}');
+    for (final entry in repoConfig) {
+      print('${entry.name}: ${entry.value}');
     }
 
     // Set value of config variable
