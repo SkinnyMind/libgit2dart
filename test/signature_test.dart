@@ -26,18 +26,16 @@ void main() {
     });
 
     test('successfully creates without provided time and offset', () {
-      final defaultSignature =
-          Signature.create(name: 'Name', email: 'email@example.com');
-      expect(defaultSignature, isA<Signature>());
-      expect(defaultSignature.name, 'Name');
-      expect(defaultSignature.email, 'email@example.com');
+      final sig = Signature.create(name: 'Name', email: 'email@example.com');
+      expect(sig, isA<Signature>());
+      expect(sig.name, 'Name');
+      expect(sig.email, 'email@example.com');
       expect(
-        defaultSignature.time -
-            (DateTime.now().millisecondsSinceEpoch / 1000).truncate(),
+        sig.time - (DateTime.now().millisecondsSinceEpoch / 1000).truncate(),
         lessThan(5),
       );
-      expect(defaultSignature.offset, 180);
-      defaultSignature.free();
+      expect(sig.offset, 180);
+      sig.free();
     });
 
     test('returns correct values', () {

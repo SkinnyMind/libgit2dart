@@ -361,6 +361,14 @@ class Repository {
     }
   }
 
+  /// Creates a new action signature with default user and now timestamp.
+  ///
+  /// This looks up the user.name and user.email from the configuration and uses the
+  /// current time as the timestamp, and creates a new signature based on that information.
+  ///
+  /// Throws a [LibGit2Error] if error occured.
+  Signature get defaultSignature => Signature.defaultSignature(this);
+
   /// Returns the list of commits starting from provided [sha] hex string.
   ///
   /// If [sorting] isn't provided default will be used (reverse chronological order, like in git).

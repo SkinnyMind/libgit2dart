@@ -50,5 +50,22 @@ Pointer<git_signature> now(String name, String email) {
   }
 }
 
+/// Create a new action signature with default user and now timestamp.
+///
+/// This looks up the user.name and user.email from the configuration and uses the
+/// current time as the timestamp, and creates a new signature based on that information.
+///
+/// Throws a [LibGit2Error] if error occured.
+Pointer<git_signature> defaultSignature(Pointer<git_repository> repo) {
+  final out = calloc<Pointer<git_signature>>();
+  final error = libgit2.git_signature_default(out, repo);
+
+  if (error < 0) {
+    throw LibGit2Error(libgit2.git_error_last());
+  } else {
+    return out.value;
+  }
+}
+
 /// Free an existing signature.
 void free(Pointer<git_signature> sig) => libgit2.git_signature_free(sig);

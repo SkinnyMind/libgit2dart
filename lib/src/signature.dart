@@ -2,6 +2,7 @@ import 'dart:ffi';
 import 'package:ffi/ffi.dart';
 import 'bindings/libgit2_bindings.dart';
 import 'bindings/signature.dart' as bindings;
+import 'repository.dart';
 import 'util.dart';
 
 class Signature {
@@ -38,6 +39,15 @@ class Signature {
 
   /// Pointer to memory address for allocated signature object.
   Pointer<git_signature> get pointer => _signaturePointer;
+
+  /// Creates a new action signature with default user and now timestamp.
+  ///
+  /// This looks up the user.name and user.email from the configuration and uses the
+  /// current time as the timestamp, and creates a new signature based on that information.
+  ///
+  /// Throws a [LibGit2Error] if error occured.
+  static Signature defaultSignature(Repository repo) =>
+      Signature(bindings.defaultSignature(repo.pointer));
 
   /// Returns full name of the author.
   String get name => _signaturePointer.ref.name.cast<Utf8>().toDartString();

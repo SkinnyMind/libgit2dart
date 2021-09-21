@@ -374,6 +374,19 @@ void main() {
           throwsA(isA<LibGit2Error>()),
         );
       });
+
+      test('returns default signature', () {
+        final config = repo.config;
+        config['user.name'] = 'Some Name';
+        config['user.email'] = 'some@email.com';
+
+        final signature = repo.defaultSignature;
+        expect(signature.name, 'Some Name');
+        expect(signature.email, 'some@email.com');
+
+        signature.free();
+        config.free();
+      });
     });
   });
 }
