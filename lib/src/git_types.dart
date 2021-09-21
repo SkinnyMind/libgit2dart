@@ -1120,3 +1120,57 @@ class GitConfigLevel {
   @override
   String toString() => 'GitConfigLevel.$_name';
 }
+
+/// Stash flags.
+class GitStash {
+  const GitStash._(this._value, this._name);
+  final int _value;
+  final String _name;
+
+  /// No option, default.
+  static const defaults = GitStash._(0, 'defaults');
+
+  /// All changes already added to the index are left intact in
+  /// the working directory.
+  static const keepIndex = GitStash._(1, 'keepIndex');
+
+  /// All untracked files are also stashed and then cleaned up
+  /// from the working directory.
+  static const includeUntracked = GitStash._(2, 'includeUntracked');
+
+  /// All ignored files are also stashed and then cleaned up from
+  /// the working directory.
+  static const includeIgnored = GitStash._(4, 'includeIgnored');
+
+  static const List<GitStash> values = [
+    defaults,
+    keepIndex,
+    includeUntracked,
+    includeIgnored,
+  ];
+
+  int get value => _value;
+
+  @override
+  String toString() => 'GitStash.$_name';
+}
+
+/// Stash application flags.
+class GitStashApply {
+  const GitStashApply._(this._value, this._name);
+  final int _value;
+  final String _name;
+
+  static const defaults = GitStashApply._(0, 'defaults');
+
+  /// Try to reinstate not only the working tree's changes,
+  /// but also the index's changes.
+  static const reinstateIndex = GitStashApply._(1, 'reinstateIndex');
+
+  static const List<GitStashApply> values = [defaults, reinstateIndex];
+
+  int get value => _value;
+
+  @override
+  String toString() => 'GitStashApply.$_name';
+}

@@ -19,10 +19,10 @@ void head(
   String? directory,
   List<String>? paths,
 ) {
-  final initOptions = _initOptions(strategy, directory, paths);
-  final optsC = initOptions[0];
-  final pathPointers = initOptions[1];
-  final strArray = initOptions[2];
+  final initOpts = initOptions(strategy, directory, paths);
+  final optsC = initOpts[0];
+  final pathPointers = initOpts[1];
+  final strArray = initOpts[2];
 
   final error = libgit2.git_checkout_head(repo, optsC);
 
@@ -47,10 +47,10 @@ void index(
   String? directory,
   List<String>? paths,
 ) {
-  final initOptions = _initOptions(strategy, directory, paths);
-  final optsC = initOptions[0];
-  final pathPointers = initOptions[1];
-  final strArray = initOptions[2];
+  final initOpts = initOptions(strategy, directory, paths);
+  final optsC = initOpts[0];
+  final pathPointers = initOpts[1];
+  final strArray = initOpts[2];
 
   final error = libgit2.git_checkout_index(repo, nullptr, optsC);
 
@@ -77,10 +77,10 @@ void tree(
   String? directory,
   List<String>? paths,
 ) {
-  final initOptions = _initOptions(strategy, directory, paths);
-  final optsC = initOptions[0];
-  final pathPointers = initOptions[1];
-  final strArray = initOptions[2];
+  final initOpts = initOptions(strategy, directory, paths);
+  final optsC = initOpts[0];
+  final pathPointers = initOpts[1];
+  final strArray = initOpts[2];
 
   final error = libgit2.git_checkout_tree(repo, treeish, optsC);
 
@@ -96,7 +96,7 @@ void tree(
   }
 }
 
-List<dynamic> _initOptions(
+List<dynamic> initOptions(
   int strategy,
   String? directory,
   List<String>? paths,

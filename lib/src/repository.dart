@@ -10,6 +10,7 @@ import 'bindings/commit.dart' as commit_bindings;
 import 'bindings/checkout.dart' as checkout_bindings;
 import 'bindings/reset.dart' as reset_bindings;
 import 'bindings/diff.dart' as diff_bindings;
+import 'bindings/stash.dart' as stash_bindings;
 import 'branch.dart';
 import 'commit.dart';
 import 'config.dart';
@@ -836,5 +837,78 @@ class Repository {
       GitApplyLocation.index.value,
       true,
     );
+  }
+
+  /// Saves the local modifications to a new stash.
+  ///
+  /// Throws a [LibGit2Error] if error occured.
+  Oid stash({
+    required Signature stasher,
+    String message = '',
+    bool keepIndex = false,
+    bool includeUntracked = false,
+    bool includeIgnored = false,
+  }) {
+    int flags = 0;
+    if (keepIndex) flags |= GitStash.keepIndex.value;
+    if (includeUntracked) flags |= GitStash.includeUntracked.value;
+    if (includeIgnored) flags |= GitStash.includeIgnored.value;
+
+    return Oid(stash_bindings.stash(
+      _repoPointer,
+      stasher.pointer,
+      message,
+      flags,
+    ));
+  }
+
+  /// Applies a single stashed state from the stash list.
+  ///
+  /// Throws a [LibGit2Error] if error occured.
+  void stashApply({
+    int index = 0,
+    bool reinstateIndex = false,
+    Set<GitCheckout> strategy = const {
+      GitCheckout.safe,
+      GitCheckout.recreateMissing
+    },
+    String? directory,
+    List<String>? paths,
+  }) {
+    int flags = reinstateIndex ? GitStashApply.reinstateIndex.value : 0;
+    final int strat =
+        strategy.fold(0, (previousValue, e) => previousValue | e.value);
+
+    stash_bindings.apply(_repoPointer, index, flags, strat, directory, paths);
+  }
+
+  /// Removes a single stashed state from the stash list.
+  ///
+  /// Throws a [LibGit2Error] if error occured.
+  void stashDrop([int index = 0]) => stash_bindings.drop(_repoPointer, index);
+
+  /// Applies a single stashed state from the stash list and remove it from the list if successful.
+  ///
+  /// Throws a [LibGit2Error] if error occured.
+  void stashPop({
+    int index = 0,
+    bool reinstateIndex = false,
+    Set<GitCheckout> strategy = const {
+      GitCheckout.safe,
+      GitCheckout.recreateMissing
+    },
+    String? directory,
+    List<String>? paths,
+  }) {
+    int flags = reinstateIndex ? GitStashApply.reinstateIndex.value : 0;
+    final int strat =
+        strategy.fold(0, (previousValue, e) => previousValue | e.value);
+
+    stash_bindings.pop(_repoPointer, index, flags, strat, directory, paths);
+  }
+
+  /// Returns list of all the stashed states, first being the most recent.
+  List<Stash> get stashList {
+    return stash_bindings.list(_repoPointer);
   }
 }
