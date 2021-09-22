@@ -1174,3 +1174,44 @@ class GitStashApply {
   @override
   String toString() => 'GitStashApply.$_name';
 }
+
+/// Direction of the connection.
+class GitDirection {
+  const GitDirection._(this._value, this._name);
+  final int _value;
+  final String _name;
+
+  static const fetch = GitDirection._(0, 'fetch');
+  static const push = GitDirection._(1, 'push');
+
+  static const List<GitDirection> values = [fetch, push];
+
+  int get value => _value;
+
+  @override
+  String toString() => 'GitDirection.$_name';
+}
+
+/// Acceptable prune settings when fetching.
+class GitFetchPrune {
+  const GitFetchPrune._(this._value, this._name);
+  final int _value;
+  final String _name;
+
+  /// Use the setting from the configuration.
+  static const unspecified = GitFetchPrune._(0, 'unspecified');
+
+  /// Force pruning on. Removes any remote branch in the local repository
+  /// that does not exist in the remote
+  static const prune = GitFetchPrune._(1, 'prune');
+
+  /// Force pruning off. Keeps the remote branches.
+  static const noPrune = GitFetchPrune._(2, 'noPrune');
+
+  static const List<GitFetchPrune> values = [unspecified, prune, noPrune];
+
+  int get value => _value;
+
+  @override
+  String toString() => 'GitFetchPrune.$_name';
+}

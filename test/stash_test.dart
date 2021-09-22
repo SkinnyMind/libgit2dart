@@ -6,7 +6,7 @@ import 'helpers/util.dart';
 void main() {
   late Repository repo;
   late Signature stasher;
-  final tmpDir = '${Directory.systemTemp.path}/patch_testrepo/';
+  final tmpDir = '${Directory.systemTemp.path}/stash_testrepo/';
 
   setUp(() async {
     if (await Directory(tmpDir).exists()) {

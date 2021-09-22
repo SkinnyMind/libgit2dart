@@ -919,4 +919,7 @@ class Repository {
   List<Stash> get stashList {
     return stash_bindings.list(_repoPointer);
   }
+
+  /// Returns [Remotes] object.
+  Remotes get remotes => Remotes(this);
 }
