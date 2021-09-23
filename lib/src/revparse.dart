@@ -23,7 +23,7 @@ class RevParse {
     final pointers = bindings.revParseExt(repo.pointer, spec);
     object = Commit(pointers[0].cast<git_commit>());
     if (pointers.length == 2) {
-      reference = Reference(repo.pointer, pointers[1].cast<git_reference>());
+      reference = Reference(pointers[1].cast<git_reference>());
     } else {
       reference = null;
     }

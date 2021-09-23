@@ -9,7 +9,7 @@ void main() async {
   final repo = Repository.open(tmpDir.path);
 
   // Get list of repo's references.
-  print('Repository references: ${repo.references.list()}');
+  print('Repository references: ${repo.references.list}');
 
   // Get reference by name.
   final ref = repo.references['refs/heads/master'];
@@ -20,7 +20,7 @@ void main() async {
   print('Reference shorthand name: ${ref.shorthand}');
 
   // Create new reference (direct or symbolic).
-  final newRef = repo.createReference(
+  final newRef = repo.references.create(
     name: 'refs/tags/v1',
     target: 'refs/heads/master',
   );

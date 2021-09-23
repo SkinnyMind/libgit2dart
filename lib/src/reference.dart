@@ -1,6 +1,4 @@
 import 'dart:ffi';
-import 'package:libgit2dart/libgit2dart.dart';
-
 import 'bindings/libgit2_bindings.dart';
 import 'bindings/reference.dart' as bindings;
 import 'bindings/object.dart' as object_bindings;
@@ -29,7 +27,10 @@ class References {
   /// Returns a list of all the references that can be found in a repository.
   ///
   /// Throws a [LibGit2Error] if error occured.
-  List<String> list() => bindings.list(_repoPointer);
+  List<String> get list => bindings.list(_repoPointer);
+
+  /// Returns number of all the references that can be found in a repository.
+  int get length => list.length;
 
   /// Returns a [Reference] by lookingup [name] in a repository.
   ///
@@ -39,8 +40,63 @@ class References {
   ///
   /// Throws a [LibGit2Error] if error occured.
   Reference operator [](String name) {
-    final refPointer = bindings.lookup(_repoPointer, name);
-    return Reference(_repoPointer, refPointer);
+    return Reference(bindings.lookup(_repoPointer, name));
+  }
+
+  /// Creates a new reference.
+  ///
+  /// The reference will be created in the repository and written to the disk.
+  /// The generated [Reference] object must be freed by the user.
+  ///
+  /// Valid reference names must follow one of two patterns:
+  ///
+  /// Top-level names must contain only capital letters and underscores, and must begin and end
+  /// with a letter. (e.g. "HEAD", "ORIG_HEAD").
+  /// Names prefixed with "refs/" can be almost anything. You must avoid the characters
+  /// '~', '^', ':', '\', '?', '[', and '*', and the sequences ".." and "@{" which have
+  /// special meaning to revparse.
+  /// Throws a [LibGit2Error] if a reference already exists with the given name
+  /// unless force is true, in which case it will be overwritten.
+  ///
+  /// The message for the reflog will be ignored if the reference does not belong in the
+  /// standard set (HEAD, branches and remote-tracking branches) and it does not have a reflog.
+  Reference create({
+    required String name,
+    required Object target,
+    bool force = false,
+    String? logMessage,
+  }) {
+    late final Oid oid;
+    late final bool isDirect;
+
+    if (target is Oid) {
+      oid = target;
+      isDirect = true;
+    } else if (isValidShaHex(target as String)) {
+      final repo = Repository(_repoPointer);
+      oid = Oid.fromSHA(repo, target);
+      isDirect = true;
+    } else {
+      isDirect = false;
+    }
+
+    if (isDirect) {
+      return Reference(bindings.createDirect(
+        _repoPointer,
+        name,
+        oid.pointer,
+        force,
+        logMessage,
+      ));
+    } else {
+      return Reference(bindings.createSymbolic(
+        _repoPointer,
+        name,
+        target as String,
+        force,
+        logMessage,
+      ));
+    }
   }
 
   /// Suggests that the given refdb compress or optimize its references.
@@ -58,86 +114,9 @@ class References {
 class Reference {
   /// Initializes a new instance of the [Reference] class.
   /// Should be freed with `free()` to release allocated memory.
-  Reference(this._repoPointer, this._refPointer);
-
-  /// Initializes a new instance of the [Reference] class by creating a new direct reference.
-  ///
-  /// The direct reference will be created in the repository and written to the disk.
-  /// The generated [Reference] object must be freed by the user.
-  ///
-  /// Valid reference names must follow one of two patterns:
-  ///
-  /// Top-level names must contain only capital letters and underscores, and must begin and end
-  /// with a letter. (e.g. "HEAD", "ORIG_HEAD").
-  /// Names prefixed with "refs/" can be almost anything. You must avoid the characters
-  /// '~', '^', ':', '\', '?', '[', and '*', and the sequences ".." and "@{" which have
-  /// special meaning to revparse.
-  ///
-  /// Throws a [LibGit2Error] if a reference already exists with the given name
-  /// unless force is true, in which case it will be overwritten.
-  ///
-  /// The message for the reflog will be ignored if the reference does not belong in the
-  /// standard set (HEAD, branches and remote-tracking branches) and it does not have a reflog.
-  Reference.createDirect({
-    required Repository repo,
-    required String name,
-    required Pointer<git_oid> oid,
-    required bool force,
-    String? logMessage,
-  }) {
-    _repoPointer = repo.pointer;
-    _refPointer = bindings.createDirect(
-      repo.pointer,
-      name,
-      oid,
-      force,
-      logMessage,
-    );
-  }
-
-  /// Initializes a new instance of the [Reference] class by creating a new symbolic reference.
-  ///
-  /// A symbolic reference is a reference name that refers to another reference name.
-  /// If the other name moves, the symbolic name will move, too. As a simple example,
-  /// the "HEAD" reference might refer to "refs/heads/master" while on the "master" branch
-  /// of a repository.
-  ///
-  /// The symbolic reference will be created in the repository and written to the disk.
-  /// The generated reference object must be freed by the user.
-  ///
-  /// Valid reference names must follow one of two patterns:
-  ///
-  /// Top-level names must contain only capital letters and underscores, and must begin and end
-  /// with a letter. (e.g. "HEAD", "ORIG_HEAD").
-  /// Names prefixed with "refs/" can be almost anything. You must avoid the characters
-  /// '~', '^', ':', '\', '?', '[', and '*', and the sequences ".." and "@{" which have special
-  /// meaning to revparse.
-  /// This function will throw an [LibGit2Error] if a reference already exists with the given
-  /// name unless force is true, in which case it will be overwritten.
-  ///
-  /// The message for the reflog will be ignored if the reference does not belong in the standard
-  /// set (HEAD, branches and remote-tracking branches) and it does not have a reflog.
-  Reference.createSymbolic({
-    required Repository repo,
-    required String name,
-    required String target,
-    required bool force,
-    String? logMessage,
-  }) {
-    _repoPointer = repo.pointer;
-    _refPointer = bindings.createSymbolic(
-      repo.pointer,
-      name,
-      target,
-      force,
-      logMessage,
-    );
-  }
+  Reference(this._refPointer);
 
   late Pointer<git_reference> _refPointer;
-
-  /// Pointer to memory address for allocated repository object.
-  late final Pointer<git_repository> _repoPointer;
 
   /// Pointer to memory address for allocated reference object.
   Pointer<git_reference> get pointer => _refPointer;
@@ -171,15 +150,13 @@ class Reference {
   /// Throws a [LibGit2Error] if error occured.
   void setTarget(String target, [String? logMessage]) {
     late final Oid oid;
+    final owner = bindings.owner(_refPointer);
 
     if (isValidShaHex(target)) {
-      final repo = Repository(_repoPointer);
+      final repo = Repository(owner);
       oid = Oid.fromSHA(repo, target);
     } else {
-      final ref = Reference(
-        _repoPointer,
-        bindings.lookup(_repoPointer, target),
-      );
+      final ref = Reference(bindings.lookup(owner, target));
       oid = ref.target;
       ref.free();
     }
@@ -249,7 +226,10 @@ class Reference {
   /// Checks if a reflog exists for the specified reference [name].
   ///
   /// Throws a [LibGit2Error] if error occured.
-  bool get hasLog => bindings.hasLog(_repoPointer, name);
+  bool get hasLog {
+    final owner = bindings.owner(_refPointer);
+    return bindings.hasLog(owner, name);
+  }
 
   /// Returns a [RefLog] object.
   ///

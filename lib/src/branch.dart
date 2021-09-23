@@ -41,7 +41,8 @@ class Branches {
   /// Throws a [LibGit2Error] if error occured.
   Branch operator [](String branchName) {
     final ref = Reference(
-        _repoPointer, reference_bindings.lookupDWIM(_repoPointer, branchName));
+      reference_bindings.lookupDWIM(_repoPointer, branchName),
+    );
     late final GitBranch type;
     ref.isBranch ? type = GitBranch.local : GitBranch.remote;
     ref.free();
@@ -64,14 +65,12 @@ class Branches {
     required Commit target,
     bool force = false,
   }) {
-    final result = bindings.create(
+    return Reference(bindings.create(
       _repoPointer,
       name,
       target.pointer,
       force,
-    );
-
-    return Reference(_repoPointer, result);
+    ));
   }
 }
 
