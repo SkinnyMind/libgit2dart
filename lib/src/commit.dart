@@ -33,6 +33,12 @@ class Commit {
 
   /// Creates new commit in the repository.
   ///
+  /// [updateRef] is name of the reference that will be updated to point to this commit.
+  /// If the reference is not direct, it will be resolved to a direct reference. Use "HEAD"
+  /// to update the HEAD of the current branch and make it point to this commit. If the
+  /// reference doesn't exist yet, it will be created. If it does exist, the first parent
+  /// must be the tip of this branch.
+  ///
   /// Throws a [LibGit2Error] if error occured.
   static Oid create({
     required Repository repo,
@@ -41,8 +47,8 @@ class Commit {
     required Signature commiter,
     required String treeSHA,
     required List<String> parents,
-    String? updateRef,
-    String? messageEncoding,
+    String updateRef = '',
+    String messageEncoding = '',
   }) {
     final tree = Tree.lookup(repo, treeSHA);
 

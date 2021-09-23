@@ -97,8 +97,7 @@ void main() {
     });
 
     test('successfully creates commit without parents', () {
-      final oid = Commit.create(
-        repo: repo,
+      final oid = repo.createCommit(
         message: message,
         author: author,
         commiter: commiter,

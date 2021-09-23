@@ -394,6 +394,34 @@ class Repository {
   /// Throws a [LibGit2Error] if error occured.
   Commit revParseSingle(String spec) => RevParse.single(this, spec);
 
+  /// Creates new commit in the repository.
+  ///
+  /// [updateRef] is name of the reference that will be updated to point to this commit.
+  /// If the reference is not direct, it will be resolved to a direct reference. Use "HEAD"
+  /// to update the HEAD of the current branch and make it point to this commit. If the
+  /// reference doesn't exist yet, it will be created. If it does exist, the first parent
+  /// must be the tip of this branch.
+  ///
+  /// Throws a [LibGit2Error] if error occured.
+  Oid createCommit({
+    required String message,
+    required Signature author,
+    required Signature commiter,
+    required String treeSHA,
+    required List<String> parents,
+    String updateRef = '',
+    String messageEncoding = '',
+  }) {
+    return Commit.create(
+      repo: this,
+      message: message,
+      author: author,
+      commiter: commiter,
+      treeSHA: treeSHA,
+      parents: parents,
+    );
+  }
+
   /// Finds a single object and intermediate reference (if there is one) by a [spec] revision string.
   ///
   /// See `man gitrevisions`, or https://git-scm.com/docs/git-rev-parse.html#_specifying_revisions
