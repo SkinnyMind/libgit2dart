@@ -4,15 +4,12 @@ import 'bindings/libgit2_bindings.dart';
 import 'bindings/reflog.dart' as bindings;
 import 'reference.dart';
 import 'signature.dart';
-import 'util.dart';
 
 class RefLog with IterableMixin<RefLogEntry> {
   /// Initializes a new instance of [RefLog] class from provided [Reference].
   ///
   /// Throws a [LibGit2Error] if error occured.
   RefLog(Reference ref) {
-    libgit2.git_libgit2_init();
-
     final repo = ref.owner;
     final name = ref.name;
     _reflogPointer = bindings.read(repo.pointer, name);
@@ -38,10 +35,10 @@ class RefLog with IterableMixin<RefLogEntry> {
 
 class RefLogEntry {
   /// Initializes a new instance of [RefLogEntry] class.
-  RefLogEntry(this._entryPointer);
+  const RefLogEntry(this._entryPointer);
 
   /// Pointer to memory address for allocated reflog entry object.
-  late final Pointer<git_reflog_entry> _entryPointer;
+  final Pointer<git_reflog_entry> _entryPointer;
 
   /// Returns the log message.
   String get message => bindings.entryMessage(_entryPointer);

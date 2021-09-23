@@ -1,16 +1,13 @@
 import 'dart:ffi';
 import 'bindings/libgit2_bindings.dart';
 import 'bindings/odb.dart' as bindings;
-import 'util.dart';
 
 class Odb {
   /// Initializes a new instance of [Odb] class from provided
   /// pointer to Odb object in memory.
-  Odb(this._odbPointer) {
-    libgit2.git_libgit2_init();
-  }
+  const Odb(this._odbPointer);
 
-  late final Pointer<git_odb> _odbPointer;
+  final Pointer<git_odb> _odbPointer;
 
   /// Pointer to memory address for allocated oid object.
   Pointer<git_odb> get pointer => _odbPointer;

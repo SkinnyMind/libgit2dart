@@ -7,7 +7,6 @@ import 'reference.dart';
 import 'repository.dart';
 import 'oid.dart';
 import 'git_types.dart';
-import 'util.dart';
 
 class Branches {
   /// Initializes a new instance of the [Branches] class
@@ -81,12 +80,10 @@ class Branch {
   /// branch object in memory.
   ///
   /// Should be freed with `free()` to release allocated memory.
-  Branch(this._branchPointer) {
-    libgit2.git_libgit2_init();
-  }
+  const Branch(this._branchPointer);
 
   /// Pointer to memory address for allocated branch object.
-  late final Pointer<git_reference> _branchPointer;
+  final Pointer<git_reference> _branchPointer;
 
   /// Returns the OID pointed to by a branch.
   ///

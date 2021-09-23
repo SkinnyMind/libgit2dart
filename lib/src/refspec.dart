@@ -8,7 +8,7 @@ import 'git_types.dart';
 class Refspec {
   /// Initializes a new instance of the [Refspec] class
   /// from provided pointer to refspec object in memory.
-  Refspec(this._refspecPointer);
+  const Refspec(this._refspecPointer);
 
   /// Pointer to memory address for allocated refspec object.
   final Pointer<git_refspec> _refspecPointer;

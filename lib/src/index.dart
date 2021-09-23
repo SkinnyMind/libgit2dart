@@ -9,18 +9,15 @@ import 'bindings/diff.dart' as diff_bindings;
 import 'oid.dart';
 import 'git_types.dart';
 import 'repository.dart';
-import 'util.dart';
 
 class Index with IterableMixin<IndexEntry> {
   /// Initializes a new instance of [Index] class from provided
   /// pointer to index object in memory.
   ///
   /// Should be freed with `free()` to release allocated memory.
-  Index(this._indexPointer) {
-    libgit2.git_libgit2_init();
-  }
+  const Index(this._indexPointer);
 
-  late final Pointer<git_index> _indexPointer;
+  final Pointer<git_index> _indexPointer;
 
   /// Pointer to memory address for allocated index object.
   Pointer<git_index> get pointer => _indexPointer;
@@ -237,10 +234,10 @@ class Index with IterableMixin<IndexEntry> {
 
 class IndexEntry {
   /// Initializes a new instance of [IndexEntry] class.
-  IndexEntry(this._indexEntryPointer);
+  const IndexEntry(this._indexEntryPointer);
 
   /// Pointer to memory address for allocated index entry object.
-  late final Pointer<git_index_entry> _indexEntryPointer;
+  final Pointer<git_index_entry> _indexEntryPointer;
 
   /// Unique identity of the index entry.
   Oid get id => Oid.fromRaw(_indexEntryPointer.ref.id);

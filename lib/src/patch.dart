@@ -5,16 +5,13 @@ import 'bindings/patch.dart' as bindings;
 import 'blob.dart';
 import 'diff.dart';
 import 'git_types.dart';
-import 'util.dart';
 
 class Patch {
   /// Initializes a new instance of [Patch] class from provided
   /// pointer to patch object in memory and pointers to old and new blobs/buffers.
   ///
   /// Should be freed with `free()` to release allocated memory.
-  Patch(this._patchPointer, this._aPointer, this._bPointer) {
-    libgit2.git_libgit2_init();
-  }
+  Patch(this._patchPointer, this._aPointer, this._bPointer);
 
   /// Directly generates a patch from the difference between two blobs, buffers or
   /// blob and a buffer.

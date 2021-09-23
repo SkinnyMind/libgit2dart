@@ -7,9 +7,7 @@ import 'util.dart';
 class Oid {
   /// Initializes a new instance of [Oid] class from provided
   /// pointer to Oid object in memory.
-  Oid(this._oidPointer) {
-    libgit2.git_libgit2_init();
-  }
+  Oid(this._oidPointer);
 
   /// Initializes a new instance of [Oid] class by determining if an object can be found
   /// in the ODB of [repository] with provided hexadecimal [sha] string that is 40 characters
@@ -34,7 +32,6 @@ class Oid {
 
   /// Initializes a new instance of [Oid] class from provided raw git_oid.
   Oid.fromRaw(git_oid raw) {
-    libgit2.git_libgit2_init();
     _oidPointer = bindings.fromRaw(raw.id);
   }
 

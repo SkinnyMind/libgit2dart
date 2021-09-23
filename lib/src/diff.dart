@@ -122,7 +122,7 @@ class Diff {
 class DiffDelta {
   /// Initializes a new instance of [DiffDelta] class from provided
   /// pointer to diff delta object in memory.
-  DiffDelta(this._diffDeltaPointer);
+  const DiffDelta(this._diffDeltaPointer);
 
   /// Pointer to memory address for allocated diff delta object.
   final Pointer<git_diff_delta> _diffDeltaPointer;
@@ -182,7 +182,7 @@ class DiffDelta {
 /// are tracking type changes or ignored/untracked directories).
 class DiffFile {
   /// Initializes a new instance of [DiffFile] class from provided diff file object.
-  DiffFile(this._diffFile);
+  const DiffFile(this._diffFile);
 
   final git_diff_file _diffFile;
 
@@ -223,7 +223,7 @@ class DiffFile {
 class DiffStats {
   /// Initializes a new instance of [DiffStats] class from provided
   /// pointer to diff stats object in memory.
-  DiffStats(this._diffStatsPointer);
+  const DiffStats(this._diffStatsPointer);
 
   /// Pointer to memory address for allocated diff delta object.
   final Pointer<git_diff_stats> _diffStatsPointer;
@@ -255,7 +255,7 @@ class DiffStats {
 class DiffHunk {
   /// Initializes a new instance of [DiffHunk] class from provided
   /// pointers to patch object and diff hunk object in memory and number of lines in hunk.
-  DiffHunk(
+  const DiffHunk(
     this._patchPointer,
     this._diffHunkPointer,
     this.linesCount,
@@ -269,10 +269,10 @@ class DiffHunk {
   final Pointer<git_patch> _patchPointer;
 
   /// Returns count of total lines in this hunk.
-  late final int linesCount;
+  final int linesCount;
 
   /// Returns index of this hunk in the patch.
-  late final int index;
+  final int index;
 
   /// Returns starting line number in 'old file'.
   int get oldStart => _diffHunkPointer.ref.old_start;
@@ -310,7 +310,7 @@ class DiffHunk {
 class DiffLine {
   /// Initializes a new instance of [DiffLine] class from provided
   /// pointer to diff line object in memory.
-  DiffLine(this._diffLinePointer);
+  const DiffLine(this._diffLinePointer);
 
   /// Pointer to memory address for allocated diff line object.
   final Pointer<git_diff_line> _diffLinePointer;

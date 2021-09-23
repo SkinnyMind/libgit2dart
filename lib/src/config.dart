@@ -144,11 +144,11 @@ class Config with IterableMixin<ConfigEntry> {
 
   @override
   Iterator<ConfigEntry> get iterator =>
-      ConfigIterator(bindings.iterator(_configPointer));
+      _ConfigIterator(bindings.iterator(_configPointer));
 }
 
 class ConfigEntry {
-  ConfigEntry(this._configEntryPointer);
+  const ConfigEntry(this._configEntryPointer);
 
   /// Pointer to memory address for allocated config entry object.
   final Pointer<git_config_entry> _configEntryPointer;
@@ -183,8 +183,8 @@ class ConfigEntry {
   }
 }
 
-class ConfigIterator implements Iterator<ConfigEntry> {
-  ConfigIterator(this._iteratorPointer);
+class _ConfigIterator implements Iterator<ConfigEntry> {
+  _ConfigIterator(this._iteratorPointer);
 
   /// Pointer to memory address for allocated config iterator.
   final Pointer<git_config_iterator> _iteratorPointer;

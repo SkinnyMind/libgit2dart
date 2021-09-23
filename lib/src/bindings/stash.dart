@@ -1,6 +1,7 @@
 import 'dart:ffi';
 import 'package:ffi/ffi.dart';
 import '../error.dart';
+import '../oid.dart';
 import '../stash.dart';
 import 'checkout.dart' as checkout_bindings;
 import 'libgit2_bindings.dart';
@@ -142,7 +143,7 @@ int _stashCb(
   _stashList.add(Stash(
     index: index,
     message: message.cast<Utf8>().toDartString(),
-    oid: oid,
+    oid: Oid(oid),
   ));
   return 0;
 }

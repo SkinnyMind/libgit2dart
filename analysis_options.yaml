@@ -1,7 +1,6 @@
 include: package:lints/recommended.yaml
 linter:
   rules:
-    - file_names
     - prefer_const_constructors
     - sort_constructors_first
 analyzer:

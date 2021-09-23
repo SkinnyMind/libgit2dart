@@ -1,16 +1,12 @@
-import 'dart:ffi';
-import 'bindings/libgit2_bindings.dart';
 import 'oid.dart';
 
 class Stash {
   /// Initializes a new instance of [Stash] class.
-  Stash({
+  const Stash({
     required this.index,
     required this.message,
-    required Pointer<git_oid> oid,
-  }) {
-    this.oid = Oid(oid);
-  }
+    required this.oid,
+  });
 
   /// The position within the stash list.
   final int index;
@@ -19,7 +15,7 @@ class Stash {
   final String message;
 
   /// The commit oid of the stashed state.
-  late final Oid oid;
+  final Oid oid;
 
   @override
   String toString() {

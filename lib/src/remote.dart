@@ -117,10 +117,10 @@ class Remotes {
 class Remote {
   /// Initializes a new instance of [Remote] class from provided pointer
   /// to remote object in memory.
-  Remote(this._remotePointer);
+  const Remote(this._remotePointer);
 
   /// Pointer to memory address for allocated remote object.
-  late final Pointer<git_remote> _remotePointer;
+  final Pointer<git_remote> _remotePointer;
 
   /// Returns the remote's name.
   String get name => bindings.name(_remotePointer);
@@ -198,7 +198,7 @@ class Remote {
 class TransferProgress {
   /// Initializes a new instance of [TransferProgress] class from provided pointer
   /// to transfer progress object in memory.
-  TransferProgress(this._transferProgressPointer);
+  const TransferProgress(this._transferProgressPointer);
 
   /// Pointer to memory address for allocated transfer progress object.
   final Pointer<git_indexer_progress> _transferProgressPointer;

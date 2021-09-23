@@ -9,16 +9,13 @@ import 'repository.dart';
 import 'signature.dart';
 import 'git_types.dart';
 import 'tree.dart';
-import 'util.dart';
 
 class Tag {
   /// Initializes a new instance of [Tag] class from provided pointer to
   /// tag object in memory.
   ///
   /// Should be freed with `free()` to release allocated memory.
-  Tag(this._tagPointer) {
-    libgit2.git_libgit2_init();
-  }
+  Tag(this._tagPointer);
 
   /// Initializes a new instance of [Tag] class from provided
   /// [Repository] object and [sha] hex string.

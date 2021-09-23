@@ -10,9 +10,7 @@ class Signature {
   /// signature object in memory.
   ///
   /// Should be freed with `free()` to release allocated memory.
-  Signature(this._signaturePointer) {
-    libgit2.git_libgit2_init();
-  }
+  Signature(this._signaturePointer);
 
   /// Initializes a new instance of [Signature] class from provided [name], [email],
   /// and optional [time] in seconds from epoch and [offset] in minutes.

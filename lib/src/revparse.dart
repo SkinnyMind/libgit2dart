@@ -60,10 +60,10 @@ class RevParse {
 class RevSpec {
   /// Initializes a new instance of [RevSpec] class from provided
   /// pointer to revspec object in memory.
-  RevSpec(this._revSpecPointer);
+  const RevSpec(this._revSpecPointer);
 
   /// Pointer to memory address for allocated revspec object.
-  late final Pointer<git_revspec> _revSpecPointer;
+  final Pointer<git_revspec> _revSpecPointer;
 
   /// The left element of the revspec; must be freed by the user.
   Commit get from => Commit(_revSpecPointer.ref.from.cast());

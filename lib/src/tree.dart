@@ -7,16 +7,13 @@ import 'index.dart';
 import 'repository.dart';
 import 'oid.dart';
 import 'git_types.dart';
-import 'util.dart';
 
 class Tree {
   /// Initializes a new instance of [Tree] class from provided pointer to
   /// tree object in memory.
   ///
   /// Should be freed with `free()` to release allocated memory.
-  Tree(this._treePointer) {
-    libgit2.git_libgit2_init();
-  }
+  Tree(this._treePointer);
 
   /// Initializes a new instance of [Tree] class from provided
   /// [Repository] object and [sha] hex string.
@@ -142,7 +139,7 @@ class Tree {
 
 class TreeEntry {
   /// Initializes a new instance of [TreeEntry] class.
-  TreeEntry(this._treeEntryPointer);
+  const TreeEntry(this._treeEntryPointer);
 
   /// Pointer to memory address for allocated tree entry object.
   final Pointer<git_tree_entry> _treeEntryPointer;
