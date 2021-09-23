@@ -5,6 +5,8 @@ import 'package:libgit2dart/libgit2dart.dart';
 import 'helpers/util.dart';
 
 void main() {
+  late Repository repo;
+  late Directory tmpDir;
   const log = [
     '78b8bf123e3952c970ae5c1ce0a3ea1d1336f6e8',
     'c68ff54aabf660fcdd9a2838d401583fe31249e3',
@@ -12,24 +14,17 @@ void main() {
     '6cbc22e509d72758ab4c8d9f287ea846b90c448b',
     'f17d0d48eae3aa08cecf29128a35e310c97b3521',
   ];
-  late Repository repo;
-  final tmpDir = '${Directory.systemTemp.path}/revwalk_testrepo/';
 
   setUp(() async {
-    if (await Directory(tmpDir).exists()) {
-      await Directory(tmpDir).delete(recursive: true);
-    }
-    await copyRepo(
-      from: Directory('test/assets/testrepo/'),
-      to: await Directory(tmpDir).create(),
-    );
-    repo = Repository.open(tmpDir);
+    tmpDir = await setupRepo(Directory('test/assets/testrepo/'));
+    repo = Repository.open(tmpDir.path);
   });
 
   tearDown(() async {
     repo.free();
-    await Directory(tmpDir).delete(recursive: true);
+    await tmpDir.delete(recursive: true);
   });
+
   group('RevWalk', () {
     test('returns list of commits with default sorting', () {
       final walker = RevWalk(repo);

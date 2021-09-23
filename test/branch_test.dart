@@ -5,24 +5,18 @@ import 'helpers/util.dart';
 
 void main() {
   late Repository repo;
-  final tmpDir = '${Directory.systemTemp.path}/branch_testrepo/';
+  late Directory tmpDir;
   const lastCommit = '821ed6e80627b8769d170a293862f9fc60825226';
   const featureCommit = '5aecfa0fb97eadaac050ccb99f03c3fb65460ad4';
 
   setUp(() async {
-    if (await Directory(tmpDir).exists()) {
-      await Directory(tmpDir).delete(recursive: true);
-    }
-    await copyRepo(
-      from: Directory('test/assets/testrepo/'),
-      to: await Directory(tmpDir).create(),
-    );
-    repo = Repository.open(tmpDir);
+    tmpDir = await setupRepo(Directory('test/assets/testrepo/'));
+    repo = Repository.open(tmpDir.path);
   });
 
   tearDown(() async {
     repo.free();
-    await Directory(tmpDir).delete(recursive: true);
+    await tmpDir.delete(recursive: true);
   });
 
   group('Branch', () {

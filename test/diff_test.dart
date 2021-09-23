@@ -6,7 +6,7 @@ import 'helpers/util.dart';
 
 void main() {
   late Repository repo;
-  final tmpDir = '${Directory.systemTemp.path}/diff_testrepo/';
+  late Directory tmpDir;
   const indexToWorkdir = [
     'file_deleted',
     'modified_file',
@@ -76,19 +76,13 @@ index e69de29..c217c63 100644
 """;
 
   setUp(() async {
-    if (await Directory(tmpDir).exists()) {
-      await Directory(tmpDir).delete(recursive: true);
-    }
-    await copyRepo(
-      from: Directory('test/assets/dirtyrepo/'),
-      to: await Directory(tmpDir).create(),
-    );
-    repo = Repository.open(tmpDir);
+    tmpDir = await setupRepo(Directory('test/assets/dirtyrepo/'));
+    repo = Repository.open(tmpDir.path);
   });
 
   tearDown(() async {
     repo.free();
-    await Directory(tmpDir).delete(recursive: true);
+    await tmpDir.delete(recursive: true);
   });
 
   group('Diff', () {
@@ -198,7 +192,7 @@ index e69de29..c217c63 100644
         'checks if diff can be applied to repository and successfully applies it',
         () {
       final diff = Diff.parse(patchText);
-      final file = File('${tmpDir}subdir/modified_file');
+      final file = File('${tmpDir.path}/subdir/modified_file');
 
       repo.reset('a763aa560953e7cfb87ccbc2f536d665aa4dff22', GitReset.hard);
       expect(file.readAsStringSync(), '');

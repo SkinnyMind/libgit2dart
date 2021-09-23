@@ -15,30 +15,30 @@ void main() {
     });
 
     group('.init()', () {
-      final initDir = '${Directory.systemTemp.path}/init_repo/';
+      final initDir = Directory('${Directory.systemTemp.path}/init_repo');
 
       setUp(() async {
-        if (await Directory(initDir).exists()) {
-          await Directory(initDir).delete(recursive: true);
+        if (await initDir.exists()) {
+          await initDir.delete(recursive: true);
         } else {
-          await Directory(initDir).create();
+          await initDir.create();
         }
       });
 
       tearDown(() async {
         repo.free();
-        await Directory(initDir).delete(recursive: true);
+        await initDir.delete(recursive: true);
       });
 
       test('successfully creates new bare repo at provided path', () {
-        repo = Repository.init(initDir, isBare: true);
-        expect(repo.path, initDir);
+        repo = Repository.init(initDir.path, isBare: true);
+        expect(repo.path, '${initDir.path}/');
         expect(repo.isBare, true);
       });
 
       test('successfully creates new standard repo at provided path', () {
-        repo = Repository.init(initDir);
-        expect(repo.path, '$initDir.git/');
+        repo = Repository.init(initDir.path);
+        expect(repo.path, '${initDir.path}/.git/');
         expect(repo.isBare, false);
         expect(repo.isEmpty, true);
       });
@@ -153,22 +153,16 @@ void main() {
       const lastCommit = '821ed6e80627b8769d170a293862f9fc60825226';
       const featureCommit = '5aecfa0fb97eadaac050ccb99f03c3fb65460ad4';
 
-      final tmpDir = '${Directory.systemTemp.path}/testrepo/';
+      late Directory tmpDir;
 
       setUp(() async {
-        if (await Directory(tmpDir).exists()) {
-          await Directory(tmpDir).delete(recursive: true);
-        }
-        await copyRepo(
-          from: Directory('test/assets/testrepo/'),
-          to: await Directory(tmpDir).create(),
-        );
-        repo = Repository.open(tmpDir);
+        tmpDir = await setupRepo(Directory('test/assets/testrepo/'));
+        repo = Repository.open(tmpDir.path);
       });
 
       tearDown(() async {
         repo.free();
-        await Directory(tmpDir).delete(recursive: true);
+        await tmpDir.delete(recursive: true);
       });
 
       test('returns config for repository', () {
@@ -203,7 +197,7 @@ void main() {
 
       group('.discover()', () {
         test('discovers repository', () async {
-          final subDir = '${tmpDir}subdir1/subdir2/';
+          final subDir = '${tmpDir.path}/subdir1/subdir2/';
           await Directory(subDir).create(recursive: true);
           expect(Repository.discover(subDir), repo.path);
         });
@@ -226,13 +220,14 @@ void main() {
       });
 
       test('successfully sets working directory', () {
-        final tmpWorkDir = '${Directory.systemTemp.path}/tmp_work_dir/';
-        Directory(tmpWorkDir).createSync();
+        final tmpWorkDir =
+            Directory('${Directory.systemTemp.path}/tmp_work_dir');
+        tmpWorkDir.createSync();
 
-        repo.setWorkdir(tmpWorkDir);
-        expect(repo.workdir, tmpWorkDir);
+        repo.setWorkdir(tmpWorkDir.path);
+        expect(repo.workdir, '${tmpWorkDir.path}/');
 
-        Directory(tmpWorkDir).deleteSync();
+        tmpWorkDir.deleteSync();
       });
 
       group('setHead', () {
@@ -341,7 +336,7 @@ void main() {
       });
 
       test('returns status of a repository', () {
-        File('${tmpDir}new_file.txt').createSync();
+        File('${tmpDir.path}/new_file.txt').createSync();
         final index = repo.index;
         index.remove('file');
         index.add('new_file.txt');

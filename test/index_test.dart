@@ -7,24 +7,18 @@ import 'helpers/util.dart';
 void main() {
   late Repository repo;
   late Index index;
-  final tmpDir = '${Directory.systemTemp.path}/index_testrepo/';
+  late Directory tmpDir;
 
   setUp(() async {
-    if (await Directory(tmpDir).exists()) {
-      await Directory(tmpDir).delete(recursive: true);
-    }
-    await copyRepo(
-      from: Directory('test/assets/testrepo/'),
-      to: await Directory(tmpDir).create(),
-    );
-    repo = Repository.open(tmpDir);
+    tmpDir = await setupRepo(Directory('test/assets/testrepo/'));
+    repo = Repository.open(tmpDir.path);
     index = repo.index;
   });
 
   tearDown(() async {
     index.free();
     repo.free();
-    await Directory(tmpDir).delete(recursive: true);
+    await tmpDir.delete(recursive: true);
   });
 
   group('Index', () {
@@ -136,7 +130,7 @@ void main() {
     test('writes to disk', () {
       expect(index.length, 4);
 
-      File('$tmpDir/new_file').createSync();
+      File('${tmpDir.path}/new_file').createSync();
 
       index.add('new_file');
       index.write();

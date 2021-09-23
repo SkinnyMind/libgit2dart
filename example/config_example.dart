@@ -1,13 +1,10 @@
 import 'dart:io';
-
 import 'package:libgit2dart/libgit2dart.dart';
-
-import 'helpers.dart';
+import '../test/helpers/util.dart';
 
 void main() async {
   // Preparing example repository.
-  final tmpDir = '${Directory.systemTemp.path}/example_repo/';
-  await prepareRepo(tmpDir);
+  final tmpDir = await setupRepo(Directory('test/assets/testrepo/'));
 
   // Open system + global config file.
   final config = Config.open();
@@ -22,7 +19,7 @@ void main() async {
   // Open config file at provided path.
   // Exception is thrown if file not found.
   try {
-    final repoConfig = Config.open('$tmpDir/.git/config');
+    final repoConfig = Config.open('${tmpDir.path}/.git/config');
 
     print('\nAll entries of repo config:');
     for (final entry in repoConfig) {
@@ -57,5 +54,5 @@ void main() async {
   }
 
   // Removing example repository.
-  await disposeRepo(tmpDir);
+  await tmpDir.delete(recursive: true);
 }

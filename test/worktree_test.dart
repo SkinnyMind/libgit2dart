@@ -5,30 +5,22 @@ import 'helpers/util.dart';
 
 void main() {
   late Repository repo;
-  final tmpDir = '${Directory.systemTemp.path}/worktree_testrepo/';
-  final worktreeDir = '${Directory.systemTemp.path}/worktree';
+  late Directory tmpDir;
+  final worktreeDir = Directory('${Directory.systemTemp.path}/worktree');
 
   setUp(() async {
-    if (await Directory(tmpDir).exists()) {
-      await Directory(tmpDir).delete(recursive: true);
+    if (await worktreeDir.exists()) {
+      await worktreeDir.delete(recursive: true);
     }
-
-    if (await Directory(worktreeDir).exists()) {
-      await Directory(worktreeDir).delete(recursive: true);
-    }
-
-    await copyRepo(
-      from: Directory('test/assets/testrepo/'),
-      to: await Directory(tmpDir).create(),
-    );
-    repo = Repository.open(tmpDir);
+    tmpDir = await setupRepo(Directory('test/assets/testrepo/'));
+    repo = Repository.open(tmpDir.path);
   });
 
   tearDown(() async {
     repo.free();
-    await Directory(tmpDir).delete(recursive: true);
-    if (await Directory(worktreeDir).exists()) {
-      await Directory(worktreeDir).delete(recursive: true);
+    await tmpDir.delete(recursive: true);
+    if (await worktreeDir.exists()) {
+      await worktreeDir.delete(recursive: true);
     }
   });
 
@@ -40,14 +32,14 @@ void main() {
       final worktree = Worktree.create(
         repo: repo,
         name: worktreeName,
-        path: worktreeDir,
+        path: worktreeDir.path,
       );
 
       expect(Worktree.list(repo), [worktreeName]);
       expect(repo.branches.list(), contains(worktreeName));
       expect(worktree.name, worktreeName);
-      expect(worktree.path, worktreeDir);
-      expect(File('$worktreeDir/.git').existsSync(), true);
+      expect(worktree.path, worktreeDir.path);
+      expect(File('${worktreeDir.path}/.git').existsSync(), true);
 
       worktree.free();
     });
@@ -64,7 +56,7 @@ void main() {
       final worktree = Worktree.create(
         repo: repo,
         name: worktreeName,
-        path: worktreeDir,
+        path: worktreeDir.path,
         ref: worktreeRef,
       );
 
@@ -73,7 +65,7 @@ void main() {
       expect(repo.branches.list(), isNot(contains(worktreeName)));
       expect(worktreeBranch.isCheckedOut, true);
 
-      Directory(worktreeDir).deleteSync(recursive: true);
+      worktreeDir.deleteSync(recursive: true);
       worktree.prune();
 
       expect(Worktree.list(repo), []);
@@ -93,11 +85,11 @@ void main() {
       final worktree = Worktree.create(
         repo: repo,
         name: worktreeName,
-        path: worktreeDir,
+        path: worktreeDir.path,
       );
       expect(Worktree.list(repo), [worktreeName]);
 
-      Directory(worktreeDir).deleteSync(recursive: true);
+      worktreeDir.deleteSync(recursive: true);
       worktree.prune();
       expect(Worktree.list(repo), []);
 

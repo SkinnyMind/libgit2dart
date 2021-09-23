@@ -6,27 +6,21 @@ import 'helpers/util.dart';
 
 void main() {
   late Repository repo;
-  final tmpDir = '${Directory.systemTemp.path}/checkout_testrepo/';
+  late Directory tmpDir;
 
   setUp(() async {
-    if (await Directory(tmpDir).exists()) {
-      await Directory(tmpDir).delete(recursive: true);
-    }
-    await copyRepo(
-      from: Directory('test/assets/testrepo/'),
-      to: await Directory(tmpDir).create(),
-    );
-    repo = Repository.open(tmpDir);
+    tmpDir = await setupRepo(Directory('test/assets/testrepo/'));
+    repo = Repository.open(tmpDir.path);
   });
 
   tearDown(() async {
     repo.free();
-    await Directory(tmpDir).delete(recursive: true);
+    await tmpDir.delete(recursive: true);
   });
 
   group('Checkout', () {
     test('successfully checkouts head', () {
-      File('${tmpDir}feature_file').writeAsStringSync('edit');
+      File('${tmpDir.path}/feature_file').writeAsStringSync('edit');
       expect(repo.status, contains('feature_file'));
 
       repo.checkout(refName: 'HEAD', strategy: {GitCheckout.force});
@@ -73,18 +67,18 @@ void main() {
     });
 
     test('successfully checkouts with alrenative directory', () {
-      final altDir = '${Directory.systemTemp.path}/alt_dir';
+      final altDir = Directory('${Directory.systemTemp.path}/alt_dir');
       // making sure there is no directory
-      if (Directory(altDir).existsSync()) {
-        Directory(altDir).deleteSync(recursive: true);
+      if (altDir.existsSync()) {
+        altDir.deleteSync(recursive: true);
       }
-      Directory(altDir).createSync();
-      expect(Directory(altDir).listSync().length, 0);
+      altDir.createSync();
+      expect(altDir.listSync().length, 0);
 
-      repo.checkout(refName: 'refs/heads/feature', directory: altDir);
-      expect(Directory(altDir).listSync().length, isNot(0));
+      repo.checkout(refName: 'refs/heads/feature', directory: altDir.path);
+      expect(altDir.listSync().length, isNot(0));
 
-      Directory(altDir).deleteSync(recursive: true);
+      altDir.deleteSync(recursive: true);
     });
 
     test('successfully checkouts file with provided path', () {

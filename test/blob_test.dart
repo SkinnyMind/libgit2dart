@@ -7,27 +7,21 @@ import 'helpers/util.dart';
 void main() {
   late Repository repo;
   late Blob blob;
-  final tmpDir = '${Directory.systemTemp.path}/blob_testrepo/';
+  late Directory tmpDir;
   const blobSHA = '9c78c21d6680a7ffebc76f7ac68cacc11d8f48bc';
   const blobContent = 'Feature edit\n';
   const newBlobContent = 'New blob\n';
 
   setUp(() async {
-    if (await Directory(tmpDir).exists()) {
-      await Directory(tmpDir).delete(recursive: true);
-    }
-    await copyRepo(
-      from: Directory('test/assets/testrepo/'),
-      to: await Directory(tmpDir).create(),
-    );
-    repo = Repository.open(tmpDir);
+    tmpDir = await setupRepo(Directory('test/assets/testrepo/'));
+    repo = Repository.open(tmpDir.path);
     blob = Blob.lookup(repo, blobSHA);
   });
 
   tearDown(() async {
     blob.free();
     repo.free();
-    await Directory(tmpDir).delete(recursive: true);
+    await tmpDir.delete(recursive: true);
   });
 
   group('Blob', () {

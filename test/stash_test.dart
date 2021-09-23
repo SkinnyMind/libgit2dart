@@ -5,18 +5,12 @@ import 'helpers/util.dart';
 
 void main() {
   late Repository repo;
+  late Directory tmpDir;
   late Signature stasher;
-  final tmpDir = '${Directory.systemTemp.path}/stash_testrepo/';
 
   setUp(() async {
-    if (await Directory(tmpDir).exists()) {
-      await Directory(tmpDir).delete(recursive: true);
-    }
-    await copyRepo(
-      from: Directory('test/assets/testrepo/'),
-      to: await Directory(tmpDir).create(),
-    );
-    repo = Repository.open(tmpDir);
+    tmpDir = await setupRepo(Directory('test/assets/testrepo/'));
+    repo = Repository.open(tmpDir.path);
     stasher = Signature.create(
       name: 'Stasher',
       email: 'stasher@email.com',
@@ -26,12 +20,12 @@ void main() {
   tearDown(() async {
     stasher.free();
     repo.free();
-    await Directory(tmpDir).delete(recursive: true);
+    await tmpDir.delete(recursive: true);
   });
 
   group('Stash', () {
     test('successfully saves changes to stash', () {
-      File('${tmpDir}file').writeAsStringSync(
+      File('${tmpDir.path}/file').writeAsStringSync(
         'edit',
         mode: FileMode.append,
       );
@@ -41,7 +35,7 @@ void main() {
     });
 
     test('successfully applies changes from stash', () {
-      File('${tmpDir}file').writeAsStringSync(
+      File('${tmpDir.path}/file').writeAsStringSync(
         'edit',
         mode: FileMode.append,
       );
@@ -54,7 +48,7 @@ void main() {
     });
 
     test('successfully drops stash', () {
-      File('${tmpDir}file').writeAsStringSync(
+      File('${tmpDir.path}/file').writeAsStringSync(
         'edit',
         mode: FileMode.append,
       );
@@ -66,7 +60,7 @@ void main() {
     });
 
     test('successfully pops from stash', () {
-      File('${tmpDir}file').writeAsStringSync(
+      File('${tmpDir.path}/file').writeAsStringSync(
         'edit',
         mode: FileMode.append,
       );
@@ -78,7 +72,7 @@ void main() {
     });
 
     test('returns list of stashes', () {
-      File('${tmpDir}file').writeAsStringSync(
+      File('${tmpDir.path}/file').writeAsStringSync(
         'edit',
         mode: FileMode.append,
       );

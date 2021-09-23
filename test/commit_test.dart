@@ -5,25 +5,18 @@ import 'package:libgit2dart/libgit2dart.dart';
 import 'helpers/util.dart';
 
 void main() {
-  const mergeCommit = '78b8bf123e3952c970ae5c1ce0a3ea1d1336f6e8';
-
   late Repository repo;
-  final tmpDir = '${Directory.systemTemp.path}/commit_testrepo/';
+  late Directory tmpDir;
 
+  const mergeCommit = '78b8bf123e3952c970ae5c1ce0a3ea1d1336f6e8';
   const message = "Commit message.\n\nSome description.\n";
   const tree = '7796359a96eb722939c24bafdb1afe9f07f2f628';
   late Signature author;
   late Signature commiter;
 
   setUp(() async {
-    if (await Directory(tmpDir).exists()) {
-      await Directory(tmpDir).delete(recursive: true);
-    }
-    await copyRepo(
-      from: Directory('test/assets/testrepo/'),
-      to: await Directory(tmpDir).create(),
-    );
-    repo = Repository.open(tmpDir);
+    tmpDir = await setupRepo(Directory('test/assets/testrepo/'));
+    repo = Repository.open(tmpDir.path);
     author = Signature.create(
       name: 'Author Name',
       email: 'author@email.com',
@@ -40,7 +33,7 @@ void main() {
     author.free();
     commiter.free();
     repo.free();
-    await Directory(tmpDir).delete(recursive: true);
+    await tmpDir.delete(recursive: true);
   });
 
   group('Commit', () {

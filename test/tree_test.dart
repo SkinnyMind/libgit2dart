@@ -7,26 +7,20 @@ import 'helpers/util.dart';
 void main() {
   late Repository repo;
   late Tree tree;
-  final tmpDir = '${Directory.systemTemp.path}/tree_testrepo/';
+  late Directory tmpDir;
   const treeSHA = 'a8ae3dd59e6e1802c6f78e05e301bfd57c9f334f';
   const fileSHA = '1377554ebea6f98a2c748183bc5a96852af12ac2';
 
   setUp(() async {
-    if (await Directory(tmpDir).exists()) {
-      await Directory(tmpDir).delete(recursive: true);
-    }
-    await copyRepo(
-      from: Directory('test/assets/testrepo/'),
-      to: await Directory(tmpDir).create(),
-    );
-    repo = Repository.open(tmpDir);
+    tmpDir = await setupRepo(Directory('test/assets/testrepo/'));
+    repo = Repository.open(tmpDir.path);
     tree = Tree.lookup(repo, treeSHA);
   });
 
   tearDown(() async {
     tree.free();
     repo.free();
-    await Directory(tmpDir).delete(recursive: true);
+    await tmpDir.delete(recursive: true);
   });
 
   group('Tree', () {

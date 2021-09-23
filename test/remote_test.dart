@@ -5,24 +5,18 @@ import 'helpers/util.dart';
 
 void main() {
   late Repository repo;
-  final tmpDir = '${Directory.systemTemp.path}/remote_testrepo/';
+  late Directory tmpDir;
   const remoteName = 'origin';
   const remoteUrl = 'git://github.com/SkinnyMind/libgit2dart.git';
 
   setUp(() async {
-    if (await Directory(tmpDir).exists()) {
-      await Directory(tmpDir).delete(recursive: true);
-    }
-    await copyRepo(
-      from: Directory('test/assets/testrepo/'),
-      to: await Directory(tmpDir).create(),
-    );
-    repo = Repository.open(tmpDir);
+    tmpDir = await setupRepo(Directory('test/assets/testrepo/'));
+    repo = Repository.open(tmpDir.path);
   });
 
   tearDown(() async {
     repo.free();
-    await Directory(tmpDir).delete(recursive: true);
+    await tmpDir.delete(recursive: true);
   });
 
   group('Remote', () {
@@ -229,18 +223,19 @@ void main() {
     });
 
     test('successfully pushes', () async {
-      final originDir = '${Directory.systemTemp.path}/origin_testrepo/';
+      final originDir =
+          Directory('${Directory.systemTemp.path}/origin_testrepo');
 
-      if (await Directory(originDir).exists()) {
-        await Directory(originDir).delete(recursive: true);
+      if (await originDir.exists()) {
+        await originDir.delete(recursive: true);
       }
       await copyRepo(
         from: Directory('test/assets/empty_bare.git/'),
-        to: await Directory(originDir).create(),
+        to: await originDir.create(),
       );
-      final originRepo = Repository.open(originDir);
+      final originRepo = Repository.open(originDir.path);
 
-      repo.remotes.create(name: 'local', url: originDir);
+      repo.remotes.create(name: 'local', url: originDir.path);
       final remote = repo.remotes['local'];
 
       remote.push(['refs/heads/master']);
@@ -251,7 +246,7 @@ void main() {
 
       remote.free();
       originRepo.free();
-      await Directory(originDir).delete(recursive: true);
+      originDir.delete(recursive: true);
     });
   });
 }

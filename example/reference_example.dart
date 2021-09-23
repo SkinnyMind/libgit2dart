@@ -1,14 +1,12 @@
 import 'dart:io';
-
 import 'package:libgit2dart/libgit2dart.dart';
-import 'helpers.dart';
+import '../test/helpers/util.dart';
 
 void main() async {
   // Preparing example repository.
-  final tmpDir = '${Directory.systemTemp.path}/example_repo/';
-  await prepareRepo(tmpDir);
+  final tmpDir = await setupRepo(Directory('test/assets/testrepo/'));
 
-  final repo = Repository.open(tmpDir);
+  final repo = Repository.open(tmpDir.path);
 
   // Get list of repo's references.
   print('Repository references: ${repo.references.list()}');
@@ -39,5 +37,5 @@ void main() async {
   repo.free();
 
   // Removing example repository.
-  await disposeRepo(tmpDir);
+  await tmpDir.delete(recursive: true);
 }

@@ -5,29 +5,25 @@ import 'package:libgit2dart/libgit2dart.dart';
 import 'helpers/util.dart';
 
 void main() {
-  const lastCommit = '78b8bf123e3952c970ae5c1ce0a3ea1d1336f6e8';
   late Repository repo;
-  final tmpDir = '${Directory.systemTemp.path}/odb_testrepo/';
+  late Directory tmpDir;
+  const lastCommit = '78b8bf123e3952c970ae5c1ce0a3ea1d1336f6e8';
 
   setUp(() async {
-    if (await Directory(tmpDir).exists()) {
-      await Directory(tmpDir).delete(recursive: true);
-    }
-    await copyRepo(
-      from: Directory('test/assets/testrepo/'),
-      to: await Directory(tmpDir).create(),
-    );
-    repo = Repository.open(tmpDir);
+    tmpDir = await setupRepo(Directory('test/assets/testrepo/'));
+    repo = Repository.open(tmpDir.path);
   });
 
   tearDown(() async {
     repo.free();
-    await Directory(tmpDir).delete(recursive: true);
+    await tmpDir.delete(recursive: true);
   });
+
   group('Odb', () {
     test('successfully initializes', () {
-      expect(repo.odb, isA<Odb>());
-      repo.odb.free();
+      final odb = repo.odb;
+      expect(odb, isA<Odb>());
+      odb.free();
     });
 
     test('finds object by short oid', () {

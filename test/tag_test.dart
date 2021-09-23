@@ -7,25 +7,19 @@ import 'helpers/util.dart';
 void main() {
   late Repository repo;
   late Tag tag;
-  final tmpDir = '${Directory.systemTemp.path}/tag_testrepo/';
+  late Directory tmpDir;
   const tagSHA = 'f0fdbf506397e9f58c59b88dfdd72778ec06cc0c';
 
   setUp(() async {
-    if (await Directory(tmpDir).exists()) {
-      await Directory(tmpDir).delete(recursive: true);
-    }
-    await copyRepo(
-      from: Directory('test/assets/testrepo/'),
-      to: await Directory(tmpDir).create(),
-    );
-    repo = Repository.open(tmpDir);
+    tmpDir = await setupRepo(Directory('test/assets/testrepo/'));
+    repo = Repository.open(tmpDir.path);
     tag = Tag.lookup(repo, tagSHA);
   });
 
   tearDown(() async {
     tag.free();
     repo.free();
-    await Directory(tmpDir).delete(recursive: true);
+    await tmpDir.delete(recursive: true);
   });
 
   group('Tag', () {
