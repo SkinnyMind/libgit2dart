@@ -86,6 +86,53 @@ Pointer<git_repository> init(String path, bool isBare) {
   }
 }
 
+/// Clone a remote repository.
+///
+/// Throws a [LibGit2Error] if error occured.
+Pointer<git_repository> clone(
+  String url,
+  String localPath,
+  bool bare,
+  String checkoutBranch,
+) {
+  final out = calloc<Pointer<git_repository>>();
+  final urlC = url.toNativeUtf8().cast<Int8>();
+  final localPathC = localPath.toNativeUtf8().cast<Int8>();
+  final cloneOptions = calloc<git_clone_options>();
+  final cloneOptionsError =
+      libgit2.git_clone_options_init(cloneOptions, GIT_CLONE_OPTIONS_VERSION);
+
+  if (cloneOptionsError < 0) {
+    throw LibGit2Error(libgit2.git_error_last());
+  }
+
+  final fetchOptions = calloc<git_fetch_options>();
+  final fetchOptionsError =
+      libgit2.git_fetch_options_init(fetchOptions, GIT_FETCH_OPTIONS_VERSION);
+
+  if (fetchOptionsError < 0) {
+    throw LibGit2Error(libgit2.git_error_last());
+  }
+
+  cloneOptions.ref.bare = bare ? 1 : 0;
+  cloneOptions.ref.checkout_branch = checkoutBranch.isEmpty
+      ? nullptr
+      : checkoutBranch.toNativeUtf8().cast<Int8>();
+  cloneOptions.ref.fetch_opts = fetchOptions.ref;
+
+  final error = libgit2.git_clone(out, urlC, localPathC, cloneOptions);
+
+  calloc.free(urlC);
+  calloc.free(localPathC);
+  calloc.free(cloneOptions);
+
+  if (error < 0) {
+    throw LibGit2Error(libgit2.git_error_last());
+  } else {
+    return out.value;
+  }
+}
+
 /// Returns the path to the `.git` folder for normal repositories or the
 /// repository itself for bare repositories.
 String path(Pointer<git_repository> repo) {

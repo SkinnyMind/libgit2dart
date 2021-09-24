@@ -46,7 +46,9 @@ class Repository {
     _repoPointer = bindings.init(path, isBare);
   }
 
-  /// Initializes a new instance of the [Repository] class.
+  /// Initializes a new instance of the [Repository] class by opening repository
+  /// at provided [path].
+  ///
   /// For a standard repository, [path] should either point to the `.git` folder
   /// or to the working directory. For a bare repository, [path] should directly
   /// point to the repository folder.
@@ -58,6 +60,24 @@ class Repository {
     libgit2.git_libgit2_init();
 
     _repoPointer = bindings.open(path);
+  }
+
+  /// Initializes a new instance of the [Repository] class by cloning a remote repository
+  /// at provided [url] into [localPath].
+  ///
+  /// [checkoutBranch] is the name of the branch to checkout after the clone. Defaults
+  /// to using the remote's default branch.
+  ///
+  /// Throws a [LibGit2Error] if error occured.
+  Repository.clone({
+    required String url,
+    required String localPath,
+    bool bare = false,
+    String checkoutBranch = '',
+  }) {
+    libgit2.git_libgit2_init();
+
+    _repoPointer = bindings.clone(url, localPath, bare, checkoutBranch);
   }
 
   late final Pointer<git_repository> _repoPointer;
