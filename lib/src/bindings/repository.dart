@@ -71,13 +71,55 @@ String discover(String startPath, String ceilingDirs) {
 /// Creates a new Git repository in the given folder.
 ///
 /// Throws a [LibGit2Error] if error occured.
-Pointer<git_repository> init(String path, bool isBare) {
+Pointer<git_repository> init(
+  String path,
+  int flags,
+  int mode,
+  String workdirPath,
+  String description,
+  String templatePath,
+  String initialHead,
+  String originUrl,
+) {
   final out = calloc<Pointer<git_repository>>();
   final pathC = path.toNativeUtf8().cast<Int8>();
-  final isBareC = isBare ? 1 : 0;
-  final error = libgit2.git_repository_init(out, pathC, isBareC);
+  final workdirPathC =
+      workdirPath.isEmpty ? nullptr : workdirPath.toNativeUtf8().cast<Int8>();
+  final descriptionC =
+      description.isEmpty ? nullptr : description.toNativeUtf8().cast<Int8>();
+  final templatePathC =
+      templatePath.isEmpty ? nullptr : templatePath.toNativeUtf8().cast<Int8>();
+  final initialHeadC =
+      initialHead.isEmpty ? nullptr : initialHead.toNativeUtf8().cast<Int8>();
+  final originUrlC =
+      originUrl.isEmpty ? nullptr : originUrl.toNativeUtf8().cast<Int8>();
+  final opts = calloc<git_repository_init_options>();
+  final optsError = libgit2.git_repository_init_options_init(
+    opts,
+    GIT_REPOSITORY_INIT_OPTIONS_VERSION,
+  );
+
+  if (optsError < 0) {
+    throw LibGit2Error(libgit2.git_error_last());
+  }
+
+  opts.ref.flags = flags;
+  opts.ref.mode = mode;
+  opts.ref.workdir_path = workdirPathC;
+  opts.ref.description = descriptionC;
+  opts.ref.template_path = templatePathC;
+  opts.ref.initial_head = initialHeadC;
+  opts.ref.origin_url = originUrlC;
+
+  final error = libgit2.git_repository_init_ext(out, pathC, opts);
 
   calloc.free(pathC);
+  calloc.free(workdirPathC);
+  calloc.free(descriptionC);
+  calloc.free(templatePathC);
+  calloc.free(initialHeadC);
+  calloc.free(originUrlC);
+  calloc.free(opts);
 
   if (error < 0) {
     throw LibGit2Error(libgit2.git_error_last());
@@ -98,6 +140,9 @@ Pointer<git_repository> clone(
   final out = calloc<Pointer<git_repository>>();
   final urlC = url.toNativeUtf8().cast<Int8>();
   final localPathC = localPath.toNativeUtf8().cast<Int8>();
+  final checkoutBranchC = checkoutBranch.isEmpty
+      ? nullptr
+      : checkoutBranch.toNativeUtf8().cast<Int8>();
   final cloneOptions = calloc<git_clone_options>();
   final cloneOptionsError =
       libgit2.git_clone_options_init(cloneOptions, GIT_CLONE_OPTIONS_VERSION);
@@ -115,16 +160,16 @@ Pointer<git_repository> clone(
   }
 
   cloneOptions.ref.bare = bare ? 1 : 0;
-  cloneOptions.ref.checkout_branch = checkoutBranch.isEmpty
-      ? nullptr
-      : checkoutBranch.toNativeUtf8().cast<Int8>();
+  cloneOptions.ref.checkout_branch = checkoutBranchC;
   cloneOptions.ref.fetch_opts = fetchOptions.ref;
 
   final error = libgit2.git_clone(out, urlC, localPathC, cloneOptions);
 
   calloc.free(urlC);
   calloc.free(localPathC);
+  calloc.free(checkoutBranchC);
   calloc.free(cloneOptions);
+  calloc.free(fetchOptions);
 
   if (error < 0) {
     throw LibGit2Error(libgit2.git_error_last());

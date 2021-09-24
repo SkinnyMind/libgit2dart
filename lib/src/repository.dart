@@ -35,15 +35,40 @@ class Repository {
   Repository(this._repoPointer);
 
   /// Initializes a new instance of the [Repository] class by creating a new
-  /// Git repository in the given folder.
+  /// git repository in the given folder.
   ///
   /// Should be freed with `free()` to release allocated memory.
   ///
   /// Throws a [LibGit2Error] if error occured.
-  Repository.init(String path, {bool isBare = false}) {
+  Repository.init({
+    required String path,
+    bool bare = false,
+    Set<GitRepositoryInit> flags = const {GitRepositoryInit.mkpath},
+    int mode = 0,
+    String workdirPath = '',
+    String description = '',
+    String templatePath = '',
+    String initialHead = '',
+    String originUrl = '',
+  }) {
     libgit2.git_libgit2_init();
 
-    _repoPointer = bindings.init(path, isBare);
+    int flagsInt = flags.fold(0, (previousValue, e) => previousValue | e.value);
+
+    if (bare) {
+      flagsInt |= GitRepositoryInit.bare.value;
+    }
+
+    _repoPointer = bindings.init(
+      path,
+      flagsInt,
+      mode,
+      workdirPath,
+      description,
+      templatePath,
+      initialHead,
+      originUrl,
+    );
   }
 
   /// Initializes a new instance of the [Repository] class by opening repository

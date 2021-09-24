@@ -1215,3 +1215,57 @@ class GitFetchPrune {
   @override
   String toString() => 'GitFetchPrune.$_name';
 }
+
+/// Option flags for [Repository] init.
+class GitRepositoryInit {
+  const GitRepositoryInit._(this._value, this._name);
+  final int _value;
+  final String _name;
+
+  /// Create a bare repository with no working directory.
+  static const bare = GitRepositoryInit._(1, 'bare');
+
+  /// Return an GIT_EEXISTS error if the repo path appears to already be
+  /// an git repository.
+  static const noReinit = GitRepositoryInit._(2, 'noReinit');
+
+  /// Normally a "/.git/" will be appended to the repo path for
+  /// non-bare repos (if it is not already there), but passing this flag
+  /// prevents that behavior.
+  static const noDotGitDir = GitRepositoryInit._(4, 'noDotGitDir');
+
+  /// Make the repo path (and workdir path) as needed. Init is always willing
+  /// to create the ".git" directory even without this flag. This flag tells
+  /// init to create the trailing component of the repo and workdir paths
+  /// as needed.
+  static const mkdir = GitRepositoryInit._(8, 'mkdir');
+
+  /// Recursively make all components of the repo and workdir paths as
+  /// necessary.
+  static const mkpath = GitRepositoryInit._(16, 'mkpath');
+
+  /// libgit2 normally uses internal templates to initialize a new repo.
+  /// This flags enables external templates, looking the [templatePath] from
+  /// the options if set, or the `init.templatedir` global config if not,
+  /// or falling back on "/usr/share/git-core/templates" if it exists.
+  static const externalTemplate = GitRepositoryInit._(32, 'externalTemplate');
+
+  /// If an alternate workdir is specified, use relative paths for the gitdir
+  /// and core.worktree.
+  static const relativeGitlink = GitRepositoryInit._(64, 'relativeGitlink');
+
+  static const List<GitRepositoryInit> values = [
+    bare,
+    noReinit,
+    noDotGitDir,
+    mkdir,
+    mkpath,
+    externalTemplate,
+    relativeGitlink,
+  ];
+
+  int get value => _value;
+
+  @override
+  String toString() => 'GitRepositoryInit.$_name';
+}
