@@ -128,10 +128,13 @@ var _stashList = <Stash>[];
 /// Loop over all the stashed states.
 List<Stash> list(Pointer<git_repository> repo) {
   const except = -1;
-  _stashList.clear();
   git_stash_cb callBack = Pointer.fromFunction(_stashCb, except);
   libgit2.git_stash_foreach(repo, callBack, nullptr);
-  return _stashList;
+
+  final result = _stashList.toList(growable: false);
+  _stashList.clear();
+
+  return result;
 }
 
 int _stashCb(
