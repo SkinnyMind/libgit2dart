@@ -6,16 +6,13 @@ import 'repository.dart';
 import 'oid.dart';
 import 'signature.dart';
 import 'tree.dart';
-import 'util.dart';
 
 class Commit {
   /// Initializes a new instance of [Commit] class from provided pointer to
   /// commit object in memory.
   ///
   /// Should be freed with `free()` to release allocated memory.
-  Commit(this._commitPointer) {
-    libgit2.git_libgit2_init();
-  }
+  Commit(this._commitPointer);
 
   /// Initializes a new instance of [Commit] class from provided [Repository] object
   /// and [sha] hex string.

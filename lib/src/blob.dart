@@ -6,16 +6,13 @@ import 'git_types.dart';
 import 'patch.dart';
 import 'oid.dart';
 import 'repository.dart';
-import 'util.dart';
 
 class Blob {
   /// Initializes a new instance of [Blob] class from provided pointer to
   /// blob object in memory.
   ///
   /// Should be freed with `free()` to release allocated memory.
-  Blob(this._blobPointer) {
-    libgit2.git_libgit2_init();
-  }
+  Blob(this._blobPointer);
 
   /// Initializes a new instance of [Blob] class from provided
   /// [Repository] object and [sha] hex string.

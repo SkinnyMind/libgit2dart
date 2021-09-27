@@ -13,9 +13,7 @@ class Diff {
   /// pointer to diff object in memory.
   ///
   /// Should be freed with `free()` to release allocated memory.
-  Diff(this._diffPointer) {
-    libgit2.git_libgit2_init();
-  }
+  Diff(this._diffPointer);
 
   Diff.parse(String content) {
     libgit2.git_libgit2_init();

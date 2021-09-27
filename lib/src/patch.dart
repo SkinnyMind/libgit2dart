@@ -5,6 +5,7 @@ import 'bindings/patch.dart' as bindings;
 import 'blob.dart';
 import 'diff.dart';
 import 'git_types.dart';
+import 'util.dart';
 
 class Patch {
   /// Initializes a new instance of [Patch] class from provided
@@ -30,6 +31,8 @@ class Patch {
     int contextLines = 3,
     int interhunkLines = 0,
   }) {
+    libgit2.git_libgit2_init();
+
     final int flagsInt =
         flags.fold(0, (previousValue, e) => previousValue | e.value);
     var result = <String, dynamic>{};
@@ -83,6 +86,8 @@ class Patch {
   ///
   /// Throws a [LibGit2Error] if error occured.
   Patch.fromDiff(Diff diff, int index) {
+    libgit2.git_libgit2_init();
+
     _patchPointer = bindings.fromDiff(diff.pointer, index);
   }
 

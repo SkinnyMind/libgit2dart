@@ -12,9 +12,7 @@ class Config with IterableMixin<ConfigEntry> {
   /// pointer to config object in memory.
   ///
   /// Should be freed with `free()` to release allocated memory.
-  Config(this._configPointer) {
-    libgit2.git_libgit2_init();
-  }
+  Config(this._configPointer);
 
   /// Initializes a new instance of [Config] class from provided [path].
   ///
