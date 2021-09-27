@@ -90,6 +90,12 @@ class Repository {
   /// Initializes a new instance of the [Repository] class by cloning a remote repository
   /// at provided [url] into [localPath].
   ///
+  /// [remote] is the callback function with `Remote Function(Repository repo, String name, String url)`
+  /// signature. The [Remote] it returns will be used instead of default one.
+  ///
+  /// [repository] is the callback function matching the `Repository Function(String path, bool bare)`
+  /// signature. The [Repository] it returns will be used instead of creating a new one.
+  ///
   /// [checkoutBranch] is the name of the branch to checkout after the clone. Defaults
   /// to using the remote's default branch.
   ///
@@ -98,11 +104,20 @@ class Repository {
     required String url,
     required String localPath,
     bool bare = false,
+    Remote Function(Repository, String, String)? remote,
+    Repository Function(String, bool)? repository,
     String checkoutBranch = '',
   }) {
     libgit2.git_libgit2_init();
 
-    _repoPointer = bindings.clone(url, localPath, bare, checkoutBranch);
+    _repoPointer = bindings.clone(
+      url,
+      localPath,
+      bare,
+      remote,
+      repository,
+      checkoutBranch,
+    );
   }
 
   late final Pointer<git_repository> _repoPointer;

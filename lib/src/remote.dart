@@ -119,8 +119,10 @@ class Remote {
   /// to remote object in memory.
   const Remote(this._remotePointer);
 
-  /// Pointer to memory address for allocated remote object.
   final Pointer<git_remote> _remotePointer;
+
+  /// Pointer to memory address for allocated remote object.
+  Pointer<git_remote> get pointer => _remotePointer;
 
   /// Returns the remote's name.
   String get name => bindings.name(_remotePointer);
