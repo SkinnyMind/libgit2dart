@@ -13,12 +13,11 @@ import '../util.dart';
 Pointer<git_oid> stash(
   Pointer<git_repository> repo,
   Pointer<git_signature> stasher,
-  String message,
+  String? message,
   int flags,
 ) {
   final out = calloc<git_oid>();
-  final messageC =
-      message.isNotEmpty ? message.toNativeUtf8().cast<Int8>() : nullptr;
+  final messageC = message?.toNativeUtf8().cast<Int8>() ?? nullptr;
   final error = libgit2.git_stash_save(out, repo, stasher, messageC, flags);
 
   if (error < 0) {

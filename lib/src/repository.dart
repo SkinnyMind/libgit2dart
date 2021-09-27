@@ -45,11 +45,11 @@ class Repository {
     bool bare = false,
     Set<GitRepositoryInit> flags = const {GitRepositoryInit.mkpath},
     int mode = 0,
-    String workdirPath = '',
-    String description = '',
-    String templatePath = '',
-    String initialHead = '',
-    String originUrl = '',
+    String? workdirPath,
+    String? description,
+    String? templatePath,
+    String? initialHead,
+    String? originUrl,
   }) {
     libgit2.git_libgit2_init();
 
@@ -106,7 +106,7 @@ class Repository {
     bool bare = false,
     Remote Function(Repository, String, String)? remote,
     Repository Function(String, bool)? repository,
-    String checkoutBranch = '',
+    String? checkoutBranch,
   }) {
     libgit2.git_libgit2_init();
 
@@ -132,7 +132,7 @@ class Repository {
   /// The method will automatically detect if the repository is bare (if there is a repository).
   ///
   /// Throws a [LibGit2Error] if error occured.
-  static String discover(String startPath, [String ceilingDirs = '']) {
+  static String discover(String startPath, [String? ceilingDirs]) {
     return bindings.discover(startPath, ceilingDirs);
   }
 
@@ -412,8 +412,8 @@ class Repository {
     required Signature commiter,
     required String treeSHA,
     required List<String> parents,
-    String updateRef = '',
-    String messageEncoding = '',
+    String? updateRef,
+    String? messageEncoding,
   }) {
     return Commit.create(
       repo: this,
@@ -737,7 +737,7 @@ class Repository {
   /// [paths] is list of files to checkout from provided reference [refName]. If paths are provided
   /// HEAD will not be set to the reference [refName].
   void checkout({
-    String refName = '',
+    String? refName,
     Set<GitCheckout> strategy = const {
       GitCheckout.safe,
       GitCheckout.recreateMissing
@@ -748,7 +748,7 @@ class Repository {
     final int strat =
         strategy.fold(0, (previousValue, e) => previousValue | e.value);
 
-    if (refName.isEmpty) {
+    if (refName == null) {
       checkout_bindings.index(_repoPointer, strat, directory, paths);
     } else if (refName == 'HEAD') {
       checkout_bindings.head(_repoPointer, strat, directory, paths);
@@ -883,7 +883,7 @@ class Repository {
   /// Throws a [LibGit2Error] if error occured.
   Oid stash({
     required Signature stasher,
-    String message = '',
+    String? message,
     bool keepIndex = false,
     bool includeUntracked = false,
     bool includeIgnored = false,

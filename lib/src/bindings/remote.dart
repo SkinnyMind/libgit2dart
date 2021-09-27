@@ -296,7 +296,7 @@ void addPush(Pointer<git_repository> repo, String remote, String refspec) {
 void connect(
   Pointer<git_remote> remote,
   int direction,
-  String proxyOption,
+  String? proxyOption,
 ) {
   final callbacks = calloc<git_remote_callbacks>();
   final callbacksError = libgit2.git_remote_init_callbacks(
@@ -380,9 +380,9 @@ List<Map<String, dynamic>> lsRemotes(Pointer<git_remote> remote) {
 void fetch(
   Pointer<git_remote> remote,
   List<String> refspecs,
-  String reflogMessage,
+  String? reflogMessage,
   int prune,
-  String proxyOption,
+  String? proxyOption,
 ) {
   var refspecsC = calloc<git_strarray>();
   final refspecsPointers =
@@ -411,9 +411,7 @@ void fetch(
   opts.ref.prune = prune;
   opts.ref.proxy_opts = proxyOptions.ref;
 
-  final reflogMessageC = reflogMessage.isEmpty
-      ? nullptr
-      : reflogMessage.toNativeUtf8().cast<Int8>();
+  final reflogMessageC = reflogMessage?.toNativeUtf8().cast<Int8>() ?? nullptr;
 
   final error = libgit2.git_remote_fetch(
     remote,
@@ -428,6 +426,7 @@ void fetch(
   calloc.free(strArray);
   calloc.free(refspecsC);
   calloc.free(proxyOptions);
+  calloc.free(reflogMessageC);
   calloc.free(opts);
 
   if (error < 0) {
@@ -441,7 +440,7 @@ void fetch(
 void push(
   Pointer<git_remote> remote,
   List<String> refspecs,
-  String proxyOption,
+  String? proxyOption,
 ) {
   var refspecsC = calloc<git_strarray>();
   final refspecsPointers =
@@ -527,7 +526,7 @@ void prune(Pointer<git_remote> remote) {
 void free(Pointer<git_remote> remote) => libgit2.git_remote_free(remote);
 
 /// Initializes git_proxy_options structure.
-Pointer<git_proxy_options> _proxyOptionsInit(String proxyOption) {
+Pointer<git_proxy_options> _proxyOptionsInit(String? proxyOption) {
   final proxyOptions = calloc<git_proxy_options>();
   final proxyOptionsError =
       libgit2.git_proxy_options_init(proxyOptions, GIT_PROXY_OPTIONS_VERSION);
@@ -536,7 +535,7 @@ Pointer<git_proxy_options> _proxyOptionsInit(String proxyOption) {
     throw LibGit2Error(libgit2.git_error_last());
   }
 
-  if (proxyOption.isEmpty) {
+  if (proxyOption == null) {
     proxyOptions.ref.type = git_proxy_t.GIT_PROXY_NONE;
   } else if (proxyOption == 'auto') {
     proxyOptions.ref.type = git_proxy_t.GIT_PROXY_AUTO;

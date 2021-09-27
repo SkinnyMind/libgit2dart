@@ -51,12 +51,17 @@ Pointer<git_repository> openBare(String barePath) {
 /// The method will automatically detect if the repository is bare (if there is a repository).
 ///
 /// Throws a [LibGit2Error] if error occured.
-String discover(String startPath, String ceilingDirs) {
+String discover(String startPath, String? ceilingDirs) {
   final out = calloc<git_buf>(sizeOf<git_buf>());
   final startPathC = startPath.toNativeUtf8().cast<Int8>();
-  final ceilingDirsC = ceilingDirs.toNativeUtf8().cast<Int8>();
-  final error =
-      libgit2.git_repository_discover(out, startPathC, 0, ceilingDirsC);
+  final ceilingDirsC = ceilingDirs?.toNativeUtf8().cast<Int8>() ?? nullptr;
+
+  final error = libgit2.git_repository_discover(
+    out,
+    startPathC,
+    0,
+    ceilingDirsC,
+  );
 
   calloc.free(startPathC);
   calloc.free(ceilingDirsC);
@@ -77,24 +82,19 @@ Pointer<git_repository> init(
   String path,
   int flags,
   int mode,
-  String workdirPath,
-  String description,
-  String templatePath,
-  String initialHead,
-  String originUrl,
+  String? workdirPath,
+  String? description,
+  String? templatePath,
+  String? initialHead,
+  String? originUrl,
 ) {
   final out = calloc<Pointer<git_repository>>();
   final pathC = path.toNativeUtf8().cast<Int8>();
-  final workdirPathC =
-      workdirPath.isEmpty ? nullptr : workdirPath.toNativeUtf8().cast<Int8>();
-  final descriptionC =
-      description.isEmpty ? nullptr : description.toNativeUtf8().cast<Int8>();
-  final templatePathC =
-      templatePath.isEmpty ? nullptr : templatePath.toNativeUtf8().cast<Int8>();
-  final initialHeadC =
-      initialHead.isEmpty ? nullptr : initialHead.toNativeUtf8().cast<Int8>();
-  final originUrlC =
-      originUrl.isEmpty ? nullptr : originUrl.toNativeUtf8().cast<Int8>();
+  final workdirPathC = workdirPath?.toNativeUtf8().cast<Int8>() ?? nullptr;
+  final descriptionC = description?.toNativeUtf8().cast<Int8>() ?? nullptr;
+  final templatePathC = templatePath?.toNativeUtf8().cast<Int8>() ?? nullptr;
+  final initialHeadC = initialHead?.toNativeUtf8().cast<Int8>() ?? nullptr;
+  final originUrlC = originUrl?.toNativeUtf8().cast<Int8>() ?? nullptr;
   final opts = calloc<git_repository_init_options>();
   final optsError = libgit2.git_repository_init_options_init(
     opts,
@@ -139,14 +139,13 @@ Pointer<git_repository> clone(
   bool bare,
   Remote Function(Repository, String, String)? remote,
   Repository Function(String, bool)? repository,
-  String checkoutBranch,
+  String? checkoutBranch,
 ) {
   final out = calloc<Pointer<git_repository>>();
   final urlC = url.toNativeUtf8().cast<Int8>();
   final localPathC = localPath.toNativeUtf8().cast<Int8>();
-  final checkoutBranchC = checkoutBranch.isEmpty
-      ? nullptr
-      : checkoutBranch.toNativeUtf8().cast<Int8>();
+  final checkoutBranchC =
+      checkoutBranch?.toNativeUtf8().cast<Int8>() ?? nullptr;
 
   final cloneOptions = calloc<git_clone_options>();
   final cloneOptionsError =

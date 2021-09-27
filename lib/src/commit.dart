@@ -47,8 +47,8 @@ class Commit {
     required Signature commiter,
     required String treeSHA,
     required List<String> parents,
-    String updateRef = '',
-    String messageEncoding = '',
+    String? updateRef,
+    String? messageEncoding,
   }) {
     final tree = Tree.lookup(repo, treeSHA);
 

@@ -43,9 +43,9 @@ class Remotes {
   Remote create({
     required String name,
     required String url,
-    String fetch = '',
+    String? fetch,
   }) {
-    if (fetch.isEmpty) {
+    if (fetch == null) {
       return Remote(bindings.create(_repoPointer, name, url));
     } else {
       return Remote(bindings.createWithFetchSpec(
@@ -154,7 +154,7 @@ class Remote {
   /// specified url. By default connection isn't done through proxy.
   ///
   /// Throws a [LibGit2Error] if error occured.
-  List<Map<String, dynamic>> ls([String proxy = '']) {
+  List<Map<String, dynamic>> ls([String? proxy]) {
     bindings.connect(_remotePointer, GitDirection.fetch.value, proxy);
     final result = bindings.lsRemotes(_remotePointer);
     bindings.disconnect(_remotePointer);
@@ -171,9 +171,9 @@ class Remote {
   /// Throws a [LibGit2Error] if error occured.
   TransferProgress fetch({
     List<String> refspecs = const [],
-    String reflogMessage = '',
+    String? reflogMessage,
     GitFetchPrune prune = GitFetchPrune.unspecified,
-    String proxy = '',
+    String? proxy,
   }) {
     bindings.fetch(_remotePointer, refspecs, reflogMessage, prune.value, proxy);
     return TransferProgress(bindings.stats(_remotePointer));
@@ -182,7 +182,7 @@ class Remote {
   /// Performs a push.
   ///
   /// Throws a [LibGit2Error] if error occured.
-  void push(List<String> refspecs, [String proxy = '']) {
+  void push(List<String> refspecs, [String? proxy]) {
     bindings.push(_remotePointer, refspecs, proxy);
   }
 
