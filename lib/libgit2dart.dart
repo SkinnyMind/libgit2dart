@@ -19,5 +19,6 @@ export 'src/patch.dart';
 export 'src/stash.dart';
 export 'src/remote.dart';
 export 'src/refspec.dart';
+export 'src/callbacks.dart';
 export 'src/error.dart';
 export 'src/git_types.dart';

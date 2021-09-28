@@ -1,9 +1,11 @@
 import 'dart:ffi';
 import 'package:ffi/ffi.dart';
+import '../callbacks.dart';
 import '../error.dart';
 import '../oid.dart';
-import 'libgit2_bindings.dart';
 import '../util.dart';
+import 'libgit2_bindings.dart';
+import 'remote_callbacks.dart';
 
 /// Get a list of the configured remotes for a repo.
 ///
@@ -297,11 +299,17 @@ void connect(
   Pointer<git_remote> remote,
   int direction,
   String? proxyOption,
+  Callbacks callbacks,
 ) {
-  final callbacks = calloc<git_remote_callbacks>();
+  final callbacksOptions = calloc<git_remote_callbacks>();
   final callbacksError = libgit2.git_remote_init_callbacks(
-    callbacks,
+    callbacksOptions,
     GIT_REMOTE_CALLBACKS_VERSION,
+  );
+
+  RemoteCallbacks.plug(
+    callbacksOptions: callbacksOptions.ref,
+    callbacks: callbacks,
   );
 
   if (callbacksError < 0) {
@@ -313,13 +321,14 @@ void connect(
   final error = libgit2.git_remote_connect(
     remote,
     direction,
-    callbacks,
+    callbacksOptions,
     proxyOptions,
     nullptr,
   );
 
-  calloc.free(callbacks);
+  calloc.free(callbacksOptions);
   calloc.free(proxyOptions);
+  RemoteCallbacks.reset();
 
   if (error < 0) {
     throw LibGit2Error(libgit2.git_error_last());
@@ -383,6 +392,7 @@ void fetch(
   String? reflogMessage,
   int prune,
   String? proxyOption,
+  Callbacks callbacks,
 ) {
   var refspecsC = calloc<git_strarray>();
   final refspecsPointers =
@@ -395,6 +405,7 @@ void fetch(
 
   refspecsC.ref.count = refspecs.length;
   refspecsC.ref.strings = strArray;
+  final reflogMessageC = reflogMessage?.toNativeUtf8().cast<Int8>() ?? nullptr;
 
   final proxyOptions = _proxyOptionsInit(proxyOption);
 
@@ -408,10 +419,12 @@ void fetch(
     throw LibGit2Error(libgit2.git_error_last());
   }
 
+  RemoteCallbacks.plug(
+    callbacksOptions: opts.ref.callbacks,
+    callbacks: callbacks,
+  );
   opts.ref.prune = prune;
   opts.ref.proxy_opts = proxyOptions.ref;
-
-  final reflogMessageC = reflogMessage?.toNativeUtf8().cast<Int8>() ?? nullptr;
 
   final error = libgit2.git_remote_fetch(
     remote,
@@ -428,6 +441,7 @@ void fetch(
   calloc.free(proxyOptions);
   calloc.free(reflogMessageC);
   calloc.free(opts);
+  RemoteCallbacks.reset();
 
   if (error < 0) {
     throw LibGit2Error(libgit2.git_error_last());
@@ -441,6 +455,7 @@ void push(
   Pointer<git_remote> remote,
   List<String> refspecs,
   String? proxyOption,
+  Callbacks callbacks,
 ) {
   var refspecsC = calloc<git_strarray>();
   final refspecsPointers =
@@ -464,6 +479,10 @@ void push(
     throw LibGit2Error(libgit2.git_error_last());
   }
 
+  RemoteCallbacks.plug(
+    callbacksOptions: opts.ref.callbacks,
+    callbacks: callbacks,
+  );
   opts.ref.proxy_opts = proxyOptions.ref;
 
   final error = libgit2.git_remote_push(remote, refspecsC, opts);
@@ -475,6 +494,7 @@ void push(
   calloc.free(refspecsC);
   calloc.free(proxyOptions);
   calloc.free(opts);
+  RemoteCallbacks.reset();
 
   if (error < 0) {
     throw LibGit2Error(libgit2.git_error_last());
@@ -499,10 +519,13 @@ void disconnect(Pointer<git_remote> remote) {
 /// Prune tracking refs that are no longer present on remote.
 ///
 /// Throws a [LibGit2Error] if error occured.
-void prune(Pointer<git_remote> remote) {
-  final callbacks = calloc<git_remote_callbacks>();
+void prune(
+  Pointer<git_remote> remote,
+  Callbacks callbacks,
+) {
+  final callbacksOptions = calloc<git_remote_callbacks>();
   final callbacksError = libgit2.git_remote_init_callbacks(
-    callbacks,
+    callbacksOptions,
     GIT_REMOTE_CALLBACKS_VERSION,
   );
 
@@ -510,9 +533,15 @@ void prune(Pointer<git_remote> remote) {
     throw LibGit2Error(libgit2.git_error_last());
   }
 
-  final error = libgit2.git_remote_prune(remote, callbacks);
+  RemoteCallbacks.plug(
+    callbacksOptions: callbacksOptions.ref,
+    callbacks: callbacks,
+  );
 
-  calloc.free(callbacks);
+  final error = libgit2.git_remote_prune(remote, callbacksOptions);
+
+  calloc.free(callbacksOptions);
+  RemoteCallbacks.reset();
 
   if (error < 0) {
     throw LibGit2Error(libgit2.git_error_last());

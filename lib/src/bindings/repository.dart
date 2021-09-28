@@ -1,10 +1,12 @@
 import 'dart:ffi';
 import 'package:ffi/ffi.dart';
+import '../callbacks.dart';
 import '../error.dart';
 import '../remote.dart';
 import '../repository.dart';
 import 'libgit2_bindings.dart';
 import '../util.dart';
+import 'remote_callbacks.dart';
 
 /// Attempt to open an already-existing repository at [path].
 ///
@@ -140,6 +142,7 @@ Pointer<git_repository> clone(
   Remote Function(Repository, String, String)? remote,
   Repository Function(String, bool)? repository,
   String? checkoutBranch,
+  Callbacks callbacks,
 ) {
   final out = calloc<Pointer<git_repository>>();
   final urlC = url.toNativeUtf8().cast<Int8>();
@@ -163,18 +166,23 @@ Pointer<git_repository> clone(
     throw LibGit2Error(libgit2.git_error_last());
   }
 
+  RemoteCallbacks.plug(
+    callbacksOptions: fetchOptions.ref.callbacks,
+    callbacks: callbacks,
+  );
+
   const except = -1;
 
   git_remote_create_cb remoteCb = nullptr;
   if (remote != null) {
-    _remoteFunction = remote;
-    remoteCb = Pointer.fromFunction(_remoteCb, except);
+    RemoteCallbacks.remoteFunction = remote;
+    remoteCb = Pointer.fromFunction(RemoteCallbacks.remoteCb, except);
   }
 
   git_repository_create_cb repositoryCb = nullptr;
   if (repository != null) {
-    _repositoryFunction = repository;
-    repositoryCb = Pointer.fromFunction(_repositoryCb, except);
+    RemoteCallbacks.repositoryFunction = repository;
+    repositoryCb = Pointer.fromFunction(RemoteCallbacks.repositoryCb, except);
   }
 
   cloneOptions.ref.bare = bare ? 1 : 0;
@@ -190,55 +198,13 @@ Pointer<git_repository> clone(
   calloc.free(checkoutBranchC);
   calloc.free(cloneOptions);
   calloc.free(fetchOptions);
-  _remoteFunction = null;
-  _repositoryFunction = null;
+  RemoteCallbacks.reset();
 
   if (error < 0) {
     throw LibGit2Error(libgit2.git_error_last());
   } else {
     return out.value;
   }
-}
-
-/// A function matching the `Remote Function(Repository repo, String name, String url)` signature
-/// to override the remote creation and customization process during a clone operation.
-Remote Function(Repository, String, String)? _remoteFunction;
-
-/// A callback used to create the git remote, prior to its being used to perform
-/// the clone operation.
-int _remoteCb(
-  Pointer<Pointer<git_remote>> remote,
-  Pointer<git_repository> repo,
-  Pointer<Int8> name,
-  Pointer<Int8> url,
-  Pointer<Void> payload,
-) {
-  remote[0] = _remoteFunction!(
-    Repository(repo),
-    name.cast<Utf8>().toDartString(),
-    url.cast<Utf8>().toDartString(),
-  ).pointer;
-
-  return 0;
-}
-
-/// A function matching the `Repository Function(String path, bool bare)` signature to override
-/// the repository creation and customization process during a clone operation.
-Repository Function(String, bool)? _repositoryFunction;
-
-/// A callback used to create the new repository into which to clone.
-int _repositoryCb(
-  Pointer<Pointer<git_repository>> repo,
-  Pointer<Int8> path,
-  int bare,
-  Pointer<Void> payload,
-) {
-  repo[0] = _repositoryFunction!(
-    path.cast<Utf8>().toDartString(),
-    bare == 1 ? true : false,
-  ).pointer;
-
-  return 0;
 }
 
 /// Returns the path to the `.git` folder for normal repositories or the

@@ -154,8 +154,16 @@ class Remote {
   /// specified url. By default connection isn't done through proxy.
   ///
   /// Throws a [LibGit2Error] if error occured.
-  List<Map<String, dynamic>> ls([String? proxy]) {
-    bindings.connect(_remotePointer, GitDirection.fetch.value, proxy);
+  List<Map<String, dynamic>> ls({
+    String? proxy,
+    Callbacks callbacks = const Callbacks(),
+  }) {
+    bindings.connect(
+      _remotePointer,
+      GitDirection.fetch.value,
+      proxy,
+      callbacks,
+    );
     final result = bindings.lsRemotes(_remotePointer);
     bindings.disconnect(_remotePointer);
     return result;
@@ -174,22 +182,40 @@ class Remote {
     String? reflogMessage,
     GitFetchPrune prune = GitFetchPrune.unspecified,
     String? proxy,
+    Callbacks callbacks = const Callbacks(),
   }) {
-    bindings.fetch(_remotePointer, refspecs, reflogMessage, prune.value, proxy);
+    bindings.fetch(
+      _remotePointer,
+      refspecs,
+      reflogMessage,
+      prune.value,
+      proxy,
+      callbacks,
+    );
     return TransferProgress(bindings.stats(_remotePointer));
   }
 
   /// Performs a push.
   ///
   /// Throws a [LibGit2Error] if error occured.
-  void push(List<String> refspecs, [String? proxy]) {
-    bindings.push(_remotePointer, refspecs, proxy);
+  void push({
+    required List<String> refspecs,
+    String? proxy,
+    Callbacks callbacks = const Callbacks(),
+  }) {
+    bindings.push(
+      _remotePointer,
+      refspecs,
+      proxy,
+      callbacks,
+    );
   }
 
   /// Prunes tracking refs that are no longer present on remote.
   ///
   /// Throws a [LibGit2Error] if error occured.
-  void prune() => bindings.prune(_remotePointer);
+  void prune([Callbacks callbacks = const Callbacks()]) =>
+      bindings.prune(_remotePointer, callbacks);
 
   /// Releases memory allocated for remote object.
   void free() => bindings.free(_remotePointer);

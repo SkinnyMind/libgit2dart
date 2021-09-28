@@ -107,6 +107,7 @@ class Repository {
     Remote Function(Repository, String, String)? remote,
     Repository Function(String, bool)? repository,
     String? checkoutBranch,
+    Callbacks callbacks = const Callbacks(),
   }) {
     libgit2.git_libgit2_init();
 
@@ -117,6 +118,7 @@ class Repository {
       remote,
       repository,
       checkoutBranch,
+      callbacks,
     );
   }
 

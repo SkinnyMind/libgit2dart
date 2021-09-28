@@ -202,7 +202,7 @@ void main() {
       remote.free();
     });
 
-    test('successfully fetches data', () async {
+    test('successfully fetches data', () {
       repo.remotes.setUrl(
         'libgit2',
         'https://github.com/libgit2/TestGitRepository',
@@ -222,7 +222,99 @@ void main() {
       remote.free();
     });
 
-    test('successfully pushes', () async {
+    test('successfully fetches data with provided transfer progress callback',
+        () {
+      repo.remotes.setUrl(
+        'libgit2',
+        'https://github.com/libgit2/TestGitRepository',
+      );
+      final remote = repo.remotes['libgit2'];
+
+      TransferProgress? callbackStats;
+      void tp(TransferProgress stats) => callbackStats = stats;
+      final callbacks = Callbacks(transferProgress: tp);
+
+      final stats = remote.fetch(callbacks: callbacks);
+
+      expect(stats.totalObjects == callbackStats?.totalObjects, true);
+      expect(stats.indexedObjects == callbackStats?.indexedObjects, true);
+      expect(stats.receivedObjects == callbackStats?.receivedObjects, true);
+      expect(stats.localObjects == callbackStats?.localObjects, true);
+      expect(stats.totalDeltas == callbackStats?.totalDeltas, true);
+      expect(stats.indexedDeltas == callbackStats?.indexedDeltas, true);
+      expect(stats.receivedBytes == callbackStats?.receivedBytes, true);
+
+      remote.free();
+    });
+
+    test('successfully fetches data with provided sideband progress callback',
+        () {
+      const sidebandMessage = """
+Enumerating objects: 69, done.
+Counting objects: 100% (1/1)\rCounting objects: 100% (1/1), done.
+Total 69 (delta 0), reused 1 (delta 0), pack-reused 68
+""";
+      repo.remotes.setUrl(
+        'libgit2',
+        'https://github.com/libgit2/TestGitRepository',
+      );
+      final remote = repo.remotes['libgit2'];
+
+      var sidebandOutput = StringBuffer();
+      void sideband(String message) {
+        sidebandOutput.write(message);
+      }
+
+      final callbacks = Callbacks(sidebandProgress: sideband);
+
+      remote.fetch(callbacks: callbacks);
+      expect(sidebandOutput.toString(), sidebandMessage);
+
+      remote.free();
+    });
+
+    test('successfully fetches data with provided update tips callback', () {
+      repo.remotes.setUrl(
+        'libgit2',
+        'https://github.com/libgit2/TestGitRepository',
+      );
+      final remote = repo.remotes['libgit2'];
+      const tipsExpected = [
+        {
+          'refname': 'refs/tags/annotated_tag',
+          'oldSha': '0000000000000000000000000000000000000000',
+          'newSha': 'd96c4e80345534eccee5ac7b07fc7603b56124cb',
+        },
+        {
+          'refname': 'refs/tags/blob',
+          'oldSha': '0000000000000000000000000000000000000000',
+          'newSha': '55a1a760df4b86a02094a904dfa511deb5655905'
+        },
+        {
+          'refname': 'refs/tags/commit_tree',
+          'oldSha': '0000000000000000000000000000000000000000',
+          'newSha': '8f50ba15d49353813cc6e20298002c0d17b0a9ee',
+        },
+      ];
+
+      var updateTipsOutput = <Map<String, String>>[];
+      void updateTips(String refname, Oid oldOid, Oid newOid) {
+        updateTipsOutput.add({
+          'refname': refname,
+          'oldSha': oldOid.sha,
+          'newSha': newOid.sha,
+        });
+      }
+
+      final callbacks = Callbacks(updateTips: updateTips);
+
+      remote.fetch(callbacks: callbacks);
+      expect(updateTipsOutput, tipsExpected);
+
+      remote.free();
+    });
+
+    test('successfully pushes with update reference callback', () async {
       final originDir =
           Directory('${Directory.systemTemp.path}/origin_testrepo');
 
@@ -238,11 +330,19 @@ void main() {
       repo.remotes.create(name: 'local', url: originDir.path);
       final remote = repo.remotes['local'];
 
-      remote.push(['refs/heads/master']);
+      var updateRefOutput = <String, String>{};
+      void updateRef(String refname, String message) {
+        updateRefOutput[refname] = message;
+      }
+
+      final callbacks = Callbacks(pushUpdateReference: updateRef);
+
+      remote.push(refspecs: ['refs/heads/master'], callbacks: callbacks);
       expect(
         (originRepo[originRepo.head.target.sha] as Commit).id.sha,
         '821ed6e80627b8769d170a293862f9fc60825226',
       );
+      expect(updateRefOutput, {'refs/heads/master': ''});
 
       remote.free();
       originRepo.free();
