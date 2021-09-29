@@ -1,10 +1,13 @@
 import 'dart:ffi';
 import 'package:ffi/ffi.dart';
+import 'package:libgit2dart/libgit2dart.dart';
+import '../credentials.dart';
 import '../callbacks.dart';
 import '../repository.dart';
-import 'libgit2_bindings.dart';
 import '../oid.dart';
 import '../remote.dart';
+import 'libgit2_bindings.dart';
+import 'credentials.dart' as credentials_bindings;
 
 class RemoteCallbacks {
   /// Callback function that reports transfer progress.
@@ -105,6 +108,56 @@ class RemoteCallbacks {
     return 0;
   }
 
+  /// [Credentials] object used for authentication in order to connect to remote.
+  static Credentials? credentials;
+
+  /// Credential acquisition callback that will be called if the remote host requires
+  /// authentication in order to connect to it.
+  static int credentialsCb(
+    Pointer<Pointer<git_credential>> credPointer,
+    Pointer<Int8> url,
+    Pointer<Int8> username,
+    int allowedTypes,
+    Pointer<Void> payload,
+  ) {
+    final credentialType = credentials!.credentialType;
+    if (allowedTypes & credentialType.value != credentialType.value) {
+      throw ArgumentError('Invalid credential type $credentialType');
+    }
+
+    if (credentials is Username) {
+      final cred = credentials as Username;
+      credPointer[0] = credentials_bindings.username(cred.username);
+    } else if (credentials is UserPass) {
+      final cred = credentials as UserPass;
+      credPointer[0] = credentials_bindings.userPass(
+        cred.username,
+        cred.password,
+      );
+    } else if (credentials is Keypair) {
+      final cred = credentials as Keypair;
+      credPointer[0] = credentials_bindings.sshKey(
+        cred.username,
+        cred.pubKey,
+        cred.privateKey,
+        cred.passPhrase,
+      );
+    } else if (credentials is KeypairFromAgent) {
+      final cred = credentials as KeypairFromAgent;
+      credPointer[0] = credentials_bindings.sshKeyFromAgent(cred.username);
+    } else if (credentials is KeypairFromMemory) {
+      final cred = credentials as KeypairFromMemory;
+      credPointer[0] = credentials_bindings.sshKeyFromMemory(
+        cred.username,
+        cred.pubKey,
+        cred.privateKey,
+        cred.passPhrase,
+      );
+    }
+
+    return 0;
+  }
+
   /// Plugs provided callbacks into libgit2 callbacks.
   static void plug({
     required git_remote_callbacks callbacksOptions,
@@ -143,6 +196,14 @@ class RemoteCallbacks {
         except,
       );
     }
+
+    if (callbacks.credentials != null) {
+      credentials = callbacks.credentials;
+      callbacksOptions.credentials = Pointer.fromFunction(
+        credentialsCb,
+        except,
+      );
+    }
   }
 
   /// Resets callback functions to their original null values.
@@ -153,5 +214,6 @@ class RemoteCallbacks {
     pushUpdateReference = null;
     remoteFunction = null;
     repositoryFunction = null;
+    credentials = null;
   }
 }

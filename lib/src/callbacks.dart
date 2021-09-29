@@ -1,13 +1,18 @@
+import 'credentials.dart';
 import 'oid.dart';
 import 'remote.dart';
 
 class Callbacks {
   const Callbacks({
+    this.credentials,
     this.transferProgress,
     this.sidebandProgress,
     this.updateTips,
     this.pushUpdateReference,
   });
+
+  /// Credentials used for authentication.
+  final Credentials? credentials;
 
   /// Callback function that reports transfer progress.
   final void Function(TransferProgress)? transferProgress;

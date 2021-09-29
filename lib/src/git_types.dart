@@ -1269,3 +1269,90 @@ class GitRepositoryInit {
   @override
   String toString() => 'GitRepositoryInit.$_name';
 }
+
+/// Supported credential types.
+///
+/// This represents the various types of authentication methods supported by
+/// the library.
+class GitCredential {
+  const GitCredential._(this._value, this._name);
+  final int _value;
+  final String _name;
+
+  /// A vanilla user/password request.
+  static const userPassPlainText = GitCredential._(1, 'userPassPlainText');
+
+  /// An SSH key-based authentication request.
+  static const sshKey = GitCredential._(2, 'sshKey');
+
+  /// An SSH key-based authentication request, with a custom signature.
+  static const sshCustom = GitCredential._(4, 'sshCustom');
+
+  /// An NTLM/Negotiate-based authentication request.
+  static const defaultAuth = GitCredential._(8, 'defaultAuth');
+
+  /// An SSH interactive authentication request.
+  static const sshInteractive = GitCredential._(16, 'sshInteractive');
+
+  /// Username-only authentication request.
+  ///
+  /// Used as a pre-authentication step if the underlying transport
+  /// (eg. SSH, with no username in its URL) does not know which username
+  /// to use.
+  static const username = GitCredential._(32, 'username');
+
+  /// An SSH key-based authentication request.
+  ///
+  /// Allows credentials to be read from memory instead of files.
+  /// Note that because of differences in crypto backend support, it might
+  /// not be functional.
+  static const sshMemory = GitCredential._(64, 'sshMemory');
+
+  static const List<GitCredential> values = [
+    userPassPlainText,
+    sshKey,
+    sshCustom,
+    defaultAuth,
+    sshInteractive,
+    username,
+    sshMemory,
+  ];
+
+  int get value => _value;
+
+  @override
+  String toString() => 'GitCredential.$_name';
+}
+
+/// Combinations of these values describe the features with which libgit2
+/// was compiled.
+class GitFeature {
+  const GitFeature._(this._value, this._name);
+  final int _value;
+  final String _name;
+
+  /// If set, libgit2 was built thread-aware and can be safely used from multiple
+  /// threads.
+  static const threads = GitFeature._(1, 'threads');
+
+  /// If set, libgit2 was built with and linked against a TLS implementation.
+  /// Custom TLS streams may still be added by the user to support HTTPS
+  /// regardless of this.
+  static const https = GitFeature._(2, 'https');
+
+  /// If set, libgit2 was built with and linked against libssh2. A custom
+  /// transport may still be added by the user to support libssh2 regardless of
+  /// this.
+  static const ssh = GitFeature._(4, 'ssh');
+
+  /// If set, libgit2 was built with support for sub-second resolution in file
+  /// modification times.
+  static const nsec = GitFeature._(8, 'nsec');
+
+  static const List<GitFeature> values = [threads, https, ssh, nsec];
+
+  int get value => _value;
+
+  @override
+  String toString() => 'GitFeature.$_name';
+}

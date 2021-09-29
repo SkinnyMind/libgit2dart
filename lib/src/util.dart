@@ -5,7 +5,7 @@ import 'bindings/libgit2_bindings.dart';
 DynamicLibrary loadLibrary() {
   if (Platform.isLinux || Platform.isAndroid || Platform.isFuchsia) {
     return DynamicLibrary.open(
-        '${Directory.current.path}/libgit2/libgit2-1.2.0.so');
+        '${Directory.current.path}/libgit2/libgit2.so.1.3.0');
   }
   if (Platform.isMacOS) {
     return DynamicLibrary.open(

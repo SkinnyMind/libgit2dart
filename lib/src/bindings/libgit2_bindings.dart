@@ -2447,6 +2447,22 @@ class Libgit2 {
   /// > Override the default priority of the loose ODB backend which
   /// > is added when default backends are assigned to a repository
   ///
+  /// opts(GIT_OPT_GET_EXTENSIONS, git_strarray *out)
+  /// > Returns the list of git extensions that are supported.  This
+  /// > is the list of built-in extensions supported by libgit2 and
+  /// > custom extensions that have been added with
+  /// > `GIT_OPT_SET_EXTENSIONS`.  Extensions that have been negated
+  /// > will not be returned.  The returned list should be released
+  /// > with `git_strarray_dispose`.
+  ///
+  /// opts(GIT_OPT_SET_EXTENSIONS, const char **extensions, size_t len)
+  /// > Set that the given git extensions are supported by the caller.
+  /// > Extensions supported by libgit2 may be negated by prefixing
+  /// > them with a `!`.  For example: setting extensions to
+  /// > { "!noop", "newext" } indicates that the caller does not want
+  /// > to support repositories with the `noop` extension but does want
+  /// > to support repositories with the `newext` extension.
+  ///
   /// @param option Option key
   /// @param ... value to set the option
   /// @return 0 on success, <0 on failure
@@ -3990,13 +4006,15 @@ class Libgit2 {
   ///
   /// @param out Output value of calculated SHA
   /// @param repo Repository pointer
-  /// @param path Path to file on disk whose contents should be hashed. If the
-  /// repository is not NULL, this can be a relative path.
+  /// @param path Path to file on disk whose contents should be hashed.  This
+  /// may be an absolute path or a relative path, in which case it
+  /// will be treated as a path within the working directory.
   /// @param type The object type to hash as (e.g. GIT_OBJECT_BLOB)
   /// @param as_path The path to use to look up filtering rules. If this is
-  /// NULL, then the `path` parameter will be used instead. If
-  /// this is passed as the empty string, then no filters will be
-  /// applied when calculating the hash.
+  /// an empty string then no filters will be applied when
+  /// calculating the hash. If this is `NULL` and the `path`
+  /// parameter is a file within the repository's working
+  /// directory, then the `path` will be used.
   /// @return 0 on success, or an error code
   int git_repository_hashfile(
     ffi.Pointer<git_oid> out,
@@ -8083,112 +8101,6 @@ class Libgit2 {
   late final _git_diff_stats_free = _git_diff_stats_freePtr
       .asFunction<void Function(ffi.Pointer<git_diff_stats>)>();
 
-  /// Create an e-mail ready patch from a diff.
-  ///
-  /// @param out buffer to store the e-mail patch in
-  /// @param diff containing the commit
-  /// @param opts structure with options to influence content and formatting.
-  /// @return 0 or an error code
-  int git_diff_format_email(
-    ffi.Pointer<git_buf> out,
-    ffi.Pointer<git_diff> diff,
-    ffi.Pointer<git_diff_format_email_options> opts,
-  ) {
-    return _git_diff_format_email(
-      out,
-      diff,
-      opts,
-    );
-  }
-
-  late final _git_diff_format_emailPtr = _lookup<
-          ffi.NativeFunction<
-              ffi.Int32 Function(ffi.Pointer<git_buf>, ffi.Pointer<git_diff>,
-                  ffi.Pointer<git_diff_format_email_options>)>>(
-      'git_diff_format_email');
-  late final _git_diff_format_email = _git_diff_format_emailPtr.asFunction<
-      int Function(ffi.Pointer<git_buf>, ffi.Pointer<git_diff>,
-          ffi.Pointer<git_diff_format_email_options>)>();
-
-  /// Create an e-mail ready patch for a commit.
-  ///
-  /// Does not support creating patches for merge commits (yet).
-  ///
-  /// @param out buffer to store the e-mail patch in
-  /// @param repo containing the commit
-  /// @param commit pointer to up commit
-  /// @param patch_no patch number of the commit
-  /// @param total_patches total number of patches in the patch set
-  /// @param flags determines the formatting of the e-mail
-  /// @param diff_opts structure with options to influence diff or NULL for defaults.
-  /// @return 0 or an error code
-  int git_diff_commit_as_email(
-    ffi.Pointer<git_buf> out,
-    ffi.Pointer<git_repository> repo,
-    ffi.Pointer<git_commit> commit,
-    int patch_no,
-    int total_patches,
-    int flags,
-    ffi.Pointer<git_diff_options> diff_opts,
-  ) {
-    return _git_diff_commit_as_email(
-      out,
-      repo,
-      commit,
-      patch_no,
-      total_patches,
-      flags,
-      diff_opts,
-    );
-  }
-
-  late final _git_diff_commit_as_emailPtr = _lookup<
-      ffi.NativeFunction<
-          ffi.Int32 Function(
-              ffi.Pointer<git_buf>,
-              ffi.Pointer<git_repository>,
-              ffi.Pointer<git_commit>,
-              size_t,
-              size_t,
-              ffi.Uint32,
-              ffi.Pointer<git_diff_options>)>>('git_diff_commit_as_email');
-  late final _git_diff_commit_as_email =
-      _git_diff_commit_as_emailPtr.asFunction<
-          int Function(
-              ffi.Pointer<git_buf>,
-              ffi.Pointer<git_repository>,
-              ffi.Pointer<git_commit>,
-              int,
-              int,
-              int,
-              ffi.Pointer<git_diff_options>)>();
-
-  /// Initialize git_diff_format_email_options structure
-  ///
-  /// Initializes a `git_diff_format_email_options` with default values. Equivalent
-  /// to creating an instance with GIT_DIFF_FORMAT_EMAIL_OPTIONS_INIT.
-  ///
-  /// @param opts The `git_blame_options` struct to initialize.
-  /// @param version The struct version; pass `GIT_DIFF_FORMAT_EMAIL_OPTIONS_VERSION`.
-  /// @return Zero on success; -1 on failure.
-  int git_diff_format_email_options_init(
-    ffi.Pointer<git_diff_format_email_options> opts,
-    int version,
-  ) {
-    return _git_diff_format_email_options_init(
-      opts,
-      version,
-    );
-  }
-
-  late final _git_diff_format_email_options_initPtr = _lookup<
-      ffi.NativeFunction<
-          ffi.Int32 Function(ffi.Pointer<git_diff_format_email_options>,
-              ffi.Uint32)>>('git_diff_format_email_options_init');
-  late final _git_diff_format_email_options_init =
-      _git_diff_format_email_options_initPtr.asFunction<
-          int Function(ffi.Pointer<git_diff_format_email_options>, int)>();
-
   /// Initialize git_diff_patchid_options structure
   ///
   /// Initializes a `git_diff_patchid_options` with default values. Equivalent to
@@ -10006,29 +9918,26 @@ class Libgit2 {
       int Function(ffi.Pointer<git_repository>, ffi.Pointer<git_object>,
           ffi.Pointer<git_checkout_options>)>();
 
-  /// Free the OID array
-  ///
-  /// This method must (and must only) be called on `git_oidarray`
-  /// objects where the array is allocated by the library. Not doing so,
-  /// will result in a memory leak.
+  /// Free the object IDs contained in an oid_array.  This method should
+  /// be called on `git_oidarray` objects that were provided by the
+  /// library.  Not doing so will result in a memory leak.
   ///
   /// This does not free the `git_oidarray` itself, since the library will
-  /// never allocate that object directly itself (it is more commonly embedded
-  /// inside another struct or created on the stack).
+  /// never allocate that object directly itself.
   ///
   /// @param array git_oidarray from which to free oid data
-  void git_oidarray_free(
+  void git_oidarray_dispose(
     ffi.Pointer<git_oidarray> array,
   ) {
-    return _git_oidarray_free(
+    return _git_oidarray_dispose(
       array,
     );
   }
 
-  late final _git_oidarray_freePtr =
+  late final _git_oidarray_disposePtr =
       _lookup<ffi.NativeFunction<ffi.Void Function(ffi.Pointer<git_oidarray>)>>(
-          'git_oidarray_free');
-  late final _git_oidarray_free = _git_oidarray_freePtr
+          'git_oidarray_dispose');
+  late final _git_oidarray_dispose = _git_oidarray_disposePtr
       .asFunction<void Function(ffi.Pointer<git_oidarray>)>();
 
   /// Initializes a `git_indexer_options` with default values. Equivalent to
@@ -19948,6 +19857,102 @@ class Libgit2 {
   late final _git_buf_free =
       _git_buf_freePtr.asFunction<void Function(ffi.Pointer<git_buf>)>();
 
+  /// Create an e-mail ready patch from a diff.
+  ///
+  /// @deprecated git_email_create_from_diff
+  /// @see git_email_create_from_diff
+  int git_diff_format_email(
+    ffi.Pointer<git_buf> out,
+    ffi.Pointer<git_diff> diff,
+    ffi.Pointer<git_diff_format_email_options> opts,
+  ) {
+    return _git_diff_format_email(
+      out,
+      diff,
+      opts,
+    );
+  }
+
+  late final _git_diff_format_emailPtr = _lookup<
+          ffi.NativeFunction<
+              ffi.Int32 Function(ffi.Pointer<git_buf>, ffi.Pointer<git_diff>,
+                  ffi.Pointer<git_diff_format_email_options>)>>(
+      'git_diff_format_email');
+  late final _git_diff_format_email = _git_diff_format_emailPtr.asFunction<
+      int Function(ffi.Pointer<git_buf>, ffi.Pointer<git_diff>,
+          ffi.Pointer<git_diff_format_email_options>)>();
+
+  /// Create an e-mail ready patch for a commit.
+  ///
+  /// @deprecated git_email_create_from_commit
+  /// @see git_email_create_from_commit
+  int git_diff_commit_as_email(
+    ffi.Pointer<git_buf> out,
+    ffi.Pointer<git_repository> repo,
+    ffi.Pointer<git_commit> commit,
+    int patch_no,
+    int total_patches,
+    int flags,
+    ffi.Pointer<git_diff_options> diff_opts,
+  ) {
+    return _git_diff_commit_as_email(
+      out,
+      repo,
+      commit,
+      patch_no,
+      total_patches,
+      flags,
+      diff_opts,
+    );
+  }
+
+  late final _git_diff_commit_as_emailPtr = _lookup<
+      ffi.NativeFunction<
+          ffi.Int32 Function(
+              ffi.Pointer<git_buf>,
+              ffi.Pointer<git_repository>,
+              ffi.Pointer<git_commit>,
+              size_t,
+              size_t,
+              ffi.Uint32,
+              ffi.Pointer<git_diff_options>)>>('git_diff_commit_as_email');
+  late final _git_diff_commit_as_email =
+      _git_diff_commit_as_emailPtr.asFunction<
+          int Function(
+              ffi.Pointer<git_buf>,
+              ffi.Pointer<git_repository>,
+              ffi.Pointer<git_commit>,
+              int,
+              int,
+              int,
+              ffi.Pointer<git_diff_options>)>();
+
+  /// Initialize git_diff_format_email_options structure
+  ///
+  /// Initializes a `git_diff_format_email_options` with default values. Equivalent
+  /// to creating an instance with GIT_DIFF_FORMAT_EMAIL_OPTIONS_INIT.
+  ///
+  /// @param opts The `git_blame_options` struct to initialize.
+  /// @param version The struct version; pass `GIT_DIFF_FORMAT_EMAIL_OPTIONS_VERSION`.
+  /// @return Zero on success; -1 on failure.
+  int git_diff_format_email_options_init(
+    ffi.Pointer<git_diff_format_email_options> opts,
+    int version,
+  ) {
+    return _git_diff_format_email_options_init(
+      opts,
+      version,
+    );
+  }
+
+  late final _git_diff_format_email_options_initPtr = _lookup<
+      ffi.NativeFunction<
+          ffi.Int32 Function(ffi.Pointer<git_diff_format_email_options>,
+              ffi.Uint32)>>('git_diff_format_email_options_init');
+  late final _git_diff_format_email_options_init =
+      _git_diff_format_email_options_initPtr.asFunction<
+          int Function(ffi.Pointer<git_diff_format_email_options>, int)>();
+
   /// Return the last `git_error` object that was generated for the
   /// current thread.  This is an alias of `git_error_last` and is
   /// preserved for backward compatibility.
@@ -20446,6 +20451,28 @@ class Libgit2 {
   late final _git_oid_iszero =
       _git_oid_iszeroPtr.asFunction<int Function(ffi.Pointer<git_oid>)>();
 
+  /// Free the memory referred to by the git_oidarray.  This is an alias of
+  /// `git_oidarray_dispose` and is preserved for backward compatibility.
+  ///
+  /// This function is deprecated, but there is no plan to remove this
+  /// function at this time.
+  ///
+  /// @deprecated Use git_oidarray_dispose
+  /// @see git_oidarray_dispose
+  void git_oidarray_free(
+    ffi.Pointer<git_oidarray> array,
+  ) {
+    return _git_oidarray_free(
+      array,
+    );
+  }
+
+  late final _git_oidarray_freePtr =
+      _lookup<ffi.NativeFunction<ffi.Void Function(ffi.Pointer<git_oidarray>)>>(
+          'git_oidarray_free');
+  late final _git_oidarray_free = _git_oidarray_freePtr
+      .asFunction<void Function(ffi.Pointer<git_oidarray>)>();
+
   /// Free the memory referred to by the git_strarray.  This is an alias of
   /// `git_strarray_dispose` and is preserved for backward compatibility.
   ///
@@ -20924,6 +20951,95 @@ class Libgit2 {
   late final _git_worktree_prune_init_options =
       _git_worktree_prune_init_optionsPtr.asFunction<
           int Function(ffi.Pointer<git_worktree_prune_options>, int)>();
+
+  /// Create a diff for a commit in mbox format for sending via email.
+  ///
+  /// @param out buffer to store the e-mail patch in
+  /// @param diff the changes to include in the email
+  /// @param patch_idx the patch index
+  /// @param patch_count the total number of patches that will be included
+  /// @param commit_id the commit id for this change
+  /// @param summary the commit message for this change
+  /// @param body optional text to include above the diffstat
+  /// @param author the person who authored this commit
+  /// @param opts email creation options
+  int git_email_create_from_diff(
+    ffi.Pointer<git_buf> out,
+    ffi.Pointer<git_diff> diff,
+    int patch_idx,
+    int patch_count,
+    ffi.Pointer<git_oid> commit_id,
+    ffi.Pointer<ffi.Int8> summary,
+    ffi.Pointer<ffi.Int8> body,
+    ffi.Pointer<git_signature> author,
+    ffi.Pointer<git_email_create_options> opts,
+  ) {
+    return _git_email_create_from_diff(
+      out,
+      diff,
+      patch_idx,
+      patch_count,
+      commit_id,
+      summary,
+      body,
+      author,
+      opts,
+    );
+  }
+
+  late final _git_email_create_from_diffPtr = _lookup<
+          ffi.NativeFunction<
+              ffi.Int32 Function(
+                  ffi.Pointer<git_buf>,
+                  ffi.Pointer<git_diff>,
+                  size_t,
+                  size_t,
+                  ffi.Pointer<git_oid>,
+                  ffi.Pointer<ffi.Int8>,
+                  ffi.Pointer<ffi.Int8>,
+                  ffi.Pointer<git_signature>,
+                  ffi.Pointer<git_email_create_options>)>>(
+      'git_email_create_from_diff');
+  late final _git_email_create_from_diff =
+      _git_email_create_from_diffPtr.asFunction<
+          int Function(
+              ffi.Pointer<git_buf>,
+              ffi.Pointer<git_diff>,
+              int,
+              int,
+              ffi.Pointer<git_oid>,
+              ffi.Pointer<ffi.Int8>,
+              ffi.Pointer<ffi.Int8>,
+              ffi.Pointer<git_signature>,
+              ffi.Pointer<git_email_create_options>)>();
+
+  /// Create a diff for a commit in mbox format for sending via email.
+  /// The commit must not be a merge commit.
+  ///
+  /// @param out buffer to store the e-mail patch in
+  /// @param commit commit to create a patch for
+  /// @param opts email creation options
+  int git_email_create_from_commit(
+    ffi.Pointer<git_buf> out,
+    ffi.Pointer<git_commit> commit,
+    ffi.Pointer<git_email_create_options> opts,
+  ) {
+    return _git_email_create_from_commit(
+      out,
+      commit,
+      opts,
+    );
+  }
+
+  late final _git_email_create_from_commitPtr = _lookup<
+          ffi.NativeFunction<
+              ffi.Int32 Function(ffi.Pointer<git_buf>, ffi.Pointer<git_commit>,
+                  ffi.Pointer<git_email_create_options>)>>(
+      'git_email_create_from_commit');
+  late final _git_email_create_from_commit =
+      _git_email_create_from_commitPtr.asFunction<
+          int Function(ffi.Pointer<git_buf>, ffi.Pointer<git_commit>,
+              ffi.Pointer<git_email_create_options>)>();
 
   /// Init the global state
   ///
@@ -26449,6 +26565,8 @@ abstract class git_libgit2_opt_t {
   static const int GIT_OPT_SET_MWINDOW_FILE_LIMIT = 30;
   static const int GIT_OPT_SET_ODB_PACKED_PRIORITY = 31;
   static const int GIT_OPT_SET_ODB_LOOSE_PRIORITY = 32;
+  static const int GIT_OPT_GET_EXTENSIONS = 33;
+  static const int GIT_OPT_SET_EXTENSIONS = 34;
 }
 
 /// A data buffer for exporting data from libgit2
@@ -27607,6 +27725,9 @@ abstract class git_diff_option_t {
   /// diff hunks.
   static const int GIT_DIFF_INDENT_HEURISTIC = 262144;
 
+  /// Ignore blank lines
+  static const int GIT_DIFF_IGNORE_BLANK_LINES = 524288;
+
   /// Treat all files as text, disabling binary attributes & detection
   static const int GIT_DIFF_FORCE_TEXT = 1048576;
 
@@ -27643,9 +27764,6 @@ abstract class git_diff_option_t {
   /// Include the necessary deflate / delta information so that `git-apply`
   /// can apply given diff information to binary files.
   static const int GIT_DIFF_SHOW_BINARY = 1073741824;
-
-  /// Ignore blank lines
-  static const int GIT_DIFF_IGNORE_BLANK_LINES = -2147483648;
 }
 
 class git_diff extends ffi.Opaque {}
@@ -28298,45 +28416,6 @@ abstract class git_diff_stats_format_t {
   static const int GIT_DIFF_STATS_INCLUDE_SUMMARY = 8;
 }
 
-/// Formatting options for diff e-mail generation
-abstract class git_diff_format_email_flags_t {
-  /// Normal patch, the default
-  static const int GIT_DIFF_FORMAT_EMAIL_NONE = 0;
-
-  /// Don't insert "[PATCH]" in the subject header
-  static const int GIT_DIFF_FORMAT_EMAIL_EXCLUDE_SUBJECT_PATCH_MARKER = 1;
-}
-
-/// Options for controlling the formatting of the generated e-mail.
-class git_diff_format_email_options extends ffi.Struct {
-  @ffi.Uint32()
-  external int version;
-
-  /// see `git_diff_format_email_flags_t` above
-  @ffi.Uint32()
-  external int flags;
-
-  /// This patch number
-  @size_t()
-  external int patch_no;
-
-  /// Total number of patches in this series
-  @size_t()
-  external int total_patches;
-
-  /// id to use for the commit
-  external ffi.Pointer<git_oid> id;
-
-  /// Summary of the change
-  external ffi.Pointer<ffi.Int8> summary;
-
-  /// Commit message's body
-  external ffi.Pointer<ffi.Int8> body;
-
-  /// Author of the change
-  external ffi.Pointer<git_signature> author;
-}
-
 /// Patch ID options structure
 ///
 /// Initialize with `GIT_PATCHID_OPTIONS_INIT`. Alternatively, you can
@@ -28446,9 +28525,11 @@ class git_attr_options extends ffi.Struct {
   @ffi.Uint32()
   external int flags;
 
+  external ffi.Pointer<git_oid> commit_id;
+
   /// The commit to load attributes from, when
   /// `GIT_ATTR_CHECK_INCLUDE_COMMIT` is specified.
-  external ffi.Pointer<git_oid> commit_id;
+  external git_oid attr_commit_id;
 }
 
 /// The callback used with git_attr_foreach.
@@ -28500,9 +28581,11 @@ class git_blob_filter_options extends ffi.Struct {
   @ffi.Uint32()
   external int flags;
 
+  external ffi.Pointer<git_oid> commit_id;
+
   /// The commit to load attributes from, when
   /// `GIT_BLOB_FILTER_ATTRIBUTES_FROM_COMMIT` is specified.
-  external ffi.Pointer<git_oid> commit_id;
+  external git_oid attr_commit_id;
 }
 
 /// Flags for indicating option behavior for git_blame APIs.
@@ -30208,9 +30291,11 @@ class git_filter_options extends ffi.Struct {
   @ffi.Uint32()
   external int flags;
 
+  external ffi.Pointer<git_oid> commit_id;
+
   /// The commit to load attributes from, when
   /// `GIT_FILTER_ATTRIBUTES_FROM_COMMIT` is specified.
-  external ffi.Pointer<git_oid> commit_id;
+  external git_oid attr_commit_id;
 }
 
 class git_filter extends ffi.Opaque {}
@@ -30870,6 +30955,92 @@ class git_credential_userpass_payload extends ffi.Struct {
   external ffi.Pointer<ffi.Int8> username;
 
   external ffi.Pointer<ffi.Int8> password;
+}
+
+/// Formatting options for diff e-mail generation
+abstract class git_diff_format_email_flags_t {
+  /// Normal patch, the default
+  static const int GIT_DIFF_FORMAT_EMAIL_NONE = 0;
+
+  /// Don't insert "[PATCH]" in the subject header
+  static const int GIT_DIFF_FORMAT_EMAIL_EXCLUDE_SUBJECT_PATCH_MARKER = 1;
+}
+
+/// Options for controlling the formatting of the generated e-mail.
+class git_diff_format_email_options extends ffi.Struct {
+  @ffi.Uint32()
+  external int version;
+
+  /// see `git_diff_format_email_flags_t` above
+  @ffi.Uint32()
+  external int flags;
+
+  /// This patch number
+  @size_t()
+  external int patch_no;
+
+  /// Total number of patches in this series
+  @size_t()
+  external int total_patches;
+
+  /// id to use for the commit
+  external ffi.Pointer<git_oid> id;
+
+  /// Summary of the change
+  external ffi.Pointer<ffi.Int8> summary;
+
+  /// Commit message's body
+  external ffi.Pointer<ffi.Int8> body;
+
+  /// Author of the change
+  external ffi.Pointer<git_signature> author;
+}
+
+/// Formatting options for diff e-mail generation
+abstract class git_email_create_flags_t {
+  /// Normal patch, the default
+  static const int GIT_EMAIL_CREATE_DEFAULT = 0;
+
+  /// Do not include patch numbers in the subject prefix.
+  static const int GIT_EMAIL_CREATE_OMIT_NUMBERS = 1;
+
+  /// Include numbers in the subject prefix even when the
+  /// patch is for a single commit (1/1).
+  static const int GIT_EMAIL_CREATE_ALWAYS_NUMBER = 2;
+
+  /// Do not perform rename or similarity detection.
+  static const int GIT_EMAIL_CREATE_NO_RENAMES = 4;
+}
+
+/// Options for controlling the formatting of the generated e-mail.
+class git_email_create_options extends ffi.Struct {
+  @ffi.Uint32()
+  external int version;
+
+  /// see `git_email_create_flags_t` above
+  @ffi.Uint32()
+  external int flags;
+
+  /// Options to use when creating diffs
+  external git_diff_options diff_opts;
+
+  /// Options for finding similarities within diffs
+  external git_diff_find_options diff_find_opts;
+
+  /// The subject prefix, by default "PATCH".  If set to an empty
+  /// string ("") then only the patch numbers will be shown in the
+  /// prefix.  If the subject_prefix is empty and patch numbers
+  /// are not being shown, the prefix will be omitted entirely.
+  external ffi.Pointer<ffi.Int8> subject_prefix;
+
+  /// The starting patch number; this cannot be 0.  By default,
+  /// this is 1.
+  @size_t()
+  external int start_number;
+
+  /// The "re-roll" number.  By default, there is no re-roll.
+  @size_t()
+  external int reroll_number;
 }
 
 /// Represents a single git message trailer.
@@ -31791,8 +31962,6 @@ const int GIT_DIFF_HUNK_HEADER_SIZE = 128;
 
 const int GIT_DIFF_FIND_OPTIONS_VERSION = 1;
 
-const int GIT_DIFF_FORMAT_EMAIL_OPTIONS_VERSION = 1;
-
 const int GIT_DIFF_PATCHID_OPTIONS_VERSION = 1;
 
 const int GIT_APPLY_OPTIONS_VERSION = 1;
@@ -31900,6 +32069,8 @@ const int GIT_CVAR_TRUE = 1;
 const int GIT_CVAR_INT32 = 2;
 
 const int GIT_CVAR_STRING = 3;
+
+const int GIT_DIFF_FORMAT_EMAIL_OPTIONS_VERSION = 1;
 
 const int GITERR_NONE = 0;
 
@@ -32071,14 +32242,16 @@ const int GIT_CREDTYPE_USERNAME = 32;
 
 const int GIT_CREDTYPE_SSH_MEMORY = 64;
 
-const String LIBGIT2_VERSION = '1.2.0';
+const int GIT_EMAIL_CREATE_OPTIONS_VERSION = 1;
+
+const String LIBGIT2_VERSION = '1.3.0';
 
 const int LIBGIT2_VER_MAJOR = 1;
 
-const int LIBGIT2_VER_MINOR = 2;
+const int LIBGIT2_VER_MINOR = 3;
 
 const int LIBGIT2_VER_REVISION = 0;
 
 const int LIBGIT2_VER_PATCH = 0;
 
-const String LIBGIT2_SOVERSION = '1.2';
+const String LIBGIT2_SOVERSION = '1.3';
