@@ -274,7 +274,7 @@ class Repository {
   GitRepositoryState get state {
     final stateInt = bindings.state(_repoPointer);
     return GitRepositoryState.values
-        .singleWhere((flag) => stateInt == flag.value);
+        .singleWhere((state) => stateInt == state.value);
   }
 
   /// Removes all the metadata associated with an ongoing command like
@@ -560,9 +560,9 @@ class Repository {
       var statuses = <GitStatus>{};
       // Skipping GitStatus.current because entry that is in the list can't be without changes
       // but `&` on `0` value falsly adds it to the set of flags
-      for (var flag in GitStatus.values.skip(1)) {
-        if (entry.ref.status & flag.value == flag.value) {
-          statuses.add(flag);
+      for (var status in GitStatus.values.skip(1)) {
+        if (entry.ref.status & status.value == status.value) {
+          statuses.add(status);
         }
       }
       result[path] = statuses;
@@ -592,9 +592,9 @@ class Repository {
       statuses.add(GitStatus.current);
     } else {
       // Skipping GitStatus.current because `&` on `0` value falsly adds it to the set of flags
-      for (var flag in GitStatus.values.skip(1)) {
-        if (statusInt & flag.value == flag.value) {
-          statuses.add(flag);
+      for (var status in GitStatus.values.skip(1)) {
+        if (statusInt & status.value == status.value) {
+          statuses.add(status);
         }
       }
     }

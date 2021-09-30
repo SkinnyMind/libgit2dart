@@ -337,9 +337,9 @@ class DiffLine {
   GitDiffLine get origin {
     final originInt = _diffLinePointer.ref.origin;
     late final GitDiffLine result;
-    for (var flag in GitDiffLine.values) {
-      if (originInt == flag.value) {
-        result = flag;
+    for (var type in GitDiffLine.values) {
+      if (originInt == type.value) {
+        result = type;
       }
     }
     return result;

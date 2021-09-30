@@ -7,9 +7,9 @@ class Features {
     var result = <GitFeature>[];
     final featuresInt = libgit2.git_libgit2_features();
 
-    for (var flag in GitFeature.values) {
-      if (featuresInt & flag.value == flag.value) {
-        result.add(flag);
+    for (var feature in GitFeature.values) {
+      if (featuresInt & feature.value == feature.value) {
+        result.add(feature);
       }
     }
 
