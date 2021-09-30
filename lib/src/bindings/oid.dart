@@ -78,6 +78,9 @@ String toSHA(Pointer<git_oid> id) {
 /// Compare two oid structures.
 ///
 /// Returns <0 if a < b, 0 if a == b, >0 if a > b.
-int compare(Pointer<git_oid> a, Pointer<git_oid> b) {
-  return libgit2.git_oid_cmp(a, b);
+int compare({
+  required Pointer<git_oid> aPointer,
+  required Pointer<git_oid> bPointer,
+}) {
+  return libgit2.git_oid_cmp(aPointer, bPointer);
 }

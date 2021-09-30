@@ -40,7 +40,7 @@ class References {
   ///
   /// Throws a [LibGit2Error] if error occured.
   Reference operator [](String name) {
-    return Reference(bindings.lookup(_repoPointer, name));
+    return Reference(bindings.lookup(repoPointer: _repoPointer, name: name));
   }
 
   /// Creates a new reference.
@@ -74,7 +74,7 @@ class References {
       isDirect = true;
     } else if (isValidShaHex(target as String)) {
       final repo = Repository(_repoPointer);
-      oid = Oid.fromSHA(repo, target);
+      oid = Oid.fromSHA(repo: repo, sha: target);
       isDirect = true;
     } else {
       isDirect = false;
@@ -82,19 +82,19 @@ class References {
 
     if (isDirect) {
       return Reference(bindings.createDirect(
-        _repoPointer,
-        name,
-        oid.pointer,
-        force,
-        logMessage,
+        repoPointer: _repoPointer,
+        name: name,
+        oidPointer: oid.pointer,
+        force: force,
+        logMessage: logMessage,
       ));
     } else {
       return Reference(bindings.createSymbolic(
-        _repoPointer,
-        name,
-        target as String,
-        force,
-        logMessage,
+        repoPointer: _repoPointer,
+        name: name,
+        target: target as String,
+        force: force,
+        logMessage: logMessage,
       ));
     }
   }
@@ -148,23 +148,31 @@ class Reference {
   /// The new reference will be written to disk, overwriting the given reference.
   ///
   /// Throws a [LibGit2Error] if error occured.
-  void setTarget(String target, [String? logMessage]) {
+  void setTarget({required String target, String? logMessage}) {
     late final Oid oid;
     final owner = bindings.owner(_refPointer);
 
     if (isValidShaHex(target)) {
       final repo = Repository(owner);
-      oid = Oid.fromSHA(repo, target);
+      oid = Oid.fromSHA(repo: repo, sha: target);
     } else {
-      final ref = Reference(bindings.lookup(owner, target));
+      final ref = Reference(bindings.lookup(repoPointer: owner, name: target));
       oid = ref.target;
       ref.free();
     }
 
     if (type == ReferenceType.direct) {
-      _refPointer = bindings.setTarget(_refPointer, oid.pointer, logMessage);
+      _refPointer = bindings.setTarget(
+        refPointer: _refPointer,
+        oidPointer: oid.pointer,
+        logMessage: logMessage,
+      );
     } else {
-      _refPointer = bindings.setTargetSymbolic(_refPointer, target, logMessage);
+      _refPointer = bindings.setTargetSymbolic(
+        refPointer: _refPointer,
+        target: target,
+        logMessage: logMessage,
+      );
     }
   }
 
@@ -183,7 +191,7 @@ class Reference {
   ///
   /// Throws a [LibGit2Error] if error occured.
   Object peel([GitObject type = GitObject.any]) {
-    final object = bindings.peel(_refPointer, type.value);
+    final object = bindings.peel(refPointer: _refPointer, type: type.value);
     final objectType = object_bindings.type(object);
 
     if (objectType == GitObject.commit.value) {
@@ -219,8 +227,17 @@ class Reference {
   /// the repository. We only rename the reflog if it exists.
   ///
   /// Throws a [LibGit2Error] if error occured.
-  void rename(String newName, {bool force = false, String? logMessage}) {
-    _refPointer = bindings.rename(_refPointer, newName, force, logMessage);
+  void rename({
+    required String newName,
+    bool force = false,
+    String? logMessage,
+  }) {
+    _refPointer = bindings.rename(
+      refPointer: _refPointer,
+      newName: newName,
+      force: force,
+      logMessage: logMessage,
+    );
   }
 
   /// Checks if a reflog exists for the specified reference [name].
@@ -228,7 +245,7 @@ class Reference {
   /// Throws a [LibGit2Error] if error occured.
   bool get hasLog {
     final owner = bindings.owner(_refPointer);
-    return bindings.hasLog(owner, name);
+    return bindings.hasLog(repoPointer: owner, name: name);
   }
 
   /// Returns a [RefLog] object.
@@ -262,7 +279,10 @@ class Reference {
   @override
   bool operator ==(other) {
     return (other is Reference) &&
-        bindings.compare(_refPointer, other._refPointer);
+        bindings.compare(
+          ref1Pointer: _refPointer,
+          ref2Pointer: other._refPointer,
+        );
   }
 
   @override

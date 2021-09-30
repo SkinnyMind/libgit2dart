@@ -61,14 +61,14 @@ class Repository {
     }
 
     _repoPointer = bindings.init(
-      path,
-      flagsInt,
-      mode,
-      workdirPath,
-      description,
-      templatePath,
-      initialHead,
-      originUrl,
+      path: path,
+      flags: flagsInt,
+      mode: mode,
+      workdirPath: workdirPath,
+      description: description,
+      templatePath: templatePath,
+      initialHead: initialHead,
+      originUrl: originUrl,
     );
   }
 
@@ -113,13 +113,13 @@ class Repository {
     libgit2.git_libgit2_init();
 
     _repoPointer = bindings.clone(
-      url,
-      localPath,
-      bare,
-      remote,
-      repository,
-      checkoutBranch,
-      callbacks,
+      url: url,
+      localPath: localPath,
+      bare: bare,
+      remote: remote,
+      repository: repository,
+      checkoutBranch: checkoutBranch,
+      callbacks: callbacks,
     );
   }
 
@@ -135,8 +135,11 @@ class Repository {
   /// The method will automatically detect if the repository is bare (if there is a repository).
   ///
   /// Throws a [LibGit2Error] if error occured.
-  static String discover(String startPath, [String? ceilingDirs]) {
-    return bindings.discover(startPath, ceilingDirs);
+  static String discover({required String startPath, String? ceilingDirs}) {
+    return bindings.discover(
+      startPath: startPath,
+      ceilingDirs: ceilingDirs,
+    );
   }
 
   /// Returns path to the `.git` folder for normal repositories
@@ -167,7 +170,10 @@ class Repository {
   ///
   /// Throws a [LibGit2Error] if error occured.
   void setNamespace(String? namespace) {
-    bindings.setNamespace(_repoPointer, namespace);
+    bindings.setNamespace(
+      repoPointer: _repoPointer,
+      namespace: namespace,
+    );
   }
 
   /// Checks whether this repository is a bare repository or not.
@@ -206,10 +212,13 @@ class Repository {
     late final Oid oid;
 
     if (isValidShaHex(target)) {
-      oid = Oid.fromSHA(this, target);
-      bindings.setHeadDetached(_repoPointer, oid.pointer);
+      oid = Oid.fromSHA(repo: this, sha: target);
+      bindings.setHeadDetached(
+        repoPointer: _repoPointer,
+        commitishPointer: oid.pointer,
+      );
     } else {
-      bindings.setHead(_repoPointer, target);
+      bindings.setHead(repoPointer: _repoPointer, refname: target);
     }
   }
 
@@ -228,7 +237,11 @@ class Repository {
   /// If both are set, this name and email will be used to write to the reflog.
   /// Pass null to unset. When unset, the identity will be taken from the repository's configuration.
   void setIdentity({required String? name, required String? email}) {
-    bindings.setIdentity(_repoPointer, name, email);
+    bindings.setIdentity(
+      repoPointer: _repoPointer,
+      name: name,
+      email: email,
+    );
   }
 
   /// Returns the configured identity to use for reflogs.
@@ -285,8 +298,12 @@ class Repository {
   /// (checkout, status, index manipulation, etc).
   ///
   /// Throws a [LibGit2Error] if error occured.
-  void setWorkdir(String path, [bool updateGitlink = false]) {
-    bindings.setWorkdir(_repoPointer, path, updateGitlink);
+  void setWorkdir({required String path, bool updateGitlink = false}) {
+    bindings.setWorkdir(
+      repoPointer: _repoPointer,
+      path: path,
+      updateGitlink: updateGitlink,
+    );
   }
 
   /// Releases memory allocated for repository object.
@@ -345,11 +362,11 @@ class Repository {
   ///
   /// Throws [ArgumentError] if provided [sha] is not pointing to commit, tree, blob or tag.
   Object operator [](String sha) {
-    final oid = Oid.fromSHA(this, sha);
+    final oid = Oid.fromSHA(repo: this, sha: sha);
     final object = object_bindings.lookup(
-      _repoPointer,
-      oid.pointer,
-      GitObject.any.value,
+      repoPointer: _repoPointer,
+      oidPointer: oid.pointer,
+      type: GitObject.any.value,
     );
     final type = object_bindings.type(object);
 
@@ -378,8 +395,11 @@ class Repository {
   /// Returns the list of commits starting from provided [sha] hex string.
   ///
   /// If [sorting] isn't provided default will be used (reverse chronological order, like in git).
-  List<Commit> log(String sha, [Set<GitSort> sorting = const {GitSort.none}]) {
-    final oid = Oid.fromSHA(this, sha);
+  List<Commit> log({
+    required String sha,
+    Set<GitSort> sorting = const {GitSort.none},
+  }) {
+    final oid = Oid.fromSHA(repo: this, sha: sha);
     final walker = RevWalk(this);
 
     walker.sorting(sorting);
@@ -398,7 +418,9 @@ class Repository {
   /// The returned object should be released when no longer needed.
   ///
   /// Throws a [LibGit2Error] if error occured.
-  Commit revParseSingle(String spec) => RevParse.single(this, spec);
+  Commit revParseSingle(String spec) {
+    return RevParse.single(repo: this, spec: spec);
+  }
 
   /// Creates new commit in the repository.
   ///
@@ -440,7 +462,9 @@ class Repository {
   /// The returned object and reference should be released when no longer needed.
   ///
   /// Throws a [LibGit2Error] if error occured.
-  RevParse revParseExt(String spec) => RevParse.ext(this, spec);
+  RevParse revParseExt(String spec) {
+    return RevParse.ext(repo: this, spec: spec);
+  }
 
   /// Parses a revision string for from, to, and intent.
   ///
@@ -448,24 +472,32 @@ class Repository {
   /// for information on the syntax accepted.
   ///
   /// Throws a [LibGit2Error] if error occured.
-  RevSpec revParse(String spec) => RevParse.range(this, spec);
+  RevSpec revParse(String spec) {
+    return RevParse.range(repo: this, spec: spec);
+  }
 
   /// Creates a new blob from a [content] string and writes it to ODB.
   ///
   /// Throws a [LibGit2Error] if error occured.
-  Oid createBlob(String content) => Blob.create(this, content);
+  Oid createBlob(String content) => Blob.create(repo: this, content: content);
 
   /// Creates a new blob from the file in working directory of a repository and writes
   /// it to the ODB. Provided [path] should be relative to the working directory.
   ///
   /// Throws a [LibGit2Error] if error occured.
-  Oid createBlobFromWorkdir(String relativePath) =>
-      Blob.createFromWorkdir(this, relativePath);
+  Oid createBlobFromWorkdir(String relativePath) {
+    return Blob.createFromWorkdir(
+      repo: this,
+      relativePath: relativePath,
+    );
+  }
 
   /// Creates a new blob from the file in filesystem and writes it to the ODB.
   ///
   /// Throws a [LibGit2Error] if error occured.
-  Oid createBlobFromDisk(String path) => Blob.createFromDisk(this, path);
+  Oid createBlobFromDisk(String path) {
+    return Blob.createFromDisk(repo: this, path: path);
+  }
 
   /// Creates a new tag in the repository from provided Oid object.
   ///
@@ -488,7 +520,7 @@ class Repository {
     bool force = false,
   }) {
     return Tag.create(
-        repository: this,
+        repo: this,
         tagName: tagName,
         target: target,
         targetType: targetType,
@@ -510,7 +542,11 @@ class Repository {
 
     for (var i = 0; i < count; i++) {
       late String path;
-      final entry = status_bindings.getByIndex(list, i);
+      final entry = status_bindings.getByIndex(
+        statuslistPointer: list,
+        index: i,
+      );
+
       if (entry.ref.head_to_index != nullptr) {
         path = entry.ref.head_to_index.ref.old_file.path
             .cast<Utf8>()
@@ -520,6 +556,7 @@ class Repository {
             .cast<Utf8>()
             .toDartString();
       }
+
       var statuses = <GitStatus>{};
       // Skipping GitStatus.current because entry that is in the list can't be without changes
       // but `&` on `0` value falsly adds it to the set of flags
@@ -545,9 +582,12 @@ class Repository {
   ///
   /// Throws a [LibGit2Error] if error occured.
   Set<GitStatus> statusFile(String path) {
-    final statusInt = status_bindings.file(_repoPointer, path);
-    var statuses = <GitStatus>{};
+    final statusInt = status_bindings.file(
+      repoPointer: _repoPointer,
+      path: path,
+    );
 
+    var statuses = <GitStatus>{};
     if (statusInt == GitStatus.current.value) {
       statuses.add(GitStatus.current);
     } else {
@@ -565,13 +605,13 @@ class Repository {
   /// Finds a merge base between two commits.
   ///
   /// Throws a [LibGit2Error] if error occured.
-  Oid mergeBase(String one, String two) {
-    final oidOne = Oid.fromSHA(this, one);
-    final oidTwo = Oid.fromSHA(this, two);
+  Oid mergeBase({required String a, required String b}) {
+    final oidA = Oid.fromSHA(repo: this, sha: a);
+    final oidB = Oid.fromSHA(repo: this, sha: b);
     return Oid(merge_bindings.mergeBase(
-      _repoPointer,
-      oidOne.pointer,
-      oidTwo.pointer,
+      repoPointer: _repoPointer,
+      aPointer: oidA.pointer,
+      bPointer: oidB.pointer,
     ));
   }
 
@@ -582,20 +622,23 @@ class Repository {
   /// respectively.
   ///
   /// Throws a [LibGit2Error] if error occured.
-  List<Set<dynamic>> mergeAnalysis(Oid theirHead, [String ourRef = 'HEAD']) {
+  List<Set<dynamic>> mergeAnalysis({
+    required Oid theirHead,
+    String ourRef = 'HEAD',
+  }) {
     final ref = references[ourRef];
     final head = commit_bindings.annotatedLookup(
-      _repoPointer,
-      theirHead.pointer,
+      repoPointer: _repoPointer,
+      oidPointer: theirHead.pointer,
     );
 
     var result = <Set<dynamic>>[];
     var analysisSet = <GitMergeAnalysis>{};
     final analysisInt = merge_bindings.analysis(
-      _repoPointer,
-      ref.pointer,
-      head,
-      1,
+      repoPointer: _repoPointer,
+      ourRefPointer: ref.pointer,
+      theirHeadPointer: head,
+      theirHeadsLen: 1,
     );
     for (var analysis in GitMergeAnalysis.values) {
       if (analysisInt[0] & analysis.value == analysis.value) {
@@ -621,11 +664,15 @@ class Repository {
   /// Throws a [LibGit2Error] if error occured.
   void merge(Oid oid) {
     final theirHead = commit_bindings.annotatedLookup(
-      _repoPointer,
-      oid.pointer,
+      repoPointer: _repoPointer,
+      oidPointer: oid.pointer,
     );
 
-    merge_bindings.merge(_repoPointer, theirHead, 1);
+    merge_bindings.merge(
+      repoPointer: _repoPointer,
+      theirHeadsPointer: theirHead,
+      theirHeadsLen: 1,
+    );
 
     commit_bindings.annotatedFree(theirHead.value);
   }
@@ -653,10 +700,10 @@ class Repository {
         fileFlags.fold(0, (previousValue, e) => previousValue | e.value);
 
     final result = merge_bindings.mergeCommits(
-      _repoPointer,
-      ourCommit.pointer,
-      theirCommit.pointer,
-      opts,
+      repoPointer: _repoPointer,
+      ourCommitPointer: ourCommit.pointer,
+      theirCommitPointer: theirCommit.pointer,
+      opts: opts,
     );
 
     return Index(result);
@@ -670,13 +717,16 @@ class Repository {
   /// The returned index must be freed explicitly with `free()`.
   ///
   /// Throws a [LibGit2Error] if error occured.
-  Index revertCommit(
-      {required Commit revertCommit, required Commit ourCommit, mainline = 0}) {
+  Index revertCommit({
+    required Commit revertCommit,
+    required Commit ourCommit,
+    mainline = 0,
+  }) {
     return Index(commit_bindings.revertCommit(
-      _repoPointer,
-      revertCommit.pointer,
-      ourCommit.pointer,
-      mainline,
+      repoPointer: _repoPointer,
+      revertCommitPointer: revertCommit.pointer,
+      ourCommitPointer: ourCommit.pointer,
+      mainline: mainline,
     ));
   }
 
@@ -708,11 +758,11 @@ class Repository {
     );
 
     final result = merge_bindings.mergeTrees(
-      _repoPointer,
-      ancestorTree.pointer,
-      ourTree.pointer,
-      theirTree.pointer,
-      opts,
+      repoPointer: _repoPointer,
+      ancestorTreePointer: ancestorTree.pointer,
+      ourTreePointer: ourTree.pointer,
+      theirTreePointer: theirTree.pointer,
+      opts: opts,
     );
 
     return Index(result);
@@ -725,8 +775,12 @@ class Repository {
   /// prepare a commit.
   ///
   /// Throws a [LibGit2Error] if error occured.
-  void cherryPick(Commit commit) =>
-      merge_bindings.cherryPick(_repoPointer, commit.pointer);
+  void cherryPick(Commit commit) {
+    merge_bindings.cherryPick(
+      repoPointer: _repoPointer,
+      commitPointer: commit.pointer,
+    );
+  }
 
   /// Checkouts the provided reference [refName] using the given strategy, and update the HEAD.
   ///
@@ -752,14 +806,33 @@ class Repository {
         strategy.fold(0, (previousValue, e) => previousValue | e.value);
 
     if (refName == null) {
-      checkout_bindings.index(_repoPointer, strat, directory, paths);
+      checkout_bindings.index(
+        repoPointer: _repoPointer,
+        strategy: strat,
+        directory: directory,
+        paths: paths,
+      );
     } else if (refName == 'HEAD') {
-      checkout_bindings.head(_repoPointer, strat, directory, paths);
+      checkout_bindings.head(
+        repoPointer: _repoPointer,
+        strategy: strat,
+        directory: directory,
+        paths: paths,
+      );
     } else {
       final ref = references[refName];
       final treeish = object_bindings.lookup(
-          _repoPointer, ref.target.pointer, GitObject.any.value);
-      checkout_bindings.tree(_repoPointer, treeish, strat, directory, paths);
+        repoPointer: _repoPointer,
+        oidPointer: ref.target.pointer,
+        type: GitObject.any.value,
+      );
+      checkout_bindings.tree(
+        repoPointer: _repoPointer,
+        treeishPointer: treeish,
+        strategy: strat,
+        directory: directory,
+        paths: paths,
+      );
       if (paths == null) {
         setHead(refName);
       }
@@ -773,15 +846,20 @@ class Repository {
   /// and working tree to match.
   ///
   /// Throws a [LibGit2Error] if error occured.
-  void reset(String target, GitReset resetType) {
-    final oid = Oid.fromSHA(this, target);
+  void reset({required String target, required GitReset resetType}) {
+    final oid = Oid.fromSHA(repo: this, sha: target);
     final object = object_bindings.lookup(
-      _repoPointer,
-      oid.pointer,
-      GitObject.any.value,
+      repoPointer: _repoPointer,
+      oidPointer: oid.pointer,
+      type: GitObject.any.value,
     );
 
-    reset_bindings.reset(_repoPointer, object, resetType.value, nullptr);
+    reset_bindings.reset(
+      repoPointer: _repoPointer,
+      targetPointer: object,
+      resetType: resetType.value,
+      checkoutOptsPointer: nullptr,
+    );
 
     object_bindings.free(object);
   }
@@ -806,39 +884,39 @@ class Repository {
 
     if (a is Tree && b is Tree) {
       return Diff(diff_bindings.treeToTree(
-        _repoPointer,
-        a.pointer,
-        b.pointer,
-        flagsInt,
-        contextLines,
-        interhunkLines,
+        repoPointer: _repoPointer,
+        oldTreePointer: a.pointer,
+        newTreePointer: b.pointer,
+        flags: flagsInt,
+        contextLines: contextLines,
+        interhunkLines: interhunkLines,
       ));
     } else if (a is Tree && b == null) {
       if (cached) {
         return Diff(diff_bindings.treeToIndex(
-          _repoPointer,
-          a.pointer,
-          index.pointer,
-          flagsInt,
-          contextLines,
-          interhunkLines,
+          repoPointer: _repoPointer,
+          treePointer: a.pointer,
+          indexPointer: index.pointer,
+          flags: flagsInt,
+          contextLines: contextLines,
+          interhunkLines: interhunkLines,
         ));
       } else {
         return Diff(diff_bindings.treeToWorkdir(
-          _repoPointer,
-          a.pointer,
-          flagsInt,
-          contextLines,
-          interhunkLines,
+          repoPointer: _repoPointer,
+          treePointer: a.pointer,
+          flags: flagsInt,
+          contextLines: contextLines,
+          interhunkLines: interhunkLines,
         ));
       }
     } else if (a == null && b == null) {
       return Diff(diff_bindings.indexToWorkdir(
-        _repoPointer,
-        index.pointer,
-        flagsInt,
-        contextLines,
-        interhunkLines,
+        repoPointer: _repoPointer,
+        indexPointer: index.pointer,
+        flags: flagsInt,
+        contextLines: contextLines,
+        interhunkLines: interhunkLines,
       ));
     } else {
       throw ArgumentError.notNull('a');
@@ -865,19 +943,19 @@ class Repository {
   /// Throws a [LibGit2Error] if error occured.
   void apply(Diff diff) {
     diff_bindings.apply(
-      _repoPointer,
-      diff.pointer,
-      GitApplyLocation.workdir.value,
+      repoPointer: _repoPointer,
+      diffPointer: diff.pointer,
+      location: GitApplyLocation.workdir.value,
     );
   }
 
   /// Checks if the [diff] will apply to HEAD.
   bool applies(Diff diff) {
     return diff_bindings.apply(
-      _repoPointer,
-      diff.pointer,
-      GitApplyLocation.index.value,
-      true,
+      repoPointer: _repoPointer,
+      diffPointer: diff.pointer,
+      location: GitApplyLocation.index.value,
+      check: true,
     );
   }
 
@@ -897,10 +975,10 @@ class Repository {
     if (includeIgnored) flags |= GitStash.includeIgnored.value;
 
     return Oid(stash_bindings.stash(
-      _repoPointer,
-      stasher.pointer,
-      message,
-      flags,
+      repoPointer: _repoPointer,
+      stasherPointer: stasher.pointer,
+      message: message,
+      flags: flags,
     ));
   }
 
@@ -921,13 +999,25 @@ class Repository {
     final int strat =
         strategy.fold(0, (previousValue, e) => previousValue | e.value);
 
-    stash_bindings.apply(_repoPointer, index, flags, strat, directory, paths);
+    stash_bindings.apply(
+      repoPointer: _repoPointer,
+      index: index,
+      flags: flags,
+      strategy: strat,
+      directory: directory,
+      paths: paths,
+    );
   }
 
   /// Removes a single stashed state from the stash list.
   ///
   /// Throws a [LibGit2Error] if error occured.
-  void stashDrop([int index = 0]) => stash_bindings.drop(_repoPointer, index);
+  void stashDrop([int index = 0]) {
+    stash_bindings.drop(
+      repoPointer: _repoPointer,
+      index: index,
+    );
+  }
 
   /// Applies a single stashed state from the stash list and remove it from the list if successful.
   ///
@@ -946,7 +1036,14 @@ class Repository {
     final int strat =
         strategy.fold(0, (previousValue, e) => previousValue | e.value);
 
-    stash_bindings.pop(_repoPointer, index, flags, strat, directory, paths);
+    stash_bindings.pop(
+      repoPointer: _repoPointer,
+      index: index,
+      flags: flags,
+      strategy: strat,
+      directory: directory,
+      paths: paths,
+    );
   }
 
   /// Returns list of all the stashed states, first being the most recent.

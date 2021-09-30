@@ -10,15 +10,15 @@ import '../util.dart';
 /// you must call `free()` on the patch when done.
 ///
 /// Throws a [LibGit2Error] if error occured.
-Map<String, dynamic> fromBuffers(
+Map<String, dynamic> fromBuffers({
   String? oldBuffer,
   String? oldAsPath,
   String? newBuffer,
   String? newAsPath,
-  int flags,
-  int contextLines,
-  int interhunkLines,
-) {
+  required int flags,
+  required int contextLines,
+  required int interhunkLines,
+}) {
   final out = calloc<Pointer<git_patch>>();
   final oldBufferC = oldBuffer?.toNativeUtf8().cast<Int8>() ?? nullptr;
   final oldAsPathC = oldAsPath?.toNativeUtf8().cast<Int8>() ?? nullptr;
@@ -26,7 +26,11 @@ Map<String, dynamic> fromBuffers(
   final newBufferC = newBuffer?.toNativeUtf8().cast<Int8>() ?? nullptr;
   final newAsPathC = oldAsPath?.toNativeUtf8().cast<Int8>() ?? nullptr;
   final newLen = newBuffer?.length ?? 0;
-  final opts = _diffOptionsInit(flags, contextLines, interhunkLines);
+  final opts = _diffOptionsInit(
+    flags: flags,
+    contextLines: contextLines,
+    interhunkLines: interhunkLines,
+  );
 
   final error = libgit2.git_patch_from_buffers(
     out,
@@ -66,25 +70,29 @@ Map<String, dynamic> fromBuffers(
 /// must call `free()` on the patch when done.
 ///
 /// Throws a [LibGit2Error] if error occured.
-Map<String, dynamic> fromBlobs(
-  Pointer<git_blob>? oldBlob,
+Map<String, dynamic> fromBlobs({
+  Pointer<git_blob>? oldBlobPointer,
   String? oldAsPath,
-  Pointer<git_blob>? newBlob,
+  Pointer<git_blob>? newBlobPointer,
   String? newAsPath,
-  int flags,
-  int contextLines,
-  int interhunkLines,
-) {
+  required int flags,
+  required int contextLines,
+  required int interhunkLines,
+}) {
   final out = calloc<Pointer<git_patch>>();
   final oldAsPathC = oldAsPath?.toNativeUtf8().cast<Int8>() ?? nullptr;
   final newAsPathC = oldAsPath?.toNativeUtf8().cast<Int8>() ?? nullptr;
-  final opts = _diffOptionsInit(flags, contextLines, interhunkLines);
+  final opts = _diffOptionsInit(
+    flags: flags,
+    contextLines: contextLines,
+    interhunkLines: interhunkLines,
+  );
 
   final error = libgit2.git_patch_from_blobs(
     out,
-    oldBlob ?? nullptr,
+    oldBlobPointer ?? nullptr,
     oldAsPathC,
-    newBlob ?? nullptr,
+    newBlobPointer ?? nullptr,
     newAsPathC,
     opts,
   );
@@ -99,11 +107,11 @@ Map<String, dynamic> fromBlobs(
     throw LibGit2Error(libgit2.git_error_last());
   } else {
     // Returning map with pointers to patch and blobs because patch object does not
-    // have refenrece to underlying blobs. So if the blob is freed/removed the patch
+    // have reference to underlying blobs. So if the blob is freed/removed the patch
     // text becomes corrupted.
     result['patch'] = out.value;
-    result['a'] = oldBlob;
-    result['b'] = newBlob;
+    result['a'] = oldBlobPointer;
+    result['b'] = newBlobPointer;
     return result;
   }
 }
@@ -114,25 +122,29 @@ Map<String, dynamic> fromBlobs(
 /// call `free()` on the patch when done.
 ///
 /// Throws a [LibGit2Error] if error occured.
-Map<String, dynamic> fromBlobAndBuffer(
-  Pointer<git_blob>? oldBlob,
+Map<String, dynamic> fromBlobAndBuffer({
+  Pointer<git_blob>? oldBlobPointer,
   String? oldAsPath,
   String? buffer,
   String? bufferAsPath,
-  int flags,
-  int contextLines,
-  int interhunkLines,
-) {
+  required int flags,
+  required int contextLines,
+  required int interhunkLines,
+}) {
   final out = calloc<Pointer<git_patch>>();
   final oldAsPathC = oldAsPath?.toNativeUtf8().cast<Int8>() ?? nullptr;
   final bufferC = buffer?.toNativeUtf8().cast<Int8>() ?? nullptr;
   final bufferAsPathC = oldAsPath?.toNativeUtf8().cast<Int8>() ?? nullptr;
   final bufferLen = buffer?.length ?? 0;
-  final opts = _diffOptionsInit(flags, contextLines, interhunkLines);
+  final opts = _diffOptionsInit(
+    flags: flags,
+    contextLines: contextLines,
+    interhunkLines: interhunkLines,
+  );
 
   final error = libgit2.git_patch_from_blob_and_buffer(
     out,
-    oldBlob ?? nullptr,
+    oldBlobPointer ?? nullptr,
     oldAsPathC,
     bufferC.cast(),
     bufferLen,
@@ -151,10 +163,10 @@ Map<String, dynamic> fromBlobAndBuffer(
     throw LibGit2Error(libgit2.git_error_last());
   } else {
     // Returning map with pointers to patch and buffers because patch object does not
-    // have refenrece to underlying buffers or blobs. So if the buffer or blob is freed/removed
+    // have reference to underlying buffers or blobs. So if the buffer or blob is freed/removed
     // the patch text becomes corrupted.
     result['patch'] = out.value;
-    result['a'] = oldBlob;
+    result['a'] = oldBlobPointer;
     result['b'] = bufferC;
     return result;
   }
@@ -167,9 +179,12 @@ Map<String, dynamic> fromBlobAndBuffer(
 /// hunks and lines in the diff of the one delta.
 ///
 /// Throws a [LibGit2Error] if error occured.
-Pointer<git_patch> fromDiff(Pointer<git_diff> diff, int idx) {
+Pointer<git_patch> fromDiff({
+  required Pointer<git_diff> diffPointer,
+  required int index,
+}) {
   final out = calloc<Pointer<git_patch>>();
-  final error = libgit2.git_patch_from_diff(out, diff, idx);
+  final error = libgit2.git_patch_from_diff(out, diffPointer, index);
 
   if (error < 0) {
     throw LibGit2Error(libgit2.git_error_last());
@@ -190,11 +205,18 @@ int numHunks(Pointer<git_patch> patch) => libgit2.git_patch_num_hunks(patch);
 /// Given a patch and a hunk index into the patch, this returns detailed information about that hunk.
 ///
 /// Throws a [LibGit2Error] if error occured.
-Map<String, dynamic> hunk(Pointer<git_patch> patch, int hunkIdx) {
+Map<String, dynamic> hunk({
+  required Pointer<git_patch> patchPointer,
+  required int hunkIndex,
+}) {
   final out = calloc<Pointer<git_diff_hunk>>();
-  final linesInHunk = calloc<Int32>();
-  final error =
-      libgit2.git_patch_get_hunk(out, linesInHunk.cast(), patch, hunkIdx);
+  final linesInHunk = calloc<Int64>();
+  final error = libgit2.git_patch_get_hunk(
+    out,
+    linesInHunk.cast(),
+    patchPointer,
+    hunkIndex,
+  );
   final result = <String, dynamic>{};
 
   if (error < 0) {
@@ -209,14 +231,18 @@ Map<String, dynamic> hunk(Pointer<git_patch> patch, int hunkIdx) {
 /// Get data about a line in a hunk of a patch.
 ///
 /// Throws a [LibGit2Error] if error occured.
-Pointer<git_diff_line> lines(
-  Pointer<git_patch> patch,
-  int hunkIdx,
-  int lineOfHunk,
-) {
+Pointer<git_diff_line> lines({
+  required Pointer<git_patch> patchPointer,
+  required int hunkIndex,
+  required int lineOfHunk,
+}) {
   final out = calloc<Pointer<git_diff_line>>();
-  final error =
-      libgit2.git_patch_get_line_in_hunk(out, patch, hunkIdx, lineOfHunk);
+  final error = libgit2.git_patch_get_line_in_hunk(
+    out,
+    patchPointer,
+    hunkIndex,
+    lineOfHunk,
+  );
 
   if (error < 0) {
     throw LibGit2Error(libgit2.git_error_last());
@@ -249,18 +275,18 @@ String text(Pointer<git_patch> patch) {
 /// If you pass `includeContext` as true, this will be the size of all of the diff output;
 /// if you pass it as false, this will only include the actual changed lines (as if
 /// contextLines was 0).
-int size(
-  Pointer<git_patch> patch,
-  bool includeContext,
-  bool includeHunkHeaders,
-  bool includeFileHeaders,
-) {
+int size({
+  required Pointer<git_patch> patchPointer,
+  required bool includeContext,
+  required bool includeHunkHeaders,
+  required bool includeFileHeaders,
+}) {
   final includeContextC = includeContext ? 1 : 0;
   final includeHunkHeadersC = includeHunkHeaders ? 1 : 0;
   final includeFileHeadersC = includeFileHeaders ? 1 : 0;
 
   return libgit2.git_patch_size(
-    patch,
+    patchPointer,
     includeContextC,
     includeHunkHeadersC,
     includeFileHeadersC,
@@ -270,11 +296,11 @@ int size(
 /// Free a previously allocated patch object.
 void free(Pointer<git_patch> patch) => libgit2.git_patch_free(patch);
 
-Pointer<git_diff_options> _diffOptionsInit(
-  int flags,
-  int contextLines,
-  int interhunkLines,
-) {
+Pointer<git_diff_options> _diffOptionsInit({
+  required int flags,
+  required int contextLines,
+  required int interhunkLines,
+}) {
   final opts = calloc<git_diff_options>();
   final optsError =
       libgit2.git_diff_options_init(opts, GIT_DIFF_OPTIONS_VERSION);

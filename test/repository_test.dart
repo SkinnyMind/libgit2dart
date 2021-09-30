@@ -40,7 +40,7 @@ void main() {
         '6cbc22e509d72758ab4c8d9f287ea846b90c448b',
         'f17d0d48eae3aa08cecf29128a35e310c97b3521',
       ];
-      final commits = repo.log(lastCommit);
+      final commits = repo.log(sha: lastCommit);
 
       for (var i = 0; i < commits.length; i++) {
         expect(commits[i].id.sha, log[i]);
@@ -55,11 +55,11 @@ void main() {
       test('discovers repository', () async {
         final subDir = '${tmpDir.path}/subdir1/subdir2/';
         await Directory(subDir).create(recursive: true);
-        expect(Repository.discover(subDir), repo.path);
+        expect(Repository.discover(startPath: subDir), repo.path);
       });
 
       test('returns empty string when repository not found', () {
-        expect(Repository.discover(Directory.systemTemp.path), '');
+        expect(Repository.discover(startPath: Directory.systemTemp.path), '');
       });
     });
 
@@ -79,7 +79,7 @@ void main() {
       final tmpWorkDir = Directory('${Directory.systemTemp.path}/tmp_work_dir');
       tmpWorkDir.createSync();
 
-      repo.setWorkdir(tmpWorkDir.path);
+      repo.setWorkdir(path: tmpWorkDir.path);
       expect(repo.workdir, '${tmpWorkDir.path}/');
 
       tmpWorkDir.deleteSync();
@@ -166,7 +166,7 @@ void main() {
       const message = 'init tag\n';
 
       final oid = Tag.create(
-        repository: repo,
+        repo: repo,
         tagName: tagName,
         target: target,
         targetType: GitObject.commit,

@@ -9,12 +9,15 @@ import '../util.dart';
 /// Return a list of branches.
 ///
 /// Throws a [LibGit2Error] if error occured.
-List<String> list(Pointer<git_repository> repo, int listFlags) {
+List<String> list({
+  required Pointer<git_repository> repoPointer,
+  required int flags,
+}) {
   final iterator = calloc<Pointer<git_branch_iterator>>();
   final iteratorError = libgit2.git_branch_iterator_new(
     iterator,
-    repo,
-    listFlags,
+    repoPointer,
+    flags,
   );
 
   if (iteratorError < 0) {
@@ -47,14 +50,19 @@ List<String> list(Pointer<git_repository> repo, int listFlags) {
 /// The generated reference must be freed by the user. The branch name will be checked for validity.
 ///
 /// Throws a [LibGit2Error] if error occured.
-Pointer<git_reference> lookup(
-  Pointer<git_repository> repo,
-  String branchName,
-  int branchType,
-) {
+Pointer<git_reference> lookup({
+  required Pointer<git_repository> repoPointer,
+  required String branchName,
+  required int branchType,
+}) {
   final out = calloc<Pointer<git_reference>>();
   final branchNameC = branchName.toNativeUtf8().cast<Int8>();
-  final error = libgit2.git_branch_lookup(out, repo, branchNameC, branchType);
+  final error = libgit2.git_branch_lookup(
+    out,
+    repoPointer,
+    branchNameC,
+    branchType,
+  );
 
   calloc.free(branchNameC);
 
@@ -75,20 +83,20 @@ Pointer<git_reference> lookup(
 /// The branch name will be checked for validity.
 ///
 /// Throws a [LibGit2Error] if error occured.
-Pointer<git_reference> create(
-  Pointer<git_repository> repo,
-  String branchName,
-  Pointer<git_commit> target,
-  bool force,
-) {
+Pointer<git_reference> create({
+  required Pointer<git_repository> repoPointer,
+  required String branchName,
+  required Pointer<git_commit> targetPointer,
+  required bool force,
+}) {
   final out = calloc<Pointer<git_reference>>();
   final branchNameC = branchName.toNativeUtf8().cast<Int8>();
   final forceC = force ? 1 : 0;
   final error = libgit2.git_branch_create(
     out,
-    repo,
+    repoPointer,
     branchNameC,
-    target,
+    targetPointer,
     forceC,
   );
 
@@ -125,22 +133,23 @@ void delete(Pointer<git_reference> branch) {
 /// and will be freed immediately.
 ///
 /// Throws a [LibGit2Error] if error occured.
-Pointer<git_reference> rename(
-  Pointer<git_reference> branch,
-  String newBranchName,
-  bool force,
-) {
+Pointer<git_reference> rename({
+  required Pointer<git_reference> branchPointer,
+  required String newBranchName,
+  required bool force,
+}) {
   final out = calloc<Pointer<git_reference>>();
   final newBranchNameC = newBranchName.toNativeUtf8().cast<Int8>();
   final forceC = force ? 1 : 0;
-  final error = libgit2.git_branch_move(out, branch, newBranchNameC, forceC);
+  final error =
+      libgit2.git_branch_move(out, branchPointer, newBranchNameC, forceC);
 
   calloc.free(newBranchNameC);
 
   if (error < 0) {
     throw LibGit2Error(libgit2.git_error_last());
   } else {
-    reference_bindings.free(branch);
+    reference_bindings.free(branchPointer);
     return out.value;
   }
 }

@@ -7,9 +7,12 @@ import '../util.dart';
 /// Lookup a tag object from the repository.
 ///
 /// Throws a [LibGit2Error] if error occured.
-Pointer<git_tag> lookup(Pointer<git_repository> repo, Pointer<git_oid> id) {
+Pointer<git_tag> lookup({
+  required Pointer<git_repository> repoPointer,
+  required Pointer<git_oid> oidPointer,
+}) {
   final out = calloc<Pointer<git_tag>>();
-  final error = libgit2.git_tag_lookup(out, repo, id);
+  final error = libgit2.git_tag_lookup(out, repoPointer, oidPointer);
 
   if (error < 0) {
     throw LibGit2Error(libgit2.git_error_last());
@@ -64,24 +67,24 @@ Pointer<git_signature> tagger(Pointer<git_tag> tag) =>
 /// special meaning to revparse.
 ///
 /// Throws a [LibGit2Error] if error occured.
-Pointer<git_oid> create(
-  Pointer<git_repository> repo,
-  String tagName,
-  Pointer<git_object> target,
-  Pointer<git_signature> tagger,
-  String message,
-  bool force,
-) {
+Pointer<git_oid> create({
+  required Pointer<git_repository> repoPointer,
+  required String tagName,
+  required Pointer<git_object> targetPointer,
+  required Pointer<git_signature> taggerPointer,
+  required String message,
+  required bool force,
+}) {
   final out = calloc<git_oid>();
   final tagNameC = tagName.toNativeUtf8().cast<Int8>();
   final messageC = message.toNativeUtf8().cast<Int8>();
   final forceC = force ? 1 : 0;
   final error = libgit2.git_tag_create(
     out,
-    repo,
+    repoPointer,
     tagNameC,
-    target,
-    tagger,
+    targetPointer,
+    taggerPointer,
     messageC,
     forceC,
   );

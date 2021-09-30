@@ -12,10 +12,13 @@ import '../util.dart';
 /// The reflog must be freed manually.
 ///
 /// Throws a [LibGit2Error] if error occured.
-Pointer<git_reflog> read(Pointer<git_repository> repo, String name) {
+Pointer<git_reflog> read({
+  required Pointer<git_repository> repoPointer,
+  required String name,
+}) {
   final out = calloc<Pointer<git_reflog>>();
   final nameC = name.toNativeUtf8().cast<Int8>();
-  final error = libgit2.git_reflog_read(out, repo, nameC);
+  final error = libgit2.git_reflog_read(out, repoPointer, nameC);
 
   calloc.free(nameC);
 
@@ -34,8 +37,11 @@ int entryCount(Pointer<git_reflog> reflog) =>
 ///
 /// Requesting the reflog entry with an index of 0 (zero) will return
 /// the most recently created entry.
-Pointer<git_reflog_entry> getByIndex(Pointer<git_reflog> reflog, int idx) {
-  return libgit2.git_reflog_entry_byindex(reflog, idx);
+Pointer<git_reflog_entry> getByIndex({
+  required Pointer<git_reflog> reflogPointer,
+  required int index,
+}) {
+  return libgit2.git_reflog_entry_byindex(reflogPointer, index);
 }
 
 /// Get the log message.

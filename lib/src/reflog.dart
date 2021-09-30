@@ -12,7 +12,7 @@ class RefLog with IterableMixin<RefLogEntry> {
   RefLog(Reference ref) {
     final repo = ref.owner;
     final name = ref.name;
-    _reflogPointer = bindings.read(repo.pointer, name);
+    _reflogPointer = bindings.read(repoPointer: repo.pointer, name: name);
   }
 
   /// Pointer to memory address for allocated reflog object.
@@ -23,7 +23,10 @@ class RefLog with IterableMixin<RefLogEntry> {
   /// Requesting the reflog entry with an index of 0 (zero) will return
   /// the most recently created entry.
   RefLogEntry operator [](int index) {
-    return RefLogEntry(bindings.getByIndex(_reflogPointer, index));
+    return RefLogEntry(bindings.getByIndex(
+      reflogPointer: _reflogPointer,
+      index: index,
+    ));
   }
 
   /// Releases memory allocated for reflog object.
@@ -70,7 +73,10 @@ class _RefLogIterator implements Iterator<RefLogEntry> {
     if (_index == _count) {
       return false;
     } else {
-      _currentEntry = RefLogEntry(bindings.getByIndex(_reflogPointer, _index));
+      _currentEntry = RefLogEntry(bindings.getByIndex(
+        reflogPointer: _reflogPointer,
+        index: _index,
+      ));
       _index++;
       return true;
     }

@@ -29,9 +29,12 @@ int direction(Pointer<git_refspec> refspec) =>
     libgit2.git_refspec_direction(refspec);
 
 /// Check if a refspec's source descriptor matches a reference.
-bool matchesSource(Pointer<git_refspec> refspec, String refname) {
+bool matchesSource({
+  required Pointer<git_refspec> refspecPointer,
+  required String refname,
+}) {
   final refnameC = refname.toNativeUtf8().cast<Int8>();
-  final result = libgit2.git_refspec_src_matches(refspec, refnameC);
+  final result = libgit2.git_refspec_src_matches(refspecPointer, refnameC);
 
   calloc.free(refnameC);
 
@@ -39,9 +42,12 @@ bool matchesSource(Pointer<git_refspec> refspec, String refname) {
 }
 
 /// Check if a refspec's destination descriptor matches a reference.
-bool matchesDestination(Pointer<git_refspec> refspec, String refname) {
+bool matchesDestination({
+  required Pointer<git_refspec> refspecPointer,
+  required String refname,
+}) {
   final refnameC = refname.toNativeUtf8().cast<Int8>();
-  final result = libgit2.git_refspec_dst_matches(refspec, refnameC);
+  final result = libgit2.git_refspec_dst_matches(refspecPointer, refnameC);
 
   calloc.free(refnameC);
 
@@ -51,10 +57,13 @@ bool matchesDestination(Pointer<git_refspec> refspec, String refname) {
 /// Transform a reference to its target following the refspec's rules.
 ///
 /// Throws a [LibGit2Error] if error occured.
-String transform(Pointer<git_refspec> spec, String name) {
+String transform({
+  required Pointer<git_refspec> refspecPointer,
+  required String name,
+}) {
   final out = calloc<git_buf>(sizeOf<git_buf>());
   final nameC = name.toNativeUtf8().cast<Int8>();
-  final error = libgit2.git_refspec_transform(out, spec, nameC);
+  final error = libgit2.git_refspec_transform(out, refspecPointer, nameC);
 
   calloc.free(nameC);
 
@@ -70,10 +79,13 @@ String transform(Pointer<git_refspec> spec, String name) {
 /// Transform a target reference to its source reference following the refspec's rules.
 ///
 /// Throws a [LibGit2Error] if error occured.
-String rTransform(Pointer<git_refspec> spec, String name) {
+String rTransform({
+  required Pointer<git_refspec> refspecPointer,
+  required String name,
+}) {
   final out = calloc<git_buf>(sizeOf<git_buf>());
   final nameC = name.toNativeUtf8().cast<Int8>();
-  final error = libgit2.git_refspec_rtransform(out, spec, nameC);
+  final error = libgit2.git_refspec_rtransform(out, refspecPointer, nameC);
 
   calloc.free(nameC);
 

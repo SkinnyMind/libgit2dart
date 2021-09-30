@@ -16,12 +16,12 @@ import '../util.dart';
 /// and will have to be filled manually.
 ///
 /// Throws a [LibGit2Error] if error occured.
-Pointer<git_treebuilder> create(
-  Pointer<git_repository> repo,
-  Pointer<git_tree> source,
-) {
+Pointer<git_treebuilder> create({
+  required Pointer<git_repository> repoPointer,
+  required Pointer<git_tree> sourcePointer,
+}) {
   final out = calloc<Pointer<git_treebuilder>>();
-  final error = libgit2.git_treebuilder_new(out, repo, source);
+  final error = libgit2.git_treebuilder_new(out, repoPointer, sourcePointer);
 
   if (error < 0) {
     throw LibGit2Error(libgit2.git_error_last());
@@ -64,12 +64,12 @@ int entryCount(Pointer<git_treebuilder> bld) =>
 /// The returned entry is owned by the builder and should not be freed manually.
 ///
 /// Throws [ArgumentError] if nothing found for provided filename.
-Pointer<git_tree_entry> getByFilename(
-  Pointer<git_treebuilder> bld,
-  String filename,
-) {
+Pointer<git_tree_entry> getByFilename({
+  required Pointer<git_treebuilder> builderPointer,
+  required String filename,
+}) {
   final filenameC = filename.toNativeUtf8().cast<Int8>();
-  final result = libgit2.git_treebuilder_get(bld, filenameC);
+  final result = libgit2.git_treebuilder_get(builderPointer, filenameC);
 
   calloc.free(filenameC);
 
@@ -91,15 +91,20 @@ Pointer<git_tree_entry> getByFilename(
 /// that it exists in the object database and is of the correct type.
 ///
 /// Throws a [LibGit2Error] if error occured.
-void add(
-  Pointer<git_treebuilder> bld,
-  String filename,
-  Pointer<git_oid> id,
-  int filemode,
-) {
+void add({
+  required Pointer<git_treebuilder> builderPointer,
+  required String filename,
+  required Pointer<git_oid> oidPointer,
+  required int filemode,
+}) {
   final filenameC = filename.toNativeUtf8().cast<Int8>();
-  final error =
-      libgit2.git_treebuilder_insert(nullptr, bld, filenameC, id, filemode);
+  final error = libgit2.git_treebuilder_insert(
+    nullptr,
+    builderPointer,
+    filenameC,
+    oidPointer,
+    filemode,
+  );
 
   calloc.free(filenameC);
 
@@ -111,9 +116,12 @@ void add(
 /// Remove an entry from the builder by its filename.
 ///
 /// Throws a [LibGit2Error] if error occured.
-void remove(Pointer<git_treebuilder> bld, String filename) {
+void remove({
+  required Pointer<git_treebuilder> builderPointer,
+  required String filename,
+}) {
   final filenameC = filename.toNativeUtf8().cast<Int8>();
-  final error = libgit2.git_treebuilder_remove(bld, filenameC);
+  final error = libgit2.git_treebuilder_remove(builderPointer, filenameC);
 
   calloc.free(filenameC);
 

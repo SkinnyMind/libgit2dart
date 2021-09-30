@@ -27,14 +27,26 @@ class Index with IterableMixin<IndexEntry> {
   /// Throws error if position is out of bounds or entry isn't found at path.
   IndexEntry operator [](Object value) {
     if (value is int) {
-      return IndexEntry(bindings.getByIndex(_indexPointer, value));
+      return IndexEntry(bindings.getByIndex(
+        indexPointer: _indexPointer,
+        position: value,
+      ));
     } else {
-      return IndexEntry(bindings.getByPath(_indexPointer, value as String, 0));
+      return IndexEntry(bindings.getByPath(
+        indexPointer: _indexPointer,
+        path: value as String,
+        stage: 0,
+      ));
     }
   }
 
   /// Checks whether entry at provided [path] is in the git index or not.
-  bool find(String path) => bindings.find(_indexPointer, path);
+  bool find(String path) {
+    return bindings.find(
+      indexPointer: _indexPointer,
+      path: path,
+    );
+  }
 
   /// Checks if the index contains entries representing file conflicts.
   bool get hasConflicts => bindings.hasConflicts(_indexPointer);
@@ -93,9 +105,12 @@ class Index with IterableMixin<IndexEntry> {
   /// Throws a [LibGit2Error] if error occured.
   void add(Object entry) {
     if (entry is IndexEntry) {
-      bindings.add(_indexPointer, entry._indexEntryPointer);
+      bindings.add(
+        indexPointer: _indexPointer,
+        sourceEntryPointer: entry._indexEntryPointer,
+      );
     } else {
-      bindings.addByPath(_indexPointer, entry as String);
+      bindings.addByPath(indexPointer: _indexPointer, path: entry as String);
     }
   }
 
@@ -109,7 +124,7 @@ class Index with IterableMixin<IndexEntry> {
   ///
   /// Throws a [LibGit2Error] if error occured.
   void addAll(List<String> pathspec) {
-    bindings.addAll(_indexPointer, pathspec);
+    bindings.addAll(indexPointer: _indexPointer, pathspec: pathspec);
   }
 
   /// Updates the contents of an existing index object in memory by reading from the hard disk.
@@ -124,7 +139,8 @@ class Index with IterableMixin<IndexEntry> {
   /// are discarded.
   ///
   /// Throws a [LibGit2Error] if error occured.
-  void read({bool force = true}) => bindings.read(_indexPointer, force);
+  void read({bool force = true}) =>
+      bindings.read(indexPointer: _indexPointer, force: force);
 
   /// Updates the contents of an existing index object in memory by reading from the
   /// specified tree.
@@ -133,18 +149,18 @@ class Index with IterableMixin<IndexEntry> {
 
     if (target is Oid) {
       final repo = Repository(bindings.owner(_indexPointer));
-      tree = Tree.lookup(repo, target.sha);
+      tree = Tree.lookup(repo: repo, sha: target.sha);
     } else if (target is Tree) {
       tree = target;
     } else if (target is String) {
       final repo = Repository(bindings.owner(_indexPointer));
-      tree = Tree.lookup(repo, target);
+      tree = Tree.lookup(repo: repo, sha: target);
     } else {
       throw ArgumentError.value(
           '$target should be either Oid object, SHA hex string or Tree object');
     }
 
-    bindings.readTree(_indexPointer, tree.pointer);
+    bindings.readTree(indexPointer: _indexPointer, treePointer: tree.pointer);
     tree.free();
   }
 
@@ -166,7 +182,10 @@ class Index with IterableMixin<IndexEntry> {
     if (repo == null) {
       return Oid(bindings.writeTree(_indexPointer));
     } else {
-      return Oid(bindings.writeTreeTo(_indexPointer, repo.pointer));
+      return Oid(bindings.writeTreeTo(
+        indexPointer: _indexPointer,
+        repoPointer: repo.pointer,
+      ));
     }
   }
 
@@ -174,12 +193,13 @@ class Index with IterableMixin<IndexEntry> {
   ///
   /// Throws a [LibGit2Error] if error occured.
   void remove(String path, [int stage = 0]) =>
-      bindings.remove(_indexPointer, path, stage);
+      bindings.remove(indexPointer: _indexPointer, path: path, stage: stage);
 
   /// Removes all matching index entries.
   ///
   /// Throws a [LibGit2Error] if error occured.
-  void removeAll(List<String> path) => bindings.removeAll(_indexPointer, path);
+  void removeAll(List<String> path) =>
+      bindings.removeAll(indexPointer: _indexPointer, pathspec: path);
 
   /// Creates a diff between the repository index and the workdir directory.
   ///
@@ -194,11 +214,11 @@ class Index with IterableMixin<IndexEntry> {
         flags.fold(0, (previousValue, e) => previousValue | e.value);
 
     return Diff(diff_bindings.indexToWorkdir(
-      repo,
-      _indexPointer,
-      flagsInt,
-      contextLines,
-      interhunkLines,
+      repoPointer: repo,
+      indexPointer: _indexPointer,
+      flags: flagsInt,
+      contextLines: contextLines,
+      interhunkLines: interhunkLines,
     ));
   }
 
@@ -216,12 +236,12 @@ class Index with IterableMixin<IndexEntry> {
         flags.fold(0, (previousValue, e) => previousValue | e.value);
 
     return Diff(diff_bindings.treeToIndex(
-      repo,
-      tree.pointer,
-      _indexPointer,
-      flagsInt,
-      contextLines,
-      interhunkLines,
+      repoPointer: repo,
+      treePointer: tree.pointer,
+      indexPointer: _indexPointer,
+      flags: flagsInt,
+      contextLines: contextLines,
+      interhunkLines: interhunkLines,
     ));
   }
 
@@ -299,7 +319,8 @@ class ConflictEntry {
   /// Removes the index entry that represent a conflict of a single file.
   ///
   /// Throws a [LibGit2Error] if error occured.
-  void remove() => bindings.conflictRemove(_indexPointer, _path);
+  void remove() =>
+      bindings.conflictRemove(indexPointer: _indexPointer, path: _path);
 
   @override
   String toString() =>
@@ -324,7 +345,10 @@ class _IndexIterator implements Iterator<IndexEntry> {
     if (_index == count) {
       return false;
     } else {
-      _currentEntry = IndexEntry(bindings.getByIndex(_indexPointer, _index));
+      _currentEntry = IndexEntry(bindings.getByIndex(
+        indexPointer: _indexPointer,
+        position: _index,
+      ));
       _index++;
       return true;
     }

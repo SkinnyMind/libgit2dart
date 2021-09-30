@@ -13,7 +13,7 @@ void main() {
   setUp(() async {
     tmpDir = await setupRepo(Directory('test/assets/testrepo/'));
     repo = Repository.open(tmpDir.path);
-    tree = Tree.lookup(repo, treeSHA);
+    tree = Tree.lookup(repo: repo, sha: treeSHA);
   });
 
   tearDown(() async {
@@ -24,13 +24,13 @@ void main() {
 
   group('TreeBuilder', () {
     test('successfully initializes tree builder when no tree is provided', () {
-      final builder = TreeBuilder(repo);
+      final builder = TreeBuilder(repo: repo);
       expect(builder, isA<TreeBuilder>());
       builder.free();
     });
 
     test('successfully initializes tree builder with provided tree', () {
-      final builder = TreeBuilder(repo, tree);
+      final builder = TreeBuilder(repo: repo, tree: tree);
       final oid = builder.write();
 
       expect(builder, isA<TreeBuilder>());
@@ -41,7 +41,7 @@ void main() {
     });
 
     test('clears all the entries in the builder', () {
-      final builder = TreeBuilder(repo, tree);
+      final builder = TreeBuilder(repo: repo, tree: tree);
 
       expect(builder.length, 4);
       builder.clear();
@@ -51,12 +51,13 @@ void main() {
     });
 
     test('successfully builds the tree builder from entry of tree', () {
-      final builder = TreeBuilder(repo);
+      final builder = TreeBuilder(repo: repo);
       final entry = tree.entries[0];
 
       expect(() => builder[entry.name], throwsA(isA<ArgumentError>()));
 
-      builder.add(entry.name, entry.id, entry.filemode);
+      builder.add(
+          filename: entry.name, oid: entry.id, filemode: entry.filemode);
       expect(builder[entry.name].name, entry.name);
 
       builder.free();
@@ -64,7 +65,7 @@ void main() {
     });
 
     test('successfully removes an entry', () {
-      final builder = TreeBuilder(repo, tree);
+      final builder = TreeBuilder(repo: repo, tree: tree);
 
       expect(builder.length, tree.length);
 

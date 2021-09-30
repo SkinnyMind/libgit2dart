@@ -18,9 +18,12 @@ class Commit {
   /// and [sha] hex string.
   ///
   /// Should be freed with `free()` to release allocated memory.
-  Commit.lookup(Repository repo, String sha) {
-    final oid = Oid.fromSHA(repo, sha);
-    _commitPointer = bindings.lookup(repo.pointer, oid.pointer);
+  Commit.lookup({required Repository repo, required String sha}) {
+    final oid = Oid.fromSHA(repo: repo, sha: sha);
+    _commitPointer = bindings.lookup(
+      repoPointer: repo.pointer,
+      oidPointer: oid.pointer,
+    );
   }
 
   late final Pointer<git_commit> _commitPointer;
@@ -47,18 +50,18 @@ class Commit {
     String? updateRef,
     String? messageEncoding,
   }) {
-    final tree = Tree.lookup(repo, treeSHA);
+    final tree = Tree.lookup(repo: repo, sha: treeSHA);
 
     final result = Oid(bindings.create(
-      repo.pointer,
-      updateRef,
-      author.pointer,
-      commiter.pointer,
-      messageEncoding,
-      message,
-      tree.pointer,
-      parents.length,
-      parents,
+      repoPointer: repo.pointer,
+      updateRef: updateRef,
+      authorPointer: author.pointer,
+      committerPointer: commiter.pointer,
+      messageEncoding: messageEncoding,
+      message: message,
+      treePointer: tree.pointer,
+      parentCount: parents.length,
+      parents: parents,
     ));
 
     tree.free();
@@ -95,7 +98,10 @@ class Commit {
     final parentCount = bindings.parentCount(_commitPointer);
 
     for (var i = 0; i < parentCount; i++) {
-      final parentOid = bindings.parentId(_commitPointer, i);
+      final parentOid = bindings.parentId(
+        commitPointer: _commitPointer,
+        position: i,
+      );
       parents.add(Oid(parentOid));
     }
 
@@ -106,7 +112,7 @@ class Commit {
   Tree get tree {
     final repo = bindings.owner(_commitPointer);
     final oid = bindings.tree(_commitPointer);
-    return Tree(tree_bindings.lookup(repo, oid));
+    return Tree(tree_bindings.lookup(repoPointer: repo, oidPointer: oid));
   }
 
   /// Releases memory allocated for commit object.

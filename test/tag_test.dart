@@ -13,7 +13,7 @@ void main() {
   setUp(() async {
     tmpDir = await setupRepo(Directory('test/assets/testrepo/'));
     repo = Repository.open(tmpDir.path);
-    tag = Tag.lookup(repo, tagSHA);
+    tag = Tag.lookup(repo: repo, sha: tagSHA);
   });
 
   tearDown(() async {
@@ -58,7 +58,7 @@ void main() {
       const message = 'init tag\n';
 
       final oid = Tag.create(
-        repository: repo,
+        repo: repo,
         tagName: tagName,
         target: target,
         targetType: GitObject.commit,
@@ -66,7 +66,7 @@ void main() {
         message: message,
       );
 
-      final newTag = Tag.lookup(repo, oid.sha);
+      final newTag = Tag.lookup(repo: repo, sha: oid.sha);
       final tagger = newTag.tagger;
       final newTagTarget = newTag.target as Commit;
 

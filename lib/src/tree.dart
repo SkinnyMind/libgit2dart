@@ -19,9 +19,12 @@ class Tree {
   /// [Repository] object and [sha] hex string.
   ///
   /// Should be freed with `free()` to release allocated memory.
-  Tree.lookup(Repository repo, String sha) {
-    final oid = Oid.fromSHA(repo, sha);
-    _treePointer = bindings.lookup(repo.pointer, oid.pointer);
+  Tree.lookup({required Repository repo, required String sha}) {
+    final oid = Oid.fromSHA(repo: repo, sha: sha);
+    _treePointer = bindings.lookup(
+      repoPointer: repo.pointer,
+      oidPointer: oid.pointer,
+    );
   }
 
   late final Pointer<git_tree> _treePointer;
@@ -34,7 +37,10 @@ class Tree {
     final entryCount = bindings.entryCount(_treePointer);
     var result = <TreeEntry>[];
     for (var i = 0; i < entryCount; i++) {
-      result.add(TreeEntry(bindings.getByIndex(_treePointer, i)));
+      result.add(TreeEntry(bindings.getByIndex(
+        treePointer: _treePointer,
+        index: i,
+      )));
     }
 
     return result;
@@ -49,11 +55,20 @@ class Tree {
   /// If provided string [value] is a path to file, lookup is done by path.
   TreeEntry operator [](Object value) {
     if (value is int) {
-      return TreeEntry(bindings.getByIndex(_treePointer, value));
+      return TreeEntry(bindings.getByIndex(
+        treePointer: _treePointer,
+        index: value,
+      ));
     } else if (value is String && value.contains('/')) {
-      return TreeEntry(bindings.getByPath(_treePointer, value));
+      return TreeEntry(bindings.getByPath(
+        rootPointer: _treePointer,
+        path: value,
+      ));
     } else if (value is String) {
-      return TreeEntry(bindings.getByName(_treePointer, value));
+      return TreeEntry(bindings.getByName(
+        treePointer: _treePointer,
+        filename: value,
+      ));
     } else {
       throw ArgumentError.value(
           '$value should be either index position, filename or path');
@@ -79,11 +94,11 @@ class Tree {
         flags.fold(0, (previousValue, e) => previousValue | e.value);
 
     return Diff(diff_bindings.treeToWorkdir(
-      repo,
-      _treePointer,
-      flagsInt,
-      contextLines,
-      interhunkLines,
+      repoPointer: repo,
+      treePointer: _treePointer,
+      flags: flagsInt,
+      contextLines: contextLines,
+      interhunkLines: interhunkLines,
     ));
   }
 
@@ -101,12 +116,12 @@ class Tree {
         flags.fold(0, (previousValue, e) => previousValue | e.value);
 
     return Diff(diff_bindings.treeToIndex(
-      repo,
-      _treePointer,
-      index.pointer,
-      flagsInt,
-      contextLines,
-      interhunkLines,
+      repoPointer: repo,
+      treePointer: _treePointer,
+      indexPointer: index.pointer,
+      flags: flagsInt,
+      contextLines: contextLines,
+      interhunkLines: interhunkLines,
     ));
   }
 
@@ -124,12 +139,12 @@ class Tree {
         flags.fold(0, (previousValue, e) => previousValue | e.value);
 
     return Diff(diff_bindings.treeToTree(
-      repo,
-      _treePointer,
-      tree.pointer,
-      flagsInt,
-      contextLines,
-      interhunkLines,
+      repoPointer: repo,
+      oldTreePointer: _treePointer,
+      newTreePointer: tree.pointer,
+      flags: flagsInt,
+      contextLines: contextLines,
+      interhunkLines: interhunkLines,
     ));
   }
 
@@ -159,27 +174,42 @@ class TreeEntry {
   @override
   bool operator ==(other) {
     return (other is TreeEntry) &&
-        (bindings.compare(_treeEntryPointer, other._treeEntryPointer) == 0);
+        (bindings.compare(
+                aPointer: _treeEntryPointer,
+                bPointer: other._treeEntryPointer) ==
+            0);
   }
 
   bool operator <(other) {
     return (other is TreeEntry) &&
-        (bindings.compare(_treeEntryPointer, other._treeEntryPointer) == -1);
+        (bindings.compare(
+                aPointer: _treeEntryPointer,
+                bPointer: other._treeEntryPointer) ==
+            -1);
   }
 
   bool operator <=(other) {
     return (other is TreeEntry) &&
-        (bindings.compare(_treeEntryPointer, other._treeEntryPointer) == -1);
+        (bindings.compare(
+                aPointer: _treeEntryPointer,
+                bPointer: other._treeEntryPointer) ==
+            -1);
   }
 
   bool operator >(other) {
     return (other is TreeEntry) &&
-        (bindings.compare(_treeEntryPointer, other._treeEntryPointer) == 1);
+        (bindings.compare(
+                aPointer: _treeEntryPointer,
+                bPointer: other._treeEntryPointer) ==
+            1);
   }
 
   bool operator >=(other) {
     return (other is TreeEntry) &&
-        (bindings.compare(_treeEntryPointer, other._treeEntryPointer) == 1);
+        (bindings.compare(
+                aPointer: _treeEntryPointer,
+                bPointer: other._treeEntryPointer) ==
+            1);
   }
 
   @override

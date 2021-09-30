@@ -7,17 +7,21 @@ import '../util.dart';
 /// Create a diff between the repository index and the workdir directory.
 ///
 /// Throws a [LibGit2Error] if error occured.
-Pointer<git_diff> indexToWorkdir(
-  Pointer<git_repository> repo,
-  Pointer<git_index> index,
-  int flags,
-  int contextLines,
-  int interhunkLines,
-) {
+Pointer<git_diff> indexToWorkdir({
+  required Pointer<git_repository> repoPointer,
+  required Pointer<git_index> indexPointer,
+  required int flags,
+  required int contextLines,
+  required int interhunkLines,
+}) {
   final out = calloc<Pointer<git_diff>>();
-  final opts = _diffOptionsInit(flags, contextLines, interhunkLines);
+  final opts = _diffOptionsInit(
+    flags: flags,
+    contextLines: contextLines,
+    interhunkLines: interhunkLines,
+  );
 
-  libgit2.git_diff_index_to_workdir(out, repo, index, opts);
+  libgit2.git_diff_index_to_workdir(out, repoPointer, indexPointer, opts);
 
   calloc.free(opts);
 
@@ -27,18 +31,28 @@ Pointer<git_diff> indexToWorkdir(
 /// Create a diff between a tree and repository index.
 ///
 /// Throws a [LibGit2Error] if error occured.
-Pointer<git_diff> treeToIndex(
-  Pointer<git_repository> repo,
-  Pointer<git_tree> oldTree,
-  Pointer<git_index> index,
-  int flags,
-  int contextLines,
-  int interhunkLines,
-) {
+Pointer<git_diff> treeToIndex({
+  required Pointer<git_repository> repoPointer,
+  required Pointer<git_tree> treePointer,
+  required Pointer<git_index> indexPointer,
+  required int flags,
+  required int contextLines,
+  required int interhunkLines,
+}) {
   final out = calloc<Pointer<git_diff>>();
-  final opts = _diffOptionsInit(flags, contextLines, interhunkLines);
+  final opts = _diffOptionsInit(
+    flags: flags,
+    contextLines: contextLines,
+    interhunkLines: interhunkLines,
+  );
 
-  libgit2.git_diff_tree_to_index(out, repo, oldTree, index, opts);
+  libgit2.git_diff_tree_to_index(
+    out,
+    repoPointer,
+    treePointer,
+    indexPointer,
+    opts,
+  );
 
   calloc.free(opts);
 
@@ -48,17 +62,21 @@ Pointer<git_diff> treeToIndex(
 /// Create a diff between a tree and the working directory.
 ///
 /// Throws a [LibGit2Error] if error occured.
-Pointer<git_diff> treeToWorkdir(
-  Pointer<git_repository> repo,
-  Pointer<git_tree> oldTree,
-  int flags,
-  int contextLines,
-  int interhunkLines,
-) {
+Pointer<git_diff> treeToWorkdir({
+  required Pointer<git_repository> repoPointer,
+  required Pointer<git_tree> treePointer,
+  required int flags,
+  required int contextLines,
+  required int interhunkLines,
+}) {
   final out = calloc<Pointer<git_diff>>();
-  final opts = _diffOptionsInit(flags, contextLines, interhunkLines);
+  final opts = _diffOptionsInit(
+    flags: flags,
+    contextLines: contextLines,
+    interhunkLines: interhunkLines,
+  );
 
-  libgit2.git_diff_tree_to_workdir(out, repo, oldTree, opts);
+  libgit2.git_diff_tree_to_workdir(out, repoPointer, treePointer, opts);
 
   calloc.free(opts);
 
@@ -68,18 +86,28 @@ Pointer<git_diff> treeToWorkdir(
 /// Create a diff with the difference between two tree objects.
 ///
 /// Throws a [LibGit2Error] if error occured.
-Pointer<git_diff> treeToTree(
-  Pointer<git_repository> repo,
-  Pointer<git_tree> oldTree,
-  Pointer<git_tree> newTree,
-  int flags,
-  int contextLines,
-  int interhunkLines,
-) {
+Pointer<git_diff> treeToTree({
+  required Pointer<git_repository> repoPointer,
+  required Pointer<git_tree> oldTreePointer,
+  required Pointer<git_tree> newTreePointer,
+  required int flags,
+  required int contextLines,
+  required int interhunkLines,
+}) {
   final out = calloc<Pointer<git_diff>>();
-  final opts = _diffOptionsInit(flags, contextLines, interhunkLines);
+  final opts = _diffOptionsInit(
+    flags: flags,
+    contextLines: contextLines,
+    interhunkLines: interhunkLines,
+  );
 
-  libgit2.git_diff_tree_to_tree(out, repo, oldTree, newTree, opts);
+  libgit2.git_diff_tree_to_tree(
+    out,
+    repoPointer,
+    oldTreePointer,
+    newTreePointer,
+    opts,
+  );
 
   calloc.free(opts);
 
@@ -96,8 +124,11 @@ int length(Pointer<git_diff> diff) => libgit2.git_diff_num_deltas(diff);
 /// then it will be "merged" to appear as if the old version was from the "onto" list
 /// and the new version is from the "from" list (with the exception that if the item
 /// has a pending DELETE in the middle, then it will show as deleted).
-void merge(Pointer<git_diff> onto, Pointer<git_diff> from) {
-  libgit2.git_diff_merge(onto, from);
+void merge({
+  required Pointer<git_diff> ontoPointer,
+  required Pointer<git_diff> fromPointer,
+}) {
+  libgit2.git_diff_merge(ontoPointer, fromPointer);
 }
 
 /// Read the contents of a git patch file into a git diff object.
@@ -132,14 +163,15 @@ Pointer<git_diff> parse(String content) {
 /// files into add/remove pairs if the amount of change is above a threshold.
 ///
 /// Throws a [LibGit2Error] if error occured.
-void findSimilar(
-    Pointer<git_diff> diff,
-    int flags,
-    int renameThreshold,
-    int copyThreshold,
-    int renameFromRewriteThreshold,
-    int breakRewriteThreshold,
-    int renameLimit) {
+void findSimilar({
+  required Pointer<git_diff> diffPointer,
+  required int flags,
+  required int renameThreshold,
+  required int copyThreshold,
+  required int renameFromRewriteThreshold,
+  required int breakRewriteThreshold,
+  required int renameLimit,
+}) {
   final opts = calloc<git_diff_find_options>();
   final optsError =
       libgit2.git_diff_find_options_init(opts, GIT_DIFF_FIND_OPTIONS_VERSION);
@@ -154,7 +186,7 @@ void findSimilar(
     throw LibGit2Error(libgit2.git_error_last());
   }
 
-  final error = libgit2.git_diff_find_similar(diff, opts);
+  final error = libgit2.git_diff_find_similar(diffPointer, opts);
 
   if (error < 0) {
     throw LibGit2Error(libgit2.git_error_last());
@@ -187,11 +219,14 @@ Pointer<git_oid> patchId(Pointer<git_diff> diff) {
 /// Return the diff delta for an entry in the diff list.
 ///
 /// Throws [RangeError] if index out of range.
-Pointer<git_diff_delta> getDeltaByIndex(Pointer<git_diff> diff, int idx) {
-  final result = libgit2.git_diff_get_delta(diff, idx);
+Pointer<git_diff_delta> getDeltaByIndex({
+  required Pointer<git_diff> diffPointer,
+  required int index,
+}) {
+  final result = libgit2.git_diff_get_delta(diffPointer, index);
 
   if (result == nullptr) {
-    throw RangeError('$idx is out of bounds');
+    throw RangeError('$index is out of bounds');
   } else {
     return result;
   }
@@ -237,13 +272,13 @@ int statsFilesChanged(Pointer<git_diff_stats> stats) =>
 /// Print diff statistics.
 ///
 /// Throws a [LibGit2Error] if error occured.
-String statsPrint(
-  Pointer<git_diff_stats> stats,
-  int format,
-  int width,
-) {
+String statsPrint({
+  required Pointer<git_diff_stats> statsPointer,
+  required int format,
+  required int width,
+}) {
   final out = calloc<git_buf>(sizeOf<git_buf>());
-  final error = libgit2.git_diff_stats_to_buf(out, stats, format, width);
+  final error = libgit2.git_diff_stats_to_buf(out, statsPointer, format, width);
 
   if (error < 0) {
     throw LibGit2Error(libgit2.git_error_last());
@@ -257,13 +292,16 @@ String statsPrint(
 /// Add patch to buffer.
 ///
 /// Throws a [LibGit2Error] if error occured.
-Pointer<git_buf> addToBuf(Pointer<git_patch> patch, Pointer<git_buf> buffer) {
-  final error = libgit2.git_patch_to_buf(buffer, patch);
+Pointer<git_buf> addToBuf({
+  required Pointer<git_patch> patchPointer,
+  required Pointer<git_buf> bufferPointer,
+}) {
+  final error = libgit2.git_patch_to_buf(bufferPointer, patchPointer);
 
   if (error < 0) {
     throw LibGit2Error(libgit2.git_error_last());
   } else {
-    return buffer;
+    return bufferPointer;
   }
 }
 
@@ -271,18 +309,18 @@ Pointer<git_buf> addToBuf(Pointer<git_patch> patch, Pointer<git_buf> buffer) {
 /// the index, or both.
 ///
 /// Throws a [LibGit2Error] if error occured.
-bool apply(
-  Pointer<git_repository> repo,
-  Pointer<git_diff> diff,
-  int location, [
+bool apply({
+  required Pointer<git_repository> repoPointer,
+  required Pointer<git_diff> diffPointer,
+  required int location,
   bool check = false,
-]) {
+}) {
   final opts = calloc<git_apply_options>();
   libgit2.git_apply_options_init(opts, GIT_APPLY_OPTIONS_VERSION);
   if (check) {
     opts.ref.flags = git_apply_flags_t.GIT_APPLY_CHECK;
   }
-  final error = libgit2.git_apply(repo, diff, location, opts);
+  final error = libgit2.git_apply(repoPointer, diffPointer, location, opts);
 
   calloc.free(opts);
 
@@ -300,11 +338,11 @@ void statsFree(Pointer<git_diff_stats> stats) =>
 /// Free a previously allocated diff.
 void free(Pointer<git_diff> diff) => libgit2.git_diff_free(diff);
 
-Pointer<git_diff_options> _diffOptionsInit(
-  int flags,
-  int contextLines,
-  int interhunkLines,
-) {
+Pointer<git_diff_options> _diffOptionsInit({
+  required int flags,
+  required int contextLines,
+  required int interhunkLines,
+}) {
   final opts = calloc<git_diff_options>();
   final optsError =
       libgit2.git_diff_options_init(opts, GIT_DIFF_OPTIONS_VERSION);

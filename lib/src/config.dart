@@ -91,17 +91,33 @@ class Config with IterableMixin<ConfigEntry> {
   Config get snapshot => Config(bindings.snapshot(_configPointer));
 
   /// Returns the [ConfigEntry] of a [variable].
-  ConfigEntry operator [](String variable) =>
-      ConfigEntry(bindings.getEntry(_configPointer, variable));
+  ConfigEntry operator [](String variable) {
+    return ConfigEntry(bindings.getEntry(
+      configPointer: _configPointer,
+      variable: variable,
+    ));
+  }
 
   /// Sets the [value] of config [variable].
   void operator []=(String variable, dynamic value) {
     if (value is bool) {
-      bindings.setBool(_configPointer, variable, value);
+      bindings.setBool(
+        configPointer: _configPointer,
+        variable: variable,
+        value: value,
+      );
     } else if (value is int) {
-      bindings.setInt(_configPointer, variable, value);
+      bindings.setInt(
+        configPointer: _configPointer,
+        variable: variable,
+        value: value,
+      );
     } else {
-      bindings.setString(_configPointer, variable, value);
+      bindings.setString(
+        configPointer: _configPointer,
+        variable: variable,
+        value: value,
+      );
     }
   }
 
@@ -109,14 +125,19 @@ class Config with IterableMixin<ConfigEntry> {
   /// (usually the local one).
   ///
   /// Throws a [LibGit2Error] if error occured.
-  void delete(String variable) => bindings.delete(_configPointer, variable);
+  void delete(String variable) =>
+      bindings.delete(configPointer: _configPointer, variable: variable);
 
   /// Returns list of values for multivar [variable]
   ///
   /// If [regexp] is present, then the iterator will only iterate over all
   /// values which match the pattern.
-  List<String> multivar(String variable, {String? regexp}) {
-    return bindings.multivarValues(_configPointer, variable, regexp);
+  List<String> multivar({required String variable, String? regexp}) {
+    return bindings.multivarValues(
+      configPointer: _configPointer,
+      variable: variable,
+      regexp: regexp,
+    );
   }
 
   /// Sets the [value] of a multivar [variable] in the config file with the
@@ -124,8 +145,17 @@ class Config with IterableMixin<ConfigEntry> {
   ///
   /// The [regexp] is applied case-sensitively on the value.
   /// Empty [regexp] sets [value] for all values of a multivar [variable].
-  void setMultivar(String variable, String regexp, String value) {
-    bindings.setMultivar(_configPointer, variable, regexp, value);
+  void setMultivar({
+    required String variable,
+    required String regexp,
+    required String value,
+  }) {
+    bindings.setMultivar(
+      configPointer: _configPointer,
+      variable: variable,
+      regexp: regexp,
+      value: value,
+    );
   }
 
   /// Deletes one or several values from a multivar [variable] in the config file
@@ -133,8 +163,12 @@ class Config with IterableMixin<ConfigEntry> {
   ///
   /// The [regexp] is applied case-sensitively on the value.
   /// Empty [regexp] deletes all values of a multivar [variable].
-  void deleteMultivar(String variable, String regexp) {
-    bindings.deleteMultivar(_configPointer, variable, regexp);
+  void deleteMultivar({required String variable, required String regexp}) {
+    bindings.deleteMultivar(
+      configPointer: _configPointer,
+      variable: variable,
+      regexp: regexp,
+    );
   }
 
   /// Releases memory allocated for config object.

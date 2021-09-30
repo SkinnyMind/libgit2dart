@@ -28,7 +28,10 @@ Pointer<git_credential> username(String username) {
 /// Create a new plain-text username and password credential object.
 ///
 /// Throws a [LibGit2Error] if error occured.
-Pointer<git_credential> userPass(String username, String password) {
+Pointer<git_credential> userPass({
+  required String username,
+  required String password,
+}) {
   final out = calloc<Pointer<git_credential>>();
   final usernameC = username.toNativeUtf8().cast<Int8>();
   final passwordC = password.toNativeUtf8().cast<Int8>();
@@ -49,12 +52,12 @@ Pointer<git_credential> userPass(String username, String password) {
 /// Create a new passphrase-protected ssh key credential object.
 ///
 /// Throws a [LibGit2Error] if error occured.
-Pointer<git_credential> sshKey(
-  String username,
-  String publicKey,
-  String privateKey,
-  String passPhrase,
-) {
+Pointer<git_credential> sshKey({
+  required String username,
+  required String publicKey,
+  required String privateKey,
+  required String passPhrase,
+}) {
   final out = calloc<Pointer<git_credential>>();
   final usernameC = username.toNativeUtf8().cast<Int8>();
   final publicKeyC = publicKey.toNativeUtf8().cast<Int8>();
@@ -102,12 +105,12 @@ Pointer<git_credential> sshKeyFromAgent(String username) {
 /// Create a new ssh key credential object reading the keys from memory.
 ///
 /// Throws a [LibGit2Error] if error occured.
-Pointer<git_credential> sshKeyFromMemory(
-  String username,
-  String publicKey,
-  String privateKey,
-  String passPhrase,
-) {
+Pointer<git_credential> sshKeyFromMemory({
+  required String username,
+  required String publicKey,
+  required String privateKey,
+  required String passPhrase,
+}) {
   final out = calloc<Pointer<git_credential>>();
   final usernameC = username.toNativeUtf8().cast<Int8>();
   final publicKeyC = publicKey.toNativeUtf8().cast<Int8>();

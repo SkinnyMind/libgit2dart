@@ -10,13 +10,14 @@ import '../util.dart';
 /// for information on the syntax accepted.
 ///
 /// Throws a [LibGit2Error] if error occured.
-Pointer<git_revspec> revParse(
-  Pointer<git_repository> repo,
-  String spec,
-) {
+Pointer<git_revspec> revParse({
+  required Pointer<git_repository> repoPointer,
+  required String spec,
+}) {
   final out = calloc<git_revspec>();
   final specC = spec.toNativeUtf8().cast<Int8>();
-  final error = libgit2.git_revparse(out, repo, specC);
+
+  final error = libgit2.git_revparse(out, repoPointer, specC);
 
   calloc.free(specC);
 
@@ -34,14 +35,14 @@ Pointer<git_revspec> revParse(
 /// The returned object should be released when no longer needed.
 ///
 /// Throws a [LibGit2Error] if error occured.
-Pointer<git_object> revParseSingle(Pointer<git_repository> repo, String spec) {
+Pointer<git_object> revParseSingle({
+  required Pointer<git_repository> repoPointer,
+  required String spec,
+}) {
   final out = calloc<Pointer<git_object>>();
   final specC = spec.toNativeUtf8().cast<Int8>();
-  final error = libgit2.git_revparse_single(
-    out,
-    repo,
-    specC,
-  );
+
+  final error = libgit2.git_revparse_single(out, repoPointer, specC);
 
   calloc.free(specC);
 
@@ -64,12 +65,21 @@ Pointer<git_object> revParseSingle(Pointer<git_repository> repo, String spec) {
 /// The returned object and reference should be released when no longer needed.
 ///
 /// Throws a [LibGit2Error] if error occured.
-List revParseExt(Pointer<git_repository> repo, String spec) {
+List revParseExt({
+  required Pointer<git_repository> repoPointer,
+  required String spec,
+}) {
   final objectOut = calloc<Pointer<git_object>>();
   final referenceOut = calloc<Pointer<git_reference>>();
   final specC = spec.toNativeUtf8().cast<Int8>();
   var result = [];
-  final error = libgit2.git_revparse_ext(objectOut, referenceOut, repo, specC);
+
+  final error = libgit2.git_revparse_ext(
+    objectOut,
+    referenceOut,
+    repoPointer,
+    specC,
+  );
 
   calloc.free(specC);
 

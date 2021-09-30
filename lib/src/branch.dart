@@ -21,18 +21,32 @@ class Branches {
   /// Returns a list of all branches that can be found in a repository.
   ///
   /// Throws a [LibGit2Error] if error occured.
-  List<String> list() => bindings.list(_repoPointer, GitBranch.all.value);
+  List<String> list() {
+    return bindings.list(
+      repoPointer: _repoPointer,
+      flags: GitBranch.all.value,
+    );
+  }
 
   /// Returns a list of local branches that can be found in a repository.
   ///
   /// Throws a [LibGit2Error] if error occured.
-  List<String> get local => bindings.list(_repoPointer, GitBranch.local.value);
+  List<String> get local {
+    return bindings.list(
+      repoPointer: _repoPointer,
+      flags: GitBranch.local.value,
+    );
+  }
 
   /// Returns a list of remote branches that can be found in a repository.
   ///
   /// Throws a [LibGit2Error] if error occured.
-  List<String> get remote =>
-      bindings.list(_repoPointer, GitBranch.remote.value);
+  List<String> get remote {
+    return bindings.list(
+      repoPointer: _repoPointer,
+      flags: GitBranch.remote.value,
+    );
+  }
 
   /// Lookups a branch by its name in a repository.
   ///
@@ -41,13 +55,20 @@ class Branches {
   /// Throws a [LibGit2Error] if error occured.
   Branch operator [](String branchName) {
     final ref = Reference(
-      reference_bindings.lookupDWIM(_repoPointer, branchName),
+      reference_bindings.lookupDWIM(
+        repoPointer: _repoPointer,
+        name: branchName,
+      ),
     );
     late final GitBranch type;
     ref.isBranch ? type = GitBranch.local : GitBranch.remote;
     ref.free();
 
-    return Branch(bindings.lookup(_repoPointer, branchName, type.value));
+    return Branch(bindings.lookup(
+      repoPointer: _repoPointer,
+      branchName: branchName,
+      branchType: type.value,
+    ));
   }
 
   /// Creates a new branch pointing at a [target] commit.
@@ -66,10 +87,10 @@ class Branches {
     bool force = false,
   }) {
     return Reference(bindings.create(
-      _repoPointer,
-      name,
-      target.pointer,
-      force,
+      repoPointer: _repoPointer,
+      branchName: name,
+      targetPointer: target.pointer,
+      force: force,
     ));
   }
 }
@@ -108,7 +129,11 @@ class Branch {
   ///
   /// Throws a [LibGit2Error] if error occured.
   Branch rename({required String newName, bool force = false}) {
-    return Branch(bindings.rename(_branchPointer, newName, force));
+    return Branch(bindings.rename(
+      branchPointer: _branchPointer,
+      newBranchName: newName,
+      force: force,
+    ));
   }
 
   /// Checks if HEAD points to the given branch.

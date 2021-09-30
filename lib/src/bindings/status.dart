@@ -32,11 +32,11 @@ int listEntryCount(Pointer<git_status_list> statuslist) {
 /// The entry is not modifiable and should not be freed.
 ///
 /// Throws [RangeError] if position is out of bounds
-Pointer<git_status_entry> getByIndex(
-  Pointer<git_status_list> statuslist,
-  int idx,
-) {
-  final result = libgit2.git_status_byindex(statuslist, idx);
+Pointer<git_status_entry> getByIndex({
+  required Pointer<git_status_list> statuslistPointer,
+  required int index,
+}) {
+  final result = libgit2.git_status_byindex(statuslistPointer, index);
 
   if (result == nullptr) {
     throw RangeError('Out of bounds');
@@ -60,10 +60,10 @@ Pointer<git_status_entry> getByIndex(
 /// and scan through looking for the path that you are interested in.
 ///
 /// Throws a [LibGit2Error] if error occured.
-int file(Pointer<git_repository> repo, String path) {
+int file({required Pointer<git_repository> repoPointer, required String path}) {
   final out = calloc<Uint32>();
   final pathC = path.toNativeUtf8().cast<Int8>();
-  final error = libgit2.git_status_file(out, repo, pathC);
+  final error = libgit2.git_status_file(out, repoPointer, pathC);
 
   calloc.free(pathC);
 

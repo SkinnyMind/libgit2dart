@@ -27,7 +27,10 @@ void main() {
     });
 
     test('finds object by short oid', () {
-      final oid = Oid.fromSHA(repo, lastCommit.substring(0, 5));
+      final oid = Oid.fromSHA(
+        repo: repo,
+        sha: lastCommit.substring(0, 5),
+      );
       expect(oid.sha, lastCommit);
     });
   });

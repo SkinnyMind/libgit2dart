@@ -10,12 +10,12 @@ import '../util.dart';
 /// either the name or the email parameter.
 ///
 /// Throws a [LibGit2Error] if error occured.
-Pointer<git_signature> create(
-  String name,
-  String email,
-  int time,
-  int offset,
-) {
+Pointer<git_signature> create({
+  required String name,
+  required String email,
+  required int time,
+  required int offset,
+}) {
   final out = calloc<Pointer<git_signature>>();
   final nameC = name.toNativeUtf8().cast<Int8>();
   final emailC = email.toNativeUtf8().cast<Int8>();
@@ -34,7 +34,7 @@ Pointer<git_signature> create(
 /// Create a new action signature with a timestamp of 'now'.
 ///
 /// Throws a [LibGit2Error] if error occured.
-Pointer<git_signature> now(String name, String email) {
+Pointer<git_signature> now({required String name, required String email}) {
   final out = calloc<Pointer<git_signature>>();
   final nameC = name.toNativeUtf8().cast<Int8>();
   final emailC = email.toNativeUtf8().cast<Int8>();

@@ -13,18 +13,19 @@ import '../util.dart';
 /// target of the branch and then update HEAD using `setHead` to point to the branch you checked out.
 ///
 /// Throws a [LibGit2Error] if error occured.
-void head(
-  Pointer<git_repository> repo,
-  int strategy,
+void head({
+  required Pointer<git_repository> repoPointer,
+  required int strategy,
   String? directory,
   List<String>? paths,
-) {
-  final initOpts = initOptions(strategy, directory, paths);
+}) {
+  final initOpts =
+      initOptions(strategy: strategy, directory: directory, paths: paths);
   final optsC = initOpts[0];
   final pathPointers = initOpts[1];
   final strArray = initOpts[2];
 
-  final error = libgit2.git_checkout_head(repo, optsC);
+  final error = libgit2.git_checkout_head(repoPointer, optsC);
 
   for (var p in pathPointers) {
     calloc.free(p);
@@ -41,18 +42,19 @@ void head(
 /// Updates files in the working tree to match the content of the index.
 ///
 /// Throws a [LibGit2Error] if error occured.
-void index(
-  Pointer<git_repository> repo,
-  int strategy,
+void index({
+  required Pointer<git_repository> repoPointer,
+  required int strategy,
   String? directory,
   List<String>? paths,
-) {
-  final initOpts = initOptions(strategy, directory, paths);
+}) {
+  final initOpts =
+      initOptions(strategy: strategy, directory: directory, paths: paths);
   final optsC = initOpts[0];
   final pathPointers = initOpts[1];
   final strArray = initOpts[2];
 
-  final error = libgit2.git_checkout_index(repo, nullptr, optsC);
+  final error = libgit2.git_checkout_index(repoPointer, nullptr, optsC);
 
   for (var p in pathPointers) {
     calloc.free(p);
@@ -70,19 +72,23 @@ void index(
 /// pointed at by the treeish.
 ///
 /// Throws a [LibGit2Error] if error occured.
-void tree(
-  Pointer<git_repository> repo,
-  Pointer<git_object> treeish,
-  int strategy,
+void tree({
+  required Pointer<git_repository> repoPointer,
+  required Pointer<git_object> treeishPointer,
+  required int strategy,
   String? directory,
   List<String>? paths,
-) {
-  final initOpts = initOptions(strategy, directory, paths);
+}) {
+  final initOpts = initOptions(
+    strategy: strategy,
+    directory: directory,
+    paths: paths,
+  );
   final optsC = initOpts[0];
   final pathPointers = initOpts[1];
   final strArray = initOpts[2];
 
-  final error = libgit2.git_checkout_tree(repo, treeish, optsC);
+  final error = libgit2.git_checkout_tree(repoPointer, treeishPointer, optsC);
 
   for (var p in pathPointers) {
     calloc.free(p);
@@ -96,17 +102,20 @@ void tree(
   }
 }
 
-List<dynamic> initOptions(
-  int strategy,
+List<dynamic> initOptions({
+  required int strategy,
   String? directory,
   List<String>? paths,
-) {
+}) {
   final optsC = calloc<git_checkout_options>(sizeOf<git_checkout_options>());
   libgit2.git_checkout_options_init(optsC, GIT_CHECKOUT_OPTIONS_VERSION);
+
   optsC.ref.checkout_strategy = strategy;
+
   if (directory != null) {
     optsC.ref.target_directory = directory.toNativeUtf8().cast<Int8>();
   }
+
   List<Pointer<Int8>> pathPointers = [];
   Pointer<Pointer<Int8>> strArray = nullptr;
   if (paths != null) {

@@ -10,9 +10,12 @@ import 'oid.dart' as oid_bindings;
 /// The returned object should be released with `free()` when no longer needed.
 ///
 /// Throws a [LibGit2Error] if error occured.
-Pointer<git_commit> lookup(Pointer<git_repository> repo, Pointer<git_oid> id) {
+Pointer<git_commit> lookup({
+  required Pointer<git_repository> repoPointer,
+  required Pointer<git_oid> oidPointer,
+}) {
   final out = calloc<Pointer<git_commit>>();
-  final error = libgit2.git_commit_lookup(out, repo, id);
+  final error = libgit2.git_commit_lookup(out, repoPointer, oidPointer);
 
   if (error < 0) {
     throw LibGit2Error(libgit2.git_error_last());
@@ -24,13 +27,18 @@ Pointer<git_commit> lookup(Pointer<git_repository> repo, Pointer<git_oid> id) {
 /// Lookup a commit object from a repository, given a prefix of its identifier (short id).
 ///
 /// Throws a [LibGit2Error] if error occured.
-Pointer<git_commit> lookupPrefix(
-  Pointer<git_repository> repo,
-  Pointer<git_oid> id,
-  int len,
-) {
+Pointer<git_commit> lookupPrefix({
+  required Pointer<git_repository> repoPointer,
+  required Pointer<git_oid> oidPointer,
+  required int len,
+}) {
   final out = calloc<Pointer<git_commit>>();
-  final error = libgit2.git_commit_lookup_prefix(out, repo, id, len);
+  final error = libgit2.git_commit_lookup_prefix(
+    out,
+    repoPointer,
+    oidPointer,
+    len,
+  );
 
   if (error < 0) {
     throw LibGit2Error(libgit2.git_error_last());
@@ -49,12 +57,16 @@ Pointer<git_commit> lookupPrefix(
 /// this one when that data is known.
 ///
 /// Throws a [LibGit2Error] if error occured.
-Pointer<Pointer<git_annotated_commit>> annotatedLookup(
-  Pointer<git_repository> repo,
-  Pointer<git_oid> id,
-) {
+Pointer<Pointer<git_annotated_commit>> annotatedLookup({
+  required Pointer<git_repository> repoPointer,
+  required Pointer<git_oid> oidPointer,
+}) {
   final out = calloc<Pointer<git_annotated_commit>>();
-  final error = libgit2.git_annotated_commit_lookup(out, repo, id);
+  final error = libgit2.git_annotated_commit_lookup(
+    out,
+    repoPointer,
+    oidPointer,
+  );
 
   if (error < 0) {
     throw LibGit2Error(libgit2.git_error_last());
@@ -71,17 +83,17 @@ void annotatedFree(Pointer<git_annotated_commit> commit) {
 /// Create new commit in the repository.
 ///
 /// Throws a [LibGit2Error] if error occured.
-Pointer<git_oid> create(
-  Pointer<git_repository> repo,
+Pointer<git_oid> create({
+  required Pointer<git_repository> repoPointer,
   String? updateRef,
-  Pointer<git_signature> author,
-  Pointer<git_signature> committer,
+  required Pointer<git_signature> authorPointer,
+  required Pointer<git_signature> committerPointer,
   String? messageEncoding,
-  String message,
-  Pointer<git_tree> tree,
-  int parentCount,
-  List<String> parents,
-) {
+  required String message,
+  required Pointer<git_tree> treePointer,
+  required int parentCount,
+  required List<String> parents,
+}) {
   final out = calloc<git_oid>();
   final updateRefC = updateRef?.toNativeUtf8().cast<Int8>() ?? nullptr;
   final messageEncodingC =
@@ -94,7 +106,7 @@ Pointer<git_oid> create(
     for (var i = 0; i < parentCount; i++) {
       final oid = oid_bindings.fromSHA(parents[i]);
       var commit = calloc<IntPtr>();
-      commit = lookup(repo, oid).cast();
+      commit = lookup(repoPointer: repoPointer, oidPointer: oid).cast();
       parentsC[i] = commit.cast();
     }
   } else {
@@ -104,13 +116,13 @@ Pointer<git_oid> create(
 
   final error = libgit2.git_commit_create(
     out,
-    repo,
+    repoPointer,
     updateRefC,
-    author,
-    committer,
+    authorPointer,
+    committerPointer,
     messageEncodingC,
     messageC,
-    tree,
+    treePointer,
     parentCount,
     parentsC,
   );
@@ -163,8 +175,11 @@ int parentCount(Pointer<git_commit> commit) =>
 /// Get the oid of a specified parent for a commit.
 ///
 /// Throws a [LibGit2Error] if error occured.
-Pointer<git_oid> parentId(Pointer<git_commit> commit, int n) {
-  final parentOid = libgit2.git_commit_parent_id(commit, n);
+Pointer<git_oid> parentId({
+  required Pointer<git_commit> commitPointer,
+  required int position,
+}) {
+  final parentOid = libgit2.git_commit_parent_id(commitPointer, position);
 
   if (parentOid == nullptr) {
     throw LibGit2Error(libgit2.git_error_last());
@@ -197,12 +212,12 @@ Pointer<git_oid> tree(Pointer<git_commit> commit) {
 /// The returned index must be freed explicitly with `free()`.
 ///
 /// Throws a [LibGit2Error] if error occured.
-Pointer<git_index> revertCommit(
-  Pointer<git_repository> repo,
-  Pointer<git_commit> revertCommit,
-  Pointer<git_commit> ourCommit,
-  int mainline,
-) {
+Pointer<git_index> revertCommit({
+  required Pointer<git_repository> repoPointer,
+  required Pointer<git_commit> revertCommitPointer,
+  required Pointer<git_commit> ourCommitPointer,
+  required int mainline,
+}) {
   final out = calloc<Pointer<git_index>>();
   final opts = calloc<git_merge_options>();
   final optsError =
@@ -214,9 +229,9 @@ Pointer<git_index> revertCommit(
 
   final error = libgit2.git_revert_commit(
     out,
-    repo,
-    revertCommit,
-    ourCommit,
+    repoPointer,
+    revertCommitPointer,
+    ourCommitPointer,
     mainline,
     opts,
   );

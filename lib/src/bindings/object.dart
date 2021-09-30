@@ -17,13 +17,13 @@ int type(Pointer<git_object> obj) => libgit2.git_object_type(obj);
 /// guess the object's type.
 ///
 /// Throws a [LibGit2Error] if error occured.
-Pointer<git_object> lookup(
-  Pointer<git_repository> repo,
-  Pointer<git_oid> id,
-  int type,
-) {
+Pointer<git_object> lookup({
+  required Pointer<git_repository> repoPointer,
+  required Pointer<git_oid> oidPointer,
+  required int type,
+}) {
   final out = calloc<Pointer<git_object>>();
-  final error = libgit2.git_object_lookup(out, repo, id, type);
+  final error = libgit2.git_object_lookup(out, repoPointer, oidPointer, type);
 
   if (error < 0) {
     throw LibGit2Error(libgit2.git_error_last());

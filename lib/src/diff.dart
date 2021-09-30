@@ -33,7 +33,10 @@ class Diff {
     final length = bindings.length(_diffPointer);
     var deltas = <DiffDelta>[];
     for (var i = 0; i < length; i++) {
-      deltas.add(DiffDelta(bindings.getDeltaByIndex(_diffPointer, i)));
+      deltas.add(DiffDelta(bindings.getDeltaByIndex(
+        diffPointer: _diffPointer,
+        index: i,
+      )));
     }
     return deltas;
   }
@@ -43,7 +46,7 @@ class Diff {
     final length = bindings.length(_diffPointer);
     var patches = <Patch>[];
     for (var i = 0; i < length; i++) {
-      patches.add(Patch.fromDiff(this, i));
+      patches.add(Patch.fromDiff(diff: this, index: i));
     }
     return patches;
   }
@@ -54,8 +57,11 @@ class Diff {
     var buffer = calloc<git_buf>(sizeOf<git_buf>());
 
     for (var i = 0; i < length; i++) {
-      final patch = Patch.fromDiff(this, i);
-      buffer = bindings.addToBuf(patch.pointer, buffer);
+      final patch = Patch.fromDiff(diff: this, index: i);
+      buffer = bindings.addToBuf(
+        patchPointer: patch.pointer,
+        bufferPointer: buffer,
+      );
       patch.free();
     }
 
@@ -70,7 +76,12 @@ class Diff {
   DiffStats get stats => DiffStats(bindings.stats(_diffPointer));
 
   /// Merges one diff into another.
-  void merge(Diff diff) => bindings.merge(_diffPointer, diff.pointer);
+  void merge(Diff diff) {
+    bindings.merge(
+      ontoPointer: _diffPointer,
+      fromPointer: diff.pointer,
+    );
+  }
 
   /// Transforms a diff marking file renames, copies, etc.
   ///
@@ -91,13 +102,13 @@ class Diff {
         flags.fold(0, (previousValue, e) => previousValue | e.value);
 
     bindings.findSimilar(
-      _diffPointer,
-      flagsInt,
-      renameThreshold,
-      copyThreshold,
-      renameFromRewriteThreshold,
-      breakRewriteThreshold,
-      renameLimit,
+      diffPointer: _diffPointer,
+      flags: flagsInt,
+      renameThreshold: renameThreshold,
+      copyThreshold: copyThreshold,
+      renameFromRewriteThreshold: renameFromRewriteThreshold,
+      breakRewriteThreshold: breakRewriteThreshold,
+      renameLimit: renameLimit,
     );
   }
 
@@ -240,10 +251,15 @@ class DiffStats {
   /// Width for output only affects formatting of [GitDiffStats.full].
   ///
   /// Throws a [LibGit2Error] if error occured.
-  String print(Set<GitDiffStats> format, int width) {
+  String print({required Set<GitDiffStats> format, required int width}) {
     final int formatInt =
         format.fold(0, (previousValue, e) => previousValue | e.value);
-    return bindings.statsPrint(_diffStatsPointer, formatInt, width);
+
+    return bindings.statsPrint(
+      statsPointer: _diffStatsPointer,
+      format: formatInt,
+      width: width,
+    );
   }
 
   /// Releases memory allocated for diff stats object.
@@ -299,7 +315,11 @@ class DiffHunk {
   List<DiffLine> get lines {
     var lines = <DiffLine>[];
     for (var i = 0; i < linesCount; i++) {
-      lines.add(DiffLine(patch_bindings.lines(_patchPointer, index, i)));
+      lines.add(DiffLine(patch_bindings.lines(
+        patchPointer: _patchPointer,
+        hunkIndex: index,
+        lineOfHunk: i,
+      )));
     }
     return lines;
   }

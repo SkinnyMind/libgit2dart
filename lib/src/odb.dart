@@ -15,11 +15,15 @@ class Odb {
   /// Determine if an object can be found in the object database by an abbreviated object ID.
   ///
   /// Throws a [LibGit2Error] if error occured.
-  Pointer<git_oid> existsPrefix(
-    Pointer<git_oid> shortOid,
-    int len,
-  ) {
-    return bindings.existsPrefix(_odbPointer, shortOid, len);
+  Pointer<git_oid> existsPrefix({
+    required Pointer<git_oid> shortOidPointer,
+    required int length,
+  }) {
+    return bindings.existsPrefix(
+      odbPointer: _odbPointer,
+      shortOidPointer: shortOidPointer,
+      length: length,
+    );
   }
 
   /// Releases memory allocated for odb object.

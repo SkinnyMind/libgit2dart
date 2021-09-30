@@ -10,9 +10,12 @@ Pointer<git_oid> id(Pointer<git_tree> tree) => libgit2.git_tree_id(tree);
 /// Lookup a tree object from the repository.
 ///
 /// Throws a [LibGit2Error] if error occured.
-Pointer<git_tree> lookup(Pointer<git_repository> repo, Pointer<git_oid> id) {
+Pointer<git_tree> lookup({
+  required Pointer<git_repository> repoPointer,
+  required Pointer<git_oid> oidPointer,
+}) {
   final out = calloc<Pointer<git_tree>>();
-  final error = libgit2.git_tree_lookup(out, repo, id);
+  final error = libgit2.git_tree_lookup(out, repoPointer, oidPointer);
 
   if (error < 0) {
     throw LibGit2Error(libgit2.git_error_last());
@@ -31,8 +34,11 @@ Pointer<git_repository> owner(Pointer<git_tree> tree) =>
 /// but you must not use it after the tree is released.
 ///
 /// Throws [RangeError] when provided index is outside of valid range.
-Pointer<git_tree_entry> getByIndex(Pointer<git_tree> tree, int index) {
-  final result = libgit2.git_tree_entry_byindex(tree, index);
+Pointer<git_tree_entry> getByIndex({
+  required Pointer<git_tree> treePointer,
+  required int index,
+}) {
+  final result = libgit2.git_tree_entry_byindex(treePointer, index);
 
   if (result == nullptr) {
     throw RangeError('Out of bounds');
@@ -47,9 +53,12 @@ Pointer<git_tree_entry> getByIndex(Pointer<git_tree> tree, int index) {
 /// but you must not use it after the tree is released.
 ///
 /// Throws [ArgumentError] if nothing found for provided filename.
-Pointer<git_tree_entry> getByName(Pointer<git_tree> tree, String filename) {
+Pointer<git_tree_entry> getByName({
+  required Pointer<git_tree> treePointer,
+  required String filename,
+}) {
   final filenameC = filename.toNativeUtf8().cast<Int8>();
-  final result = libgit2.git_tree_entry_byname(tree, filenameC);
+  final result = libgit2.git_tree_entry_byname(treePointer, filenameC);
 
   calloc.free(filenameC);
 
@@ -66,10 +75,13 @@ Pointer<git_tree_entry> getByName(Pointer<git_tree> tree, String filename) {
 /// freed explicitly with `entryFree()`.
 ///
 /// Throws a [LibGit2Error] if error occured.
-Pointer<git_tree_entry> getByPath(Pointer<git_tree> root, String path) {
+Pointer<git_tree_entry> getByPath({
+  required Pointer<git_tree> rootPointer,
+  required String path,
+}) {
   final out = calloc<Pointer<git_tree_entry>>();
   final pathC = path.toNativeUtf8().cast<Int8>();
-  final error = libgit2.git_tree_entry_bypath(out, root, pathC);
+  final error = libgit2.git_tree_entry_bypath(out, rootPointer, pathC);
 
   calloc.free(pathC);
 
@@ -98,8 +110,11 @@ int entryFilemode(Pointer<git_tree_entry> entry) =>
 /// Compare two tree entries.
 ///
 /// Returns <0 if e1 is before e2, 0 if e1 == e2, >0 if e1 is after e2.
-int compare(Pointer<git_tree_entry> e1, Pointer<git_tree_entry> e2) {
-  return libgit2.git_tree_entry_cmp(e1, e2);
+int compare({
+  required Pointer<git_tree_entry> aPointer,
+  required Pointer<git_tree_entry> bPointer,
+}) {
+  return libgit2.git_tree_entry_cmp(aPointer, bPointer);
 }
 
 /// Free a user-owned tree entry.

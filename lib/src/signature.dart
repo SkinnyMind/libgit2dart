@@ -27,9 +27,14 @@ class Signature {
     libgit2.git_libgit2_init();
 
     if (time == null) {
-      _signaturePointer = bindings.now(name, email);
+      _signaturePointer = bindings.now(name: name, email: email);
     } else {
-      _signaturePointer = bindings.create(name, email, time, offset);
+      _signaturePointer = bindings.create(
+        name: name,
+        email: email,
+        time: time,
+        offset: offset,
+      );
     }
   }
 

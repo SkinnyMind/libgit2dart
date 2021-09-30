@@ -15,7 +15,7 @@ void main() {
   setUp(() async {
     tmpDir = await setupRepo(Directory('test/assets/testrepo/'));
     repo = Repository.open(tmpDir.path);
-    blob = Blob.lookup(repo, blobSHA);
+    blob = Blob.lookup(repo: repo, sha: blobSHA);
   });
 
   tearDown(() async {
@@ -37,8 +37,8 @@ void main() {
     });
 
     test('successfully creates new blob', () {
-      final oid = Blob.create(repo, newBlobContent);
-      final newBlob = Blob.lookup(repo, oid.sha);
+      final oid = Blob.create(repo: repo, content: newBlobContent);
+      final newBlob = Blob.lookup(repo: repo, sha: oid.sha);
 
       expect(newBlob.id.sha, '18fdaeef018e57a92bcad2d4a35b577f34089af6');
       expect(newBlob.isBinary, false);
@@ -50,8 +50,11 @@ void main() {
 
     test('successfully creates new blob from file at provided relative path',
         () {
-      final oid = Blob.createFromWorkdir(repo, 'feature_file');
-      final newBlob = Blob.lookup(repo, oid.sha);
+      final oid = Blob.createFromWorkdir(
+        repo: repo,
+        relativePath: 'feature_file',
+      );
+      final newBlob = Blob.lookup(repo: repo, sha: oid.sha);
 
       expect(newBlob.id.sha, blobSHA);
       expect(newBlob.isBinary, false);
@@ -63,7 +66,10 @@ void main() {
 
     test('throws when creating new blob from invalid path', () {
       expect(
-        () => Blob.createFromWorkdir(repo, 'invalid/path.txt'),
+        () => Blob.createFromWorkdir(
+          repo: repo,
+          relativePath: 'invalid/path.txt',
+        ),
         throwsA(isA<LibGit2Error>()),
       );
     });
@@ -74,7 +80,10 @@ void main() {
       final outsideFile =
           File('${Directory.current.absolute.path}/test/blob_test.dart');
       expect(
-        () => Blob.createFromWorkdir(repo, outsideFile.path),
+        () => Blob.createFromWorkdir(
+          repo: repo,
+          relativePath: outsideFile.path,
+        ),
         throwsA(isA<LibGit2Error>()),
       );
     });
@@ -82,8 +91,8 @@ void main() {
     test('successfully creates new blob from file at provided path', () {
       final outsideFile =
           File('${Directory.current.absolute.path}/test/blob_test.dart');
-      final oid = Blob.createFromDisk(repo, outsideFile.path);
-      final newBlob = Blob.lookup(repo, oid.sha);
+      final oid = Blob.createFromDisk(repo: repo, path: outsideFile.path);
+      final newBlob = Blob.lookup(repo: repo, sha: oid.sha);
 
       expect(newBlob, isA<Blob>());
       expect(newBlob.isBinary, false);

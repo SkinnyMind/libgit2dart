@@ -24,7 +24,7 @@ void main() {
         final commit =
             repo['c68ff54aabf660fcdd9a2838d401583fe31249e3'] as Commit;
 
-        final result = repo.mergeAnalysis(commit.id);
+        final result = repo.mergeAnalysis(theirHead: commit.id);
         expect(result[0], {GitMergeAnalysis.upToDate});
         expect(result[1], {GitMergePreference.none});
         expect(repo.status, isEmpty);
@@ -36,7 +36,10 @@ void main() {
         final commit =
             repo['c68ff54aabf660fcdd9a2838d401583fe31249e3'] as Commit;
 
-        final result = repo.mergeAnalysis(commit.id, 'refs/tags/v0.1');
+        final result = repo.mergeAnalysis(
+          theirHead: commit.id,
+          ourRef: 'refs/tags/v0.1',
+        );
         expect(result[0], {GitMergeAnalysis.upToDate});
         expect(repo.status, isEmpty);
 
@@ -53,7 +56,10 @@ void main() {
           target: ffCommit,
         );
 
-        final result = repo.mergeAnalysis(theirHead.id, ffBranch.name);
+        final result = repo.mergeAnalysis(
+          theirHead: theirHead.id,
+          ourRef: ffBranch.name,
+        );
         expect(
           result[0],
           {GitMergeAnalysis.fastForward, GitMergeAnalysis.normal},
@@ -69,7 +75,7 @@ void main() {
         final commit =
             repo['5aecfa0fb97eadaac050ccb99f03c3fb65460ad4'] as Commit;
 
-        final result = repo.mergeAnalysis(commit.id);
+        final result = repo.mergeAnalysis(theirHead: commit.id);
         expect(result[0], {GitMergeAnalysis.normal});
         expect(repo.status, isEmpty);
 
@@ -81,7 +87,7 @@ void main() {
       final conflictBranch = repo.branches['conflict-branch'];
       final index = repo.index;
 
-      final result = repo.mergeAnalysis(conflictBranch.target);
+      final result = repo.mergeAnalysis(theirHead: conflictBranch.target);
       expect(result[0], {GitMergeAnalysis.normal});
 
       repo.merge(conflictBranch.target);
@@ -212,7 +218,7 @@ void main() {
         final ourCommit =
             repo['14905459d775f3f56a39ebc2ff081163f7da3529'] as Commit;
         final baseCommit =
-            repo[repo.mergeBase(ourCommit.id.sha, theirCommit.id.sha).sha]
+            repo[repo.mergeBase(a: ourCommit.id.sha, b: theirCommit.id.sha).sha]
                 as Commit;
         final theirTree = theirCommit.tree;
         final ourTree = ourCommit.tree;
@@ -250,7 +256,7 @@ void main() {
         final ourCommit =
             repo['14905459d775f3f56a39ebc2ff081163f7da3529'] as Commit;
         final baseCommit =
-            repo[repo.mergeBase(ourCommit.id.sha, theirCommit.id.sha).sha]
+            repo[repo.mergeBase(a: ourCommit.id.sha, b: theirCommit.id.sha).sha]
                 as Commit;
         final theirTree = theirCommit.tree;
         final ourTree = ourCommit.tree;

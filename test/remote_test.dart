@@ -79,7 +79,7 @@ void main() {
     test('successfully renames', () {
       final remote = repo.remotes[remoteName];
 
-      final problems = repo.remotes.rename(remoteName, 'new');
+      final problems = repo.remotes.rename(remote: remoteName, newName: 'new');
       expect(problems, isEmpty);
       expect(remote.name, isNot('new'));
 
@@ -91,7 +91,10 @@ void main() {
     });
 
     test('throws when renaming with invalid names', () {
-      expect(() => repo.remotes.rename('', ''), throwsA(isA<LibGit2Error>()));
+      expect(
+        () => repo.remotes.rename(remote: '', newName: ''),
+        throwsA(isA<LibGit2Error>()),
+      );
     });
 
     test('successfully sets url', () {
@@ -99,7 +102,7 @@ void main() {
       expect(remote.url, remoteUrl);
 
       const newUrl = 'git://new/url.git';
-      repo.remotes.setUrl(remoteName, newUrl);
+      repo.remotes.setUrl(remote: remoteName, url: newUrl);
 
       final newRemote = repo.remotes[remoteName];
       expect(newRemote.url, newUrl);
@@ -110,14 +113,14 @@ void main() {
 
     test('throws when trying to set invalid url name', () {
       expect(
-        () => repo.remotes.setUrl('origin', ''),
+        () => repo.remotes.setUrl(remote: 'origin', url: ''),
         throwsA(isA<LibGit2Error>()),
       );
     });
 
     test('successfully sets url for pushing', () {
       const newUrl = 'git://new/url.git';
-      repo.remotes.setPushUrl(remoteName, newUrl);
+      repo.remotes.setPushUrl(remote: remoteName, url: newUrl);
 
       final remote = repo.remotes[remoteName];
       expect(remote.pushUrl, newUrl);
@@ -127,7 +130,7 @@ void main() {
 
     test('throws when trying to set invalid push url name', () {
       expect(
-        () => repo.remotes.setPushUrl('origin', ''),
+        () => repo.remotes.setPushUrl(remote: 'origin', url: ''),
         throwsA(isA<LibGit2Error>()),
       );
     });
@@ -159,7 +162,10 @@ void main() {
     });
 
     test('successfully adds fetch refspec', () {
-      repo.remotes.addFetch('origin', '+refs/test/*:refs/test/remotes/*');
+      repo.remotes.addFetch(
+        remote: 'origin',
+        refspec: '+refs/test/*:refs/test/remotes/*',
+      );
       final remote = repo.remotes['origin'];
       expect(remote.fetchRefspecs.length, 2);
       expect(
@@ -174,7 +180,10 @@ void main() {
     });
 
     test('successfully adds push refspec', () {
-      repo.remotes.addPush('origin', '+refs/test/*:refs/test/remotes/*');
+      repo.remotes.addPush(
+        remote: 'origin',
+        refspec: '+refs/test/*:refs/test/remotes/*',
+      );
       final remote = repo.remotes['origin'];
       expect(remote.pushRefspecs.length, 1);
       expect(remote.pushRefspecs, ['+refs/test/*:refs/test/remotes/*']);
@@ -184,8 +193,8 @@ void main() {
 
     test('successfully returns remote repo\'s reference list', () {
       repo.remotes.setUrl(
-        'libgit2',
-        'https://github.com/libgit2/TestGitRepository',
+        remote: 'libgit2',
+        url: 'https://github.com/libgit2/TestGitRepository',
       );
       final remote = repo.remotes['libgit2'];
 
@@ -204,8 +213,8 @@ void main() {
 
     test('successfully fetches data', () {
       repo.remotes.setUrl(
-        'libgit2',
-        'https://github.com/libgit2/TestGitRepository',
+        remote: 'libgit2',
+        url: 'https://github.com/libgit2/TestGitRepository',
       );
       final remote = repo.remotes['libgit2'];
 
@@ -225,8 +234,8 @@ void main() {
     test('successfully fetches data with provided transfer progress callback',
         () {
       repo.remotes.setUrl(
-        'libgit2',
-        'https://github.com/libgit2/TestGitRepository',
+        remote: 'libgit2',
+        url: 'https://github.com/libgit2/TestGitRepository',
       );
       final remote = repo.remotes['libgit2'];
 
@@ -255,8 +264,8 @@ Counting objects: 100% (1/1)\rCounting objects: 100% (1/1), done.
 Total 69 (delta 0), reused 1 (delta 0), pack-reused 68
 """;
       repo.remotes.setUrl(
-        'libgit2',
-        'https://github.com/libgit2/TestGitRepository',
+        remote: 'libgit2',
+        url: 'https://github.com/libgit2/TestGitRepository',
       );
       final remote = repo.remotes['libgit2'];
 
@@ -275,8 +284,8 @@ Total 69 (delta 0), reused 1 (delta 0), pack-reused 68
 
     test('successfully fetches data with provided update tips callback', () {
       repo.remotes.setUrl(
-        'libgit2',
-        'https://github.com/libgit2/TestGitRepository',
+        remote: 'libgit2',
+        url: 'https://github.com/libgit2/TestGitRepository',
       );
       final remote = repo.remotes['libgit2'];
       const tipsExpected = [

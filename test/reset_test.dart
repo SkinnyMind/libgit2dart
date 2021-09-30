@@ -26,7 +26,7 @@ void main() {
       var contents = file.readAsStringSync();
       expect(contents, 'Feature edit\n');
 
-      repo.reset(sha, GitReset.hard);
+      repo.reset(target: sha, resetType: GitReset.hard);
       contents = file.readAsStringSync();
       expect(contents, isEmpty);
     });
@@ -35,7 +35,7 @@ void main() {
       var contents = file.readAsStringSync();
       expect(contents, 'Feature edit\n');
 
-      repo.reset(sha, GitReset.soft);
+      repo.reset(target: sha, resetType: GitReset.soft);
       contents = file.readAsStringSync();
       expect(contents, 'Feature edit\n');
 
@@ -50,7 +50,7 @@ void main() {
       var contents = file.readAsStringSync();
       expect(contents, 'Feature edit\n');
 
-      repo.reset(sha, GitReset.mixed);
+      repo.reset(target: sha, resetType: GitReset.mixed);
       contents = file.readAsStringSync();
       expect(contents, 'Feature edit\n');
 

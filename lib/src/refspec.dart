@@ -33,20 +33,38 @@ class Refspec {
   }
 
   /// Checks if a refspec's source descriptor matches a reference.
-  bool matchesSource(String refname) =>
-      bindings.matchesSource(_refspecPointer, refname);
+  bool matchesSource(String refname) {
+    return bindings.matchesSource(
+      refspecPointer: _refspecPointer,
+      refname: refname,
+    );
+  }
 
   /// Checks if a refspec's destination descriptor matches a reference.
-  bool matchesDestination(String refname) =>
-      bindings.matchesDestination(_refspecPointer, refname);
+  bool matchesDestination(String refname) {
+    return bindings.matchesDestination(
+      refspecPointer: _refspecPointer,
+      refname: refname,
+    );
+  }
 
   /// Transforms a reference to its target following the refspec's rules.
   ///
   /// Throws a [LibGit2Error] if error occured.
-  String transform(String name) => bindings.transform(_refspecPointer, name);
+  String transform(String name) {
+    return bindings.transform(
+      refspecPointer: _refspecPointer,
+      name: name,
+    );
+  }
 
   /// Transforms a target reference to its source reference following the refspec's rules.
   ///
   /// Throws a [LibGit2Error] if error occured.
-  String rTransform(String name) => bindings.rTransform(_refspecPointer, name);
+  String rTransform(String name) {
+    return bindings.rTransform(
+      refspecPointer: _refspecPointer,
+      name: name,
+    );
+  }
 }

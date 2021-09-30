@@ -134,10 +134,13 @@ Pointer<git_config> snapshot(Pointer<git_config> config) {
 /// Get the config entry of a config variable.
 ///
 /// Throws a [LibGit2Error] if error occured.
-Pointer<git_config_entry> getEntry(Pointer<git_config> cfg, String variable) {
+Pointer<git_config_entry> getEntry({
+  required Pointer<git_config> configPointer,
+  required String variable,
+}) {
   final out = calloc<Pointer<git_config_entry>>();
   final name = variable.toNativeUtf8().cast<Int8>();
-  final error = libgit2.git_config_get_entry(out, cfg, name);
+  final error = libgit2.git_config_get_entry(out, configPointer, name);
 
   calloc.free(name);
 
@@ -152,10 +155,14 @@ Pointer<git_config_entry> getEntry(Pointer<git_config> cfg, String variable) {
 /// highest level (usually the local one).
 ///
 /// Throws a [LibGit2Error] if error occured.
-void setBool(Pointer<git_config> cfg, String variable, bool value) {
+void setBool({
+  required Pointer<git_config> configPointer,
+  required String variable,
+  required bool value,
+}) {
   final name = variable.toNativeUtf8().cast<Int8>();
   final valueC = value ? 1 : 0;
-  final error = libgit2.git_config_set_bool(cfg, name, valueC);
+  final error = libgit2.git_config_set_bool(configPointer, name, valueC);
 
   calloc.free(name);
 
@@ -168,9 +175,13 @@ void setBool(Pointer<git_config> cfg, String variable, bool value) {
 /// highest level (usually the local one).
 ///
 /// Throws a [LibGit2Error] if error occured.
-void setInt(Pointer<git_config> cfg, String variable, int value) {
+void setInt({
+  required Pointer<git_config> configPointer,
+  required String variable,
+  required int value,
+}) {
   final name = variable.toNativeUtf8().cast<Int8>();
-  final error = libgit2.git_config_set_int64(cfg, name, value);
+  final error = libgit2.git_config_set_int64(configPointer, name, value);
 
   calloc.free(name);
 
@@ -183,10 +194,14 @@ void setInt(Pointer<git_config> cfg, String variable, int value) {
 /// highest level (usually the local one).
 ///
 /// Throws a [LibGit2Error] if error occured.
-void setString(Pointer<git_config> cfg, String variable, String value) {
+void setString({
+  required Pointer<git_config> configPointer,
+  required String variable,
+  required String value,
+}) {
   final name = variable.toNativeUtf8().cast<Int8>();
   final valueC = value.toNativeUtf8().cast<Int8>();
-  final error = libgit2.git_config_set_string(cfg, name, valueC);
+  final error = libgit2.git_config_set_string(configPointer, name, valueC);
 
   calloc.free(name);
   calloc.free(valueC);
@@ -207,9 +222,12 @@ Pointer<git_config_iterator> iterator(Pointer<git_config> cfg) {
 /// (usually the local one).
 ///
 /// Throws a [LibGit2Error] if error occured.
-void delete(Pointer<git_config> cfg, String variable) {
+void delete({
+  required Pointer<git_config> configPointer,
+  required String variable,
+}) {
   final name = variable.toNativeUtf8().cast<Int8>();
-  final error = libgit2.git_config_delete_entry(cfg, name);
+  final error = libgit2.git_config_delete_entry(configPointer, name);
 
   calloc.free(name);
 
@@ -222,16 +240,23 @@ void delete(Pointer<git_config> cfg, String variable) {
 ///
 /// If regexp is present, then the iterator will only iterate over all
 /// values which match the pattern.
-List<String> multivarValues(
-  Pointer<git_config> cfg,
-  String variable,
+List<String> multivarValues({
+  required Pointer<git_config> configPointer,
+  required String variable,
   String? regexp,
-) {
+}) {
   final name = variable.toNativeUtf8().cast<Int8>();
   final regexpC = regexp?.toNativeUtf8().cast<Int8>() ?? nullptr;
   final iterator = calloc<Pointer<git_config_iterator>>();
   final entry = calloc<Pointer<git_config_entry>>();
-  libgit2.git_config_multivar_iterator_new(iterator, cfg, name, regexpC);
+
+  libgit2.git_config_multivar_iterator_new(
+    iterator,
+    configPointer,
+    name,
+    regexpC,
+  );
+
   var error = 0;
   final entries = <String>[];
 
@@ -256,16 +281,17 @@ List<String> multivarValues(
 /// highest level (usually the local one).
 ///
 /// The regexp is applied case-sensitively on the value.
-void setMultivar(
-  Pointer<git_config> cfg,
-  String variable,
-  String regexp,
-  String value,
-) {
+void setMultivar({
+  required Pointer<git_config> configPointer,
+  required String variable,
+  required String regexp,
+  required String value,
+}) {
   final name = variable.toNativeUtf8().cast<Int8>();
   final regexpC = regexp.toNativeUtf8().cast<Int8>();
   final valueC = value.toNativeUtf8().cast<Int8>();
-  libgit2.git_config_set_multivar(cfg, name, regexpC, valueC);
+
+  libgit2.git_config_set_multivar(configPointer, name, regexpC, valueC);
 
   calloc.free(name);
   calloc.free(regexpC);
@@ -276,10 +302,15 @@ void setMultivar(
 /// with the highest level (usually the local one).
 ///
 /// The regexp is applied case-sensitively on the value.
-void deleteMultivar(Pointer<git_config> cfg, String variable, String regexp) {
+void deleteMultivar({
+  required Pointer<git_config> configPointer,
+  required String variable,
+  required String regexp,
+}) {
   final name = variable.toNativeUtf8().cast<Int8>();
   final regexpC = regexp.toNativeUtf8().cast<Int8>();
-  libgit2.git_config_delete_multivar(cfg, name, regexpC);
+
+  libgit2.git_config_delete_multivar(configPointer, name, regexpC);
 
   calloc.free(name);
   calloc.free(regexpC);

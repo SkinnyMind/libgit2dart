@@ -24,13 +24,13 @@ void main() {
   group('Oid', () {
     group('fromSHA()', () {
       test('initializes successfully', () {
-        final oid = Oid.fromSHA(repo, sha);
+        final oid = Oid.fromSHA(repo: repo, sha: sha);
         expect(oid, isA<Oid>());
         expect(oid.sha, sha);
       });
 
       test('initializes successfully from short hex string', () {
-        final oid = Oid.fromSHA(repo, sha.substring(0, 5));
+        final oid = Oid.fromSHA(repo: repo, sha: sha.substring(0, 5));
 
         expect(oid, isA<Oid>());
         expect(oid.sha, sha);
@@ -39,7 +39,7 @@ void main() {
 
     group('fromRaw()', () {
       test('initializes successfully', () {
-        final sourceOid = Oid.fromSHA(repo, sha);
+        final sourceOid = Oid.fromSHA(repo: repo, sha: sha);
         final oid = Oid.fromRaw(sourceOid.pointer.ref);
         expect(oid, isA<Oid>());
         expect(oid.sha, sha);
@@ -47,27 +47,27 @@ void main() {
     });
 
     test('returns sha hex string', () {
-      final oid = Oid.fromSHA(repo, sha);
+      final oid = Oid.fromSHA(repo: repo, sha: sha);
       expect(oid.sha, equals(sha));
     });
 
     group('compare', () {
       test('< and <=', () {
-        final oid1 = Oid.fromSHA(repo, sha);
-        final oid2 = Oid.fromSHA(repo, biggerSha);
+        final oid1 = Oid.fromSHA(repo: repo, sha: sha);
+        final oid2 = Oid.fromSHA(repo: repo, sha: biggerSha);
         expect(oid1 < oid2, true);
         expect(oid1 <= oid2, true);
       });
 
       test('==', () {
-        final oid1 = Oid.fromSHA(repo, sha);
-        final oid2 = Oid.fromSHA(repo, sha);
+        final oid1 = Oid.fromSHA(repo: repo, sha: sha);
+        final oid2 = Oid.fromSHA(repo: repo, sha: sha);
         expect(oid1 == oid2, true);
       });
 
       test('> and >=', () {
-        final oid1 = Oid.fromSHA(repo, sha);
-        final oid2 = Oid.fromSHA(repo, lesserSha);
+        final oid1 = Oid.fromSHA(repo: repo, sha: sha);
+        final oid2 = Oid.fromSHA(repo: repo, sha: lesserSha);
         expect(oid1 > oid2, true);
         expect(oid1 >= oid2, true);
       });

@@ -54,10 +54,13 @@ Pointer<git_reference> resolve(Pointer<git_reference> ref) {
 /// The name will be checked for validity.
 ///
 /// Throws a [LibGit2Error] if error occured.
-Pointer<git_reference> lookup(Pointer<git_repository> repo, String name) {
+Pointer<git_reference> lookup({
+  required Pointer<git_repository> repoPointer,
+  required String name,
+}) {
   final out = calloc<Pointer<git_reference>>();
   final nameC = name.toNativeUtf8().cast<Int8>();
-  final error = libgit2.git_reference_lookup(out, repo, nameC);
+  final error = libgit2.git_reference_lookup(out, repoPointer, nameC);
 
   calloc.free(nameC);
 
@@ -74,10 +77,13 @@ Pointer<git_reference> lookup(Pointer<git_repository> repo, String name) {
 /// the user is referring to.
 ///
 /// Throws a [LibGit2Error] if error occured.
-Pointer<git_reference> lookupDWIM(Pointer<git_repository> repo, String name) {
+Pointer<git_reference> lookupDWIM({
+  required Pointer<git_repository> repoPointer,
+  required String name,
+}) {
   final out = calloc<Pointer<git_reference>>();
   final nameC = name.toNativeUtf8().cast<Int8>();
-  final error = libgit2.git_reference_dwim(out, repo, nameC);
+  final error = libgit2.git_reference_dwim(out, repoPointer, nameC);
 
   calloc.free(nameC);
 
@@ -118,19 +124,19 @@ String shorthand(Pointer<git_reference> ref) {
 /// the repository. We only rename the reflog if it exists.
 ///
 /// Throws a [LibGit2Error] if error occured.
-Pointer<git_reference> rename(
-  Pointer<git_reference> ref,
-  String newName,
-  bool force,
+Pointer<git_reference> rename({
+  required Pointer<git_reference> refPointer,
+  required String newName,
+  required bool force,
   String? logMessage,
-) {
+}) {
   final out = calloc<Pointer<git_reference>>();
   final newNameC = newName.toNativeUtf8().cast<Int8>();
   final forceC = force == true ? 1 : 0;
   final logMessageC = logMessage?.toNativeUtf8().cast<Int8>() ?? nullptr;
   final error = libgit2.git_reference_rename(
     out,
-    ref,
+    refPointer,
     newNameC,
     forceC,
     logMessageC,
@@ -171,9 +177,12 @@ List<String> list(Pointer<git_repository> repo) {
 /// Check if a reflog exists for the specified reference.
 ///
 /// Throws a [LibGit2Error] if error occured.
-bool hasLog(Pointer<git_repository> repo, String name) {
+bool hasLog({
+  required Pointer<git_repository> repoPointer,
+  required String name,
+}) {
   final refname = name.toNativeUtf8().cast<Int8>();
-  final error = libgit2.git_reference_has_log(repo, refname);
+  final error = libgit2.git_reference_has_log(repoPointer, refname);
 
   calloc.free(refname);
 
@@ -230,22 +239,22 @@ bool isTag(Pointer<git_reference> ref) {
 ///
 /// The message for the reflog will be ignored if the reference does not belong in the
 /// standard set (HEAD, branches and remote-tracking branches) and it does not have a reflog.
-Pointer<git_reference> createDirect(
-  Pointer<git_repository> repo,
-  String name,
-  Pointer<git_oid> oid,
-  bool force,
+Pointer<git_reference> createDirect({
+  required Pointer<git_repository> repoPointer,
+  required String name,
+  required Pointer<git_oid> oidPointer,
+  required bool force,
   String? logMessage,
-) {
+}) {
   final out = calloc<Pointer<git_reference>>();
   final nameC = name.toNativeUtf8().cast<Int8>();
   final forceC = force == true ? 1 : 0;
   final logMessageC = logMessage?.toNativeUtf8().cast<Int8>() ?? nullptr;
   final error = libgit2.git_reference_create(
     out,
-    repo,
+    repoPointer,
     nameC,
-    oid,
+    oidPointer,
     forceC,
     logMessageC,
   );
@@ -282,13 +291,13 @@ Pointer<git_reference> createDirect(
 ///
 /// The message for the reflog will be ignored if the reference does not belong in the standard
 /// set (HEAD, branches and remote-tracking branches) and it does not have a reflog.
-Pointer<git_reference> createSymbolic(
-  Pointer<git_repository> repo,
-  String name,
-  String target,
-  bool force,
+Pointer<git_reference> createSymbolic({
+  required Pointer<git_repository> repoPointer,
+  required String name,
+  required String target,
+  required bool force,
   String? logMessage,
-) {
+}) {
   final out = calloc<Pointer<git_reference>>();
   final nameC = name.toNativeUtf8().cast<Int8>();
   final targetC = target.toNativeUtf8().cast<Int8>();
@@ -296,7 +305,7 @@ Pointer<git_reference> createSymbolic(
   final logMessageC = logMessage?.toNativeUtf8().cast<Int8>() ?? nullptr;
   final error = libgit2.git_reference_symbolic_create(
     out,
-    repo,
+    repoPointer,
     nameC,
     targetC,
     forceC,
@@ -339,14 +348,19 @@ Pointer<git_repository> owner(Pointer<git_reference> ref) {
 /// The new reference will be written to disk, overwriting the given reference.
 ///
 /// Throws a [LibGit2Error] if error occured.
-Pointer<git_reference> setTarget(
-  Pointer<git_reference> ref,
-  Pointer<git_oid> oid,
+Pointer<git_reference> setTarget({
+  required Pointer<git_reference> refPointer,
+  required Pointer<git_oid> oidPointer,
   String? logMessage,
-) {
+}) {
   final out = calloc<Pointer<git_reference>>();
   final logMessageC = logMessage?.toNativeUtf8().cast<Int8>() ?? nullptr;
-  final error = libgit2.git_reference_set_target(out, ref, oid, logMessageC);
+  final error = libgit2.git_reference_set_target(
+    out,
+    refPointer,
+    oidPointer,
+    logMessageC,
+  );
 
   calloc.free(logMessageC);
 
@@ -368,16 +382,20 @@ Pointer<git_reference> setTarget(
 /// standard set (HEAD, branches and remote-tracking branches) and and it does not have a reflog.
 ///
 /// Throws a [LibGit2Error] if error occured.
-Pointer<git_reference> setTargetSymbolic(
-  Pointer<git_reference> ref,
-  String target,
+Pointer<git_reference> setTargetSymbolic({
+  required Pointer<git_reference> refPointer,
+  required String target,
   String? logMessage,
-) {
+}) {
   final out = calloc<Pointer<git_reference>>();
   final targetC = target.toNativeUtf8().cast<Int8>();
   final logMessageC = logMessage?.toNativeUtf8().cast<Int8>() ?? nullptr;
-  final error =
-      libgit2.git_reference_symbolic_set_target(out, ref, targetC, logMessageC);
+  final error = libgit2.git_reference_symbolic_set_target(
+    out,
+    refPointer,
+    targetC,
+    logMessageC,
+  );
 
   calloc.free(targetC);
   calloc.free(logMessageC);
@@ -390,8 +408,11 @@ Pointer<git_reference> setTargetSymbolic(
 }
 
 /// Compare two references.
-bool compare(Pointer<git_reference> ref1, Pointer<git_reference> ref2) {
-  final result = libgit2.git_reference_cmp(ref1, ref2);
+bool compare({
+  required Pointer<git_reference> ref1Pointer,
+  required Pointer<git_reference> ref2Pointer,
+}) {
+  final result = libgit2.git_reference_cmp(ref1Pointer, ref2Pointer);
   return result == 0 ? true : false;
 }
 
@@ -403,9 +424,12 @@ bool compare(Pointer<git_reference> ref1, Pointer<git_reference> ref2) {
 /// non-tag object is met.
 ///
 /// Throws a [LibGit2Error] if error occured.
-Pointer<git_object> peel(Pointer<git_reference> ref, int type) {
+Pointer<git_object> peel({
+  required Pointer<git_reference> refPointer,
+  required int type,
+}) {
   final out = calloc<Pointer<git_object>>();
-  final error = libgit2.git_reference_peel(out, ref, type);
+  final error = libgit2.git_reference_peel(out, refPointer, type);
 
   if (error < 0) {
     throw LibGit2Error(libgit2.git_error_last());

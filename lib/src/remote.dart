@@ -33,7 +33,7 @@ class Remotes {
   ///
   /// Throws a [LibGit2Error] if error occured.
   Remote operator [](String name) {
-    return Remote(bindings.lookup(_repoPointer, name));
+    return Remote(bindings.lookup(repoPointer: _repoPointer, name: name));
   }
 
   /// Adds a remote to the repository's configuration with the default [fetch]
@@ -46,13 +46,17 @@ class Remotes {
     String? fetch,
   }) {
     if (fetch == null) {
-      return Remote(bindings.create(_repoPointer, name, url));
+      return Remote(bindings.create(
+        repoPointer: _repoPointer,
+        name: name,
+        url: url,
+      ));
     } else {
       return Remote(bindings.createWithFetchSpec(
-        _repoPointer,
-        name,
-        url,
-        fetch,
+        repoPointer: _repoPointer,
+        name: name,
+        url: url,
+        fetch: fetch,
       ));
     }
   }
@@ -62,7 +66,9 @@ class Remotes {
   /// All remote-tracking branches and configuration settings for the remote will be removed.
   ///
   /// Throws a [LibGit2Error] if error occured.
-  void delete(String name) => bindings.delete(_repoPointer, name);
+  void delete(String name) {
+    bindings.delete(repoPointer: _repoPointer, name: name);
+  }
 
   /// Give the remote a new name.
   ///
@@ -76,8 +82,13 @@ class Remotes {
   /// their list of refspecs.
   ///
   /// Throws a [LibGit2Error] if error occured.
-  List<String> rename(String name, String newName) =>
-      bindings.rename(_repoPointer, name, newName);
+  List<String> rename({required String remote, required String newName}) {
+    return bindings.rename(
+      repoPointer: _repoPointer,
+      name: remote,
+      newName: newName,
+    );
+  }
 
   /// Sets the remote's url in the configuration.
   ///
@@ -85,8 +96,13 @@ class Remotes {
   /// case of a single-url remote and will otherwise return an error.
   ///
   /// Throws a [LibGit2Error] if error occured.
-  void setUrl(String remote, String url) =>
-      bindings.setUrl(_repoPointer, remote, url);
+  void setUrl({required String remote, required String url}) {
+    bindings.setUrl(
+      repoPointer: _repoPointer,
+      remote: remote,
+      url: url,
+    );
+  }
 
   /// Sets the remote's url for pushing in the configuration.
   ///
@@ -94,24 +110,39 @@ class Remotes {
   /// case of a single-url remote and will otherwise return an error.
   ///
   /// Throws a [LibGit2Error] if error occured.
-  void setPushUrl(String remote, String url) =>
-      bindings.setPushUrl(_repoPointer, remote, url);
+  void setPushUrl({required String remote, required String url}) {
+    bindings.setPushUrl(
+      repoPointer: _repoPointer,
+      remote: remote,
+      url: url,
+    );
+  }
 
   /// Adds a fetch refspec to the remote's configuration.
   ///
   /// No loaded remote instances will be affected.
   ///
   /// Throws a [LibGit2Error] if error occured.
-  void addFetch(String remote, String refspec) =>
-      bindings.addFetch(_repoPointer, remote, refspec);
+  void addFetch({required String remote, required String refspec}) {
+    bindings.addFetch(
+      repoPointer: _repoPointer,
+      remote: remote,
+      refspec: refspec,
+    );
+  }
 
   /// Adds a push refspec to the remote's configuration.
   ///
   /// No loaded remote instances will be affected.
   ///
   /// Throws a [LibGit2Error] if error occured.
-  void addPush(String remote, String refspec) =>
-      bindings.addPush(_repoPointer, remote, refspec);
+  void addPush({required String remote, required String refspec}) {
+    bindings.addPush(
+      repoPointer: _repoPointer,
+      remote: remote,
+      refspec: refspec,
+    );
+  }
 }
 
 class Remote {
@@ -139,8 +170,12 @@ class Remote {
   int get refspecCount => bindings.refspecCount(_remotePointer);
 
   /// Returns a [Refspec] object from the remote at provided position.
-  Refspec getRefspec(int index) =>
-      Refspec(bindings.getRefspec(_remotePointer, index));
+  Refspec getRefspec(int index) {
+    return Refspec(bindings.getRefspec(
+      remotePointer: _remotePointer,
+      position: index,
+    ));
+  }
 
   /// Returns the remote's list of fetch refspecs.
   List<String> get fetchRefspecs => bindings.fetchRefspecs(_remotePointer);
@@ -159,10 +194,10 @@ class Remote {
     Callbacks callbacks = const Callbacks(),
   }) {
     bindings.connect(
-      _remotePointer,
-      GitDirection.fetch.value,
-      proxy,
-      callbacks,
+      remotePointer: _remotePointer,
+      direction: GitDirection.fetch.value,
+      callbacks: callbacks,
+      proxyOption: proxy,
     );
     final result = bindings.lsRemotes(_remotePointer);
     bindings.disconnect(_remotePointer);
@@ -185,12 +220,12 @@ class Remote {
     Callbacks callbacks = const Callbacks(),
   }) {
     bindings.fetch(
-      _remotePointer,
-      refspecs,
-      reflogMessage,
-      prune.value,
-      proxy,
-      callbacks,
+      remotePointer: _remotePointer,
+      refspecs: refspecs,
+      prune: prune.value,
+      callbacks: callbacks,
+      reflogMessage: reflogMessage,
+      proxyOption: proxy,
     );
     return TransferProgress(bindings.stats(_remotePointer));
   }
@@ -204,18 +239,22 @@ class Remote {
     Callbacks callbacks = const Callbacks(),
   }) {
     bindings.push(
-      _remotePointer,
-      refspecs,
-      proxy,
-      callbacks,
+      remotePointer: _remotePointer,
+      refspecs: refspecs,
+      callbacks: callbacks,
+      proxyOption: proxy,
     );
   }
 
   /// Prunes tracking refs that are no longer present on remote.
   ///
   /// Throws a [LibGit2Error] if error occured.
-  void prune([Callbacks callbacks = const Callbacks()]) =>
-      bindings.prune(_remotePointer, callbacks);
+  void prune([Callbacks callbacks = const Callbacks()]) {
+    bindings.prune(
+      remotePointer: _remotePointer,
+      callbacks: callbacks,
+    );
+  }
 
   /// Releases memory allocated for remote object.
   void free() => bindings.free(_remotePointer);

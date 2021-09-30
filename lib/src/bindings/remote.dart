@@ -32,10 +32,13 @@ List<String> list(Pointer<git_repository> repo) {
 /// The name will be checked for validity.
 ///
 /// Throws a [LibGit2Error] if error occured.
-Pointer<git_remote> lookup(Pointer<git_repository> repo, String name) {
+Pointer<git_remote> lookup({
+  required Pointer<git_repository> repoPointer,
+  required String name,
+}) {
   final out = calloc<Pointer<git_remote>>();
   final nameC = name.toNativeUtf8().cast<Int8>();
-  final error = libgit2.git_remote_lookup(out, repo, nameC);
+  final error = libgit2.git_remote_lookup(out, repoPointer, nameC);
 
   calloc.free(nameC);
 
@@ -49,15 +52,15 @@ Pointer<git_remote> lookup(Pointer<git_repository> repo, String name) {
 /// Add a remote with the default fetch refspec to the repository's configuration.
 ///
 /// Throws a [LibGit2Error] if error occured.
-Pointer<git_remote> create(
-  Pointer<git_repository> repo,
-  String name,
-  String url,
-) {
+Pointer<git_remote> create({
+  required Pointer<git_repository> repoPointer,
+  required String name,
+  required String url,
+}) {
   final out = calloc<Pointer<git_remote>>();
   final nameC = name.toNativeUtf8().cast<Int8>();
   final urlC = url.toNativeUtf8().cast<Int8>();
-  final error = libgit2.git_remote_create(out, repo, nameC, urlC);
+  final error = libgit2.git_remote_create(out, repoPointer, nameC, urlC);
 
   calloc.free(nameC);
   calloc.free(urlC);
@@ -72,19 +75,19 @@ Pointer<git_remote> create(
 /// Add a remote with the provided fetch refspec to the repository's configuration.
 ///
 /// Throws a [LibGit2Error] if error occured.
-Pointer<git_remote> createWithFetchSpec(
-  Pointer<git_repository> repo,
-  String name,
-  String url,
-  String fetch,
-) {
+Pointer<git_remote> createWithFetchSpec({
+  required Pointer<git_repository> repoPointer,
+  required String name,
+  required String url,
+  required String fetch,
+}) {
   final out = calloc<Pointer<git_remote>>();
   final nameC = name.toNativeUtf8().cast<Int8>();
   final urlC = url.toNativeUtf8().cast<Int8>();
   final fetchC = fetch.toNativeUtf8().cast<Int8>();
   final error = libgit2.git_remote_create_with_fetchspec(
     out,
-    repo,
+    repoPointer,
     nameC,
     urlC,
     fetchC,
@@ -106,9 +109,12 @@ Pointer<git_remote> createWithFetchSpec(
 /// All remote-tracking branches and configuration settings for the remote will be removed.
 ///
 /// Throws a [LibGit2Error] if error occured.
-void delete(Pointer<git_repository> repo, String name) {
+void delete({
+  required Pointer<git_repository> repoPointer,
+  required String name,
+}) {
   final nameC = name.toNativeUtf8().cast<Int8>();
-  final error = libgit2.git_remote_delete(repo, nameC);
+  final error = libgit2.git_remote_delete(repoPointer, nameC);
 
   calloc.free(nameC);
 
@@ -129,11 +135,15 @@ void delete(Pointer<git_repository> repo, String name) {
 /// their list of refspecs.
 ///
 /// Throws a [LibGit2Error] if error occured.
-List<String> rename(Pointer<git_repository> repo, String name, String newName) {
+List<String> rename({
+  required Pointer<git_repository> repoPointer,
+  required String name,
+  required String newName,
+}) {
   final out = calloc<git_strarray>();
   final nameC = name.toNativeUtf8().cast<Int8>();
   final newNameC = newName.toNativeUtf8().cast<Int8>();
-  final error = libgit2.git_remote_rename(out, repo, nameC, newNameC);
+  final error = libgit2.git_remote_rename(out, repoPointer, nameC, newNameC);
 
   calloc.free(nameC);
   calloc.free(newNameC);
@@ -157,10 +167,14 @@ List<String> rename(Pointer<git_repository> repo, String name, String newName) {
 /// case of a single-url remote and will otherwise return an error.
 ///
 /// Throws a [LibGit2Error] if error occured.
-void setUrl(Pointer<git_repository> repo, String remote, String url) {
+void setUrl({
+  required Pointer<git_repository> repoPointer,
+  required String remote,
+  required String url,
+}) {
   final remoteC = remote.toNativeUtf8().cast<Int8>();
   final urlC = url.toNativeUtf8().cast<Int8>();
-  final error = libgit2.git_remote_set_url(repo, remoteC, urlC);
+  final error = libgit2.git_remote_set_url(repoPointer, remoteC, urlC);
 
   calloc.free(remoteC);
   calloc.free(urlC);
@@ -176,10 +190,14 @@ void setUrl(Pointer<git_repository> repo, String remote, String url) {
 /// case of a single-url remote and will otherwise return an error.
 ///
 /// Throws a [LibGit2Error] if error occured.
-void setPushUrl(Pointer<git_repository> repo, String remote, String url) {
+void setPushUrl({
+  required Pointer<git_repository> repoPointer,
+  required String remote,
+  required String url,
+}) {
   final remoteC = remote.toNativeUtf8().cast<Int8>();
   final urlC = url.toNativeUtf8().cast<Int8>();
-  final error = libgit2.git_remote_set_pushurl(repo, remoteC, urlC);
+  final error = libgit2.git_remote_set_pushurl(repoPointer, remoteC, urlC);
 
   calloc.free(remoteC);
   calloc.free(urlC);
@@ -218,8 +236,11 @@ int refspecCount(Pointer<git_remote> remote) =>
     libgit2.git_remote_refspec_count(remote);
 
 /// Get a refspec from the remote at provided position.
-Pointer<git_refspec> getRefspec(Pointer<git_remote> remote, int n) {
-  return libgit2.git_remote_get_refspec(remote, n);
+Pointer<git_refspec> getRefspec({
+  required Pointer<git_remote> remotePointer,
+  required int position,
+}) {
+  return libgit2.git_remote_get_refspec(remotePointer, position);
 }
 
 /// Get the remote's list of fetch refspecs.
@@ -256,10 +277,14 @@ List<String> pushRefspecs(Pointer<git_remote> remote) {
 /// instances will be affected.
 ///
 /// Throws a [LibGit2Error] if error occured.
-void addFetch(Pointer<git_repository> repo, String remote, String refspec) {
+void addFetch({
+  required Pointer<git_repository> repoPointer,
+  required String remote,
+  required String refspec,
+}) {
   final remoteC = remote.toNativeUtf8().cast<Int8>();
   final refspecC = refspec.toNativeUtf8().cast<Int8>();
-  final error = libgit2.git_remote_add_fetch(repo, remoteC, refspecC);
+  final error = libgit2.git_remote_add_fetch(repoPointer, remoteC, refspecC);
 
   calloc.free(remoteC);
   calloc.free(refspecC);
@@ -275,10 +300,14 @@ void addFetch(Pointer<git_repository> repo, String remote, String refspec) {
 /// instances will be affected.
 ///
 /// Throws a [LibGit2Error] if error occured.
-void addPush(Pointer<git_repository> repo, String remote, String refspec) {
+void addPush({
+  required Pointer<git_repository> repoPointer,
+  required String remote,
+  required String refspec,
+}) {
   final remoteC = remote.toNativeUtf8().cast<Int8>();
   final refspecC = refspec.toNativeUtf8().cast<Int8>();
-  final error = libgit2.git_remote_add_push(repo, remoteC, refspecC);
+  final error = libgit2.git_remote_add_push(repoPointer, remoteC, refspecC);
 
   calloc.free(remoteC);
   calloc.free(refspecC);
@@ -295,12 +324,12 @@ void addPush(Pointer<git_repository> repo, String remote, String refspec) {
 /// which can only do the one or the other.
 ///
 /// Throws a [LibGit2Error] if error occured.
-void connect(
-  Pointer<git_remote> remote,
-  int direction,
+void connect({
+  required Pointer<git_remote> remotePointer,
+  required int direction,
+  required Callbacks callbacks,
   String? proxyOption,
-  Callbacks callbacks,
-) {
+}) {
   final callbacksOptions = calloc<git_remote_callbacks>();
   final callbacksError = libgit2.git_remote_init_callbacks(
     callbacksOptions,
@@ -319,7 +348,7 @@ void connect(
   final proxyOptions = _proxyOptionsInit(proxyOption);
 
   final error = libgit2.git_remote_connect(
-    remote,
+    remotePointer,
     direction,
     callbacksOptions,
     proxyOptions,
@@ -386,14 +415,14 @@ List<Map<String, dynamic>> lsRemotes(Pointer<git_remote> remote) {
 /// update the remote-tracking branches.
 ///
 /// Throws a [LibGit2Error] if error occured.
-void fetch(
-  Pointer<git_remote> remote,
-  List<String> refspecs,
+void fetch({
+  required Pointer<git_remote> remotePointer,
+  required List<String> refspecs,
+  required int prune,
+  required Callbacks callbacks,
   String? reflogMessage,
-  int prune,
   String? proxyOption,
-  Callbacks callbacks,
-) {
+}) {
   var refspecsC = calloc<git_strarray>();
   final refspecsPointers =
       refspecs.map((e) => e.toNativeUtf8().cast<Int8>()).toList();
@@ -427,7 +456,7 @@ void fetch(
   opts.ref.proxy_opts = proxyOptions.ref;
 
   final error = libgit2.git_remote_fetch(
-    remote,
+    remotePointer,
     refspecsC,
     opts,
     reflogMessageC,
@@ -451,12 +480,12 @@ void fetch(
 /// Perform a push.
 ///
 /// Throws a [LibGit2Error] if error occured.
-void push(
-  Pointer<git_remote> remote,
-  List<String> refspecs,
+void push({
+  required Pointer<git_remote> remotePointer,
+  required List<String> refspecs,
+  required Callbacks callbacks,
   String? proxyOption,
-  Callbacks callbacks,
-) {
+}) {
   var refspecsC = calloc<git_strarray>();
   final refspecsPointers =
       refspecs.map((e) => e.toNativeUtf8().cast<Int8>()).toList();
@@ -485,7 +514,7 @@ void push(
   );
   opts.ref.proxy_opts = proxyOptions.ref;
 
-  final error = libgit2.git_remote_push(remote, refspecsC, opts);
+  final error = libgit2.git_remote_push(remotePointer, refspecsC, opts);
 
   for (var p in refspecsPointers) {
     calloc.free(p);
@@ -519,10 +548,10 @@ void disconnect(Pointer<git_remote> remote) {
 /// Prune tracking refs that are no longer present on remote.
 ///
 /// Throws a [LibGit2Error] if error occured.
-void prune(
-  Pointer<git_remote> remote,
-  Callbacks callbacks,
-) {
+void prune({
+  required Pointer<git_remote> remotePointer,
+  required Callbacks callbacks,
+}) {
   final callbacksOptions = calloc<git_remote_callbacks>();
   final callbacksError = libgit2.git_remote_init_callbacks(
     callbacksOptions,
@@ -538,7 +567,7 @@ void prune(
     callbacks: callbacks,
   );
 
-  final error = libgit2.git_remote_prune(remote, callbacksOptions);
+  final error = libgit2.git_remote_prune(remotePointer, callbacksOptions);
 
   calloc.free(callbacksOptions);
   RemoteCallbacks.reset();

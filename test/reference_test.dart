@@ -346,7 +346,7 @@ void main() {
     group('set target', () {
       test('successfully sets with SHA hex', () {
         final ref = repo.references['refs/heads/master'];
-        ref.setTarget(newCommit);
+        ref.setTarget(target: newCommit);
         expect(ref.target.sha, newCommit);
 
         ref.free();
@@ -354,7 +354,7 @@ void main() {
 
       test('successfully sets target with short SHA hex', () {
         final ref = repo.references['refs/heads/master'];
-        ref.setTarget(newCommit.substring(0, 5));
+        ref.setTarget(target: newCommit.substring(0, 5));
         expect(ref.target.sha, newCommit);
 
         ref.free();
@@ -364,7 +364,7 @@ void main() {
         final ref = repo.references['HEAD'];
         expect(ref.target.sha, lastCommit);
 
-        ref.setTarget('refs/heads/feature');
+        ref.setTarget(target: 'refs/heads/feature');
         expect(ref.target.sha, '5aecfa0fb97eadaac050ccb99f03c3fb65460ad4');
 
         ref.free();
@@ -375,7 +375,7 @@ void main() {
         expect(ref.target.sha, lastCommit);
 
         repo.setIdentity(name: 'name', email: 'email');
-        ref.setTarget('refs/heads/feature', 'log message');
+        ref.setTarget(target: 'refs/heads/feature', logMessage: 'log message');
         expect(ref.target.sha, '5aecfa0fb97eadaac050ccb99f03c3fb65460ad4');
         final reflog = ref.log;
         expect(reflog.first.message, 'log message');
@@ -389,7 +389,7 @@ void main() {
       test('throws on invalid target', () {
         final ref = repo.references['HEAD'];
         expect(
-          () => ref.setTarget('refs/heads/invalid~'),
+          () => ref.setTarget(target: 'refs/heads/invalid~'),
           throwsA(isA<LibGit2Error>()),
         );
 
@@ -405,7 +405,7 @@ void main() {
         );
         expect(ref.name, 'refs/tags/v1');
 
-        ref.rename('refs/tags/v2');
+        ref.rename(newName: 'refs/tags/v2');
         expect(ref.name, 'refs/tags/v2');
 
         ref.free();
@@ -418,7 +418,7 @@ void main() {
         );
 
         expect(
-          () => ref.rename('refs/tags/invalid~'),
+          () => ref.rename(newName: 'refs/tags/invalid~'),
           throwsA(isA<LibGit2Error>()),
         );
 
@@ -437,7 +437,7 @@ void main() {
         );
 
         expect(
-          () => ref1.rename('refs/tags/v2'),
+          () => ref1.rename(newName: 'refs/tags/v2'),
           throwsA(isA<LibGit2Error>()),
         );
 
@@ -458,7 +458,7 @@ void main() {
 
         expect(ref2.target.sha, newCommit);
 
-        ref1.rename('refs/tags/v2', force: true);
+        ref1.rename(newName: 'refs/tags/v2', force: true);
         expect(ref1.name, 'refs/tags/v2');
 
         ref1.free();

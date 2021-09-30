@@ -13,10 +13,10 @@ class TreeBuilder {
   /// Should be freed with `free()` to release allocated memory.
   ///
   /// Throws a [LibGit2Error] if error occured.
-  TreeBuilder(Repository repo, [Tree? tree]) {
+  TreeBuilder({required Repository repo, Tree? tree}) {
     _treeBuilderPointer = bindings.create(
-      repo.pointer,
-      tree?.pointer ?? nullptr,
+      repoPointer: repo.pointer,
+      sourcePointer: tree?.pointer ?? nullptr,
     );
   }
 
@@ -44,7 +44,10 @@ class TreeBuilder {
   ///
   /// Throws [ArgumentError] if nothing found for provided filename.
   TreeEntry operator [](String filename) {
-    return TreeEntry(bindings.getByFilename(_treeBuilderPointer, filename));
+    return TreeEntry(bindings.getByFilename(
+      builderPointer: _treeBuilderPointer,
+      filename: filename,
+    ));
   }
 
   /// Adds or updates an entry to the tree builder with the given attributes.
@@ -56,20 +59,28 @@ class TreeBuilder {
   /// that it exists in the object database and is of the correct type.
   ///
   /// Throws a [LibGit2Error] if error occured.
-  void add(String filename, Oid id, GitFilemode filemode) {
+  void add({
+    required String filename,
+    required Oid oid,
+    required GitFilemode filemode,
+  }) {
     bindings.add(
-      _treeBuilderPointer,
-      filename,
-      id.pointer,
-      filemode.value,
+      builderPointer: _treeBuilderPointer,
+      filename: filename,
+      oidPointer: oid.pointer,
+      filemode: filemode.value,
     );
   }
 
   /// Removes an entry from the tree builder by its filename.
   ///
   /// Throws a [LibGit2Error] if error occured.
-  void remove(String filename) =>
-      bindings.remove(_treeBuilderPointer, filename);
+  void remove(String filename) {
+    bindings.remove(
+      builderPointer: _treeBuilderPointer,
+      filename: filename,
+    );
+  }
 
   /// Releases memory allocated for tree builder object.
   void free() => bindings.free(_treeBuilderPointer);

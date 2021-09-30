@@ -18,9 +18,12 @@ class Blob {
   /// [Repository] object and [sha] hex string.
   ///
   /// Should be freed with `free()` to release allocated memory.
-  Blob.lookup(Repository repo, String sha) {
-    final oid = Oid.fromSHA(repo, sha);
-    _blobPointer = bindings.lookup(repo.pointer, oid.pointer);
+  Blob.lookup({required Repository repo, required String sha}) {
+    final oid = Oid.fromSHA(repo: repo, sha: sha);
+    _blobPointer = bindings.lookup(
+      repoPointer: repo.pointer,
+      oidPointer: oid.pointer,
+    );
   }
 
   late final Pointer<git_blob> _blobPointer;
@@ -31,23 +34,33 @@ class Blob {
   /// Creates a new blob from a [content] string and writes it to ODB.
   ///
   /// Throws a [LibGit2Error] if error occured.
-  static Oid create(Repository repo, String content) {
-    return Oid(bindings.create(repo.pointer, content, content.length));
+  static Oid create({required Repository repo, required String content}) {
+    return Oid(bindings.create(
+      repoPointer: repo.pointer,
+      buffer: content,
+      len: content.length,
+    ));
   }
 
   /// Creates a new blob from the file in working directory of a repository and writes
   /// it to the ODB. Provided [relativePath] should be relative to the working directory.
   ///
   /// Throws a [LibGit2Error] if error occured.
-  static Oid createFromWorkdir(Repository repo, String relativePath) {
-    return Oid(bindings.createFromWorkdir(repo.pointer, relativePath));
+  static Oid createFromWorkdir({
+    required Repository repo,
+    required String relativePath,
+  }) {
+    return Oid(bindings.createFromWorkdir(
+      repoPointer: repo.pointer,
+      relativePath: relativePath,
+    ));
   }
 
   /// Creates a new blob from the file in filesystem and writes it to the ODB.
   ///
   /// Throws a [LibGit2Error] if error occured.
-  static Oid createFromDisk(Repository repo, String path) {
-    return Oid(bindings.createFromDisk(repo.pointer, path));
+  static Oid createFromDisk({required Repository repo, required String path}) {
+    return Oid(bindings.createFromDisk(repoPointer: repo.pointer, path: path));
   }
 
   /// Returns the Oid of the blob.
@@ -83,13 +96,13 @@ class Blob {
         flags.fold(0, (previousValue, e) => previousValue | e.value);
 
     final result = patch_bindings.fromBlobs(
-      _blobPointer,
-      oldAsPath,
-      newBlob?.pointer,
-      newAsPath,
-      flagsInt,
-      contextLines,
-      interhunkLines,
+      oldBlobPointer: _blobPointer,
+      oldAsPath: oldAsPath,
+      newBlobPointer: newBlob?.pointer,
+      newAsPath: newAsPath,
+      flags: flagsInt,
+      contextLines: contextLines,
+      interhunkLines: interhunkLines,
     );
 
     return Patch(result['patch'], result['a'], result['b']);
@@ -112,13 +125,13 @@ class Blob {
         flags.fold(0, (previousValue, e) => previousValue | e.value);
 
     final result = patch_bindings.fromBlobAndBuffer(
-      _blobPointer,
-      oldAsPath,
-      buffer,
-      bufferAsPath,
-      flagsInt,
-      contextLines,
-      interhunkLines,
+      oldBlobPointer: _blobPointer,
+      oldAsPath: oldAsPath,
+      buffer: buffer,
+      bufferAsPath: bufferAsPath,
+      flags: flagsInt,
+      contextLines: contextLines,
+      interhunkLines: interhunkLines,
     );
 
     return Patch(result['patch'], result['a'], result['b']);

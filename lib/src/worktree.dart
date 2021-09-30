@@ -21,7 +21,12 @@ class Worktree {
     required String path,
     Reference? ref,
   }) {
-    _worktreePointer = bindings.create(repo.pointer, name, path, ref?.pointer);
+    _worktreePointer = bindings.create(
+      repoPointer: repo.pointer,
+      name: name,
+      path: path,
+      refPointer: ref?.pointer,
+    );
   }
 
   /// Initializes a new instance of [Worktree] class by looking up existing worktree
@@ -30,8 +35,8 @@ class Worktree {
   /// Should be freed with `free()` to release allocated memory.
   ///
   /// Throws a [LibGit2Error] if error occured.
-  Worktree.lookup(Repository repo, String name) {
-    _worktreePointer = bindings.lookup(repo.pointer, name);
+  Worktree.lookup({required Repository repo, required String name}) {
+    _worktreePointer = bindings.lookup(repoPointer: repo.pointer, name: name);
   }
 
   /// Pointer to memory address for allocated branch object.

@@ -16,9 +16,9 @@ import '../util.dart';
 /// are discarded.
 ///
 /// Throws a [LibGit2Error] if error occured.
-void read(Pointer<git_index> index, bool force) {
+void read({required Pointer<git_index> indexPointer, required bool force}) {
   final forceC = force == true ? 1 : 0;
-  final error = libgit2.git_index_read(index, forceC);
+  final error = libgit2.git_index_read(indexPointer, forceC);
 
   if (error < 0) {
     throw LibGit2Error(libgit2.git_error_last());
@@ -30,8 +30,11 @@ void read(Pointer<git_index> index, bool force) {
 /// The current index contents will be replaced by the specified tree.
 ///
 /// Throws a [LibGit2Error] if error occured.
-void readTree(Pointer<git_index> index, Pointer<git_tree> tree) {
-  final error = libgit2.git_index_read_tree(index, tree);
+void readTree({
+  required Pointer<git_index> indexPointer,
+  required Pointer<git_tree> treePointer,
+}) {
+  final error = libgit2.git_index_read_tree(indexPointer, treePointer);
 
   if (error < 0) {
     throw LibGit2Error(libgit2.git_error_last());
@@ -68,12 +71,12 @@ Pointer<git_oid> writeTree(Pointer<git_index> index) {
 /// The index must not contain any file in conflict.
 ///
 /// Throws a [LibGit2Error] if error occured.
-Pointer<git_oid> writeTreeTo(
-  Pointer<git_index> index,
-  Pointer<git_repository> repo,
-) {
+Pointer<git_oid> writeTreeTo({
+  required Pointer<git_index> indexPointer,
+  required Pointer<git_repository> repoPointer,
+}) {
   final out = calloc<git_oid>();
-  final error = libgit2.git_index_write_tree_to(out, index, repo);
+  final error = libgit2.git_index_write_tree_to(out, indexPointer, repoPointer);
 
   if (error < 0) {
     throw LibGit2Error(libgit2.git_error_last());
@@ -83,9 +86,9 @@ Pointer<git_oid> writeTreeTo(
 }
 
 /// Find the first position of any entries which point to given path in the Git index.
-bool find(Pointer<git_index> index, String path) {
+bool find({required Pointer<git_index> indexPointer, required String path}) {
   final pathC = path.toNativeUtf8().cast<Int8>();
-  final result = libgit2.git_index_find(nullptr, index, pathC);
+  final result = libgit2.git_index_find(nullptr, indexPointer, pathC);
 
   calloc.free(pathC);
 
@@ -100,8 +103,11 @@ int entryCount(Pointer<git_index> index) => libgit2.git_index_entrycount(index);
 /// The entry is not modifiable and should not be freed.
 ///
 /// Throws [RangeError] when provided index is outside of valid range.
-Pointer<git_index_entry> getByIndex(Pointer<git_index> index, int n) {
-  final result = libgit2.git_index_get_byindex(index, n);
+Pointer<git_index_entry> getByIndex({
+  required Pointer<git_index> indexPointer,
+  required int position,
+}) {
+  final result = libgit2.git_index_get_byindex(indexPointer, position);
 
   if (result == nullptr) {
     throw RangeError('Out of bounds');
@@ -115,13 +121,13 @@ Pointer<git_index_entry> getByIndex(Pointer<git_index> index, int n) {
 ///The entry is not modifiable and should not be freed.
 ///
 /// Throws [ArgumentError] if nothing found for provided path.
-Pointer<git_index_entry> getByPath(
-  Pointer<git_index> index,
-  String path,
-  int stage,
-) {
+Pointer<git_index_entry> getByPath({
+  required Pointer<git_index> indexPointer,
+  required String path,
+  required int stage,
+}) {
   final pathC = path.toNativeUtf8().cast<Int8>();
-  final result = libgit2.git_index_get_bypath(index, pathC, stage);
+  final result = libgit2.git_index_get_bypath(indexPointer, pathC, stage);
 
   calloc.free(pathC);
 
@@ -152,8 +158,11 @@ void clear(Pointer<git_index> index) {
 /// it will be replaced. Otherwise, the `sourceEntry` will be added.
 ///
 /// Throws a [LibGit2Error] if error occured.
-void add(Pointer<git_index> index, Pointer<git_index_entry> sourceEntry) {
-  final error = libgit2.git_index_add(index, sourceEntry);
+void add({
+  required Pointer<git_index> indexPointer,
+  required Pointer<git_index_entry> sourceEntryPointer,
+}) {
+  final error = libgit2.git_index_add(indexPointer, sourceEntryPointer);
 
   if (error < 0) {
     throw LibGit2Error(libgit2.git_error_last());
@@ -173,9 +182,12 @@ void add(Pointer<git_index> index, Pointer<git_index_entry> sourceEntry) {
 /// (REUC) section.
 ///
 /// Throws a [LibGit2Error] if error occured.
-void addByPath(Pointer<git_index> index, String path) {
+void addByPath({
+  required Pointer<git_index> indexPointer,
+  required String path,
+}) {
   final pathC = path.toNativeUtf8().cast<Int8>();
-  final error = libgit2.git_index_add_bypath(index, pathC);
+  final error = libgit2.git_index_add_bypath(indexPointer, pathC);
 
   calloc.free(pathC);
 
@@ -193,7 +205,10 @@ void addByPath(Pointer<git_index> index, String path) {
 /// added to the index (either updating an existing entry or adding a new entry).
 ///
 /// Throws a [LibGit2Error] if error occured.
-void addAll(Pointer<git_index> index, List<String> pathspec) {
+void addAll({
+  required Pointer<git_index> indexPointer,
+  required List<String> pathspec,
+}) {
   var pathspecC = calloc<git_strarray>();
   final List<Pointer<Int8>> pathPointers =
       pathspec.map((e) => e.toNativeUtf8().cast<Int8>()).toList();
@@ -207,7 +222,7 @@ void addAll(Pointer<git_index> index, List<String> pathspec) {
   pathspecC.ref.count = pathspec.length;
 
   final error = libgit2.git_index_add_all(
-    index,
+    indexPointer,
     pathspecC,
     0,
     nullptr,
@@ -239,9 +254,13 @@ void write(Pointer<git_index> index) {
 /// Remove an entry from the index.
 ///
 /// Throws a [LibGit2Error] if error occured.
-void remove(Pointer<git_index> index, String path, int stage) {
+void remove({
+  required Pointer<git_index> indexPointer,
+  required String path,
+  required int stage,
+}) {
   final pathC = path.toNativeUtf8().cast<Int8>();
-  final error = libgit2.git_index_remove(index, pathC, stage);
+  final error = libgit2.git_index_remove(indexPointer, pathC, stage);
 
   calloc.free(pathC);
 
@@ -253,7 +272,10 @@ void remove(Pointer<git_index> index, String path, int stage) {
 /// Remove all matching index entries.
 ///
 /// Throws a [LibGit2Error] if error occured.
-void removeAll(Pointer<git_index> index, List<String> pathspec) {
+void removeAll({
+  required Pointer<git_index> indexPointer,
+  required List<String> pathspec,
+}) {
   final pathspecC = calloc<git_strarray>();
   final List<Pointer<Int8>> pathPointers =
       pathspec.map((e) => e.toNativeUtf8().cast<Int8>()).toList();
@@ -267,7 +289,7 @@ void removeAll(Pointer<git_index> index, List<String> pathspec) {
   pathspecC.ref.count = pathspec.length;
 
   final error = libgit2.git_index_remove_all(
-    index,
+    indexPointer,
     pathspecC,
     nullptr,
     nullptr,
@@ -293,7 +315,8 @@ bool hasConflicts(Pointer<git_index> index) {
 ///
 /// Throws a [LibGit2Error] if error occured.
 List<Map<String, Pointer<git_index_entry>>> conflictList(
-    Pointer<git_index> index) {
+  Pointer<git_index> index,
+) {
   final iterator = calloc<Pointer<git_index_conflict_iterator>>();
   final iteratorError =
       libgit2.git_index_conflict_iterator_new(iterator, index);
@@ -336,9 +359,12 @@ List<Map<String, Pointer<git_index_entry>>> conflictList(
 /// Removes the index entries that represent a conflict of a single file.
 ///
 /// Throws a [LibGit2Error] if error occured.
-void conflictRemove(Pointer<git_index> index, String path) {
+void conflictRemove({
+  required Pointer<git_index> indexPointer,
+  required String path,
+}) {
   final pathC = path.toNativeUtf8().cast<Int8>();
-  final error = libgit2.git_index_conflict_remove(index, pathC);
+  final error = libgit2.git_index_conflict_remove(indexPointer, pathC);
 
   calloc.free(pathC);
 

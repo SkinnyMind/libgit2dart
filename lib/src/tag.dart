@@ -21,9 +21,12 @@ class Tag {
   /// [Repository] object and [sha] hex string.
   ///
   /// Should be freed with `free()` to release allocated memory.
-  Tag.lookup(Repository repo, String sha) {
-    final oid = Oid.fromSHA(repo, sha);
-    _tagPointer = bindings.lookup(repo.pointer, oid.pointer);
+  Tag.lookup({required Repository repo, required String sha}) {
+    final oid = Oid.fromSHA(repo: repo, sha: sha);
+    _tagPointer = bindings.lookup(
+      repoPointer: repo.pointer,
+      oidPointer: oid.pointer,
+    );
   }
 
   late final Pointer<git_tag> _tagPointer;
@@ -44,7 +47,7 @@ class Tag {
   ///
   /// Throws a [LibGit2Error] if error occured.
   static Oid create({
-    required Repository repository,
+    required Repository repo,
     required String tagName,
     required String target,
     required GitObject targetType,
@@ -52,19 +55,19 @@ class Tag {
     required String message,
     bool force = false,
   }) {
-    final targetOid = Oid.fromSHA(repository, target);
+    final targetOid = Oid.fromSHA(repo: repo, sha: target);
     final object = object_bindings.lookup(
-      repository.pointer,
-      targetOid.pointer,
-      targetType.value,
+      repoPointer: repo.pointer,
+      oidPointer: targetOid.pointer,
+      type: targetType.value,
     );
     final result = bindings.create(
-      repository.pointer,
-      tagName,
-      object,
-      tagger.pointer,
-      message,
-      force,
+      repoPointer: repo.pointer,
+      tagName: tagName,
+      targetPointer: object,
+      taggerPointer: tagger.pointer,
+      message: message,
+      force: force,
     );
 
     object_bindings.free(object);

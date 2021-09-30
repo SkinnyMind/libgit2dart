@@ -40,36 +40,36 @@ class Patch {
     if (a is Blob || a == null) {
       if (b is Blob) {
         result = bindings.fromBlobs(
-          a?.pointer,
-          aPath,
-          b.pointer,
-          bPath,
-          flagsInt,
-          contextLines,
-          interhunkLines,
+          oldBlobPointer: a?.pointer,
+          oldAsPath: aPath,
+          newBlobPointer: b.pointer,
+          newAsPath: bPath,
+          flags: flagsInt,
+          contextLines: contextLines,
+          interhunkLines: interhunkLines,
         );
       } else if (b is String || b == null) {
         result = bindings.fromBlobAndBuffer(
-          a?.pointer,
-          aPath,
-          b,
-          bPath,
-          flagsInt,
-          contextLines,
-          interhunkLines,
+          oldBlobPointer: a?.pointer,
+          oldAsPath: aPath,
+          buffer: b,
+          bufferAsPath: bPath,
+          flags: flagsInt,
+          contextLines: contextLines,
+          interhunkLines: interhunkLines,
         );
       } else {
         throw ArgumentError('Provided argument(s) is not Blob or String');
       }
     } else if ((a is String || a == null) && (b is String || b == null)) {
       result = bindings.fromBuffers(
-        a,
-        aPath,
-        b,
-        bPath,
-        flagsInt,
-        contextLines,
-        interhunkLines,
+        oldBuffer: a,
+        oldAsPath: aPath,
+        newBuffer: b,
+        newAsPath: bPath,
+        flags: flagsInt,
+        contextLines: contextLines,
+        interhunkLines: interhunkLines,
       );
     } else {
       throw ArgumentError('Provided argument(s) is not Blob or String');
@@ -85,10 +85,10 @@ class Patch {
   /// Should be freed with `free()` to release allocated memory.
   ///
   /// Throws a [LibGit2Error] if error occured.
-  Patch.fromDiff(Diff diff, int index) {
+  Patch.fromDiff({required Diff diff, required int index}) {
     libgit2.git_libgit2_init();
 
-    _patchPointer = bindings.fromDiff(diff.pointer, index);
+    _patchPointer = bindings.fromDiff(diffPointer: diff.pointer, index: index);
   }
 
   late final Pointer<git_patch> _patchPointer;
@@ -118,10 +118,10 @@ class Patch {
     bool includeFileHeaders = false,
   }) {
     return bindings.size(
-      _patchPointer,
-      includeContext,
-      includeHunkHeaders,
-      includeFileHeaders,
+      patchPointer: _patchPointer,
+      includeContext: includeContext,
+      includeHunkHeaders: includeHunkHeaders,
+      includeFileHeaders: includeFileHeaders,
     );
   }
 
@@ -136,7 +136,7 @@ class Patch {
     final hunks = <DiffHunk>[];
 
     for (var i = 0; i < length; i++) {
-      final hunk = bindings.hunk(_patchPointer, i);
+      final hunk = bindings.hunk(patchPointer: _patchPointer, hunkIndex: i);
       hunks.add(DiffHunk(_patchPointer, hunk['hunk'], hunk['linesN'], i));
     }
 

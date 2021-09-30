@@ -26,7 +26,7 @@ void main() async {
   );
 
   // Rename reference.
-  newRef.rename('refs/tags/v1.1');
+  newRef.rename(newName: 'refs/tags/v1.1');
 
   // Delete reference.
   newRef.delete();

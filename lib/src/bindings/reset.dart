@@ -15,13 +15,18 @@ import '../util.dart';
 /// with the content of the index. (Untracked and ignored files will be left alone, however.)
 ///
 /// Throws a [LibGit2Error] if error occured.
-void reset(
-  Pointer<git_repository> repo,
-  Pointer<git_object> target,
-  int resetType,
-  Pointer<git_checkout_options> checkoutOpts,
-) {
-  final error = libgit2.git_reset(repo, target, resetType, checkoutOpts);
+void reset({
+  required Pointer<git_repository> repoPointer,
+  required Pointer<git_object> targetPointer,
+  required int resetType,
+  required Pointer<git_checkout_options> checkoutOptsPointer,
+}) {
+  final error = libgit2.git_reset(
+    repoPointer,
+    targetPointer,
+    resetType,
+    checkoutOptsPointer,
+  );
 
   if (error < 0) {
     throw LibGit2Error(libgit2.git_error_last());

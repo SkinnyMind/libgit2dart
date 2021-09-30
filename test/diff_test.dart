@@ -194,7 +194,10 @@ index e69de29..c217c63 100644
       final diff = Diff.parse(patchText);
       final file = File('${tmpDir.path}/subdir/modified_file');
 
-      repo.reset('a763aa560953e7cfb87ccbc2f536d665aa4dff22', GitReset.hard);
+      repo.reset(
+        target: 'a763aa560953e7cfb87ccbc2f536d665aa4dff22',
+        resetType: GitReset.hard,
+      );
       expect(file.readAsStringSync(), '');
 
       expect(repo.applies(diff), true);
@@ -206,7 +209,7 @@ index e69de29..c217c63 100644
 
     test('successfully creates patch from entry index in diff', () {
       final diff = Diff.parse(patchText);
-      final patch = Patch.fromDiff(diff, 0);
+      final patch = Patch.fromDiff(diff: diff, index: 0);
 
       expect(diff.length, 1);
       expect(patch.text, patchText);
@@ -298,7 +301,7 @@ index e69de29..c217c63 100644
       expect(stats.insertions, 4);
       expect(stats.deletions, 2);
       expect(stats.filesChanged, 8);
-      expect(stats.print({GitDiffStats.full}, 80), statsPrint);
+      expect(stats.print(format: {GitDiffStats.full}, width: 80), statsPrint);
 
       stats.free();
       diff.free();
@@ -315,7 +318,7 @@ index e69de29..c217c63 100644
 
     test('returns hunks in a patch', () {
       final diff = Diff.parse(patchText);
-      final patch = Patch.fromDiff(diff, 0);
+      final patch = Patch.fromDiff(diff: diff, index: 0);
       final hunk = patch.hunks[0];
 
       expect(patch.hunks.length, 1);
@@ -332,7 +335,7 @@ index e69de29..c217c63 100644
 
     test('returns lines in a hunk', () {
       final diff = Diff.parse(patchText);
-      final patch = Patch.fromDiff(diff, 0);
+      final patch = Patch.fromDiff(diff: diff, index: 0);
       final hunk = patch.hunks[0];
       final line = hunk.lines[0];
 

@@ -28,7 +28,7 @@ void main() {
   group('RevWalk', () {
     test('returns list of commits with default sorting', () {
       final walker = RevWalk(repo);
-      final start = Oid.fromSHA(repo, log.first);
+      final start = Oid.fromSHA(repo: repo, sha: log.first);
 
       walker.push(start);
       final commits = walker.walk();
@@ -45,7 +45,7 @@ void main() {
 
     test('returns list of commits with reverse sorting', () {
       final walker = RevWalk(repo);
-      final start = Oid.fromSHA(repo, log.first);
+      final start = Oid.fromSHA(repo: repo, sha: log.first);
 
       walker.push(start);
       walker.sorting({GitSort.reverse});
@@ -63,7 +63,7 @@ void main() {
 
     test('successfully changes sorting', () {
       final walker = RevWalk(repo);
-      final start = Oid.fromSHA(repo, log.first);
+      final start = Oid.fromSHA(repo: repo, sha: log.first);
 
       walker.push(start);
       final timeSortedCommits = walker.walk();
@@ -89,8 +89,8 @@ void main() {
 
     test('successfully hides commit and its ancestors', () {
       final walker = RevWalk(repo);
-      final start = Oid.fromSHA(repo, log.first);
-      final oidToHide = Oid.fromSHA(repo, log[2]);
+      final start = Oid.fromSHA(repo: repo, sha: log.first);
+      final oidToHide = Oid.fromSHA(repo: repo, sha: log[2]);
 
       walker.push(start);
       walker.hide(oidToHide);
@@ -106,7 +106,7 @@ void main() {
 
     test('successfully resets walker', () {
       final walker = RevWalk(repo);
-      final start = Oid.fromSHA(repo, log.first);
+      final start = Oid.fromSHA(repo: repo, sha: log.first);
 
       walker.push(start);
       walker.reset();
@@ -120,7 +120,7 @@ void main() {
     test('simplifies walker by enqueuing only first parent for each commit',
         () {
       final walker = RevWalk(repo);
-      final start = Oid.fromSHA(repo, log.first);
+      final start = Oid.fromSHA(repo: repo, sha: log.first);
 
       walker.push(start);
       walker.simplifyFirstParent();

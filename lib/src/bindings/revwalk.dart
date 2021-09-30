@@ -33,8 +33,11 @@ Pointer<git_revwalk> create(Pointer<git_repository> repo) {
 /// Changing the sorting mode resets the walker.
 ///
 /// Throws a [LibGit2Error] if error occured.
-void sorting(Pointer<git_revwalk> walker, int sortMode) {
-  final error = libgit2.git_revwalk_sorting(walker, sortMode);
+void sorting({
+  required Pointer<git_revwalk> walkerPointer,
+  required int sortMode,
+}) {
+  final error = libgit2.git_revwalk_sorting(walkerPointer, sortMode);
 
   if (error < 0) {
     throw LibGit2Error(libgit2.git_error_last());
@@ -51,8 +54,11 @@ void sorting(Pointer<git_revwalk> walker, int sortMode) {
 /// The given id must belong to a committish on the walked repository.
 ///
 /// Throws a [LibGit2Error] if error occured.
-void push(Pointer<git_revwalk> walker, Pointer<git_oid> id) {
-  final error = libgit2.git_revwalk_push(walker, id);
+void push({
+  required Pointer<git_revwalk> walkerPointer,
+  required Pointer<git_oid> oidPointer,
+}) {
+  final error = libgit2.git_revwalk_push(walkerPointer, oidPointer);
 
   if (error < 0) {
     throw LibGit2Error(libgit2.git_error_last());
@@ -69,18 +75,21 @@ void push(Pointer<git_revwalk> walker, Pointer<git_oid> id) {
 /// repositories (topological preprocessing times at 0.3s on the git.git repo).
 ///
 /// The revision walker is reset when the walk is over.
-List<Pointer<git_commit>> walk(
-  Pointer<git_repository> repo,
-  Pointer<git_revwalk> walker,
-) {
+List<Pointer<git_commit>> walk({
+  required Pointer<git_repository> repoPointer,
+  required Pointer<git_revwalk> walkerPointer,
+}) {
   var result = <Pointer<git_commit>>[];
   var error = 0;
 
   while (error == 0) {
     final oid = calloc<git_oid>();
-    error = libgit2.git_revwalk_next(oid, walker);
+    error = libgit2.git_revwalk_next(oid, walkerPointer);
     if (error == 0) {
-      final commit = commit_bindings.lookup(repo, oid);
+      final commit = commit_bindings.lookup(
+        repoPointer: repoPointer,
+        oidPointer: oid,
+      );
       result.add(commit);
       calloc.free(oid);
     } else {
@@ -98,8 +107,11 @@ List<Pointer<git_commit>> walk(
 /// The resolved commit and all its parents will be hidden from the output on the revision walk.
 ///
 /// Throws a [LibGit2Error] if error occured.
-void hide(Pointer<git_revwalk> walk, Pointer<git_oid> oid) {
-  final error = libgit2.git_revwalk_hide(walk, oid);
+void hide({
+  required Pointer<git_revwalk> walkerPointer,
+  required Pointer<git_oid> oidPointer,
+}) {
+  final error = libgit2.git_revwalk_hide(walkerPointer, oidPointer);
 
   if (error < 0) {
     throw LibGit2Error(libgit2.git_error_last());
@@ -119,8 +131,8 @@ void reset(Pointer<git_revwalk> walker) => libgit2.git_revwalk_reset(walker);
 /// No parents other than the first for each commit will be enqueued.
 ///
 /// Throws a [LibGit2Error] if error occured.
-void simplifyFirstParent(Pointer<git_revwalk> walk) {
-  final error = libgit2.git_revwalk_simplify_first_parent(walk);
+void simplifyFirstParent(Pointer<git_revwalk> walker) {
+  final error = libgit2.git_revwalk_simplify_first_parent(walker);
 
   if (error < 0) {
     throw LibGit2Error(libgit2.git_error_last());

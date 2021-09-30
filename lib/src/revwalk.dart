@@ -23,7 +23,10 @@ class RevWalk {
     final repoPointer = bindings.repository(_revWalkPointer);
     var result = <Commit>[];
 
-    final commits = bindings.walk(repoPointer, _revWalkPointer);
+    final commits = bindings.walk(
+      repoPointer: repoPointer,
+      walkerPointer: _revWalkPointer,
+    );
     for (var commit in commits) {
       result.add(Commit(commit));
     }
@@ -41,7 +44,7 @@ class RevWalk {
       0,
       (previousValue, e) => previousValue | e.value,
     );
-    bindings.sorting(_revWalkPointer, sort);
+    bindings.sorting(walkerPointer: _revWalkPointer, sortMode: sort);
   }
 
   /// Adds a new root for the traversal.
@@ -54,7 +57,12 @@ class RevWalk {
   /// The given id must belong to a committish on the walked repository.
   ///
   /// Throws a [LibGit2Error] if error occured.
-  void push(Oid oid) => bindings.push(_revWalkPointer, oid.pointer);
+  void push(Oid oid) {
+    bindings.push(
+      walkerPointer: _revWalkPointer,
+      oidPointer: oid.pointer,
+    );
+  }
 
   /// Marks a commit (and its ancestors) uninteresting for the output.
   ///
@@ -63,7 +71,12 @@ class RevWalk {
   /// The resolved commit and all its parents will be hidden from the output on the revision walk.
   ///
   /// Throws a [LibGit2Error] if error occured.
-  void hide(Oid oid) => bindings.hide(_revWalkPointer, oid.pointer);
+  void hide(Oid oid) {
+    bindings.hide(
+      walkerPointer: _revWalkPointer,
+      oidPointer: oid.pointer,
+    );
+  }
 
   /// Resets the revision walker for reuse.
   ///

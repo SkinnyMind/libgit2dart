@@ -11,12 +11,12 @@ import '../util.dart';
 /// data structures inside the repository and check out the current HEAD at path.
 ///
 /// Throws a [LibGit2Error] if error occured.
-Pointer<git_worktree> create(
-  Pointer<git_repository> repo,
-  String name,
-  String path,
-  Pointer<git_reference>? ref,
-) {
+Pointer<git_worktree> create({
+  required Pointer<git_repository> repoPointer,
+  required String name,
+  required String path,
+  Pointer<git_reference>? refPointer,
+}) {
   final out = calloc<Pointer<git_worktree>>();
   final nameC = name.toNativeUtf8().cast<Int8>();
   final pathC = path.toNativeUtf8().cast<Int8>();
@@ -24,10 +24,10 @@ Pointer<git_worktree> create(
       calloc<git_worktree_add_options>(sizeOf<git_worktree_add_options>());
   opts.ref.version = 1;
   opts.ref.lock = 0;
-  if (ref != null) {
-    opts.ref.ref = ref;
+  if (refPointer != null) {
+    opts.ref.ref = refPointer;
   }
-  final error = libgit2.git_worktree_add(out, repo, nameC, pathC, opts);
+  final error = libgit2.git_worktree_add(out, repoPointer, nameC, pathC, opts);
 
   calloc.free(nameC);
   calloc.free(pathC);
@@ -43,10 +43,13 @@ Pointer<git_worktree> create(
 /// Lookup a working tree by its name for a given repository.
 ///
 /// Throws a [LibGit2Error] if error occured.
-Pointer<git_worktree> lookup(Pointer<git_repository> repo, String name) {
+Pointer<git_worktree> lookup({
+  required Pointer<git_repository> repoPointer,
+  required String name,
+}) {
   final out = calloc<Pointer<git_worktree>>();
   final nameC = name.toNativeUtf8().cast<Int8>();
-  final error = libgit2.git_worktree_lookup(out, repo, nameC);
+  final error = libgit2.git_worktree_lookup(out, repoPointer, nameC);
 
   calloc.free(nameC);
 

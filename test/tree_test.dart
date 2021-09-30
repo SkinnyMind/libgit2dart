@@ -14,7 +14,7 @@ void main() {
   setUp(() async {
     tmpDir = await setupRepo(Directory('test/assets/testrepo/'));
     repo = Repository.open(tmpDir.path);
-    tree = Tree.lookup(repo, treeSHA);
+    tree = Tree.lookup(repo: repo, sha: treeSHA);
   });
 
   tearDown(() async {
@@ -64,10 +64,14 @@ void main() {
 
     test('successfully creates tree', () {
       final fileOid = repo.createBlob('blob content');
-      final builder = TreeBuilder(repo);
+      final builder = TreeBuilder(repo: repo);
 
-      builder.add('filename', fileOid, GitFilemode.blob);
-      final newTree = Tree.lookup(repo, builder.write().sha);
+      builder.add(
+        filename: 'filename',
+        oid: fileOid,
+        filemode: GitFilemode.blob,
+      );
+      final newTree = Tree.lookup(repo: repo, sha: builder.write().sha);
 
       final entry = newTree['filename'];
       expect(newTree.length, 1);

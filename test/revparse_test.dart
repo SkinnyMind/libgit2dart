@@ -94,7 +94,7 @@ void main() {
       expect(revspec.to?.id.sha, '5aecfa0fb97eadaac050ccb99f03c3fb65460ad4');
       expect(revspec.flags, {GitRevSpec.range, GitRevSpec.mergeBase});
       expect(
-        repo.mergeBase(revspec.from.id.sha, revspec.to!.id.sha),
+        repo.mergeBase(a: revspec.from.id.sha, b: revspec.to!.id.sha),
         isA<Oid>(),
       );
 

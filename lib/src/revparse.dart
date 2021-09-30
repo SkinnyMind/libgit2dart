@@ -19,8 +19,11 @@ class RevParse {
   /// The returned object and reference should be released when no longer needed.
   ///
   /// Throws a [LibGit2Error] if error occured.
-  RevParse.ext(Repository repo, String spec) {
-    final pointers = bindings.revParseExt(repo.pointer, spec);
+  RevParse.ext({required Repository repo, required String spec}) {
+    final pointers = bindings.revParseExt(
+      repoPointer: repo.pointer,
+      spec: spec,
+    );
     object = Commit(pointers[0].cast<git_commit>());
     if (pointers.length == 2) {
       reference = Reference(pointers[1].cast<git_reference>());
@@ -42,8 +45,13 @@ class RevParse {
   /// The returned object should be released when no longer needed.
   ///
   /// Throws a [LibGit2Error] if error occured.
-  static Commit single(Repository repo, String spec) {
-    return Commit(bindings.revParseSingle(repo.pointer, spec).cast());
+  static Commit single({required Repository repo, required String spec}) {
+    return Commit(bindings
+        .revParseSingle(
+          repoPointer: repo.pointer,
+          spec: spec,
+        )
+        .cast());
   }
 
   /// Parses a revision string for from, to, and intent.
@@ -52,8 +60,11 @@ class RevParse {
   /// for information on the syntax accepted.
   ///
   /// Throws a [LibGit2Error] if error occured.
-  static RevSpec range(Repository repo, String spec) {
-    return RevSpec(bindings.revParse(repo.pointer, spec));
+  static RevSpec range({required Repository repo, required String spec}) {
+    return RevSpec(bindings.revParse(
+      repoPointer: repo.pointer,
+      spec: spec,
+    ));
   }
 }
 

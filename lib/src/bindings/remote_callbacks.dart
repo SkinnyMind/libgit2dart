@@ -131,16 +131,16 @@ class RemoteCallbacks {
     } else if (credentials is UserPass) {
       final cred = credentials as UserPass;
       credPointer[0] = credentials_bindings.userPass(
-        cred.username,
-        cred.password,
+        username: cred.username,
+        password: cred.password,
       );
     } else if (credentials is Keypair) {
       final cred = credentials as Keypair;
       credPointer[0] = credentials_bindings.sshKey(
-        cred.username,
-        cred.pubKey,
-        cred.privateKey,
-        cred.passPhrase,
+        username: cred.username,
+        publicKey: cred.pubKey,
+        privateKey: cred.privateKey,
+        passPhrase: cred.passPhrase,
       );
     } else if (credentials is KeypairFromAgent) {
       final cred = credentials as KeypairFromAgent;
@@ -148,10 +148,10 @@ class RemoteCallbacks {
     } else if (credentials is KeypairFromMemory) {
       final cred = credentials as KeypairFromMemory;
       credPointer[0] = credentials_bindings.sshKeyFromMemory(
-        cred.username,
-        cred.pubKey,
-        cred.privateKey,
-        cred.passPhrase,
+        username: cred.username,
+        publicKey: cred.pubKey,
+        privateKey: cred.privateKey,
+        passPhrase: cred.passPhrase,
       );
     }
 

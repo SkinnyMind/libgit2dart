@@ -53,7 +53,10 @@ Pointer<git_repository> openBare(String barePath) {
 /// The method will automatically detect if the repository is bare (if there is a repository).
 ///
 /// Throws a [LibGit2Error] if error occured.
-String discover(String startPath, String? ceilingDirs) {
+String discover({
+  required String startPath,
+  String? ceilingDirs,
+}) {
   final out = calloc<git_buf>(sizeOf<git_buf>());
   final startPathC = startPath.toNativeUtf8().cast<Int8>();
   final ceilingDirsC = ceilingDirs?.toNativeUtf8().cast<Int8>() ?? nullptr;
@@ -80,16 +83,16 @@ String discover(String startPath, String? ceilingDirs) {
 /// Creates a new Git repository in the given folder.
 ///
 /// Throws a [LibGit2Error] if error occured.
-Pointer<git_repository> init(
-  String path,
-  int flags,
-  int mode,
+Pointer<git_repository> init({
+  required String path,
+  required int flags,
+  required int mode,
   String? workdirPath,
   String? description,
   String? templatePath,
   String? initialHead,
   String? originUrl,
-) {
+}) {
   final out = calloc<Pointer<git_repository>>();
   final pathC = path.toNativeUtf8().cast<Int8>();
   final workdirPathC = workdirPath?.toNativeUtf8().cast<Int8>() ?? nullptr;
@@ -135,15 +138,15 @@ Pointer<git_repository> init(
 /// Clone a remote repository.
 ///
 /// Throws a [LibGit2Error] if error occured.
-Pointer<git_repository> clone(
-  String url,
-  String localPath,
-  bool bare,
+Pointer<git_repository> clone({
+  required String url,
+  required String localPath,
+  required bool bare,
   Remote Function(Repository, String, String)? remote,
   Repository Function(String, bool)? repository,
   String? checkoutBranch,
-  Callbacks callbacks,
-) {
+  required Callbacks callbacks,
+}) {
   final out = calloc<Pointer<git_repository>>();
   final urlC = url.toNativeUtf8().cast<Int8>();
   final localPathC = localPath.toNativeUtf8().cast<Int8>();
@@ -245,9 +248,12 @@ String getNamespace(Pointer<git_repository> repo) {
 /// under refs/namespaces/foo/, use foo as the namespace.
 ///
 /// Throws a [LibGit2Error] if error occured.
-void setNamespace(Pointer<git_repository> repo, String? namespace) {
+void setNamespace({
+  required Pointer<git_repository> repoPointer,
+  String? namespace,
+}) {
   final nmspace = namespace?.toNativeUtf8().cast<Int8>() ?? nullptr;
-  final error = libgit2.git_repository_set_namespace(repo, nmspace);
+  final error = libgit2.git_repository_set_namespace(repoPointer, nmspace);
 
   calloc.free(nmspace);
 
@@ -330,11 +336,15 @@ bool isBranchUnborn(Pointer<git_repository> repo) {
 ///
 /// If both are set, this name and email will be used to write to the reflog.
 /// Pass NULL to unset. When unset, the identity will be taken from the repository's configuration.
-void setIdentity(Pointer<git_repository> repo, String? name, String? email) {
+void setIdentity({
+  required Pointer<git_repository> repoPointer,
+  String? name,
+  String? email,
+}) {
   final nameC = name?.toNativeUtf8().cast<Int8>() ?? nullptr;
   final emailC = email?.toNativeUtf8().cast<Int8>() ?? nullptr;
 
-  libgit2.git_repository_set_ident(repo, nameC, emailC);
+  libgit2.git_repository_set_ident(repoPointer, nameC, emailC);
 
   calloc.free(nameC);
   calloc.free(emailC);
@@ -507,11 +517,14 @@ Pointer<git_refdb> refdb(Pointer<git_repository> repo) {
 /// Otherwise, the HEAD will be detached and will directly point to the Commit.
 ///
 /// Throws a [LibGit2Error] if error occured.
-void setHead(Pointer<git_repository> repo, String ref) {
-  final refname = ref.toNativeUtf8().cast<Int8>();
-  final error = libgit2.git_repository_set_head(repo, refname);
+void setHead({
+  required Pointer<git_repository> repoPointer,
+  required String refname,
+}) {
+  final refnameC = refname.toNativeUtf8().cast<Int8>();
+  final error = libgit2.git_repository_set_head(repoPointer, refnameC);
 
-  calloc.free(refname);
+  calloc.free(refnameC);
 
   if (error < 0) {
     throw LibGit2Error(libgit2.git_error_last());
@@ -527,8 +540,14 @@ void setHead(Pointer<git_repository> repo, String ref) {
 /// Otherwise, the HEAD will eventually be detached and will directly point to the peeled commit.
 ///
 /// Throws a [LibGit2Error] if error occured.
-void setHeadDetached(Pointer<git_repository> repo, Pointer<git_oid> commitish) {
-  final error = libgit2.git_repository_set_head_detached(repo, commitish);
+void setHeadDetached({
+  required Pointer<git_repository> repoPointer,
+  required Pointer<git_oid> commitishPointer,
+}) {
+  final error = libgit2.git_repository_set_head_detached(
+    repoPointer,
+    commitishPointer,
+  );
 
   if (error < 0) {
     throw LibGit2Error(libgit2.git_error_last());
@@ -542,12 +561,14 @@ void setHeadDetached(Pointer<git_repository> repo, Pointer<git_oid> commitish) {
 /// by a user, allowing for more exact reflog messages.
 ///
 /// See the documentation for [setHeadDetached].
-void setHeadDetachedFromAnnotated(
-  Pointer<git_repository> repo,
-  Pointer<git_annotated_commit> commitish,
-) {
-  final error =
-      libgit2.git_repository_set_head_detached_from_annotated(repo, commitish);
+void setHeadDetachedFromAnnotated({
+  required Pointer<git_repository> repoPointer,
+  required Pointer<git_annotated_commit> commitishPointer,
+}) {
+  final error = libgit2.git_repository_set_head_detached_from_annotated(
+    repoPointer,
+    commitishPointer,
+  );
 
   if (error < 0) {
     throw LibGit2Error(libgit2.git_error_last());
@@ -564,15 +585,15 @@ void setHeadDetachedFromAnnotated(
 /// (checkout, status, index manipulation, etc).
 ///
 /// Throws a [LibGit2Error] if error occured.
-void setWorkdir(
-  Pointer<git_repository> repo,
-  String path,
-  bool updateGitlink,
-) {
+void setWorkdir({
+  required Pointer<git_repository> repoPointer,
+  required String path,
+  required bool updateGitlink,
+}) {
   final workdir = path.toNativeUtf8().cast<Int8>();
   final updateGitlinkC = updateGitlink ? 1 : 0;
   final error = libgit2.git_repository_set_workdir(
-    repo,
+    repoPointer,
     workdir,
     updateGitlinkC,
   );
