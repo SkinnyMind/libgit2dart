@@ -5,15 +5,15 @@ import 'package:libgit2dart/libgit2dart.dart';
 void main() {
   final cloneDir = Directory('${Directory.systemTemp.path}/credentials_cloned');
 
-  setUp(() async {
-    if (await cloneDir.exists()) {
-      cloneDir.delete(recursive: true);
+  setUp(() {
+    if (cloneDir.existsSync()) {
+      cloneDir.deleteSync(recursive: true);
     }
   });
 
-  tearDown(() async {
-    if (await cloneDir.exists()) {
-      cloneDir.delete(recursive: true);
+  tearDown(() {
+    if (cloneDir.existsSync()) {
+      cloneDir.deleteSync(recursive: true);
     }
   });
   group('Credentials', () {

@@ -1356,3 +1356,31 @@ class GitFeature {
   @override
   String toString() => 'GitFeature.$_name';
 }
+
+/// Combinations of these values determine the lookup order for attribute.
+class GitAttributeCheck {
+  const GitAttributeCheck._(this._value, this._name);
+  final int _value;
+  final String _name;
+
+  static const fileThenIndex = GitAttributeCheck._(0, 'fileThenIndex');
+  static const indexThenFile = GitAttributeCheck._(1, 'indexThenFile');
+  static const indexOnly = GitAttributeCheck._(2, 'indexOnly');
+  static const noSystem = GitAttributeCheck._(4, 'noSystem');
+  static const includeHead = GitAttributeCheck._(8, 'includeHead');
+  static const includeCommit = GitAttributeCheck._(16, 'includeCommit');
+
+  static const List<GitAttributeCheck> values = [
+    fileThenIndex,
+    indexThenFile,
+    indexOnly,
+    noSystem,
+    includeHead,
+    includeCommit,
+  ];
+
+  int get value => _value;
+
+  @override
+  String toString() => 'GitAttributeCheck.$_name';
+}

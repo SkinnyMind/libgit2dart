@@ -236,5 +236,20 @@ void main() {
       signature.free();
       config.free();
     });
+
+    test('returns attribute value', () async {
+      expect(repo.getAttribute(path: 'invalid', name: 'not-there'), null);
+
+      final attrFile = await File('${repo.workdir}.gitattributes').create();
+      attrFile.writeAsString('*.dart text\n*.jpg -text\n*.sh eol=lf\n');
+
+      await File('${repo.workdir}file.dart').create();
+      await File('${repo.workdir}file.sh').create();
+
+      expect(repo.getAttribute(path: 'file.dart', name: 'not-there'), null);
+      expect(repo.getAttribute(path: 'file.dart', name: 'text'), true);
+      expect(repo.getAttribute(path: 'file.jpg', name: 'text'), false);
+      expect(repo.getAttribute(path: 'file.sh', name: 'eol'), 'lf');
+    });
   });
 }

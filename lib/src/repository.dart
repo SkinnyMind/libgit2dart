@@ -11,6 +11,7 @@ import 'bindings/checkout.dart' as checkout_bindings;
 import 'bindings/reset.dart' as reset_bindings;
 import 'bindings/diff.dart' as diff_bindings;
 import 'bindings/stash.dart' as stash_bindings;
+import 'bindings/attr.dart' as attr_bindings;
 import 'branch.dart';
 import 'commit.dart';
 import 'config.dart';
@@ -955,4 +956,26 @@ class Repository {
 
   /// Returns [Remotes] object.
   Remotes get remotes => Remotes(this);
+
+  /// Looks up the value of one git attribute for path.
+  ///
+  /// Returned value can be either `true`, `false`, `null` (if the attribute was not set at all),
+  /// or a [String] value, if the attribute was set to an actual string.
+  ///
+  /// Throws a [LibGit2Error] if error occured.
+  dynamic getAttribute({
+    required String path,
+    required String name,
+    Set<GitAttributeCheck> flags = const {GitAttributeCheck.fileThenIndex},
+  }) {
+    final int flagsInt =
+        flags.fold(0, (previousValue, e) => previousValue | e.value);
+
+    return attr_bindings.getAttribute(
+      repoPointer: _repoPointer,
+      flags: flagsInt,
+      path: path,
+      name: name,
+    );
+  }
 }
