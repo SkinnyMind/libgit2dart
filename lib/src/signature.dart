@@ -80,4 +80,9 @@ class Signature {
 
   /// Releases memory allocated for signature object.
   void free() => bindings.free(_signaturePointer);
+
+  @override
+  String toString() {
+    return 'Signature{name: $name, email: $email, time: $time, offset: $offset}';
+  }
 }

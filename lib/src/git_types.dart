@@ -1384,3 +1384,72 @@ class GitAttributeCheck {
   @override
   String toString() => 'GitAttributeCheck.$_name';
 }
+
+/// Flags for indicating option behavior for git blame APIs.
+class GitBlameFlag {
+  const GitBlameFlag._(this._value, this._name);
+  final int _value;
+  final String _name;
+
+  /// Normal blame, the default.
+  static const normal = GitBlameFlag._(0, 'normal');
+
+  /// Track lines that have moved within a file (like `git blame -M`).
+  ///
+  /// This is not yet implemented and reserved for future use.
+  static const trackCopiesSameFile = GitBlameFlag._(1, 'trackCopiesSameFile');
+
+  /// Track lines that have moved across files in the same commit
+  /// (like `git blame -C`).
+  ///
+  /// This is not yet implemented and reserved for future use.
+  static const trackCopiesSameCommitMoves =
+      GitBlameFlag._(2, 'trackCopiesSameCommitMoves');
+
+  /// Track lines that have been copied from another file that exists
+  /// in the same commit (like `git blame -CC`).  Implies SAME_FILE.
+  ///
+  /// This is not yet implemented and reserved for future use.
+  static const trackCopiesSameCommitCopies = GitBlameFlag._(
+    4,
+    'trackCopiesSameCommitCopies',
+  );
+
+  /// Track lines that have been copied from another file that exists in
+  /// *any* commit (like `git blame -CCC`).  Implies SAME_COMMIT_COPIES.
+  ///
+  /// This is not yet implemented and reserved for future use.
+  static const trackCopiesAnyCommitCopies = GitBlameFlag._(
+    8,
+    'trackCopiesAnyCommitCopies',
+  );
+
+  /// Restrict the search of commits to those reachable following only
+  /// the first parents.
+  static const firstParent = GitBlameFlag._(16, 'firstParent');
+
+  /// Use mailmap file to map author and committer names and email
+  /// addresses to canonical real names and email addresses. The
+  /// mailmap will be read from the working directory, or HEAD in a
+  /// bare repository.
+  static const useMailmap = GitBlameFlag._(32, 'useMailmap');
+
+  /// Ignore whitespace differences.
+  static const ignoreWhitespace = GitBlameFlag._(64, 'ignoreWhitespace');
+
+  static const List<GitBlameFlag> values = [
+    normal,
+    trackCopiesSameFile,
+    trackCopiesSameCommitMoves,
+    trackCopiesSameCommitCopies,
+    trackCopiesAnyCommitCopies,
+    firstParent,
+    useMailmap,
+    ignoreWhitespace,
+  ];
+
+  int get value => _value;
+
+  @override
+  String toString() => 'GitBlameFlag.$_name';
+}

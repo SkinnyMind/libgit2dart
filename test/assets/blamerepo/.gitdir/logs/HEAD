@@ -1,0 +1,12 @@
+0000000000000000000000000000000000000000 f17d0d48eae3aa08cecf29128a35e310c97b3521 Aleksey Kulikov <skinny.mind@gmail.com> 1626090830 +0300	commit (initial): init
+f17d0d48eae3aa08cecf29128a35e310c97b3521 f17d0d48eae3aa08cecf29128a35e310c97b3521 Aleksey Kulikov <skinny.mind@gmail.com> 1626090891 +0300	checkout: moving from master to feature
+f17d0d48eae3aa08cecf29128a35e310c97b3521 6cbc22e509d72758ab4c8d9f287ea846b90c448b Aleksey Kulikov <skinny.mind@gmail.com> 1626091020 +0300	commit: add feature file
+6cbc22e509d72758ab4c8d9f287ea846b90c448b fc38877b2552ab554752d9a77e1f48f738cca79b Aleksey Kulikov <skinny.mind@gmail.com> 1626091054 +0300	commit: edit feature file
+fc38877b2552ab554752d9a77e1f48f738cca79b f17d0d48eae3aa08cecf29128a35e310c97b3521 Aleksey Kulikov <skinny.mind@gmail.com> 1626091067 +0300	checkout: moving from feature to master
+f17d0d48eae3aa08cecf29128a35e310c97b3521 c68ff54aabf660fcdd9a2838d401583fe31249e3 Aleksey Kulikov <skinny.mind@gmail.com> 1626091171 +0300	commit: add .gitignore
+c68ff54aabf660fcdd9a2838d401583fe31249e3 78b8bf123e3952c970ae5c1ce0a3ea1d1336f6e8 Aleksey Kulikov <skinny.mind@gmail.com> 1626091184 +0300	merge feature: Merge made by the 'recursive' strategy.
+78b8bf123e3952c970ae5c1ce0a3ea1d1336f6e8 fc38877b2552ab554752d9a77e1f48f738cca79b Aleksey Kulikov <skinny.mind@gmail.com> 1626091245 +0300	checkout: moving from master to feature
+fc38877b2552ab554752d9a77e1f48f738cca79b 5aecfa0fb97eadaac050ccb99f03c3fb65460ad4 Aleksey Kulikov <skinny.mind@gmail.com> 1626091274 +0300	commit: add another feature file
+5aecfa0fb97eadaac050ccb99f03c3fb65460ad4 78b8bf123e3952c970ae5c1ce0a3ea1d1336f6e8 Aleksey Kulikov <skinny.mind@gmail.com> 1626091285 +0300	checkout: moving from feature to master
+78b8bf123e3952c970ae5c1ce0a3ea1d1336f6e8 821ed6e80627b8769d170a293862f9fc60825226 Aleksey Kulikov <skinny.mind@gmail.com> 1630568461 +0300	commit: add subdirectory file
+821ed6e80627b8769d170a293862f9fc60825226 a07a01e325c2c04e05d2450ad37785fbfe0a0014 Aleksey Kulikov <skinny.mind@gmail.com> 1633081062 +0300	commit: blame edit

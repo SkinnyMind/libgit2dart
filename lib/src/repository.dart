@@ -1075,4 +1075,47 @@ class Repository {
       name: name,
     );
   }
+
+  /// Gets the blame for a single file.
+  ///
+  /// [flags] is a combination of [GitBlameFlag]s.
+  ///
+  /// [minMatchCharacters] is the lower bound on the number of alphanumeric
+  /// characters that must be detected as moving/copying within a file for
+  /// it to associate those lines with the parent commit. The default value is 20.
+  /// This value only takes effect if any of the [GitBlameFlag.trackCopies*]
+  /// flags are specified.
+  ///
+  /// [newestCommit] is the id of the newest commit to consider. The default is HEAD.
+  ///
+  /// [oldestCommit] is the id of the oldest commit to consider. The default is the
+  /// first commit encountered with no parent.
+  ///
+  /// [minLine] is the first line in the file to blame. The default is 1
+  /// (line numbers start with 1).
+  ///
+  /// [maxLine] is the last line in the file to blame. The default is the last
+  /// line of the file.
+  ///
+  /// Throws a [LibGit2Error] if error occured.
+  Blame blame({
+    required String path,
+    Set<GitBlameFlag> flags = const {GitBlameFlag.normal},
+    int? minMatchCharacters,
+    Oid? newestCommit,
+    Oid? oldestCommit,
+    int? minLine,
+    int? maxLine,
+  }) {
+    return Blame.file(
+      repo: this,
+      path: path,
+      flags: flags,
+      minMatchCharacters: minMatchCharacters,
+      newestCommit: newestCommit,
+      oldestCommit: oldestCommit,
+      minLine: minLine,
+      maxLine: maxLine,
+    );
+  }
 }
