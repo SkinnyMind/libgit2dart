@@ -1118,4 +1118,49 @@ class Repository {
       maxLine: maxLine,
     );
   }
+
+  /// Returns list of notes for repository.
+  ///
+  /// Notes must be freed manually.
+  ///
+  /// Throws a [LibGit2Error] if error occured.
+  List<Note> get notes => Notes(this).list;
+
+  /// Reads the note for an object.
+  ///
+  /// The note must be freed manually.
+  ///
+  /// Throws a [LibGit2Error] if error occured.
+  Note lookupNote({
+    required Oid annotatedId,
+    String notesRef = 'refs/notes/commits',
+  }) {
+    return Notes.lookup(
+      repo: this,
+      annotatedId: annotatedId,
+      notesRef: notesRef,
+    );
+  }
+
+  /// Adds a note for an [object].
+  ///
+  /// Throws a [LibGit2Error] if error occured.
+  Oid createNote({
+    required Signature author,
+    required Signature committer,
+    required Oid object,
+    required String note,
+    String notesRef = 'refs/notes/commits',
+    bool force = false,
+  }) {
+    return Notes.create(
+      repo: this,
+      author: author,
+      committer: committer,
+      object: object,
+      note: note,
+      notesRef: notesRef,
+      force: force,
+    );
+  }
 }

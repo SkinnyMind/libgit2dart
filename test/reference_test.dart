@@ -28,6 +28,7 @@ void main() {
         [
           'refs/heads/feature',
           'refs/heads/master',
+          'refs/notes/commits',
           'refs/tags/v0.1',
           'refs/tags/v0.2',
         ],
