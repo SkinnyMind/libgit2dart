@@ -89,6 +89,36 @@ void merge({
   }
 }
 
+/// Merge two files as they exist in the index, using the given common ancestor
+/// as the baseline, producing a string that reflects the merge result containing
+/// possible conflicts.
+///
+/// Throws a [LibGit2Error] if error occured.
+String mergeFileFromIndex({
+  required Pointer<git_repository> repoPointer,
+  required Pointer<git_index_entry>? ancestorPointer,
+  required Pointer<git_index_entry>? oursPointer,
+  required Pointer<git_index_entry>? theirsPointer,
+}) {
+  final out = calloc<git_merge_file_result>();
+  final error = libgit2.git_merge_file_from_index(
+    out,
+    repoPointer,
+    ancestorPointer ?? nullptr,
+    oursPointer ?? nullptr,
+    theirsPointer ?? nullptr,
+    nullptr,
+  );
+
+  if (error < 0) {
+    throw LibGit2Error(libgit2.git_error_last());
+  } else {
+    final result = out.ref.ptr.cast<Utf8>().toDartString(length: out.ref.len);
+    calloc.free(out);
+    return result;
+  }
+}
+
 /// Merge two commits, producing a git_index that reflects the result of the merge.
 /// The index may be written as-is to the working directory or checked out. If the index
 /// is to be converted to a tree, the caller should resolve any conflicts that arose as

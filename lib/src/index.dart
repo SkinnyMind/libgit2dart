@@ -256,8 +256,10 @@ class IndexEntry {
   /// Initializes a new instance of [IndexEntry] class.
   const IndexEntry(this._indexEntryPointer);
 
-  /// Pointer to memory address for allocated index entry object.
   final Pointer<git_index_entry> _indexEntryPointer;
+
+  /// Pointer to memory address for allocated index entry object.
+  Pointer<git_index_entry> get pointer => _indexEntryPointer;
 
   /// Unique identity of the index entry.
   Oid get id => Oid.fromRaw(_indexEntryPointer.ref.id);
@@ -281,6 +283,11 @@ class IndexEntry {
 
   /// Sets the UNIX file attributes of a index entry.
   set mode(GitFilemode mode) => _indexEntryPointer.ref.mode = mode.value;
+
+  @override
+  String toString() {
+    return 'IndexEntry{path: $path, sha: $sha}';
+  }
 
   String _oidToHex(git_oid oid) {
     var hex = StringBuffer();

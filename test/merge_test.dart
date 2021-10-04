@@ -1,3 +1,5 @@
+// ignore_for_file: unnecessary_string_escapes
+
 import 'dart:io';
 import 'package:test/test.dart';
 import 'package:libgit2dart/libgit2dart.dart';
@@ -137,6 +139,35 @@ void main() {
 
       index.free();
       conflictBranch.free();
+    });
+
+    group('merge file from index', () {
+      test('successfully merges', () {
+        const diffExpected = """
+\<<<<<<< conflict_file
+master conflict edit
+=======
+conflict branch edit
+>>>>>>> conflict_file
+""";
+        final conflictBranch = repo.branches['conflict-branch'];
+        final index = repo.index;
+        repo.merge(conflictBranch.target);
+
+        final diff = repo.mergeFileFromIndex(
+          ancestor: index.conflicts['conflict_file']!.ancestor,
+          ours: index.conflicts['conflict_file']!.our,
+          theirs: index.conflicts['conflict_file']!.their,
+        );
+
+        expect(
+          diff,
+          diffExpected,
+        );
+
+        index.free();
+        conflictBranch.free();
+      });
     });
 
     group('merge commits', () {

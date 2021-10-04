@@ -677,6 +677,24 @@ class Repository {
     commit_bindings.annotatedFree(theirHead.value);
   }
 
+  /// Merges two files as they exist in the index, using the given common ancestor
+  /// as the baseline, producing a string that reflects the merge result containing
+  /// possible conflicts.
+  ///
+  /// Throws a [LibGit2Error] if error occured.
+  String mergeFileFromIndex({
+    required IndexEntry? ancestor,
+    required IndexEntry? ours,
+    required IndexEntry? theirs,
+  }) {
+    return merge_bindings.mergeFileFromIndex(
+      repoPointer: _repoPointer,
+      ancestorPointer: ancestor?.pointer,
+      oursPointer: ours?.pointer,
+      theirsPointer: theirs?.pointer,
+    );
+  }
+
   /// Merges two commits, producing an index that reflects the result of the merge.
   /// The index may be written as-is to the working directory or checked out. If the index
   /// is to be converted to a tree, the caller should resolve any conflicts that arose as
