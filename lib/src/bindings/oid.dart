@@ -84,3 +84,17 @@ int compare({
 }) {
   return libgit2.git_oid_cmp(aPointer, bPointer);
 }
+
+/// Copy an oid from one structure to another.
+///
+/// Throws a [LibGit2Error] if error occured.
+Pointer<git_oid> copy(Pointer<git_oid> src) {
+  final out = calloc<git_oid>();
+  final error = libgit2.git_oid_cpy(out, src);
+
+  if (error < 0) {
+    throw LibGit2Error(libgit2.git_error_last());
+  } else {
+    return out;
+  }
+}

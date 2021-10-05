@@ -1,6 +1,7 @@
 import 'dart:ffi';
 import 'bindings/libgit2_bindings.dart';
 import 'bindings/oid.dart' as bindings;
+import 'bindings/odb.dart' as odb_bindings;
 import 'repository.dart';
 import 'util.dart';
 
@@ -22,7 +23,8 @@ class Oid {
         _oidPointer = bindings.fromSHA(sha);
       } else {
         final odb = repo.odb;
-        _oidPointer = odb.existsPrefix(
+        _oidPointer = odb_bindings.existsPrefix(
+          odbPointer: odb.pointer,
           shortOidPointer: bindings.fromStrN(sha),
           length: sha.length,
         );
