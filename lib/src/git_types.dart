@@ -1453,3 +1453,48 @@ class GitBlameFlag {
   @override
   String toString() => 'GitBlameFlag.$_name';
 }
+
+/// Type of rebase operation in-progress after calling rebase's `next()`.
+class GitRebaseOperation {
+  const GitRebaseOperation._(this._value, this._name);
+  final int _value;
+  final String _name;
+
+  /// The given commit is to be cherry-picked. The client should commit
+  /// the changes and continue if there are no conflicts.
+  static const pick = GitRebaseOperation._(0, 'pick');
+
+  /// The given commit is to be cherry-picked, but the client should prompt
+  /// the user to provide an updated commit message.
+  static const reword = GitRebaseOperation._(1, 'reword');
+
+  /// The given commit is to be cherry-picked, but the client should stop
+  /// to allow the user to edit the changes before committing them.
+  static const edit = GitRebaseOperation._(2, 'edit');
+
+  /// The given commit is to be squashed into the previous commit. The
+  /// commit message will be merged with the previous message.
+  static const squash = GitRebaseOperation._(3, 'squash');
+
+  /// The given commit is to be squashed into the previous commit. The
+  /// commit message from this commit will be discarded.
+  static const fixup = GitRebaseOperation._(4, 'fixup');
+
+  /// No commit will be cherry-picked. The client should run the given
+  /// command and (if successful) continue.
+  static const exec = GitRebaseOperation._(5, 'exec');
+
+  static const List<GitRebaseOperation> values = [
+    pick,
+    reword,
+    edit,
+    squash,
+    fixup,
+    exec,
+  ];
+
+  int get value => _value;
+
+  @override
+  String toString() => 'GitRebaseOperation.$_name';
+}
