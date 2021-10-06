@@ -24,6 +24,7 @@ export 'src/credentials.dart';
 export 'src/blame.dart';
 export 'src/note.dart';
 export 'src/rebase.dart';
+export 'src/mailmap.dart';
 export 'src/features.dart';
 export 'src/error.dart';
 export 'src/git_types.dart';
