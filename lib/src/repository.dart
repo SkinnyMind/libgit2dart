@@ -13,6 +13,7 @@ import 'bindings/diff.dart' as diff_bindings;
 import 'bindings/stash.dart' as stash_bindings;
 import 'bindings/attr.dart' as attr_bindings;
 import 'bindings/graph.dart' as graph_bindings;
+import 'bindings/describe.dart' as describe_bindings;
 import 'branch.dart';
 import 'commit.dart';
 import 'config.dart';
@@ -529,6 +530,11 @@ class Repository {
         message: message,
         force: force);
   }
+
+  /// Returns a list with all the tags in the repository.
+  ///
+  /// Throws a [LibGit2Error] if error occured.
+  List<String> get tags => Tag.list(this);
 
   /// Returns a [Branches] object.
   Branches get branches => Branches(this);
@@ -1217,5 +1223,78 @@ class Repository {
       localPointer: local.pointer,
       upstreamPointer: upstream.pointer,
     );
+  }
+
+  /// Describes a commit or the current worktree.
+  ///
+  /// [maxCandidatesTags] is the number of candidate tags to consider. Increasing above 10 will
+  /// take slightly longer but may produce a more accurate result. A value of 0 will cause
+  /// only exact matches to be output. Default is 10.
+  ///
+  /// [describeStrategy] is reference lookup strategy that is one of [GitDescribeStrategy].
+  /// Default matches only annotated tags.
+  ///
+  /// [pattern] is pattern to use for tags matching, excluding the "refs/tags/" prefix.
+  ///
+  /// [onlyFollowFirstParent] checks whether or not to follow only the first parent
+  /// commit upon seeing a merge commit.
+  ///
+  /// [showCommitOidAsFallback] determines if full id of the commit should be shown
+  /// if no matching tag or reference is found.
+  ///
+  /// [abbreviatedSize] is the minimum number of hexadecimal digits to show for abbreviated
+  /// object names. A value of 0 will suppress long format, only showing the closest tag.
+  /// Default is 7.
+  ///
+  /// [alwaysUseLongFormat] determines if he long format (the nearest tag, the number of
+  /// commits, and the abbrevated commit name) should be used even when the commit matches
+  /// the tag.
+  ///
+  /// [dirtySuffix] is a string to append if the working tree is dirty.
+  ///
+  /// Throws a [LibGit2Error] if error occured.
+  String describe({
+    Commit? commit,
+    int? maxCandidatesTags,
+    GitDescribeStrategy? describeStrategy,
+    String? pattern,
+    bool? onlyFollowFirstParent,
+    bool? showCommitOidAsFallback,
+    int? abbreviatedSize,
+    bool? alwaysUseLongFormat,
+    String? dirtySuffix,
+  }) {
+    late final Pointer<git_describe_result> describeResult;
+
+    if (commit != null) {
+      describeResult = describe_bindings.commit(
+        commitPointer: commit.pointer,
+        maxCandidatesTags: maxCandidatesTags,
+        describeStrategy: describeStrategy?.value,
+        pattern: pattern,
+        onlyFollowFirstParent: onlyFollowFirstParent,
+        showCommitOidAsFallback: showCommitOidAsFallback,
+      );
+    } else {
+      describeResult = describe_bindings.workdir(
+        repo: _repoPointer,
+        maxCandidatesTags: maxCandidatesTags,
+        describeStrategy: describeStrategy?.value,
+        pattern: pattern,
+        onlyFollowFirstParent: onlyFollowFirstParent,
+        showCommitOidAsFallback: showCommitOidAsFallback,
+      );
+    }
+
+    final result = describe_bindings.format(
+      describeResultPointer: describeResult,
+      abbreviatedSize: abbreviatedSize,
+      alwaysUseLongFormat: alwaysUseLongFormat,
+      dirtySuffix: dirtySuffix,
+    );
+
+    describe_bindings.describeResultFree(describeResult);
+
+    return result;
   }
 }

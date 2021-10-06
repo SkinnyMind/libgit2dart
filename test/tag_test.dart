@@ -86,10 +86,10 @@ void main() {
     });
 
     test('successfully deletes tag', () {
-      expect(Tag.list(repo), ['v0.1', 'v0.2']);
+      expect(repo.tags, ['v0.1', 'v0.2']);
 
       tag.delete();
-      expect(Tag.list(repo), ['v0.1']);
+      expect(repo.tags, ['v0.1']);
     });
   });
 }

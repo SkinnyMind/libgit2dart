@@ -1498,3 +1498,30 @@ class GitRebaseOperation {
   @override
   String toString() => 'GitRebaseOperation.$_name';
 }
+
+/// Reference lookup strategy.
+///
+/// These behave like the --tags and --all options to git-describe,
+/// namely they say to look for any reference in either refs/tags/ or
+/// refs/ respectively.
+class GitDescribeStrategy {
+  const GitDescribeStrategy._(this._value, this._name);
+  final int _value;
+  final String _name;
+
+  /// Only match annotated tags.
+  static const defaultStrategy = GitDescribeStrategy._(0, 'defaultStrategy');
+
+  /// Match everything under `refs/tags/` (includes lightweight tags).
+  static const tags = GitDescribeStrategy._(1, 'tags');
+
+  /// Match everything under `refs/` (includes branches).
+  static const all = GitDescribeStrategy._(2, 'all');
+
+  static const List<GitDescribeStrategy> values = [defaultStrategy, tags, all];
+
+  int get value => _value;
+
+  @override
+  String toString() => 'GitDescribeStrategy.$_name';
+}
