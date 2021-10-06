@@ -1,7 +1,5 @@
 import 'dart:ffi';
 import 'package:libgit2dart/libgit2dart.dart';
-import 'package:libgit2dart/src/git_types.dart';
-
 import 'bindings/libgit2_bindings.dart';
 import 'bindings/odb.dart' as bindings;
 import 'oid.dart';

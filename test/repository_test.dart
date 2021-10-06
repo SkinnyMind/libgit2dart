@@ -251,5 +251,58 @@ void main() {
       expect(repo.getAttribute(path: 'file.jpg', name: 'text'), false);
       expect(repo.getAttribute(path: 'file.sh', name: 'eol'), 'lf');
     });
+
+    test('checks if commit is a descendant of another commit', () {
+      final commit1 = repo['821ed6e8'] as Commit;
+      final commit2 = repo['78b8bf12'] as Commit;
+
+      expect(
+        repo.descendantOf(
+          commitSHA: commit1.id.sha,
+          ancestorSHA: commit2.id.sha,
+        ),
+        true,
+      );
+
+      expect(
+        repo.descendantOf(
+          commitSHA: commit1.id.sha,
+          ancestorSHA: commit1.id.sha,
+        ),
+        false,
+      );
+
+      expect(
+        repo.descendantOf(
+          commitSHA: commit2.id.sha,
+          ancestorSHA: commit1.id.sha,
+        ),
+        false,
+      );
+
+      commit1.free();
+      commit2.free();
+    });
+
+    test('returns number of ahead behind commits', () {
+      final commit1 = repo['821ed6e8'] as Commit;
+      final commit2 = repo['c68ff54a'] as Commit;
+
+      expect(
+        repo.aheadBehind(localSHA: commit1.id.sha, upstreamSHA: commit2.id.sha),
+        [4, 0],
+      );
+      expect(
+        repo.aheadBehind(localSHA: commit2.id.sha, upstreamSHA: commit1.id.sha),
+        [0, 4],
+      );
+      expect(
+        repo.aheadBehind(localSHA: commit1.id.sha, upstreamSHA: commit1.id.sha),
+        [0, 0],
+      );
+
+      commit1.free();
+      commit2.free();
+    });
   });
 }

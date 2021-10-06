@@ -12,6 +12,7 @@ import 'bindings/reset.dart' as reset_bindings;
 import 'bindings/diff.dart' as diff_bindings;
 import 'bindings/stash.dart' as stash_bindings;
 import 'bindings/attr.dart' as attr_bindings;
+import 'bindings/graph.dart' as graph_bindings;
 import 'branch.dart';
 import 'commit.dart';
 import 'config.dart';
@@ -1179,6 +1180,42 @@ class Repository {
       note: note,
       notesRef: notesRef,
       force: force,
+    );
+  }
+
+  /// Checks if a commit is the descendant of another commit.
+  ///
+  /// Note that a commit is not considered a descendant of itself, in contrast to
+  /// `git merge-base --is-ancestor`.
+  ///
+  /// Throws a [LibGit2Error] if error occured.
+  bool descendantOf({required String commitSHA, required String ancestorSHA}) {
+    final commit = Oid.fromSHA(repo: this, sha: commitSHA);
+    final ancestor = Oid.fromSHA(repo: this, sha: ancestorSHA);
+
+    return graph_bindings.descendantOf(
+      repoPointer: _repoPointer,
+      commitPointer: commit.pointer,
+      ancestorPointer: ancestor.pointer,
+    );
+  }
+
+  /// Returns list with the `ahead` and `behind` number of unique commits respectively.
+  ///
+  /// There is no need for branches containing the commits to have any upstream relationship,
+  /// but it helps to think of one as a branch and the other as its upstream, the ahead and
+  /// behind values will be what git would report for the branches.
+  List<int> aheadBehind({
+    required String localSHA,
+    required String upstreamSHA,
+  }) {
+    final local = Oid.fromSHA(repo: this, sha: localSHA);
+    final upstream = Oid.fromSHA(repo: this, sha: upstreamSHA);
+
+    return graph_bindings.aheadBehind(
+      repoPointer: _repoPointer,
+      localPointer: local.pointer,
+      upstreamPointer: upstream.pointer,
     );
   }
 }
