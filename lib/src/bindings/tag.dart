@@ -4,6 +4,26 @@ import '../error.dart';
 import 'libgit2_bindings.dart';
 import '../util.dart';
 
+/// Fill a list with all the tags in the repository.
+///
+/// Throws a [LibGit2Error] if error occured.
+List<String> list(Pointer<git_repository> repo) {
+  final out = calloc<git_strarray>();
+  final error = libgit2.git_tag_list(out, repo);
+
+  var result = <String>[];
+
+  if (error < 0) {
+    throw LibGit2Error(libgit2.git_error_last());
+  } else {
+    for (var i = 0; i < out.ref.count; i++) {
+      result.add(out.ref.strings[i].cast<Utf8>().toDartString());
+    }
+    calloc.free(out);
+    return result;
+  }
+}
+
 /// Lookup a tag object from the repository.
 ///
 /// Throws a [LibGit2Error] if error occured.
@@ -97,6 +117,30 @@ Pointer<git_oid> create({
   } else {
     return out;
   }
+}
+
+/// Delete an existing tag reference.
+///
+/// The tag name will be checked for validity.
+///
+/// Throws a [LibGit2Error] if error occured.
+void delete({
+  required Pointer<git_repository> repoPointer,
+  required String tagName,
+}) {
+  final tagNameC = tagName.toNativeUtf8().cast<Int8>();
+  final error = libgit2.git_tag_delete(repoPointer, tagNameC);
+
+  calloc.free(tagNameC);
+
+  if (error < 0) {
+    throw LibGit2Error(libgit2.git_error_last());
+  }
+}
+
+/// Get the repository that contains the tag.
+Pointer<git_repository> owner(Pointer<git_tag> tag) {
+  return libgit2.git_tag_owner(tag);
 }
 
 /// Close an open tag to release memory.

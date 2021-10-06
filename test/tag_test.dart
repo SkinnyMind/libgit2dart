@@ -80,5 +80,16 @@ void main() {
       newTagTarget.free();
       signature.free();
     });
+
+    test('returns list of tags in repository', () {
+      expect(Tag.list(repo), ['v0.1', 'v0.2']);
+    });
+
+    test('successfully deletes tag', () {
+      expect(Tag.list(repo), ['v0.1', 'v0.2']);
+
+      tag.delete();
+      expect(Tag.list(repo), ['v0.1']);
+    });
   });
 }

@@ -74,6 +74,13 @@ class Tag {
     return Oid(result);
   }
 
+  /// Returns a list with all the tags in the repository.
+  ///
+  /// Throws a [LibGit2Error] if error occured.
+  static List<String> list(Repository repo) {
+    return bindings.list(repo.pointer);
+  }
+
   /// Get the tagged object (commit, tree, blob, tag) of a tag.
   ///
   /// This method performs a repository lookup for the given object and returns it.
@@ -120,6 +127,16 @@ class Tag {
     } else {
       return null;
     }
+  }
+
+  /// Deletes an existing tag reference.
+  ///
+  /// The tag name will be checked for validity.
+  ///
+  /// Throws a [LibGit2Error] if error occured.
+  void delete() {
+    final owner = bindings.owner(_tagPointer);
+    bindings.delete(repoPointer: owner, tagName: name);
   }
 
   /// Releases memory allocated for tag object.
