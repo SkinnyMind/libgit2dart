@@ -1,6 +1,7 @@
 import 'dart:ffi';
 import 'package:ffi/ffi.dart';
 import 'package:libgit2dart/libgit2dart.dart';
+import 'package:libgit2dart/src/packbuilder.dart';
 import 'bindings/libgit2_bindings.dart';
 import 'bindings/repository.dart' as bindings;
 import 'bindings/merge.dart' as merge_bindings;
@@ -1294,6 +1295,41 @@ class Repository {
     );
 
     describe_bindings.describeResultFree(describeResult);
+
+    return result;
+  }
+
+  /// Packs the objects in the odb chosen by the [packDelegate] function and
+  /// writes .pack and .idx files for them into provided [path] or default location.
+  ///
+  /// Returns the number of objects written to the pack.
+  ///
+  /// [packDelegate] is a function that will provide what objects should be added to the
+  /// pack builder. Default is add all objects.
+  ///
+  /// [threads] is number of threads the PackBuilder will spawn. Default is none. 0 will
+  /// let libgit2 to autodetect number of CPUs.
+  ///
+  /// Throws a [LibGit2Error] if error occured.
+  int pack(
+      {String? path, void Function(PackBuilder)? packDelegate, int? threads}) {
+    void packAll(PackBuilder packbuilder) {
+      for (var object in odb.objects) {
+        packbuilder.add(object);
+      }
+    }
+
+    final _packDelegate = packDelegate ?? packAll;
+
+    final packbuilder = PackBuilder(this);
+    if (threads != null) {
+      packbuilder.setThreads(threads);
+    }
+    _packDelegate(packbuilder);
+    packbuilder.write(path);
+    final result = packbuilder.writtenLength;
+
+    packbuilder.free();
 
     return result;
   }
