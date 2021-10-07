@@ -81,7 +81,19 @@ bool exists({
 }
 
 /// List of objects in the database.
+///
+/// IMPORTANT: make sure to clear that list since it's a global variable.
 var _objects = <Oid>[];
+
+/// The callback to call for each object.
+int _forEachCb(
+  Pointer<git_oid> oid,
+  Pointer<Void> payload,
+) {
+  final _oid = oid_bindings.copy(oid);
+  _objects.add(Oid(_oid));
+  return 0;
+}
 
 /// List all objects available in the database.
 ///
@@ -103,16 +115,6 @@ List<Oid> objects(Pointer<git_odb> odb) {
   _objects.clear();
 
   return result;
-}
-
-/// The callback to call for each object.
-int _forEachCb(
-  Pointer<git_oid> oid,
-  Pointer<Void> payload,
-) {
-  final _oid = oid_bindings.copy(oid);
-  _objects.add(Oid(_oid));
-  return 0;
 }
 
 /// Read an object from the database.
