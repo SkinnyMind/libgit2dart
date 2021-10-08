@@ -1333,4 +1333,83 @@ class Repository {
 
     return result;
   }
+
+  /// Returns a list with all tracked submodules paths of a repository.
+  ///
+  /// Throws a [LibGit2Error] if error occured.
+  List<String> get submodules => Submodule.list(this);
+
+  /// Lookups submodule by name or path.
+  ///
+  /// You must free submodule when done with it.
+  ///
+  /// Throws a [LibGit2Error] if error occured.
+  Submodule lookupSubmodule(String submodule) {
+    return Submodule.lookup(repo: this, submodule: submodule);
+  }
+
+  /// Copies submodule info into ".git/config" file.
+  ///
+  /// Just like `git submodule init`, this copies information about the
+  /// submodule into `.git/config`.
+  ///
+  /// By default, existing entries will not be overwritten, but setting [overwrite]
+  /// to true forces them to be updated.
+  ///
+  /// Throws a [LibGit2Error] if error occured.
+  void initSubmodule({
+    required String submodule,
+    bool overwrite = false,
+  }) {
+    Submodule.init(repo: this, submodule: submodule, overwrite: overwrite);
+  }
+
+  /// Updates a submodule. This will clone a missing submodule and checkout the
+  /// subrepository to the commit specified in the index of the containing repository.
+  /// If the submodule repository doesn't contain the target commit (e.g. because
+  /// fetchRecurseSubmodules isn't set), then the submodule is fetched using the fetch
+  /// options supplied in [callbacks].
+  ///
+  /// If the submodule is not initialized, setting [init] to true will initialize the
+  /// submodule before updating. Otherwise, this will return an error if attempting
+  /// to update an uninitialzed repository.
+  ///
+  /// Throws a [LibGit2Error] if error occured.
+  void updateSubmodule({
+    required String submodule,
+    bool init = false,
+    Callbacks callbacks = const Callbacks(),
+  }) {
+    Submodule.update(
+      repo: this,
+      submodule: submodule,
+      init: init,
+      callbacks: callbacks,
+    );
+  }
+
+  /// Adds a submodule to the index.
+  ///
+  /// [url] is URL for the submodule's remote.
+  ///
+  /// [path] is path at which the submodule should be created.
+  ///
+  /// [link] determines if workdir should contain a gitlink to the repo in `.git/modules`
+  /// vs. repo directly in workdir. Default is true.
+  ///
+  /// Throws a [LibGit2Error] if error occured.
+  Submodule addSubmodule({
+    required String url,
+    required String path,
+    bool useGitlink = true,
+    Callbacks callbacks = const Callbacks(),
+  }) {
+    return Submodule.add(
+      repo: this,
+      url: url,
+      path: path,
+      useGitlink: useGitlink,
+      callbacks: callbacks,
+    );
+  }
 }

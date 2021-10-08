@@ -1525,3 +1525,176 @@ class GitDescribeStrategy {
   @override
   String toString() => 'GitDescribeStrategy.$_name';
 }
+
+/// Submodule ignore values.
+///
+/// These values represent settings for the `submodule.$name.ignore`
+/// configuration value which says how deeply to look at the working
+/// directory when getting submodule status.
+class GitSubmoduleIgnore {
+  const GitSubmoduleIgnore._(this._value, this._name);
+  final int _value;
+  final String _name;
+
+  // Use the submodule's configuration.
+  static const unspecified = GitSubmoduleIgnore._(-1, 'unspecified');
+
+  /// Don't ignore any change - i.e. even an untracked file, will mark the
+  /// submodule as dirty.  Ignored files are still ignored, of course.
+  static const none = GitSubmoduleIgnore._(1, 'none');
+
+  /// Ignore untracked files; only changes to tracked files, or the index or
+  /// the HEAD commit will matter.
+  static const untracked = GitSubmoduleIgnore._(2, 'untracked');
+
+  /// Ignore changes in the working directory, only considering changes if
+  /// the HEAD of submodule has moved from the value in the superproject.
+  static const dirty = GitSubmoduleIgnore._(3, 'dirty');
+
+  /// Never check if the submodule is dirty.
+  static const all = GitSubmoduleIgnore._(4, 'all');
+
+  static const List<GitSubmoduleIgnore> values = [
+    unspecified,
+    none,
+    untracked,
+    dirty,
+    all,
+  ];
+
+  int get value => _value;
+
+  @override
+  String toString() => 'GitSubmoduleIgnore.$_name';
+}
+
+/// Submodule update values
+///
+/// These values represent settings for the `submodule.$name.update`
+/// configuration value which says how to handle `git submodule update` for
+/// this submodule.  The value is usually set in the `.gitmodules` file and
+/// copied to `.git/config` when the submodule is initialized.
+class GitSubmoduleUpdate {
+  const GitSubmoduleUpdate._(this._value, this._name);
+  final int _value;
+  final String _name;
+
+  /// The default; when a submodule is updated, checkout the new detached HEAD
+  /// to the submodule directory.
+  static const checkout = GitSubmoduleUpdate._(1, 'checkout');
+
+  /// Update by rebasing the current checked out branch onto the commit from
+  /// the superproject.
+  static const rebase = GitSubmoduleUpdate._(2, 'rebase');
+
+  /// Update by merging the commit in the superproject into the current checkout
+  /// out branch of the submodule.
+  static const merge = GitSubmoduleUpdate._(3, 'merge');
+
+  /// Do not update this submodule even when the commit in the superproject is updated.
+  static const none = GitSubmoduleUpdate._(4, 'none');
+
+  static const List<GitSubmoduleUpdate> values = [
+    checkout,
+    rebase,
+    merge,
+    none,
+  ];
+
+  int get value => _value;
+
+  @override
+  String toString() => 'GitSubmoduleUpdate.$_name';
+}
+
+/// A combination of these flags will be returned to describe the status of a
+/// submodule.  Depending on the "ignore" property of the submodule, some of
+/// the flags may never be returned because they indicate changes that are
+/// supposed to be ignored.
+///
+/// Submodule info is contained in 4 places: the HEAD tree, the index, config
+/// files (both .git/config and .gitmodules), and the working directory.  Any
+/// or all of those places might be missing information about the submodule
+/// depending on what state the repo is in.  We consider all four places to
+/// build the combination of status flags.
+class GitSubmoduleStatus {
+  const GitSubmoduleStatus._(this._value, this._name);
+  final int _value;
+  final String _name;
+
+  /// Superproject head contains submodule.
+  static const inHead = GitSubmoduleStatus._(1, 'inHead');
+
+  /// Superproject index contains submodule.
+  static const inIndex = GitSubmoduleStatus._(2, 'inIndex');
+
+  /// Superproject gitmodules has submodule.
+  static const inConfig = GitSubmoduleStatus._(4, 'inConfig');
+
+  /// Superproject workdir has submodule.
+  static const inWorkdir = GitSubmoduleStatus._(8, 'inWorkdir');
+
+  /// In index, not in head.
+  static const indexAdded = GitSubmoduleStatus._(16, 'indexAdded');
+
+  /// In head, not in index.
+  static const indexDeleted = GitSubmoduleStatus._(32, 'indexDeleted');
+
+  /// Index and head don't match.
+  static const indexModified = GitSubmoduleStatus._(64, 'indexModified');
+
+  /// Workdir contains empty directory.
+  static const workdirUninitialized = GitSubmoduleStatus._(
+    128,
+    'workdirUninitialized',
+  );
+
+  /// In workdir, not index.
+  static const workdirAdded = GitSubmoduleStatus._(256, 'workdirAdded');
+
+  /// In index, not workdir.
+  static const workdirDeleted = GitSubmoduleStatus._(512, 'workdirDeleted');
+
+  /// Index and workdir head don't match.
+  static const workdirModified = GitSubmoduleStatus._(1024, 'workdirModified');
+
+  /// Submodule workdir index is dirty.
+  static const workdirIndexModified = GitSubmoduleStatus._(
+    2048,
+    'workdirIndexModified',
+  );
+
+  /// Submodule workdir has modified files.
+  static const smWorkdirModified = GitSubmoduleStatus._(
+    4096,
+    'smWorkdirModified',
+  );
+
+  /// Workdir contains untracked files.
+  static const workdirUntracked = GitSubmoduleStatus._(
+    8192,
+    'workdirUntracked',
+  );
+
+  static const List<GitSubmoduleStatus> values = [
+    inHead,
+    inIndex,
+    inConfig,
+    inWorkdir,
+    indexAdded,
+    indexDeleted,
+    indexModified,
+    workdirUninitialized,
+    workdirAdded,
+    workdirDeleted,
+    workdirModified,
+    workdirIndexModified,
+    smWorkdirModified,
+    workdirUntracked,
+  ];
+
+  int get value => _value;
+
+  @override
+  String toString() => 'GitSubmoduleStatus.$_name';
+}
