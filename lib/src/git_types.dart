@@ -550,6 +550,10 @@ class GitCheckout {
   /// Normally checkout writes the index upon completion; this prevents that.
   static const dontWriteIndex = GitCheckout._(8388608, 'dontWriteIndex');
 
+  /// Show what would be done by a checkout. Stop after sending
+  /// notifications; don't update the working directory or index.
+  static const dryRun = GitCheckout._(16777216, 'dryRun');
+
   static const List<GitCheckout> values = [
     none,
     safe,
@@ -571,6 +575,7 @@ class GitCheckout {
     conflictStyleDiff3,
     dontRemoveExisting,
     dontWriteIndex,
+    dryRun
   ];
 
   int get value => _value;

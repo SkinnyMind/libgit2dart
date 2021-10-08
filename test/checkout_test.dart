@@ -1,4 +1,5 @@
 import 'dart:io';
+import 'package:libgit2dart/src/git_types.dart';
 import 'package:test/test.dart';
 import 'package:libgit2dart/libgit2dart.dart';
 import 'helpers/util.dart';
@@ -92,6 +93,21 @@ void main() {
           'another_feature_file': {GitStatus.indexNew}
         },
       );
+    });
+
+    test('successfully performs dry run checkout', () {
+      final index = repo.index;
+      expect(index.length, 4);
+      expect(File('${repo.workdir}/another_feature_file').existsSync(), false);
+
+      repo.checkout(
+        refName: 'refs/heads/feature',
+        strategy: {GitCheckout.dryRun},
+      );
+      expect(index.length, 4);
+      expect(File('${repo.workdir}/another_feature_file').existsSync(), false);
+
+      index.free();
     });
   });
 }
