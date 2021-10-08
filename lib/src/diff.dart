@@ -140,6 +140,7 @@ class DiffDelta {
     for (var type in GitDelta.values) {
       if (_diffDeltaPointer.ref.status == type.value) {
         status = type;
+        break;
       }
     }
     return status;
@@ -221,6 +222,7 @@ class DiffFile {
     for (var mode in GitFilemode.values) {
       if (_diffFile.mode == mode.value) {
         result = mode;
+        break;
       }
     }
     return result;
@@ -338,6 +340,7 @@ class DiffLine {
     for (var type in GitDiffLine.values) {
       if (originInt == type.value) {
         result = type;
+        break;
       }
     }
     return result;
