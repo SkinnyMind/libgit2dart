@@ -1,10 +1,8 @@
 import 'dart:ffi';
 import 'package:ffi/ffi.dart';
+import 'package:libgit2dart/libgit2dart.dart';
 import 'bindings/libgit2_bindings.dart';
 import 'bindings/patch.dart' as bindings;
-import 'blob.dart';
-import 'diff.dart';
-import 'git_types.dart';
 import 'util.dart';
 
 class Patch {

@@ -1,17 +1,10 @@
 import 'dart:ffi';
+import 'package:libgit2dart/libgit2dart.dart';
 import 'bindings/libgit2_bindings.dart';
 import 'bindings/reference.dart' as bindings;
 import 'bindings/object.dart' as object_bindings;
 import 'bindings/refdb.dart' as refdb_bindings;
 import 'bindings/repository.dart' as repository_bindings;
-import 'blob.dart';
-import 'commit.dart';
-import 'oid.dart';
-import 'reflog.dart';
-import 'git_types.dart';
-import 'repository.dart';
-import 'tag.dart';
-import 'tree.dart';
 import 'util.dart';
 
 class References {

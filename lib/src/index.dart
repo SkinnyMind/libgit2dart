@@ -2,13 +2,9 @@ import 'dart:collection';
 import 'dart:ffi';
 import 'package:ffi/ffi.dart';
 import 'package:libgit2dart/libgit2dart.dart';
-import 'package:libgit2dart/src/tree.dart';
 import 'bindings/libgit2_bindings.dart';
 import 'bindings/index.dart' as bindings;
 import 'bindings/diff.dart' as diff_bindings;
-import 'oid.dart';
-import 'git_types.dart';
-import 'repository.dart';
 
 class Index with IterableMixin<IndexEntry> {
   /// Initializes a new instance of [Index] class from provided

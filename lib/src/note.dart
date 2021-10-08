@@ -1,9 +1,7 @@
 import 'dart:ffi';
+import 'package:libgit2dart/libgit2dart.dart';
 import 'bindings/libgit2_bindings.dart';
 import 'bindings/note.dart' as bindings;
-import 'oid.dart';
-import 'repository.dart';
-import 'signature.dart';
 
 class Notes {
   /// Initializes a new instance of the [Notes] class from

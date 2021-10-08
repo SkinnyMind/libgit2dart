@@ -1,10 +1,7 @@
 import 'dart:ffi';
+import 'package:libgit2dart/libgit2dart.dart';
 import 'bindings/libgit2_bindings.dart';
 import 'bindings/treebuilder.dart' as bindings;
-import 'repository.dart';
-import 'oid.dart';
-import 'git_types.dart';
-import 'tree.dart';
 
 class TreeBuilder {
   /// Initializes a new instance of [TreeBuilder] class from provided

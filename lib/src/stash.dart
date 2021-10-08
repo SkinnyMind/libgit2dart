@@ -1,4 +1,4 @@
-import 'oid.dart';
+import 'package:libgit2dart/libgit2dart.dart';
 
 class Stash {
   /// Initializes a new instance of [Stash] class.

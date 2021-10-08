@@ -1,8 +1,8 @@
 import 'dart:ffi';
+import 'package:libgit2dart/libgit2dart.dart';
 import 'bindings/libgit2_bindings.dart';
 import 'bindings/oid.dart' as bindings;
 import 'bindings/odb.dart' as odb_bindings;
-import 'repository.dart';
 import 'util.dart';
 
 class Oid {

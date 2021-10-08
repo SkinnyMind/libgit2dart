@@ -1,4 +1,3 @@
-import 'package:libgit2dart/src/features.dart';
 import 'package:test/test.dart';
 import 'package:libgit2dart/libgit2dart.dart';
 

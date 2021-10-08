@@ -1,7 +1,6 @@
 import 'dart:ffi';
 import 'package:ffi/ffi.dart';
 import 'package:libgit2dart/libgit2dart.dart';
-import 'package:libgit2dart/src/packbuilder.dart';
 import 'bindings/libgit2_bindings.dart';
 import 'bindings/repository.dart' as bindings;
 import 'bindings/merge.dart' as merge_bindings;
@@ -15,20 +14,6 @@ import 'bindings/stash.dart' as stash_bindings;
 import 'bindings/attr.dart' as attr_bindings;
 import 'bindings/graph.dart' as graph_bindings;
 import 'bindings/describe.dart' as describe_bindings;
-import 'branch.dart';
-import 'commit.dart';
-import 'config.dart';
-import 'index.dart';
-import 'odb.dart';
-import 'oid.dart';
-import 'reference.dart';
-import 'revwalk.dart';
-import 'revparse.dart';
-import 'blob.dart';
-import 'git_types.dart';
-import 'signature.dart';
-import 'tag.dart';
-import 'tree.dart';
 import 'util.dart';
 
 class Repository {

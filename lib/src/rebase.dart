@@ -1,12 +1,9 @@
 import 'dart:ffi';
 import 'package:ffi/ffi.dart';
+import 'package:libgit2dart/libgit2dart.dart';
 import 'bindings/libgit2_bindings.dart';
 import 'bindings/rebase.dart' as bindings;
 import 'bindings/commit.dart' as commit_bindings;
-import 'git_types.dart';
-import 'oid.dart';
-import 'repository.dart';
-import 'signature.dart';
 
 class Rebase {
   /// Initializes a new instance of the [Rebase] class by initializing a

@@ -1,9 +1,8 @@
 import 'dart:collection';
 import 'dart:ffi';
+import 'package:libgit2dart/libgit2dart.dart';
 import 'bindings/libgit2_bindings.dart';
 import 'bindings/reflog.dart' as bindings;
-import 'reference.dart';
-import 'signature.dart';
 
 class RefLog with IterableMixin<RefLogEntry> {
   /// Initializes a new instance of [RefLog] class from provided [Reference].

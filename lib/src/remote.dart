@@ -1,10 +1,7 @@
 import 'dart:ffi';
+import 'package:libgit2dart/libgit2dart.dart';
 import 'bindings/libgit2_bindings.dart';
 import 'bindings/remote.dart' as bindings;
-import 'callbacks.dart';
-import 'git_types.dart';
-import 'refspec.dart';
-import 'repository.dart';
 
 class Remotes {
   /// Initializes a new instance of the [Remotes] class from

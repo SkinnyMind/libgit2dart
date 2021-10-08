@@ -1,12 +1,8 @@
 import 'dart:ffi';
+import 'package:libgit2dart/libgit2dart.dart';
 import 'bindings/libgit2_bindings.dart';
 import 'bindings/branch.dart' as bindings;
 import 'bindings/reference.dart' as reference_bindings;
-import 'commit.dart';
-import 'reference.dart';
-import 'repository.dart';
-import 'oid.dart';
-import 'git_types.dart';
 
 class Branches {
   /// Initializes a new instance of the [Branches] class

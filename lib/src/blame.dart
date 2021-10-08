@@ -1,13 +1,10 @@
 import 'dart:collection';
 import 'dart:ffi';
 import 'package:ffi/ffi.dart';
+import 'package:libgit2dart/libgit2dart.dart';
 import 'bindings/libgit2_bindings.dart';
 import 'bindings/blame.dart' as bindings;
 import 'util.dart';
-import 'git_types.dart';
-import 'oid.dart';
-import 'repository.dart';
-import 'signature.dart';
 
 class Blame with IterableMixin<BlameHunk> {
   /// Initializes a new instance of the [Blame] class from

@@ -1,11 +1,9 @@
 import 'dart:ffi';
 import 'package:ffi/ffi.dart';
+import 'package:libgit2dart/libgit2dart.dart';
 import 'bindings/libgit2_bindings.dart';
 import 'bindings/diff.dart' as bindings;
 import 'bindings/patch.dart' as patch_bindings;
-import 'git_types.dart';
-import 'oid.dart';
-import 'patch.dart';
 import 'util.dart';
 
 class Diff {

@@ -1,11 +1,8 @@
 import 'dart:ffi';
+import 'package:libgit2dart/libgit2dart.dart';
 import 'bindings/libgit2_bindings.dart';
 import 'bindings/blob.dart' as bindings;
 import 'bindings/patch.dart' as patch_bindings;
-import 'git_types.dart';
-import 'patch.dart';
-import 'oid.dart';
-import 'repository.dart';
 
 class Blob {
   /// Initializes a new instance of [Blob] class from provided pointer to

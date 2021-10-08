@@ -19,6 +19,7 @@ export 'src/patch.dart';
 export 'src/stash.dart';
 export 'src/remote.dart';
 export 'src/refspec.dart';
+export 'src/revparse.dart';
 export 'src/callbacks.dart';
 export 'src/credentials.dart';
 export 'src/blame.dart';

@@ -1,8 +1,8 @@
 import 'dart:ffi';
 import 'package:ffi/ffi.dart';
+import 'package:libgit2dart/libgit2dart.dart';
 import 'bindings/libgit2_bindings.dart';
 import 'bindings/signature.dart' as bindings;
-import 'repository.dart';
 import 'util.dart';
 
 class Signature {

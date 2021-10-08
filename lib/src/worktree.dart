@@ -1,8 +1,7 @@
 import 'dart:ffi';
+import 'package:libgit2dart/libgit2dart.dart';
 import 'bindings/libgit2_bindings.dart';
 import 'bindings/worktree.dart' as bindings;
-import 'reference.dart';
-import 'repository.dart';
 
 class Worktree {
   /// Initializes a new instance of [Worktree] class by creating new worktree

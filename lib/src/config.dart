@@ -2,9 +2,9 @@ import 'dart:collection';
 import 'dart:ffi';
 import 'dart:io';
 import 'package:ffi/ffi.dart';
+import 'package:libgit2dart/libgit2dart.dart';
 import 'bindings/libgit2_bindings.dart';
 import 'bindings/config.dart' as bindings;
-import 'git_types.dart';
 import 'util.dart';
 
 class Config with IterableMixin<ConfigEntry> {

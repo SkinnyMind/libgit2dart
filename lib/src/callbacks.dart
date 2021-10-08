@@ -1,6 +1,4 @@
-import 'credentials.dart';
-import 'oid.dart';
-import 'remote.dart';
+import 'package:libgit2dart/libgit2dart.dart';
 
 class Callbacks {
   const Callbacks({

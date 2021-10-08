@@ -1,4 +1,4 @@
-import 'package:libgit2dart/src/git_types.dart';
+import 'package:libgit2dart/libgit2dart.dart';
 
 abstract class Credentials {
   /// Returns type of authentication method.
