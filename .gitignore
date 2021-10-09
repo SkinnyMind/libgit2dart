@@ -3,3 +3,6 @@
 .dart_tool
 .pub
 pubspec.lock
+
+# Coverage
+coverage/
