@@ -9,14 +9,14 @@ void main() {
   const lastCommit = '821ed6e80627b8769d170a293862f9fc60825226';
   const featureCommit = '5aecfa0fb97eadaac050ccb99f03c3fb65460ad4';
 
-  setUp(() async {
-    tmpDir = await setupRepo(Directory('test/assets/testrepo/'));
+  setUp(() {
+    tmpDir = setupRepo(Directory('test/assets/testrepo/'));
     repo = Repository.open(tmpDir.path);
   });
 
-  tearDown(() async {
+  tearDown(() {
     repo.free();
-    await tmpDir.delete(recursive: true);
+    tmpDir.deleteSync(recursive: true);
   });
 
   group('Repository', () {
@@ -125,7 +125,7 @@ void main() {
 
       test('successfully creates new blob', () {
         final oid = repo.createBlob(newBlobContent);
-        final newBlob = repo[oid.sha] as Blob;
+        final newBlob = repo.lookupBlob(oid);
 
         expect(newBlob, isA<Blob>());
 
@@ -135,7 +135,7 @@ void main() {
       test('successfully creates new blob from file at provided relative path',
           () {
         final oid = repo.createBlobFromWorkdir('feature_file');
-        final newBlob = repo[oid.sha] as Blob;
+        final newBlob = repo.lookupBlob(oid);
 
         expect(newBlob, isA<Blob>());
 
@@ -146,7 +146,7 @@ void main() {
         final outsideFile =
             File('${Directory.current.absolute.path}/test/blob_test.dart');
         final oid = repo.createBlobFromDisk(outsideFile.path);
-        final newBlob = repo[oid.sha] as Blob;
+        final newBlob = repo.lookupBlob(oid);
 
         expect(newBlob, isA<Blob>());
 
@@ -161,11 +161,10 @@ void main() {
         time: 1234,
       );
       const tagName = 'tag';
-      const target = 'f17d0d48eae3aa08cecf29128a35e310c97b3521';
+      final target = repo['f17d0d48eae3aa08cecf29128a35e310c97b3521'];
       const message = 'init tag\n';
 
-      final oid = Tag.create(
-        repo: repo,
+      final oid = repo.createTag(
         tagName: tagName,
         target: target,
         targetType: GitObject.commit,
@@ -173,7 +172,7 @@ void main() {
         message: message,
       );
 
-      final newTag = repo[oid.sha] as Tag;
+      final newTag = repo.lookupTag(oid);
       final tagger = newTag.tagger;
       final newTagTarget = newTag.target as Commit;
 
@@ -181,7 +180,7 @@ void main() {
       expect(newTag.name, tagName);
       expect(newTag.message, message);
       expect(tagger, signature);
-      expect(newTagTarget.id.sha, target);
+      expect(newTagTarget.id, target);
 
       newTag.free();
       newTagTarget.free();
@@ -252,8 +251,8 @@ void main() {
     });
 
     test('checks if commit is a descendant of another commit', () {
-      final commit1 = repo['821ed6e8'] as Commit;
-      final commit2 = repo['78b8bf12'] as Commit;
+      final commit1 = repo.lookupCommit(repo['821ed6e8']);
+      final commit2 = repo.lookupCommit(repo['78b8bf12']);
 
       expect(
         repo.descendantOf(
@@ -284,8 +283,8 @@ void main() {
     });
 
     test('returns number of ahead behind commits', () {
-      final commit1 = repo['821ed6e8'] as Commit;
-      final commit2 = repo['c68ff54a'] as Commit;
+      final commit1 = repo.lookupCommit(repo['821ed6e8']);
+      final commit2 = repo.lookupCommit(repo['c68ff54a']);
 
       expect(
         repo.aheadBehind(localSHA: commit1.id.sha, upstreamSHA: commit2.id.sha),

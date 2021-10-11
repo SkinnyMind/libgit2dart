@@ -7,18 +7,17 @@ void main() {
   late Repository repo;
   late Tree tree;
   late Directory tmpDir;
-  const treeSHA = 'a8ae3dd59e6e1802c6f78e05e301bfd57c9f334f';
 
-  setUp(() async {
-    tmpDir = await setupRepo(Directory('test/assets/testrepo/'));
+  setUp(() {
+    tmpDir = setupRepo(Directory('test/assets/testrepo/'));
     repo = Repository.open(tmpDir.path);
-    tree = Tree.lookup(repo: repo, sha: treeSHA);
+    tree = repo.lookupTree(repo['a8ae3dd59e6e1802c6f78e05e301bfd57c9f334f']);
   });
 
-  tearDown(() async {
+  tearDown(() {
     tree.free();
     repo.free();
-    await tmpDir.delete(recursive: true);
+    tmpDir.deleteSync(recursive: true);
   });
 
   group('TreeBuilder', () {
@@ -56,11 +55,13 @@ void main() {
       expect(() => builder[entry.name], throwsA(isA<ArgumentError>()));
 
       builder.add(
-          filename: entry.name, oid: entry.id, filemode: entry.filemode);
+        filename: entry.name,
+        oid: entry.id,
+        filemode: entry.filemode,
+      );
       expect(builder[entry.name].name, entry.name);
 
       builder.free();
-      entry.free();
     });
 
     test('successfully removes an entry', () {

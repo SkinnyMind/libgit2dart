@@ -7,14 +7,14 @@ void main() {
   late Repository repo;
   late Directory tmpDir;
 
-  setUp(() async {
-    tmpDir = await setupRepo(Directory('test/assets/testrepo/'));
+  setUp(() {
+    tmpDir = setupRepo(Directory('test/assets/testrepo/'));
     repo = Repository.open(tmpDir.path);
   });
 
-  tearDown(() async {
+  tearDown(() {
     repo.free();
-    await tmpDir.delete(recursive: true);
+    tmpDir.deleteSync(recursive: true);
   });
 
   group('Describe', () {
@@ -23,25 +23,22 @@ void main() {
     });
 
     test('successfully describes commit', () {
-      final tag = Tag.lookup(repo: repo, sha: 'f0fdbf5');
-      tag.delete();
+      repo.deleteTag('v0.2');
 
       expect(
         repo.describe(describeStrategy: GitDescribeStrategy.tags),
         'v0.1-1-g821ed6e',
       );
-
-      tag.free();
     });
 
     test('throws when trying to describe and no reference found', () {
-      final commit = repo['f17d0d48'] as Commit;
+      final commit = repo.lookupCommit(repo['f17d0d48']);
       expect(() => repo.describe(commit: commit), throwsA(isA<LibGit2Error>()));
       commit.free();
     });
 
     test('returns oid when fallback argument is provided', () {
-      final commit = repo['f17d0d48'] as Commit;
+      final commit = repo.lookupCommit(repo['f17d0d48']);
       expect(
         repo.describe(commit: commit, showCommitOidAsFallback: true),
         'f17d0d4',
@@ -50,7 +47,7 @@ void main() {
     });
 
     test('successfully describes with provided strategy', () {
-      final commit = repo['5aecfa0'] as Commit;
+      final commit = repo.lookupCommit(repo['5aecfa0']);
       expect(
         repo.describe(
           commit: commit,
@@ -63,10 +60,10 @@ void main() {
 
     test('successfully describes with provided pattern', () {
       final signature = repo.defaultSignature;
-      final commit = repo['fc38877'] as Commit;
+      final commit = repo.lookupCommit(repo['fc38877']);
       repo.createTag(
         tagName: 'test/tag1',
-        target: 'f17d0d48',
+        target: repo['f17d0d48'],
         targetType: GitObject.commit,
         tagger: signature,
         message: '',
@@ -82,10 +79,9 @@ void main() {
     });
 
     test('successfully describes and follows first parent only', () {
-      final tag = Tag.lookup(repo: repo, sha: 'f0fdbf5');
-      tag.delete();
+      final commit = repo.lookupCommit(repo['821ed6e']);
+      repo.deleteTag('v0.2');
 
-      final commit = repo['821ed6e'] as Commit;
       expect(
         repo.describe(
           commit: commit,
@@ -95,15 +91,13 @@ void main() {
         'v0.1-1-g821ed6e',
       );
 
-      tag.free();
       commit.free();
     });
 
-    test('successfully describes with abbreviated size provided', () {
-      final tag = Tag.lookup(repo: repo, sha: 'f0fdbf5');
-      tag.delete();
+    test('successfully describes with provided abbreviated size', () {
+      final commit = repo.lookupCommit(repo['821ed6e']);
+      repo.deleteTag('v0.2');
 
-      final commit = repo['821ed6e'] as Commit;
       expect(
         repo.describe(
           commit: commit,
@@ -122,7 +116,6 @@ void main() {
         'v0.1',
       );
 
-      tag.free();
       commit.free();
     });
 

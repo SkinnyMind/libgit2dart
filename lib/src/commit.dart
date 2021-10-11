@@ -8,18 +8,16 @@ class Commit {
   /// Initializes a new instance of [Commit] class from provided pointer to
   /// commit object in memory.
   ///
-  /// Should be freed with `free()` to release allocated memory.
+  /// Should be freed to release allocated memory.
   Commit(this._commitPointer);
 
-  /// Initializes a new instance of [Commit] class from provided [Repository] object
-  /// and [sha] hex string.
+  /// Lookups commit object for provided [id] in a [repo]sitory.
   ///
-  /// Should be freed with `free()` to release allocated memory.
-  Commit.lookup({required Repository repo, required String sha}) {
-    final oid = Oid.fromSHA(repo: repo, sha: sha);
+  /// Should be freed to release allocated memory.
+  Commit.lookup({required Repository repo, required Oid id}) {
     _commitPointer = bindings.lookup(
       repoPointer: repo.pointer,
-      oidPointer: oid.pointer,
+      oidPointer: id.pointer,
     );
   }
 
@@ -42,14 +40,14 @@ class Commit {
     required String message,
     required Signature author,
     required Signature commiter,
-    required String treeSHA,
-    required List<String> parents,
+    required Tree tree,
+    required List<Commit> parents,
     String? updateRef,
     String? messageEncoding,
   }) {
-    final tree = Tree.lookup(repo: repo, sha: treeSHA);
+    final parentsPointers = parents.map((parent) => parent.pointer).toList();
 
-    final result = Oid(bindings.create(
+    return Oid(bindings.create(
       repoPointer: repo.pointer,
       updateRef: updateRef,
       authorPointer: author.pointer,
@@ -58,12 +56,8 @@ class Commit {
       message: message,
       treePointer: tree.pointer,
       parentCount: parents.length,
-      parents: parents,
+      parents: parentsPointers,
     ));
-
-    tree.free();
-
-    return result;
   }
 
   /// Returns the encoding for the message of a commit, as a string

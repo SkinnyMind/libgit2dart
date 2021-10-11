@@ -3,7 +3,6 @@ import 'package:ffi/ffi.dart';
 import '../error.dart';
 import 'libgit2_bindings.dart';
 import '../util.dart';
-import 'oid.dart' as oid_bindings;
 
 /// Lookup a commit object from a repository.
 ///
@@ -92,26 +91,21 @@ Pointer<git_oid> create({
   required String message,
   required Pointer<git_tree> treePointer,
   required int parentCount,
-  required List<String> parents,
+  required List<Pointer<git_commit>> parents,
 }) {
   final out = calloc<git_oid>();
   final updateRefC = updateRef?.toNativeUtf8().cast<Int8>() ?? nullptr;
   final messageEncodingC =
       messageEncoding?.toNativeUtf8().cast<Int8>() ?? nullptr;
   final messageC = message.toNativeUtf8().cast<Int8>();
-  Pointer<Pointer<git_commit>> parentsC =
-      calloc.call<Pointer<git_commit>>(parentCount);
+  final parentsC = calloc<Pointer<git_commit>>(parentCount);
 
   if (parents.isNotEmpty) {
     for (var i = 0; i < parentCount; i++) {
-      final oid = oid_bindings.fromSHA(parents[i]);
-      var commit = calloc<IntPtr>();
-      commit = lookup(repoPointer: repoPointer, oidPointer: oid).cast();
-      parentsC[i] = commit.cast();
+      parentsC[i] = parents[i];
     }
   } else {
-    final commit = calloc<IntPtr>();
-    parentsC[0] = commit.cast();
+    parentsC[0] = nullptr;
   }
 
   final error = libgit2.git_commit_create(
@@ -130,9 +124,6 @@ Pointer<git_oid> create({
   calloc.free(updateRefC);
   calloc.free(messageEncodingC);
   calloc.free(messageC);
-  for (var i = 0; i < parentCount; i++) {
-    free(parentsC[i]);
-  }
   calloc.free(parentsC);
 
   if (error < 0) {

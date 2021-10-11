@@ -9,21 +9,22 @@ void main() {
   late Repository repo;
   late Directory tmpDir;
 
-  setUp(() async {
-    tmpDir = await setupRepo(Directory('test/assets/mergerepo/'));
+  setUp(() {
+    tmpDir = setupRepo(Directory('test/assets/mergerepo/'));
     repo = Repository.open(tmpDir.path);
   });
 
-  tearDown(() async {
+  tearDown(() {
     repo.free();
-    await tmpDir.delete(recursive: true);
+    tmpDir.deleteSync(recursive: true);
   });
 
   group('Merge', () {
     group('analysis', () {
       test('is up to date when no reference is provided', () {
-        final commit =
-            repo['c68ff54aabf660fcdd9a2838d401583fe31249e3'] as Commit;
+        final commit = repo.lookupCommit(
+          repo['c68ff54aabf660fcdd9a2838d401583fe31249e3'],
+        );
 
         final result = repo.mergeAnalysis(theirHead: commit.id);
         expect(result[0], {GitMergeAnalysis.upToDate});
@@ -34,8 +35,9 @@ void main() {
       });
 
       test('is up to date for provided ref', () {
-        final commit =
-            repo['c68ff54aabf660fcdd9a2838d401583fe31249e3'] as Commit;
+        final commit = repo.lookupCommit(
+          repo['c68ff54aabf660fcdd9a2838d401583fe31249e3'],
+        );
 
         final result = repo.mergeAnalysis(
           theirHead: commit.id,
@@ -48,18 +50,20 @@ void main() {
       });
 
       test('is fast forward', () {
-        final theirHead =
-            repo['6cbc22e509d72758ab4c8d9f287ea846b90c448b'] as Commit;
-        final ffCommit =
-            repo['f17d0d48eae3aa08cecf29128a35e310c97b3521'] as Commit;
-        final ffBranch = repo.branches.create(
+        final theirHead = repo.lookupCommit(
+          repo['6cbc22e509d72758ab4c8d9f287ea846b90c448b'],
+        );
+        final ffCommit = repo.lookupCommit(
+          repo['f17d0d48eae3aa08cecf29128a35e310c97b3521'],
+        );
+        final ffBranch = repo.createBranch(
           name: 'ff-branch',
           target: ffCommit,
         );
 
         final result = repo.mergeAnalysis(
           theirHead: theirHead.id,
-          ourRef: ffBranch.name,
+          ourRef: 'refs/heads/${ffBranch.name}',
         );
         expect(
           result[0],
@@ -73,8 +77,9 @@ void main() {
       });
 
       test('is not fast forward and there is no conflicts', () {
-        final commit =
-            repo['5aecfa0fb97eadaac050ccb99f03c3fb65460ad4'] as Commit;
+        final commit = repo.lookupCommit(
+          repo['5aecfa0fb97eadaac050ccb99f03c3fb65460ad4'],
+        );
 
         final result = repo.mergeAnalysis(theirHead: commit.id);
         expect(result[0], {GitMergeAnalysis.normal});
@@ -85,7 +90,7 @@ void main() {
     });
 
     test('writes conflicts to index', () {
-      final conflictBranch = repo.branches['conflict-branch'];
+      final conflictBranch = repo.lookupBranch('conflict-branch');
       final index = repo.index;
 
       final result = repo.mergeAnalysis(theirHead: conflictBranch.target);
@@ -123,7 +128,7 @@ void main() {
     });
 
     test('successfully removes conflicts', () {
-      final conflictBranch = repo.branches['conflict-branch'];
+      final conflictBranch = repo.lookupBranch('conflict-branch');
       final index = repo.index;
 
       repo.merge(conflictBranch.target);
@@ -149,7 +154,7 @@ master conflict edit
 conflict branch edit
 >>>>>>> conflict_file
 """;
-        final conflictBranch = repo.branches['conflict-branch'];
+        final conflictBranch = repo.lookupBranch('conflict-branch');
         final index = repo.index;
         repo.merge(conflictBranch.target);
 
@@ -171,10 +176,12 @@ conflict branch edit
 
     group('merge commits', () {
       test('successfully merges with default values', () {
-        final theirCommit =
-            repo['5aecfa0fb97eadaac050ccb99f03c3fb65460ad4'] as Commit;
-        final ourCommit =
-            repo['14905459d775f3f56a39ebc2ff081163f7da3529'] as Commit;
+        final theirCommit = repo.lookupCommit(
+          repo['5aecfa0fb97eadaac050ccb99f03c3fb65460ad4'],
+        );
+        final ourCommit = repo.lookupCommit(
+          repo['14905459d775f3f56a39ebc2ff081163f7da3529'],
+        );
 
         final mergeIndex = repo.mergeCommits(
           ourCommit: ourCommit,
@@ -197,10 +204,12 @@ conflict branch edit
       });
 
       test('successfully merges with provided favor', () {
-        final theirCommit =
-            repo['5aecfa0fb97eadaac050ccb99f03c3fb65460ad4'] as Commit;
-        final ourCommit =
-            repo['14905459d775f3f56a39ebc2ff081163f7da3529'] as Commit;
+        final theirCommit = repo.lookupCommit(
+          repo['5aecfa0fb97eadaac050ccb99f03c3fb65460ad4'],
+        );
+        final ourCommit = repo.lookupCommit(
+          repo['14905459d775f3f56a39ebc2ff081163f7da3529'],
+        );
 
         final mergeIndex = repo.mergeCommits(
           ourCommit: ourCommit,
@@ -215,10 +224,12 @@ conflict branch edit
       });
 
       test('successfully merges with provided merge and file flags', () {
-        final theirCommit =
-            repo['5aecfa0fb97eadaac050ccb99f03c3fb65460ad4'] as Commit;
-        final ourCommit =
-            repo['14905459d775f3f56a39ebc2ff081163f7da3529'] as Commit;
+        final theirCommit = repo.lookupCommit(
+          repo['5aecfa0fb97eadaac050ccb99f03c3fb65460ad4'],
+        );
+        final ourCommit = repo.lookupCommit(
+          repo['14905459d775f3f56a39ebc2ff081163f7da3529'],
+        );
 
         final mergeIndex = repo.mergeCommits(
           ourCommit: ourCommit,
@@ -243,13 +254,15 @@ conflict branch edit
 
     group('merge trees', () {
       test('successfully merges with default values', () {
-        final theirCommit =
-            repo['5aecfa0fb97eadaac050ccb99f03c3fb65460ad4'] as Commit;
-        final ourCommit =
-            repo['14905459d775f3f56a39ebc2ff081163f7da3529'] as Commit;
-        final baseCommit =
-            repo[repo.mergeBase(a: ourCommit.id.sha, b: theirCommit.id.sha).sha]
-                as Commit;
+        final theirCommit = repo.lookupCommit(
+          repo['5aecfa0fb97eadaac050ccb99f03c3fb65460ad4'],
+        );
+        final ourCommit = repo.lookupCommit(
+          repo['14905459d775f3f56a39ebc2ff081163f7da3529'],
+        );
+        final baseCommit = repo.lookupCommit(
+          repo.mergeBase(a: ourCommit.id.sha, b: theirCommit.id.sha),
+        );
         final theirTree = theirCommit.tree;
         final ourTree = ourCommit.tree;
         final ancestorTree = baseCommit.tree;
@@ -281,13 +294,15 @@ conflict branch edit
       });
 
       test('successfully merges with provided favor', () {
-        final theirCommit =
-            repo['5aecfa0fb97eadaac050ccb99f03c3fb65460ad4'] as Commit;
-        final ourCommit =
-            repo['14905459d775f3f56a39ebc2ff081163f7da3529'] as Commit;
-        final baseCommit =
-            repo[repo.mergeBase(a: ourCommit.id.sha, b: theirCommit.id.sha).sha]
-                as Commit;
+        final theirCommit = repo.lookupCommit(
+          repo['5aecfa0fb97eadaac050ccb99f03c3fb65460ad4'],
+        );
+        final ourCommit = repo.lookupCommit(
+          repo['14905459d775f3f56a39ebc2ff081163f7da3529'],
+        );
+        final baseCommit = repo.lookupCommit(
+          repo.mergeBase(a: ourCommit.id.sha, b: theirCommit.id.sha),
+        );
         final theirTree = theirCommit.tree;
         final ourTree = ourCommit.tree;
         final ancestorTree = baseCommit.tree;
@@ -311,7 +326,9 @@ conflict branch edit
     });
 
     test('successfully cherry-picks commit', () {
-      final cherry = repo['5aecfa0fb97eadaac050ccb99f03c3fb65460ad4'] as Commit;
+      final cherry = repo.lookupCommit(
+        repo['5aecfa0fb97eadaac050ccb99f03c3fb65460ad4'],
+      );
       repo.cherryPick(cherry);
       expect(repo.state, GitRepositoryState.cherrypick);
       expect(repo.message, 'add another feature file\n');

@@ -7,91 +7,98 @@ void main() {
   late Repository repo;
   late Directory tmpDir;
   final worktreeDir = Directory('${Directory.systemTemp.path}/worktree');
+  const worktreeName = 'worktree';
 
-  setUp(() async {
-    if (await worktreeDir.exists()) {
-      await worktreeDir.delete(recursive: true);
+  setUp(() {
+    if (worktreeDir.existsSync()) {
+      worktreeDir.deleteSync(recursive: true);
     }
-    tmpDir = await setupRepo(Directory('test/assets/testrepo/'));
+    tmpDir = setupRepo(Directory('test/assets/testrepo/'));
     repo = Repository.open(tmpDir.path);
   });
 
-  tearDown(() async {
+  tearDown(() {
     repo.free();
-    await tmpDir.delete(recursive: true);
-    if (await worktreeDir.exists()) {
-      await worktreeDir.delete(recursive: true);
+    tmpDir.deleteSync(recursive: true);
+    if (worktreeDir.existsSync()) {
+      worktreeDir.deleteSync(recursive: true);
     }
   });
 
   group('Worktree', () {
     test('successfully creates worktree at provided path', () {
-      const worktreeName = 'worktree';
-      expect(Worktree.list(repo), []);
+      expect(repo.worktrees, []);
 
-      final worktree = Worktree.create(
-        repo: repo,
+      final worktree = repo.createWorktree(
         name: worktreeName,
         path: worktreeDir.path,
       );
+      final lookedupWorktree = repo.lookupWorktree(worktreeName);
+      final branches = repo.branches;
 
-      expect(Worktree.list(repo), [worktreeName]);
-      expect(repo.branches.list(), contains(worktreeName));
+      expect(repo.worktrees, [worktreeName]);
+      expect(branches.any((branch) => branch.name == worktreeName), true);
       expect(worktree.name, worktreeName);
+      expect(lookedupWorktree.name, worktreeName);
       expect(worktree.path, worktreeDir.path);
+      expect(lookedupWorktree.path, worktreeDir.path);
       expect(File('${worktreeDir.path}/.git').existsSync(), true);
 
+      for (final branch in branches) {
+        branch.free();
+      }
+      lookedupWorktree.free();
       worktree.free();
     });
 
     test(
         'successfully creates worktree at provided path from provided reference',
         () {
-      const worktreeName = 'worktree';
       final head = repo.revParseSingle('HEAD');
-      final worktreeRef = repo.branches.create(name: 'v1', target: head);
-      final worktreeBranch = repo.branches['v1'];
-      expect(Worktree.list(repo), []);
+      final worktreeBranch = repo.createBranch(name: 'v1', target: head);
+      final ref = repo.lookupReference('refs/heads/v1');
+      expect(repo.worktrees, []);
 
-      final worktree = Worktree.create(
-        repo: repo,
+      final worktree = repo.createWorktree(
         name: worktreeName,
         path: worktreeDir.path,
-        ref: worktreeRef,
+        ref: ref,
       );
+      final branches = repo.branches;
 
-      expect(Worktree.list(repo), [worktreeName]);
-      expect(repo.branches.list(), contains('v1'));
-      expect(repo.branches.list(), isNot(contains(worktreeName)));
+      expect(repo.worktrees, [worktreeName]);
+      expect(branches.any((branch) => branch.name == 'v1'), true);
+      expect(branches.any((branch) => branch.name == worktreeName), false);
       expect(worktreeBranch.isCheckedOut, true);
 
       worktreeDir.deleteSync(recursive: true);
       worktree.prune();
 
-      expect(Worktree.list(repo), []);
+      expect(repo.worktrees, []);
       expect(worktreeBranch.isCheckedOut, false);
-      expect(repo.branches.list(), contains('v1'));
+      expect(branches.any((branch) => branch.name == 'v1'), true);
 
+      for (final branch in branches) {
+        branch.free();
+      }
       worktreeBranch.free();
-      worktreeRef.free();
+      ref.free();
       head.free();
       worktree.free();
     });
 
     test('successfully prunes worktree', () {
-      const worktreeName = 'worktree';
-      expect(Worktree.list(repo), []);
+      expect(repo.worktrees, []);
 
-      final worktree = Worktree.create(
-        repo: repo,
+      final worktree = repo.createWorktree(
         name: worktreeName,
         path: worktreeDir.path,
       );
-      expect(Worktree.list(repo), [worktreeName]);
+      expect(repo.worktrees, [worktreeName]);
 
       worktreeDir.deleteSync(recursive: true);
       worktree.prune();
-      expect(Worktree.list(repo), []);
+      expect(repo.worktrees, []);
 
       worktree.free();
     });

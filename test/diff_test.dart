@@ -74,14 +74,14 @@ index e69de29..c217c63 100644
  8 files changed, 4 insertions(+), 2 deletions(-)
 """;
 
-  setUp(() async {
-    tmpDir = await setupRepo(Directory('test/assets/dirtyrepo/'));
+  setUp(() {
+    tmpDir = setupRepo(Directory('test/assets/dirtyrepo/'));
     repo = Repository.open(tmpDir.path);
   });
 
-  tearDown(() async {
+  tearDown(() {
     repo.free();
-    await tmpDir.delete(recursive: true);
+    tmpDir.deleteSync(recursive: true);
   });
 
   group('Diff', () {
@@ -100,7 +100,9 @@ index e69de29..c217c63 100644
 
     test('successfully returns diff between index and tree', () {
       final index = repo.index;
-      final tree = (repo[repo.head.target.sha] as Commit).tree;
+      final head = repo.head;
+      final commit = repo.lookupCommit(head.target);
+      final tree = commit.tree;
       final diff = index.diffToTree(tree: tree);
 
       expect(diff.length, 8);
@@ -108,13 +110,17 @@ index e69de29..c217c63 100644
         expect(diff.deltas[i].newFile.path, indexToTree[i]);
       }
 
+      commit.free();
+      head.free();
       tree.free();
       diff.free();
       index.free();
     });
 
     test('successfully returns diff between tree and workdir', () {
-      final tree = (repo[repo.head.target.sha] as Commit).tree;
+      final head = repo.head;
+      final commit = repo.lookupCommit(head.target);
+      final tree = commit.tree;
       final diff = repo.diff(a: tree);
 
       expect(diff.length, 9);
@@ -122,13 +128,17 @@ index e69de29..c217c63 100644
         expect(diff.deltas[i].newFile.path, treeToWorkdir[i]);
       }
 
+      commit.free();
+      head.free();
       tree.free();
       diff.free();
     });
 
     test('successfully returns diff between tree and index', () {
       final index = repo.index;
-      final tree = (repo[repo.head.target.sha] as Commit).tree;
+      final head = repo.head;
+      final commit = repo.lookupCommit(head.target);
+      final tree = commit.tree;
       final diff = repo.diff(a: tree, cached: true);
 
       expect(diff.length, 8);
@@ -136,14 +146,20 @@ index e69de29..c217c63 100644
         expect(diff.deltas[i].newFile.path, indexToTree[i]);
       }
 
+      commit.free();
+      head.free();
       tree.free();
       diff.free();
       index.free();
     });
 
     test('successfully returns diff between tree and tree', () {
-      final tree1 = (repo[repo.head.target.sha] as Commit).tree;
-      final tree2 = repo['b85d53c9236e89aff2b62558adaa885fd1d6ff1c'] as Tree;
+      final head = repo.head;
+      final commit = repo.lookupCommit(head.target);
+      final tree1 = commit.tree;
+      final tree2 = repo.lookupTree(
+        repo['b85d53c9236e89aff2b62558adaa885fd1d6ff1c'],
+      );
       final diff = repo.diff(a: tree1, b: tree2);
 
       expect(diff.length, 10);
@@ -151,14 +167,20 @@ index e69de29..c217c63 100644
         expect(diff.deltas[i].newFile.path, treeToTree[i]);
       }
 
+      commit.free();
+      head.free();
       tree1.free();
       tree2.free();
       diff.free();
     });
 
     test('successfully merges diffs', () {
-      final tree1 = (repo[repo.head.target.sha] as Commit).tree;
-      final tree2 = repo['b85d53c9236e89aff2b62558adaa885fd1d6ff1c'] as Tree;
+      final head = repo.head;
+      final commit = repo.lookupCommit(head.target);
+      final tree1 = commit.tree;
+      final tree2 = repo.lookupTree(
+        repo['b85d53c9236e89aff2b62558adaa885fd1d6ff1c'],
+      );
       final diff1 = tree1.diffToTree(tree: tree2);
       final diff2 = tree1.diffToWorkdir();
 
@@ -168,6 +190,8 @@ index e69de29..c217c63 100644
       diff1.merge(diff2);
       expect(diff1.length, 11);
 
+      commit.free();
+      head.free();
       tree1.free();
       tree2.free();
       diff1.free();
@@ -219,8 +243,10 @@ index e69de29..c217c63 100644
 
     test('successfully finds similar entries', () {
       final index = repo.index;
-      final oldTree = (repo[repo.head.target.sha] as Commit).tree;
-      final newTree = repo[index.writeTree().sha] as Tree;
+      final head = repo.head;
+      final commit = repo.lookupCommit(head.target);
+      final oldTree = commit.tree;
+      final newTree = repo.lookupTree(index.writeTree());
 
       final diff = oldTree.diffToTree(tree: newTree);
       expect(
@@ -234,6 +260,8 @@ index e69de29..c217c63 100644
         GitDelta.renamed,
       );
 
+      commit.free();
+      head.free();
       diff.free();
       index.free();
       oldTree.free();

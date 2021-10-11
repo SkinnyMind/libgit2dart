@@ -3,70 +3,63 @@ import 'package:libgit2dart/libgit2dart.dart';
 import 'bindings/libgit2_bindings.dart';
 import 'bindings/remote.dart' as bindings;
 
-class Remotes {
-  /// Initializes a new instance of the [Remotes] class from
-  /// provided [Repository] object.
-  Remotes(Repository repo) {
-    _repoPointer = repo.pointer;
-  }
+class Remote {
+  /// Initializes a new instance of [Remote] class from provided pointer
+  /// to remote object in memory.
+  Remote(this._remotePointer);
 
-  /// Pointer to memory address for allocated repository object.
-  late final Pointer<git_repository> _repoPointer;
-
-  /// Returns a list of the configured remotes for a repo.
-  ///
-  /// Throws a [LibGit2Error] if error occured.
-  List<String> get list {
-    return bindings.list(_repoPointer);
-  }
-
-  /// Returns number of the configured remotes for a repo.
-  int get length => list.length;
-
-  /// Returns [Remote] by looking up [name] in a repository.
+  /// Initializes a new instance of [Remote] class by looking up remote with
+  /// provided [name] in a [repo]sitory.
   ///
   /// The name will be checked for validity.
   ///
   /// Throws a [LibGit2Error] if error occured.
-  Remote operator [](String name) {
-    return Remote(bindings.lookup(repoPointer: _repoPointer, name: name));
+  Remote.lookup({required Repository repo, required String name}) {
+    _remotePointer = bindings.lookup(repoPointer: repo.pointer, name: name);
   }
 
-  /// Adds a remote to the repository's configuration with the default [fetch]
-  /// refspec if none provided .
+  /// Initializes a new instance of [Remote] class by adding a remote with
+  /// provided [name] and [url] to the [repo]sitory's configuration with the
+  /// default [fetch] refspec if none provided .
   ///
   /// Throws a [LibGit2Error] if error occured.
-  Remote create({
+  Remote.create({
+    required Repository repo,
     required String name,
     required String url,
     String? fetch,
   }) {
     if (fetch == null) {
-      return Remote(bindings.create(
-        repoPointer: _repoPointer,
+      _remotePointer = bindings.create(
+        repoPointer: repo.pointer,
         name: name,
         url: url,
-      ));
+      );
     } else {
-      return Remote(bindings.createWithFetchSpec(
-        repoPointer: _repoPointer,
+      _remotePointer = bindings.createWithFetchSpec(
+        repoPointer: repo.pointer,
         name: name,
         url: url,
         fetch: fetch,
-      ));
+      );
     }
   }
+
+  late final Pointer<git_remote> _remotePointer;
+
+  /// Pointer to memory address for allocated remote object.
+  Pointer<git_remote> get pointer => _remotePointer;
 
   /// Deletes an existing persisted remote.
   ///
   /// All remote-tracking branches and configuration settings for the remote will be removed.
   ///
   /// Throws a [LibGit2Error] if error occured.
-  void delete(String name) {
-    bindings.delete(repoPointer: _repoPointer, name: name);
+  static void delete({required Repository repo, required String name}) {
+    bindings.delete(repoPointer: repo.pointer, name: name);
   }
 
-  /// Give the remote a new name.
+  /// Gives the remote a new name.
   ///
   /// Returns list of non-default refspecs that cannot be renamed.
   ///
@@ -78,12 +71,23 @@ class Remotes {
   /// their list of refspecs.
   ///
   /// Throws a [LibGit2Error] if error occured.
-  List<String> rename({required String remote, required String newName}) {
+  static List<String> rename({
+    required Repository repo,
+    required String oldName,
+    required String newName,
+  }) {
     return bindings.rename(
-      repoPointer: _repoPointer,
-      name: remote,
+      repoPointer: repo.pointer,
+      name: oldName,
       newName: newName,
     );
+  }
+
+  /// Returns a list of the configured remotes for a [repo]sitory.
+  ///
+  /// Throws a [LibGit2Error] if error occured.
+  static List<String> list(Repository repo) {
+    return bindings.list(repo.pointer);
   }
 
   /// Sets the remote's url in the configuration.
@@ -92,9 +96,13 @@ class Remotes {
   /// case of a single-url remote and will otherwise return an error.
   ///
   /// Throws a [LibGit2Error] if error occured.
-  void setUrl({required String remote, required String url}) {
+  static void setUrl({
+    required Repository repo,
+    required String remote,
+    required String url,
+  }) {
     bindings.setUrl(
-      repoPointer: _repoPointer,
+      repoPointer: repo.pointer,
       remote: remote,
       url: url,
     );
@@ -106,9 +114,13 @@ class Remotes {
   /// case of a single-url remote and will otherwise return an error.
   ///
   /// Throws a [LibGit2Error] if error occured.
-  void setPushUrl({required String remote, required String url}) {
+  static void setPushUrl({
+    required Repository repo,
+    required String remote,
+    required String url,
+  }) {
     bindings.setPushUrl(
-      repoPointer: _repoPointer,
+      repoPointer: repo.pointer,
       remote: remote,
       url: url,
     );
@@ -119,9 +131,13 @@ class Remotes {
   /// No loaded remote instances will be affected.
   ///
   /// Throws a [LibGit2Error] if error occured.
-  void addFetch({required String remote, required String refspec}) {
+  static void addFetch({
+    required Repository repo,
+    required String remote,
+    required String refspec,
+  }) {
     bindings.addFetch(
-      repoPointer: _repoPointer,
+      repoPointer: repo.pointer,
       remote: remote,
       refspec: refspec,
     );
@@ -132,24 +148,17 @@ class Remotes {
   /// No loaded remote instances will be affected.
   ///
   /// Throws a [LibGit2Error] if error occured.
-  void addPush({required String remote, required String refspec}) {
+  static void addPush({
+    required Repository repo,
+    required String remote,
+    required String refspec,
+  }) {
     bindings.addPush(
-      repoPointer: _repoPointer,
+      repoPointer: repo.pointer,
       remote: remote,
       refspec: refspec,
     );
   }
-}
-
-class Remote {
-  /// Initializes a new instance of [Remote] class from provided pointer
-  /// to remote object in memory.
-  const Remote(this._remotePointer);
-
-  final Pointer<git_remote> _remotePointer;
-
-  /// Pointer to memory address for allocated remote object.
-  Pointer<git_remote> get pointer => _remotePointer;
 
   /// Returns the remote's name.
   String get name => bindings.name(_remotePointer);

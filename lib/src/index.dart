@@ -139,25 +139,9 @@ class Index with IterableMixin<IndexEntry> {
       bindings.read(indexPointer: _indexPointer, force: force);
 
   /// Updates the contents of an existing index object in memory by reading from the
-  /// specified tree.
-  void readTree(Object target) {
-    late final Tree tree;
-
-    if (target is Oid) {
-      final repo = Repository(bindings.owner(_indexPointer));
-      tree = Tree.lookup(repo: repo, sha: target.sha);
-    } else if (target is Tree) {
-      tree = target;
-    } else if (target is String) {
-      final repo = Repository(bindings.owner(_indexPointer));
-      tree = Tree.lookup(repo: repo, sha: target);
-    } else {
-      throw ArgumentError.value(
-          '$target should be either Oid object, SHA hex string or Tree object');
-    }
-
+  /// specified [tree].
+  void readTree(Tree tree) {
     bindings.readTree(indexPointer: _indexPointer, treePointer: tree.pointer);
-    tree.free();
   }
 
   /// Writes an existing index object from memory back to disk using an atomic file lock.

@@ -2,9 +2,9 @@ import 'dart:io';
 import 'package:libgit2dart/libgit2dart.dart';
 import '../test/helpers/util.dart';
 
-void main() async {
+void main() {
   // Preparing example repository.
-  final tmpDir = await setupRepo(Directory('test/assets/testrepo/'));
+  final tmpDir = setupRepo(Directory('test/assets/testrepo/'));
 
   // Open system + global config file.
   final config = Config.open();
@@ -54,5 +54,5 @@ void main() async {
   }
 
   // Removing example repository.
-  await tmpDir.delete(recursive: true);
+  tmpDir.deleteSync(recursive: true);
 }

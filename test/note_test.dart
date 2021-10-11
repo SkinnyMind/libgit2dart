@@ -19,14 +19,14 @@ void main() {
     },
   ];
 
-  setUp(() async {
-    tmpDir = await setupRepo(Directory('test/assets/testrepo/'));
+  setUp(() {
+    tmpDir = setupRepo(Directory('test/assets/testrepo/'));
     repo = Repository.open(tmpDir.path);
   });
 
-  tearDown(() async {
+  tearDown(() {
     repo.free();
-    await tmpDir.delete(recursive: true);
+    tmpDir.deleteSync(recursive: true);
   });
 
   group('Note', () {
@@ -39,10 +39,7 @@ void main() {
         expect(notes[i].id.sha, notesExpected[i]['id']);
         expect(notes[i].message, notesExpected[i]['message']);
         expect(notes[i].annotatedId.sha, notesExpected[i]['annotatedId']);
-      }
-
-      for (var note in notes) {
-        note.free();
+        notes[i].free();
       }
     });
 
@@ -64,11 +61,11 @@ void main() {
       final noteOid = repo.createNote(
         author: signature,
         committer: signature,
-        object: head.target,
+        annotatedId: head.target,
         note: 'New note for HEAD',
         force: true,
       );
-      final noteBlob = repo[noteOid.sha] as Blob;
+      final noteBlob = repo.lookupBlob(noteOid);
 
       expect(noteOid.sha, 'ffd6e2ceaf91c00ea6d29e2e897f906da720529f');
       expect(noteBlob.content, 'New note for HEAD');
@@ -81,15 +78,18 @@ void main() {
     test('successfully removes note', () {
       final signature = repo.defaultSignature;
       final head = repo.head;
-      final note = repo.lookupNote(annotatedId: head.target);
 
-      note.remove(author: signature, committer: signature);
+      repo.deleteNote(
+        annotatedId: repo.head.target,
+        author: signature,
+        committer: signature,
+      );
+
       expect(
         () => repo.lookupNote(annotatedId: head.target),
         throwsA(isA<LibGit2Error>()),
       );
 
-      note.free();
       head.free();
       signature.free();
     });

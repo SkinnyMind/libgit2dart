@@ -7,19 +7,20 @@ void main() {
   late Repository repo;
   late Tree tree;
   late Directory tmpDir;
-  const treeSHA = 'a8ae3dd59e6e1802c6f78e05e301bfd57c9f334f';
   const fileSHA = '1377554ebea6f98a2c748183bc5a96852af12ac2';
 
-  setUp(() async {
-    tmpDir = await setupRepo(Directory('test/assets/testrepo/'));
+  setUp(() {
+    tmpDir = setupRepo(Directory('test/assets/testrepo/'));
     repo = Repository.open(tmpDir.path);
-    tree = Tree.lookup(repo: repo, sha: treeSHA);
+    tree = repo.lookupTree(
+      repo['a8ae3dd59e6e1802c6f78e05e301bfd57c9f334f'],
+    );
   });
 
-  tearDown(() async {
+  tearDown(() {
     tree.free();
     repo.free();
-    await tmpDir.delete(recursive: true);
+    tmpDir.deleteSync(recursive: true);
   });
 
   group('Tree', () {
@@ -70,7 +71,7 @@ void main() {
         oid: fileOid,
         filemode: GitFilemode.blob,
       );
-      final newTree = Tree.lookup(repo: repo, sha: builder.write().sha);
+      final newTree = repo.lookupTree(builder.write());
 
       final entry = newTree['filename'];
       expect(newTree.length, 1);

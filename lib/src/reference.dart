@@ -7,53 +7,31 @@ import 'bindings/refdb.dart' as refdb_bindings;
 import 'bindings/repository.dart' as repository_bindings;
 import 'util.dart';
 
-class References {
-  /// Initializes a new instance of the [References] class
-  /// from provided [Repository] object.
-  References(Repository repo) {
-    _repoPointer = repo.pointer;
-  }
-
-  /// Pointer to memory address for allocated repository object.
-  late final Pointer<git_repository> _repoPointer;
-
-  /// Returns a list of all the references that can be found in a repository.
-  ///
-  /// Throws a [LibGit2Error] if error occured.
-  List<String> get list => bindings.list(_repoPointer);
-
-  /// Returns number of all the references that can be found in a repository.
-  int get length => list.length;
-
-  /// Returns a [Reference] by lookingup [name] in a repository.
-  ///
-  /// Should be freed with `free()` to release allocated memory.
-  ///
-  /// The name will be checked for validity.
-  ///
-  /// Throws a [LibGit2Error] if error occured.
-  Reference operator [](String name) {
-    return Reference(bindings.lookup(repoPointer: _repoPointer, name: name));
-  }
+class Reference {
+  /// Initializes a new instance of the [Reference] class.
+  /// Should be freed to release allocated memory.
+  Reference(this._refPointer);
 
   /// Creates a new reference.
   ///
-  /// The reference will be created in the repository and written to the disk.
+  /// The reference will be created in the [repo]sitory and written to the disk.
   /// The generated [Reference] object must be freed by the user.
   ///
-  /// Valid reference names must follow one of two patterns:
+  /// Valid reference [name]s must follow one of two patterns:
   ///
   /// Top-level names must contain only capital letters and underscores, and must begin and end
   /// with a letter. (e.g. "HEAD", "ORIG_HEAD").
   /// Names prefixed with "refs/" can be almost anything. You must avoid the characters
   /// '~', '^', ':', '\', '?', '[', and '*', and the sequences ".." and "@{" which have
   /// special meaning to revparse.
-  /// Throws a [LibGit2Error] if a reference already exists with the given name
-  /// unless force is true, in which case it will be overwritten.
   ///
-  /// The message for the reflog will be ignored if the reference does not belong in the
+  /// Throws a [LibGit2Error] if a reference already exists with the given [name]
+  /// unless [force] is true, in which case it will be overwritten.
+  ///
+  /// The [logMessage] message for the reflog will be ignored if the reference does not belong in the
   /// standard set (HEAD, branches and remote-tracking branches) and it does not have a reflog.
-  Reference create({
+  Reference.create({
+    required Repository repo,
     required String name,
     required Object target,
     bool force = false,
@@ -66,7 +44,6 @@ class References {
       oid = target;
       isDirect = true;
     } else if (isValidShaHex(target as String)) {
-      final repo = Repository(_repoPointer);
       oid = Oid.fromSHA(repo: repo, sha: target);
       isDirect = true;
     } else {
@@ -74,45 +51,96 @@ class References {
     }
 
     if (isDirect) {
-      return Reference(bindings.createDirect(
-        repoPointer: _repoPointer,
+      _refPointer = bindings.createDirect(
+        repoPointer: repo.pointer,
         name: name,
         oidPointer: oid.pointer,
         force: force,
         logMessage: logMessage,
-      ));
+      );
     } else {
-      return Reference(bindings.createSymbolic(
-        repoPointer: _repoPointer,
+      _refPointer = bindings.createSymbolic(
+        repoPointer: repo.pointer,
         name: name,
         target: target as String,
         force: force,
         logMessage: logMessage,
-      ));
+      );
     }
   }
 
-  /// Suggests that the given refdb compress or optimize its references.
-  /// This mechanism is implementation specific. For on-disk reference databases,
-  /// for example, this may pack all loose references.
+  /// Lookups reference [name] in a [repo]sitory.
+  ///
+  /// Should be freed to release allocated memory.
+  ///
+  /// The [name] will be checked for validity.
   ///
   /// Throws a [LibGit2Error] if error occured.
-  void compress() {
-    final refdb = repository_bindings.refdb(_repoPointer);
-    refdb_bindings.compress(refdb);
-    refdb_bindings.free(refdb);
+  Reference.lookup({required Repository repo, required String name}) {
+    _refPointer = bindings.lookup(repoPointer: repo.pointer, name: name);
   }
-}
-
-class Reference {
-  /// Initializes a new instance of the [Reference] class.
-  /// Should be freed with `free()` to release allocated memory.
-  Reference(this._refPointer);
 
   late Pointer<git_reference> _refPointer;
 
   /// Pointer to memory address for allocated reference object.
   Pointer<git_reference> get pointer => _refPointer;
+
+  /// Deletes an existing reference with provided [name].
+  ///
+  /// This method works for both direct and symbolic references.
+  ///
+  /// Throws a [LibGit2Error] if error occured.
+  static void delete({required Repository repo, required String name}) {
+    final ref = Reference.lookup(repo: repo, name: name);
+    bindings.delete(ref.pointer);
+    ref.free();
+  }
+
+  /// Renames an existing reference.
+  ///
+  /// This method works for both direct and symbolic references.
+  ///
+  /// The [newName] will be checked for validity.
+  ///
+  /// If the [force] flag is set to false, and there's already a reference with the given name,
+  /// the renaming will fail.
+  ///
+  /// IMPORTANT: The user needs to write a proper reflog entry [logMessage] if the reflog is
+  /// enabled for the repository. We only rename the reflog if it exists.
+  ///
+  /// Throws a [LibGit2Error] if error occured.
+  static void rename({
+    required Repository repo,
+    required String oldName,
+    required String newName,
+    bool force = false,
+    String? logMessage,
+  }) {
+    final ref = Reference.lookup(repo: repo, name: oldName);
+    bindings.rename(
+      refPointer: ref.pointer,
+      newName: newName,
+      force: force,
+      logMessage: logMessage,
+    );
+    ref.free();
+  }
+
+  /// Returns a list of all the references that can be found in a [repo]sitory.
+  ///
+  /// Throws a [LibGit2Error] if error occured.
+  static List<String> list(Repository repo) => bindings.list(repo.pointer);
+
+  /// Suggests that the [repo]sitory's refdb compress or optimize its references.
+  /// This mechanism is implementation specific. For on-disk reference databases,
+  /// for example, this may pack all loose references.
+  ///
+  /// Throws a [LibGit2Error] if error occured.
+  static void compress(Repository repo) {
+    final refdb = repository_bindings.refdb(repo.pointer);
+    refdb_bindings.compress(refdb);
+    refdb_bindings.free(refdb);
+  }
 
   /// Returns the type of the reference.
   ReferenceType get type {
@@ -180,6 +208,8 @@ class Reference {
   /// ```dart
   /// final commit = ref.peel(GitObject.commit) as Commit;
   /// final tree = ref.peel(GitObject.tree) as Tree;
+  /// final blob = ref.peel(GitObject.blob) as Blob;
+  /// final tag = ref.peel(GitObject.tag) as Tag;
   /// ```
   ///
   /// Throws a [LibGit2Error] if error occured.
@@ -206,32 +236,6 @@ class Reference {
   /// This will transform the reference name into a name "human-readable" version.
   /// If no shortname is appropriate, it will return the full name.
   String get shorthand => bindings.shorthand(_refPointer);
-
-  /// Renames an existing reference.
-  ///
-  /// This method works for both direct and symbolic references.
-  ///
-  /// The new name will be checked for validity.
-  ///
-  /// If the force flag is not enabled, and there's already a reference with the given name,
-  /// the renaming will fail.
-  ///
-  /// IMPORTANT: The user needs to write a proper reflog entry if the reflog is enabled for
-  /// the repository. We only rename the reflog if it exists.
-  ///
-  /// Throws a [LibGit2Error] if error occured.
-  void rename({
-    required String newName,
-    bool force = false,
-    String? logMessage,
-  }) {
-    _refPointer = bindings.rename(
-      refPointer: _refPointer,
-      newName: newName,
-      force: force,
-      logMessage: logMessage,
-    );
-  }
 
   /// Checks if a reflog exists for the specified reference [name].
   ///
@@ -261,14 +265,6 @@ class Reference {
   /// Returns the repository where a reference resides.
   Repository get owner => Repository(bindings.owner(_refPointer));
 
-  /// Delete an existing reference.
-  ///
-  /// This method works for both direct and symbolic references.
-  /// The reference will be immediately removed on disk but the memory will not be freed.
-  ///
-  /// Throws a [LibGit2Error] if the reference has changed from the time it was looked up.
-  void delete() => bindings.delete(_refPointer);
-
   @override
   bool operator ==(other) {
     return (other is Reference) &&
@@ -283,4 +279,9 @@ class Reference {
 
   /// Releases memory allocated for reference object.
   void free() => bindings.free(_refPointer);
+
+  @override
+  String toString() {
+    return 'Reference{name: $name, target: $target}';
+  }
 }

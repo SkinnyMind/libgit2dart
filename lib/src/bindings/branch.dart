@@ -9,7 +9,7 @@ import '../util.dart';
 /// Return a list of branches.
 ///
 /// Throws a [LibGit2Error] if error occured.
-List<String> list({
+List<Pointer<git_reference>> list({
   required Pointer<git_repository> repoPointer,
   required int flags,
 }) {
@@ -24,7 +24,7 @@ List<String> list({
     throw LibGit2Error(libgit2.git_error_last());
   }
 
-  var result = <String>[];
+  var result = <Pointer<git_reference>>[];
   var error = 0;
 
   while (error == 0) {
@@ -32,10 +32,8 @@ List<String> list({
     final refType = calloc<Int32>();
     error = libgit2.git_branch_next(reference, refType, iterator.value);
     if (error == 0) {
-      final refName = reference_bindings.shorthand(reference.value);
-      result.add(refName);
+      result.add(reference.value);
       calloc.free(refType);
-      calloc.free(reference);
     } else {
       break;
     }
@@ -129,11 +127,8 @@ void delete(Pointer<git_reference> branch) {
 ///
 /// The new branch name will be checked for validity.
 ///
-/// Note that if the move succeeds, the old reference object will not be valid anymore,
-/// and will be freed immediately.
-///
 /// Throws a [LibGit2Error] if error occured.
-Pointer<git_reference> rename({
+void rename({
   required Pointer<git_reference> branchPointer,
   required String newBranchName,
   required bool force,
@@ -149,8 +144,7 @@ Pointer<git_reference> rename({
   if (error < 0) {
     throw LibGit2Error(libgit2.git_error_last());
   } else {
-    reference_bindings.free(branchPointer);
-    return out.value;
+    reference_bindings.free(out.value);
   }
 }
 

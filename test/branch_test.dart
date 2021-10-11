@@ -6,48 +6,59 @@ import 'helpers/util.dart';
 void main() {
   late Repository repo;
   late Directory tmpDir;
-  const lastCommit = '821ed6e80627b8769d170a293862f9fc60825226';
-  const featureCommit = '5aecfa0fb97eadaac050ccb99f03c3fb65460ad4';
+  late Oid lastCommit;
+  late Oid featureCommit;
 
-  setUp(() async {
-    tmpDir = await setupRepo(Directory('test/assets/testrepo/'));
+  setUp(() {
+    tmpDir = setupRepo(Directory('test/assets/testrepo/'));
     repo = Repository.open(tmpDir.path);
+    lastCommit = repo['821ed6e80627b8769d170a293862f9fc60825226'];
+    featureCommit = repo['5aecfa0fb97eadaac050ccb99f03c3fb65460ad4'];
   });
 
-  tearDown(() async {
+  tearDown(() {
     repo.free();
-    await tmpDir.delete(recursive: true);
+    tmpDir.deleteSync(recursive: true);
   });
 
   group('Branch', () {
     test('returns a list of all branches', () {
-      final branches = Branches(repo);
-      expect(branches.list(), ['feature', 'master']);
+      const branchesExpected = ['feature', 'master'];
+      final branches = repo.branches;
+
+      for (var i = 0; i < branches.length; i++) {
+        expect(branches[i].name, branchesExpected[i]);
+        branches[i].free();
+      }
     });
 
     test('returns a list of local branches', () {
-      final branches = repo.branches.local;
-      expect(branches, ['feature', 'master']);
+      const branchesExpected = ['feature', 'master'];
+      final branches = repo.branchesLocal;
+
+      for (var i = 0; i < branches.length; i++) {
+        expect(branches[i].name, branchesExpected[i]);
+        branches[i].free();
+      }
     });
 
-    test('returns a list of remote branches for provided type', () {
-      final branches = repo.branches.remote;
-      expect(branches, []);
+    test('returns a list of remote branches', () {
+      expect(repo.branchesRemote, []);
     });
 
     test('returns a branch with provided name', () {
-      final branch = repo.branches['master'];
-      expect(branch.target.sha, lastCommit);
+      final branch = repo.lookupBranch('master');
+      expect(branch.target.sha, lastCommit.sha);
       branch.free();
     });
 
     test('throws when provided name not found', () {
-      expect(() => repo.branches['invalid'], throwsA(isA<LibGit2Error>()));
+      expect(() => repo.lookupBranch('invalid'), throwsA(isA<LibGit2Error>()));
     });
 
     test('checks if branch is current head', () {
-      final masterBranch = repo.branches['master'];
-      final featureBranch = repo.branches['feature'];
+      final masterBranch = repo.lookupBranch('master');
+      final featureBranch = repo.lookupBranch('feature');
 
       expect(masterBranch.isHead, true);
       expect(featureBranch.isHead, false);
@@ -57,30 +68,33 @@ void main() {
     });
 
     test('returns name', () {
-      final branch = repo.branches['master'];
+      final branch = repo.lookupBranch('master');
       expect(branch.name, 'master');
       branch.free();
     });
 
     group('create()', () {
       test('successfully creates', () {
-        final commit = repo[lastCommit] as Commit;
+        final commit = repo.lookupCommit(lastCommit);
 
-        final ref = repo.branches.create(name: 'testing', target: commit);
-        final branch = repo.branches['testing'];
-        expect(repo.branches.list().length, 3);
-        expect(branch.target.sha, lastCommit);
+        final branch = repo.createBranch(name: 'testing', target: commit);
+        final branches = repo.branches;
 
+        expect(repo.branches.length, 3);
+        expect(branch.target, lastCommit);
+
+        for (final branch in branches) {
+          branch.free();
+        }
         branch.free();
-        ref.free();
         commit.free();
       });
 
       test('throws when name already exists', () {
-        final commit = repo[lastCommit] as Commit;
+        final commit = repo.lookupCommit(lastCommit);
 
         expect(
-          () => repo.branches.create(name: 'feature', target: commit),
+          () => repo.createBranch(name: 'feature', target: commit),
           throwsA(isA<LibGit2Error>()),
         );
 
@@ -88,30 +102,39 @@ void main() {
       });
 
       test('successfully creates with force flag when name already exists', () {
-        final commit = repo[lastCommit] as Commit;
+        final commit = repo.lookupCommit(lastCommit);
 
-        final ref =
-            repo.branches.create(name: 'feature', target: commit, force: true);
-        final branch = repo.branches['feature'];
-        expect(repo.branches.local.length, 2);
-        expect(branch.target.sha, lastCommit);
+        final branch = repo.createBranch(
+          name: 'feature',
+          target: commit,
+          force: true,
+        );
+        final localBranches = repo.branchesLocal;
 
+        expect(localBranches.length, 2);
+        expect(branch.target, lastCommit);
+
+        for (final branch in localBranches) {
+          branch.free();
+        }
         branch.free();
-        ref.free();
         commit.free();
       });
     });
 
     group('delete()', () {
       test('successfully deletes', () {
-        repo.branches['feature'].delete();
-        expect(repo.branches.local.length, 1);
-        expect(() => repo.branches['feature'], throwsA(isA<LibGit2Error>()));
+        repo.deleteBranch('feature');
+
+        expect(
+          () => repo.lookupBranch('feature'),
+          throwsA(isA<LibGit2Error>()),
+        );
       });
 
       test('throws when trying to delete current HEAD', () {
         expect(
-          () => repo.branches['master'].delete(),
+          () => repo.deleteBranch('master'),
           throwsA(isA<LibGit2Error>()),
         );
       });
@@ -119,43 +142,48 @@ void main() {
 
     group('rename()', () {
       test('successfully renames', () {
-        final renamed = repo.branches['feature'].rename(newName: 'renamed');
-        final branch = repo.branches['renamed'];
+        repo.renameBranch(oldName: 'feature', newName: 'renamed');
+        final branch = repo.lookupBranch('renamed');
+        final branches = repo.branches;
 
-        expect(renamed.target.sha, featureCommit);
-        expect(branch.target.sha, featureCommit);
+        expect(branches.length, 2);
+        expect(
+          () => repo.lookupBranch('feature'),
+          throwsA(isA<LibGit2Error>()),
+        );
+        expect(branch.target, featureCommit);
 
+        for (final branch in branches) {
+          branch.free();
+        }
         branch.free();
-        renamed.free();
       });
 
       test('throws when name already exists', () {
-        final branch = repo.branches['feature'];
         expect(
-          () => branch.rename(newName: 'master'),
+          () => repo.renameBranch(oldName: 'feature', newName: 'master'),
           throwsA(isA<LibGit2Error>()),
         );
-        branch.free();
       });
 
       test('successfully renames with force flag when name already exists', () {
-        final renamed = repo.branches['master'].rename(
+        repo.renameBranch(
+          oldName: 'master',
           newName: 'feature',
           force: true,
         );
+        final branch = repo.lookupBranch('feature');
 
-        expect(renamed.target.sha, lastCommit);
+        expect(branch.target, lastCommit);
 
-        renamed.free();
+        branch.free();
       });
 
       test('throws when name is invalid', () {
-        final branch = repo.branches['feature'];
         expect(
-          () => branch.rename(newName: 'inv@{id'),
+          () => repo.renameBranch(oldName: 'feature', newName: 'inv@{id'),
           throwsA(isA<LibGit2Error>()),
         );
-        branch.free();
       });
     });
   });

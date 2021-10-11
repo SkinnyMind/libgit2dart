@@ -5,9 +5,9 @@ import 'bindings/treebuilder.dart' as bindings;
 
 class TreeBuilder {
   /// Initializes a new instance of [TreeBuilder] class from provided
-  /// [Repository] and optional [Tree] objects.
+  /// [repo]sitory and optional [tree] objects.
   ///
-  /// Should be freed with `free()` to release allocated memory.
+  /// Should be freed to release allocated memory.
   ///
   /// Throws a [LibGit2Error] if error occured.
   TreeBuilder({required Repository repo, Tree? tree}) {
@@ -79,6 +79,6 @@ class TreeBuilder {
     );
   }
 
-  /// Releases memory allocated for tree builder object.
+  /// Releases memory allocated for tree builder object and all the entries.
   void free() => bindings.free(_treeBuilderPointer);
 }

@@ -8,18 +8,16 @@ class Tag {
   /// Initializes a new instance of [Tag] class from provided pointer to
   /// tag object in memory.
   ///
-  /// Should be freed with `free()` to release allocated memory.
+  /// Should be freed to release allocated memory.
   Tag(this._tagPointer);
 
-  /// Initializes a new instance of [Tag] class from provided
-  /// [Repository] object and [sha] hex string.
+  /// Lookups tag object for provided [id] in a [repo]sitory.
   ///
-  /// Should be freed with `free()` to release allocated memory.
-  Tag.lookup({required Repository repo, required String sha}) {
-    final oid = Oid.fromSHA(repo: repo, sha: sha);
+  /// Should be freed to release allocated memory.
+  Tag.lookup({required Repository repo, required Oid id}) {
     _tagPointer = bindings.lookup(
       repoPointer: repo.pointer,
-      oidPointer: oid.pointer,
+      oidPointer: id.pointer,
     );
   }
 
@@ -28,12 +26,12 @@ class Tag {
   /// Pointer to memory address for allocated tag object.
   Pointer<git_tag> get pointer => _tagPointer;
 
-  /// Creates a new tag in the repository from provided Oid object.
+  /// Creates a new tag in the repository for provided [target] object.
   ///
-  /// A new reference will also be created pointing to this tag object. If force is true
+  /// A new reference will also be created pointing to this tag object. If [force] is true
   /// and a reference already exists with the given name, it'll be replaced.
   ///
-  /// The message will not be cleaned up.
+  /// The [message] will not be cleaned up.
   ///
   /// The tag name will be checked for validity. You must avoid the characters
   /// '~', '^', ':', '\', '?', '[', and '*', and the sequences ".." and "@{" which have
@@ -43,16 +41,15 @@ class Tag {
   static Oid create({
     required Repository repo,
     required String tagName,
-    required String target,
+    required Oid target,
     required GitObject targetType,
     required Signature tagger,
     required String message,
     bool force = false,
   }) {
-    final targetOid = Oid.fromSHA(repo: repo, sha: target);
     final object = object_bindings.lookup(
       repoPointer: repo.pointer,
-      oidPointer: targetOid.pointer,
+      oidPointer: target.pointer,
       type: targetType.value,
     );
     final result = bindings.create(
@@ -66,6 +63,15 @@ class Tag {
 
     object_bindings.free(object);
     return Oid(result);
+  }
+
+  /// Deletes an existing tag reference with provided [name] in a [repo]sitory.
+  ///
+  /// The tag [name] will be checked for validity.
+  ///
+  /// Throws a [LibGit2Error] if error occured.
+  static void delete({required Repository repo, required String name}) {
+    bindings.delete(repoPointer: repo.pointer, tagName: name);
   }
 
   /// Returns a list with all the tags in the repository.
@@ -121,16 +127,6 @@ class Tag {
     } else {
       return null;
     }
-  }
-
-  /// Deletes an existing tag reference.
-  ///
-  /// The tag name will be checked for validity.
-  ///
-  /// Throws a [LibGit2Error] if error occured.
-  void delete() {
-    final owner = bindings.owner(_tagPointer);
-    bindings.delete(repoPointer: owner, tagName: name);
   }
 
   /// Releases memory allocated for tag object.

@@ -11,14 +11,14 @@ void main() {
   const biggerSha = '78b8bf123e3952c970ae5c1ce0a3ea1d1336f6e9';
   const lesserSha = '78b8bf123e3952c970ae5c1ce0a3ea1d1336f6e7';
 
-  setUp(() async {
-    tmpDir = await setupRepo(Directory('test/assets/testrepo/'));
+  setUp(() {
+    tmpDir = setupRepo(Directory('test/assets/testrepo/'));
     repo = Repository.open(tmpDir.path);
   });
 
-  tearDown(() async {
+  tearDown(() {
     repo.free();
-    await tmpDir.delete(recursive: true);
+    tmpDir.deleteSync(recursive: true);
   });
 
   group('Oid', () {

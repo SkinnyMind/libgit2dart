@@ -9,18 +9,18 @@ void main() {
   late Reference head;
   late Directory tmpDir;
 
-  setUp(() async {
-    tmpDir = await setupRepo(Directory('test/assets/testrepo/'));
+  setUp(() {
+    tmpDir = setupRepo(Directory('test/assets/testrepo/'));
     repo = Repository.open(tmpDir.path);
     head = repo.head;
     reflog = RefLog(head);
   });
 
-  tearDown(() async {
+  tearDown(() {
     reflog.free();
     head.free();
     repo.free();
-    await tmpDir.delete(recursive: true);
+    tmpDir.deleteSync(recursive: true);
   });
 
   group('RefLog', () {

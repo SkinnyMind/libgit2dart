@@ -9,15 +9,15 @@ void main() {
   late File file;
   const sha = '6cbc22e509d72758ab4c8d9f287ea846b90c448b';
 
-  setUp(() async {
-    tmpDir = await setupRepo(Directory('test/assets/testrepo/'));
+  setUp(() {
+    tmpDir = setupRepo(Directory('test/assets/testrepo/'));
     file = File('${tmpDir.path}/feature_file');
     repo = Repository.open(tmpDir.path);
   });
 
-  tearDown(() async {
+  tearDown(() {
     repo.free();
-    await tmpDir.delete(recursive: true);
+    tmpDir.deleteSync(recursive: true);
   });
 
   group('Reset', () {

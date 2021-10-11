@@ -7,18 +7,19 @@ void main() {
   late Repository repo;
   late Tag tag;
   late Directory tmpDir;
-  const tagSHA = 'f0fdbf506397e9f58c59b88dfdd72778ec06cc0c';
+  late Oid tagID;
 
-  setUp(() async {
-    tmpDir = await setupRepo(Directory('test/assets/testrepo/'));
+  setUp(() {
+    tmpDir = setupRepo(Directory('test/assets/testrepo/'));
     repo = Repository.open(tmpDir.path);
-    tag = Tag.lookup(repo: repo, sha: tagSHA);
+    tagID = repo['f0fdbf506397e9f58c59b88dfdd72778ec06cc0c'];
+    tag = repo.lookupTag(tagID);
   });
 
-  tearDown(() async {
+  tearDown(() {
     tag.free();
     repo.free();
-    await tmpDir.delete(recursive: true);
+    tmpDir.deleteSync(recursive: true);
   });
 
   group('Tag', () {
@@ -36,7 +37,7 @@ void main() {
       final target = tag.target as Commit;
       final tagger = tag.tagger;
 
-      expect(tag.id.sha, tagSHA);
+      expect(tag.id, tagID);
       expect(tag.name, 'v0.2');
       expect(tag.message, 'annotated tag\n');
       expect(target.message, 'add subdirectory file\n');
@@ -53,11 +54,10 @@ void main() {
         time: 1234,
       );
       const tagName = 'tag';
-      final target = 'f17d0d48eae3aa08cecf29128a35e310c97b3521';
+      final target = repo['f17d0d48eae3aa08cecf29128a35e310c97b3521'];
       const message = 'init tag\n';
 
-      final oid = Tag.create(
-        repo: repo,
+      final oid = repo.createTag(
         tagName: tagName,
         target: target,
         targetType: GitObject.commit,
@@ -65,7 +65,7 @@ void main() {
         message: message,
       );
 
-      final newTag = Tag.lookup(repo: repo, sha: oid.sha);
+      final newTag = repo.lookupTag(oid);
       final tagger = newTag.tagger;
       final newTagTarget = newTag.target as Commit;
 
@@ -73,7 +73,7 @@ void main() {
       expect(newTag.name, tagName);
       expect(newTag.message, message);
       expect(tagger, signature);
-      expect(newTagTarget.id.sha, target);
+      expect(newTagTarget.id, target);
 
       newTag.free();
       newTagTarget.free();
@@ -87,7 +87,7 @@ void main() {
     test('successfully deletes tag', () {
       expect(repo.tags, ['v0.1', 'v0.2']);
 
-      tag.delete();
+      repo.deleteTag('v0.2');
       expect(repo.tags, ['v0.1']);
     });
   });

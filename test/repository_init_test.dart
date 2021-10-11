@@ -6,17 +6,17 @@ void main() {
   late Repository repo;
   final initDir = Directory('${Directory.systemTemp.path}/init_repo');
 
-  setUp(() async {
-    if (await initDir.exists()) {
-      await initDir.delete(recursive: true);
+  setUp(() {
+    if (initDir.existsSync()) {
+      initDir.deleteSync(recursive: true);
     } else {
-      await initDir.create();
+      initDir.createSync();
     }
   });
 
-  tearDown(() async {
+  tearDown(() {
     repo.free();
-    await initDir.delete(recursive: true);
+    initDir.deleteSync(recursive: true);
   });
   group('Repository.init', () {
     test('successfully creates new bare repo at provided path', () {
@@ -49,7 +49,7 @@ void main() {
         File('${initDir.path}/.git/description').readAsStringSync(),
         'test repo',
       );
-      expect(repo.remotes['origin'].url, 'test.url');
+      expect(repo.lookupRemote('origin').url, 'test.url');
     });
   });
 }

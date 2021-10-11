@@ -8,14 +8,14 @@ void main() {
   late Repository repo;
   late Directory tmpDir;
 
-  setUp(() async {
-    tmpDir = await setupRepo(Directory('test/assets/testrepo/'));
+  setUp(() {
+    tmpDir = setupRepo(Directory('test/assets/testrepo/'));
     repo = Repository.open(tmpDir.path);
   });
 
-  tearDown(() async {
+  tearDown(() {
     repo.free();
-    await tmpDir.delete(recursive: true);
+    tmpDir.deleteSync(recursive: true);
   });
 
   group('Checkout', () {
@@ -39,8 +39,9 @@ void main() {
     });
 
     test('successfully checkouts tree', () {
-      final masterHead =
-          repo['821ed6e80627b8769d170a293862f9fc60825226'] as Commit;
+      final masterHead = repo.lookupCommit(
+        repo['821ed6e80627b8769d170a293862f9fc60825226'],
+      );
       final masterTree = masterHead.tree;
       expect(
         masterTree.entries.any((e) => e.name == 'another_feature_file'),
@@ -48,8 +49,9 @@ void main() {
       );
 
       repo.checkout(refName: 'refs/heads/feature');
-      final featureHead =
-          repo['5aecfa0fb97eadaac050ccb99f03c3fb65460ad4'] as Commit;
+      final featureHead = repo.lookupCommit(
+        repo['5aecfa0fb97eadaac050ccb99f03c3fb65460ad4'],
+      );
       final featureTree = featureHead.tree;
       final repoHead = repo.head;
       expect(repoHead.target.sha, featureHead.id.sha);

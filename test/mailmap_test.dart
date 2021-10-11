@@ -126,14 +126,14 @@ Santa Claus <santa.claus@northpole.xx> <me@company.xx>
   late Repository repo;
   late Directory tmpDir;
 
-  setUp(() async {
-    tmpDir = await setupRepo(Directory('test/assets/mailmaprepo/'));
+  setUp(() {
+    tmpDir = setupRepo(Directory('test/assets/mailmaprepo/'));
     repo = Repository.open(tmpDir.path);
   });
 
-  tearDown(() async {
+  tearDown(() {
     repo.free();
-    await tmpDir.delete(recursive: true);
+    tmpDir.deleteSync(recursive: true);
   });
 
   group('Mailmap', () {

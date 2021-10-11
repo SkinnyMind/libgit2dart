@@ -10,14 +10,14 @@ void main() {
   const submoduleUrl = 'https://github.com/libgit2/TestGitRepository';
   const submoduleHeadSha = '49322bb17d3acc9146f98c97d078513228bbf3c0';
 
-  setUp(() async {
-    tmpDir = await setupRepo(Directory('test/assets/submodulerepo/'));
+  setUp(() {
+    tmpDir = setupRepo(Directory('test/assets/submodulerepo/'));
     repo = Repository.open(tmpDir.path);
   });
 
-  tearDown(() async {
+  tearDown(() {
     repo.free();
-    await tmpDir.delete(recursive: true);
+    tmpDir.deleteSync(recursive: true);
   });
 
   group('Submodule', () {

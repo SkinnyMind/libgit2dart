@@ -10,43 +10,61 @@ void main() {
   late Remote remote;
   final cloneDir = Directory('${Directory.systemTemp.path}/cloned');
 
-  setUp(() async {
-    tmpDir = await setupRepo(Directory('test/assets/testrepo/'));
-    if (await cloneDir.exists()) {
-      cloneDir.delete(recursive: true);
+  setUp(() {
+    tmpDir = setupRepo(Directory('test/assets/testrepo/'));
+    if (cloneDir.existsSync()) {
+      cloneDir.deleteSync(recursive: true);
     }
     originRepo = Repository.open(tmpDir.path);
     clonedRepo = Repository.clone(
       url: tmpDir.path,
       localPath: cloneDir.path,
     );
-    originRepo.branches['feature'].delete();
-    remote = clonedRepo.remotes['origin'];
+    originRepo.deleteBranch('feature');
+    remote = clonedRepo.lookupRemote('origin');
   });
 
-  tearDown(() async {
+  tearDown(() {
     remote.free();
     originRepo.free();
     clonedRepo.free();
-    await tmpDir.delete(recursive: true);
-    if (await cloneDir.exists()) {
-      cloneDir.delete(recursive: true);
+    tmpDir.deleteSync(recursive: true);
+    if (cloneDir.existsSync()) {
+      cloneDir.deleteSync(recursive: true);
     }
   });
   group('Remote', () {
     test('fetch() does not prune branch by default', () {
       remote.fetch();
-      expect(clonedRepo.branches.list(), contains('origin/feature'));
+
+      final branches = clonedRepo.branches;
+      expect(branches.any((branch) => branch.name == 'origin/feature'), true);
+
+      for (final branch in branches) {
+        branch.free();
+      }
     });
 
     test('fetch() successfully prunes branch with provided flag', () {
       remote.fetch(prune: GitFetchPrune.prune);
-      expect(clonedRepo.branches.list(), isNot(contains('origin/feature')));
+
+      final branches = clonedRepo.branches;
+      expect(branches.any((branch) => branch.name == 'origin/feature'), false);
+
+      for (final branch in branches) {
+        branch.free();
+      }
     });
 
     test('fetch() does not prune branch with provided flag', () {
       remote.fetch(prune: GitFetchPrune.noPrune);
-      expect(clonedRepo.branches.list(), contains('origin/feature'));
+
+      final branches = clonedRepo.branches;
+      expect(branches.any((branch) => branch.name == 'origin/feature'), true);
+
+      for (final branch in branches) {
+        branch.free();
+      }
     });
 
     test('prune() successfully prunes branches', () {
@@ -58,11 +76,22 @@ void main() {
       final callbacks = Callbacks(updateTips: updateTips);
 
       remote.fetch(prune: GitFetchPrune.noPrune);
-      expect(clonedRepo.branches.list(), contains('origin/feature'));
+      var branches = clonedRepo.branches;
+      expect(branches.any((branch) => branch.name == 'origin/feature'), true);
+
+      for (final branch in branches) {
+        branch.free();
+      }
 
       remote.prune(callbacks);
+
+      branches = clonedRepo.branches;
       expect(pruned, contains('refs/remotes/origin/feature'));
-      expect(clonedRepo.branches.list(), isNot(contains('origin/feature')));
+      expect(branches.any((branch) => branch.name == 'origin/feature'), false);
+
+      for (final branch in branches) {
+        branch.free();
+      }
     });
   });
 }

@@ -10,14 +10,14 @@ void main() {
   const blobSha = '9c78c21d6680a7ffebc76f7ac68cacc11d8f48bc';
   const blobContent = 'Feature edit\n';
 
-  setUp(() async {
-    tmpDir = await setupRepo(Directory('test/assets/testrepo/'));
+  setUp(() {
+    tmpDir = setupRepo(Directory('test/assets/testrepo/'));
     repo = Repository.open(tmpDir.path);
   });
 
-  tearDown(() async {
+  tearDown(() {
     repo.free();
-    await tmpDir.delete(recursive: true);
+    tmpDir.deleteSync(recursive: true);
   });
 
   group('Odb', () {

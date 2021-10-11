@@ -12,21 +12,21 @@ void main() {
     '14905459d775f3f56a39ebc2ff081163f7da3529',
   ];
 
-  setUp(() async {
-    tmpDir = await setupRepo(Directory('test/assets/mergerepo/'));
+  setUp(() {
+    tmpDir = setupRepo(Directory('test/assets/mergerepo/'));
     repo = Repository.open(tmpDir.path);
   });
 
-  tearDown(() async {
+  tearDown(() {
     repo.free();
-    await tmpDir.delete(recursive: true);
+    tmpDir.deleteSync(recursive: true);
   });
 
   group('Rebase', () {
     test('successfully performs rebase when there is no conflicts', () {
       final signature = repo.defaultSignature;
-      final master = repo.references['refs/heads/master'];
-      final feature = repo.references['refs/heads/feature'];
+      final master = repo.lookupReference('refs/heads/master');
+      final feature = repo.lookupReference('refs/heads/feature');
 
       repo.checkout(refName: feature.name);
       expect(() => repo.index['.gitignore'], throwsA(isA<ArgumentError>()));
@@ -60,9 +60,9 @@ void main() {
 
     test('successfully performs rebase with provided upstream', () {
       final signature = repo.defaultSignature;
-      final master = repo.references['refs/heads/master'];
-      final feature = repo.references['refs/heads/feature'];
-      final startCommit = repo[shas[1]] as Commit;
+      final master = repo.lookupReference('refs/heads/master');
+      final feature = repo.lookupReference('refs/heads/feature');
+      final startCommit = repo.lookupCommit(repo[shas[1]]);
 
       repo.checkout(refName: feature.name);
       expect(
@@ -97,8 +97,8 @@ void main() {
 
     test('stops when there is conflicts', () {
       final signature = repo.defaultSignature;
-      final master = repo.references['refs/heads/master'];
-      final conflict = repo.references['refs/heads/conflict-branch'];
+      final master = repo.lookupReference('refs/heads/master');
+      final conflict = repo.lookupReference('refs/heads/conflict-branch');
 
       repo.checkout(refName: conflict.name);
 
@@ -124,8 +124,8 @@ void main() {
     });
 
     test('successfully aborts rebase in progress', () {
-      final master = repo.references['refs/heads/master'];
-      final conflict = repo.references['refs/heads/conflict-branch'];
+      final master = repo.lookupReference('refs/heads/master');
+      final conflict = repo.lookupReference('refs/heads/conflict-branch');
 
       repo.checkout(refName: conflict.name);
 

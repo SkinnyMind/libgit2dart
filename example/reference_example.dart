@@ -2,17 +2,17 @@ import 'dart:io';
 import 'package:libgit2dart/libgit2dart.dart';
 import '../test/helpers/util.dart';
 
-void main() async {
+void main() {
   // Preparing example repository.
-  final tmpDir = await setupRepo(Directory('test/assets/testrepo/'));
+  final tmpDir = setupRepo(Directory('test/assets/testrepo/'));
 
   final repo = Repository.open(tmpDir.path);
 
   // Get list of repo's references.
-  print('Repository references: ${repo.references.list}');
+  print('Repository references: ${repo.references}');
 
   // Get reference by name.
-  final ref = repo.references['refs/heads/master'];
+  final ref = repo.lookupReference('refs/heads/master');
 
   print('Reference SHA hex: ${ref.target.sha}');
   print('Is reference a local branch: ${ref.isBranch}');
@@ -20,16 +20,16 @@ void main() async {
   print('Reference shorthand name: ${ref.shorthand}');
 
   // Create new reference (direct or symbolic).
-  final newRef = repo.references.create(
+  final newRef = repo.createReference(
     name: 'refs/tags/v1',
     target: 'refs/heads/master',
   );
 
   // Rename reference.
-  newRef.rename(newName: 'refs/tags/v1.1');
+  repo.renameReference(oldName: 'v1', newName: 'refs/tags/v1.1');
 
   // Delete reference.
-  newRef.delete();
+  repo.deleteReference('v1.1');
 
   // free() should be called on object to free memory when done.
   ref.free();
@@ -37,5 +37,5 @@ void main() async {
   repo.free();
 
   // Removing example repository.
-  await tmpDir.delete(recursive: true);
+  tmpDir.deleteSync(recursive: true);
 }

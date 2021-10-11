@@ -8,18 +8,16 @@ class Blob {
   /// Initializes a new instance of [Blob] class from provided pointer to
   /// blob object in memory.
   ///
-  /// Should be freed with `free()` to release allocated memory.
+  /// Should be freed to release allocated memory.
   Blob(this._blobPointer);
 
-  /// Initializes a new instance of [Blob] class from provided
-  /// [Repository] object and [sha] hex string.
+  /// Lookups a blob object for provided [id] in a [repo]sitory.
   ///
-  /// Should be freed with `free()` to release allocated memory.
-  Blob.lookup({required Repository repo, required String sha}) {
-    final oid = Oid.fromSHA(repo: repo, sha: sha);
+  /// Should be freed to release allocated memory.
+  Blob.lookup({required Repository repo, required Oid id}) {
     _blobPointer = bindings.lookup(
       repoPointer: repo.pointer,
-      oidPointer: oid.pointer,
+      oidPointer: id.pointer,
     );
   }
 

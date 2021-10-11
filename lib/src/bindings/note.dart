@@ -107,10 +107,10 @@ Pointer<git_oid> create({
   }
 }
 
-/// Remove the note for an object.
+/// Delete the note for an object.
 ///
 /// Throws a [LibGit2Error] if error occured.
-void remove({
+void delete({
   required Pointer<git_repository> repoPointer,
   String notesRef = 'refs/notes/commits',
   required Pointer<git_signature> authorPointer,

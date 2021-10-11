@@ -8,20 +8,19 @@ void main() {
   late Directory tmpDir;
   final cloneDir = Directory('${Directory.systemTemp.path}/cloned');
 
-  setUp(() async {
-    tmpDir = await setupRepo(Directory('test/assets/testrepo/'));
+  setUp(() {
+    tmpDir = setupRepo(Directory('test/assets/testrepo/'));
     repo = Repository.open(tmpDir.path);
-
-    if (await cloneDir.exists()) {
+    if (cloneDir.existsSync()) {
       cloneDir.delete(recursive: true);
     }
   });
 
-  tearDown(() async {
+  tearDown(() {
     repo.free();
-    await tmpDir.delete(recursive: true);
-    if (await cloneDir.exists()) {
-      cloneDir.delete(recursive: true);
+    tmpDir.deleteSync(recursive: true);
+    if (cloneDir.existsSync()) {
+      cloneDir.deleteSync(recursive: true);
     }
   });
 
@@ -69,7 +68,7 @@ void main() {
 
     test('successfully clones repository with provided remote callback', () {
       Remote remote(Repository repo, String name, String url) =>
-          repo.remotes.create(name: 'test', url: tmpDir.path);
+          repo.createRemote(name: 'test', url: tmpDir.path);
 
       final clonedRepo = Repository.clone(
         url: tmpDir.path,
@@ -79,15 +78,15 @@ void main() {
 
       expect(clonedRepo.isEmpty, false);
       expect(clonedRepo.isBare, false);
-      expect(clonedRepo.remotes.list, ['test']);
-      expect(clonedRepo.references.list, contains('refs/remotes/test/master'));
+      expect(clonedRepo.remotes, ['test']);
+      expect(clonedRepo.references, contains('refs/remotes/test/master'));
 
       clonedRepo.free();
     });
 
     test('throws when cloning repository with invalid remote callback', () {
       Remote remote(Repository repo, String name, String url) =>
-          repo.remotes.create(name: '', url: '');
+          repo.createRemote(name: '', url: '');
 
       expect(
         () => Repository.clone(

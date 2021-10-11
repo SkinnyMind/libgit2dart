@@ -8,16 +8,16 @@ void main() {
   late Index index;
   late Directory tmpDir;
 
-  setUp(() async {
-    tmpDir = await setupRepo(Directory('test/assets/testrepo/'));
+  setUp(() {
+    tmpDir = setupRepo(Directory('test/assets/testrepo/'));
     repo = Repository.open(tmpDir.path);
     index = repo.index;
   });
 
-  tearDown(() async {
+  tearDown(() {
     index.free();
     repo.free();
-    await tmpDir.delete(recursive: true);
+    tmpDir.deleteSync(recursive: true);
   });
 
   group('Index', () {
@@ -156,25 +156,18 @@ void main() {
       expect(index.find('feature_file'), false);
     });
 
-    group('read tree', () {
-      const treeSha = 'df2b8fc99e1c1d4dbc0a854d9f72157f1d6ea078';
-      test('successfully reads with provided SHA hex', () {
-        expect(index.length, 4);
-        index.readTree(treeSha);
+    test('successfully reads tree with provided SHA hex', () {
+      final tree = repo.lookupTree(
+        repo['df2b8fc99e1c1d4dbc0a854d9f72157f1d6ea078'],
+      );
+      expect(index.length, 4);
+      index.readTree(tree);
 
-        expect(index.length, 1);
+      expect(index.length, 1);
 
-        // make sure the index is only modified in memory
-        index.read();
-        expect(index.length, 4);
-      });
-
-      test('successfully reads with provided short SHA hex', () {
-        expect(index.length, 4);
-        index.readTree(treeSha.substring(0, 5));
-
-        expect(index.length, 1);
-      });
+      // make sure the index is only modified in memory
+      index.read();
+      expect(index.length, 4);
     });
 
     test('successfully writes tree', () {

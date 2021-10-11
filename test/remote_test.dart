@@ -9,23 +9,23 @@ void main() {
   const remoteName = 'origin';
   const remoteUrl = 'git://github.com/SkinnyMind/libgit2dart.git';
 
-  setUp(() async {
-    tmpDir = await setupRepo(Directory('test/assets/testrepo/'));
+  setUp(() {
+    tmpDir = setupRepo(Directory('test/assets/testrepo/'));
     repo = Repository.open(tmpDir.path);
   });
 
-  tearDown(() async {
+  tearDown(() {
     repo.free();
-    await tmpDir.delete(recursive: true);
+    tmpDir.deleteSync(recursive: true);
   });
 
   group('Remote', () {
     test('returns list of remotes', () {
-      expect(repo.remotes.list, ['origin']);
+      expect(repo.remotes, ['origin']);
     });
 
     test('successfully looks up remote for provided name', () {
-      final remote = repo.remotes['origin'];
+      final remote = repo.lookupRemote('origin');
 
       expect(remote.name, remoteName);
       expect(remote.url, remoteUrl);
@@ -35,11 +35,11 @@ void main() {
     });
 
     test('throws when provided name for lookup is not found', () {
-      expect(() => repo.remotes['upstream'], throwsA(isA<LibGit2Error>()));
+      expect(() => repo.lookupRemote('upstream'), throwsA(isA<LibGit2Error>()));
     });
 
     test('successfully creates without fetchspec', () {
-      final remote = repo.remotes.create(name: 'upstream', url: remoteUrl);
+      final remote = repo.createRemote(name: 'upstream', url: remoteUrl);
 
       expect(repo.remotes.length, 2);
       expect(remote.name, 'upstream');
@@ -51,7 +51,7 @@ void main() {
 
     test('successfully creates with provided fetchspec', () {
       const spec = '+refs/*:refs/*';
-      final remote = repo.remotes.create(
+      final remote = repo.createRemote(
         name: 'upstream',
         url: remoteUrl,
         fetch: spec,
@@ -67,23 +67,23 @@ void main() {
     });
 
     test('successfully deletes', () {
-      final remote = repo.remotes.create(name: 'upstream', url: remoteUrl);
+      final remote = repo.createRemote(name: 'upstream', url: remoteUrl);
       expect(repo.remotes.length, 2);
 
-      repo.remotes.delete(remote.name);
+      repo.deleteRemote(remote.name);
       expect(repo.remotes.length, 1);
 
       remote.free();
     });
 
     test('successfully renames', () {
-      final remote = repo.remotes[remoteName];
+      final remote = repo.lookupRemote(remoteName);
 
-      final problems = repo.remotes.rename(remote: remoteName, newName: 'new');
+      final problems = repo.renameRemote(oldName: remoteName, newName: 'new');
       expect(problems, isEmpty);
       expect(remote.name, isNot('new'));
 
-      final newRemote = repo.remotes['new'];
+      final newRemote = repo.lookupRemote('new');
       expect(newRemote.name, 'new');
 
       newRemote.free();
@@ -92,19 +92,19 @@ void main() {
 
     test('throws when renaming with invalid names', () {
       expect(
-        () => repo.remotes.rename(remote: '', newName: ''),
+        () => repo.renameRemote(oldName: '', newName: ''),
         throwsA(isA<LibGit2Error>()),
       );
     });
 
     test('successfully sets url', () {
-      final remote = repo.remotes[remoteName];
+      final remote = repo.lookupRemote(remoteName);
       expect(remote.url, remoteUrl);
 
       const newUrl = 'git://new/url.git';
-      repo.remotes.setUrl(remote: remoteName, url: newUrl);
+      Remote.setUrl(repo: repo, remote: remoteName, url: newUrl);
 
-      final newRemote = repo.remotes[remoteName];
+      final newRemote = repo.lookupRemote(remoteName);
       expect(newRemote.url, newUrl);
 
       newRemote.free();
@@ -113,16 +113,16 @@ void main() {
 
     test('throws when trying to set invalid url name', () {
       expect(
-        () => repo.remotes.setUrl(remote: 'origin', url: ''),
+        () => Remote.setUrl(repo: repo, remote: 'origin', url: ''),
         throwsA(isA<LibGit2Error>()),
       );
     });
 
     test('successfully sets url for pushing', () {
       const newUrl = 'git://new/url.git';
-      repo.remotes.setPushUrl(remote: remoteName, url: newUrl);
+      Remote.setPushUrl(repo: repo, remote: remoteName, url: newUrl);
 
-      final remote = repo.remotes[remoteName];
+      final remote = repo.lookupRemote(remoteName);
       expect(remote.pushUrl, newUrl);
 
       remote.free();
@@ -130,13 +130,13 @@ void main() {
 
     test('throws when trying to set invalid push url name', () {
       expect(
-        () => repo.remotes.setPushUrl(remote: 'origin', url: ''),
+        () => Remote.setPushUrl(repo: repo, remote: 'origin', url: ''),
         throwsA(isA<LibGit2Error>()),
       );
     });
 
     test('returns refspec', () {
-      final remote = repo.remotes['origin'];
+      final remote = repo.lookupRemote('origin');
       expect(remote.refspecCount, 1);
 
       final refspec = remote.getRefspec(0);
@@ -162,11 +162,12 @@ void main() {
     });
 
     test('successfully adds fetch refspec', () {
-      repo.remotes.addFetch(
+      Remote.addFetch(
+        repo: repo,
         remote: 'origin',
         refspec: '+refs/test/*:refs/test/remotes/*',
       );
-      final remote = repo.remotes['origin'];
+      final remote = repo.lookupRemote('origin');
       expect(remote.fetchRefspecs.length, 2);
       expect(
         remote.fetchRefspecs,
@@ -180,11 +181,12 @@ void main() {
     });
 
     test('successfully adds push refspec', () {
-      repo.remotes.addPush(
+      Remote.addPush(
+        repo: repo,
         remote: 'origin',
         refspec: '+refs/test/*:refs/test/remotes/*',
       );
-      final remote = repo.remotes['origin'];
+      final remote = repo.lookupRemote('origin');
       expect(remote.pushRefspecs.length, 1);
       expect(remote.pushRefspecs, ['+refs/test/*:refs/test/remotes/*']);
 
@@ -192,11 +194,12 @@ void main() {
     });
 
     test('successfully returns remote repo\'s reference list', () {
-      repo.remotes.setUrl(
+      Remote.setUrl(
+        repo: repo,
         remote: 'libgit2',
         url: 'https://github.com/libgit2/TestGitRepository',
       );
-      final remote = repo.remotes['libgit2'];
+      final remote = repo.lookupRemote('libgit2');
 
       final refs = remote.ls();
       expect(refs.first['local'], false);
@@ -212,11 +215,12 @@ void main() {
     });
 
     test('successfully fetches data', () {
-      repo.remotes.setUrl(
+      Remote.setUrl(
+        repo: repo,
         remote: 'libgit2',
         url: 'https://github.com/libgit2/TestGitRepository',
       );
-      final remote = repo.remotes['libgit2'];
+      final remote = repo.lookupRemote('libgit2');
 
       final stats = remote.fetch();
 
@@ -233,11 +237,12 @@ void main() {
 
     test('successfully fetches data with provided transfer progress callback',
         () {
-      repo.remotes.setUrl(
+      Remote.setUrl(
+        repo: repo,
         remote: 'libgit2',
         url: 'https://github.com/libgit2/TestGitRepository',
       );
-      final remote = repo.remotes['libgit2'];
+      final remote = repo.lookupRemote('libgit2');
 
       TransferProgress? callbackStats;
       void tp(TransferProgress stats) => callbackStats = stats;
@@ -263,11 +268,12 @@ Enumerating objects: 69, done.
 Counting objects: 100% (1/1)\rCounting objects: 100% (1/1), done.
 Total 69 (delta 0), reused 1 (delta 0), pack-reused 68
 """;
-      repo.remotes.setUrl(
+      Remote.setUrl(
+        repo: repo,
         remote: 'libgit2',
         url: 'https://github.com/libgit2/TestGitRepository',
       );
-      final remote = repo.remotes['libgit2'];
+      final remote = repo.lookupRemote('libgit2');
 
       var sidebandOutput = StringBuffer();
       void sideband(String message) {
@@ -283,11 +289,12 @@ Total 69 (delta 0), reused 1 (delta 0), pack-reused 68
     });
 
     test('successfully fetches data with provided update tips callback', () {
-      repo.remotes.setUrl(
+      Remote.setUrl(
+        repo: repo,
         remote: 'libgit2',
         url: 'https://github.com/libgit2/TestGitRepository',
       );
-      final remote = repo.remotes['libgit2'];
+      final remote = repo.lookupRemote('libgit2');
       const tipsExpected = [
         {
           'refname': 'refs/tags/annotated_tag',
@@ -323,21 +330,22 @@ Total 69 (delta 0), reused 1 (delta 0), pack-reused 68
       remote.free();
     });
 
-    test('successfully pushes with update reference callback', () async {
+    test('successfully pushes with update reference callback', () {
       final originDir =
           Directory('${Directory.systemTemp.path}/origin_testrepo');
 
-      if (await originDir.exists()) {
-        await originDir.delete(recursive: true);
+      if (originDir.existsSync()) {
+        originDir.deleteSync(recursive: true);
       }
-      await copyRepo(
+      originDir.createSync();
+      copyRepo(
         from: Directory('test/assets/empty_bare.git/'),
-        to: await originDir.create(),
+        to: originDir,
       );
       final originRepo = Repository.open(originDir.path);
 
-      repo.remotes.create(name: 'local', url: originDir.path);
-      final remote = repo.remotes['local'];
+      repo.createRemote(name: 'local', url: originDir.path);
+      final remote = repo.lookupRemote('local');
 
       var updateRefOutput = <String, String>{};
       void updateRef(String refname, String message) {
@@ -348,7 +356,7 @@ Total 69 (delta 0), reused 1 (delta 0), pack-reused 68
 
       remote.push(refspecs: ['refs/heads/master'], callbacks: callbacks);
       expect(
-        (originRepo[originRepo.head.target.sha] as Commit).id.sha,
+        originRepo.lookupCommit(originRepo.head.target).id.sha,
         '821ed6e80627b8769d170a293862f9fc60825226',
       );
       expect(updateRefOutput, {'refs/heads/master': ''});

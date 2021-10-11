@@ -10,8 +10,8 @@ void main() {
   late Signature sig2;
   var hunks = <Map<String, dynamic>>[];
 
-  setUp(() async {
-    tmpDir = await setupRepo(Directory('test/assets/blamerepo/'));
+  setUp(() {
+    tmpDir = setupRepo(Directory('test/assets/blamerepo/'));
     repo = Repository.open(tmpDir.path);
     sig1 = Signature.create(
       name: 'Aleksey Kulikov',
@@ -48,11 +48,11 @@ void main() {
     ];
   });
 
-  tearDown(() async {
+  tearDown(() {
     sig1.free();
     sig2.free();
     repo.free();
-    await tmpDir.delete(recursive: true);
+    tmpDir.deleteSync(recursive: true);
   });
 
   group('Blame', () {

@@ -8,8 +8,8 @@ void main() {
   late Directory tmpDir;
   late Signature stasher;
 
-  setUp(() async {
-    tmpDir = await setupRepo(Directory('test/assets/testrepo/'));
+  setUp(() {
+    tmpDir = setupRepo(Directory('test/assets/testrepo/'));
     repo = Repository.open(tmpDir.path);
     stasher = Signature.create(
       name: 'Stasher',
@@ -17,10 +17,10 @@ void main() {
     );
   });
 
-  tearDown(() async {
+  tearDown(() {
     stasher.free();
     repo.free();
-    await tmpDir.delete(recursive: true);
+    tmpDir.deleteSync(recursive: true);
   });
 
   group('Stash', () {

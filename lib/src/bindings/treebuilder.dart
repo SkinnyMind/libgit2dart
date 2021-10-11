@@ -130,5 +130,5 @@ void remove({
   }
 }
 
-/// Free a tree builder to release memory.
+/// Free a tree builder and all the entries to release memory.
 void free(Pointer<git_treebuilder> bld) => libgit2.git_treebuilder_free(bld);

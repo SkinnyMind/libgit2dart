@@ -20,13 +20,22 @@ Pointer<git_worktree> create({
   final out = calloc<Pointer<git_worktree>>();
   final nameC = name.toNativeUtf8().cast<Int8>();
   final pathC = path.toNativeUtf8().cast<Int8>();
-  final opts =
-      calloc<git_worktree_add_options>(sizeOf<git_worktree_add_options>());
-  opts.ref.version = 1;
-  opts.ref.lock = 0;
+
+  final opts = calloc<git_worktree_add_options>();
+  final optsError = libgit2.git_worktree_add_options_init(
+    opts,
+    GIT_WORKTREE_ADD_OPTIONS_VERSION,
+  );
+
+  if (optsError < 0) {
+    throw LibGit2Error(libgit2.git_error_last());
+  }
+
+  opts.ref.ref = nullptr;
   if (refPointer != null) {
     opts.ref.ref = refPointer;
   }
+
   final error = libgit2.git_worktree_add(out, repoPointer, nameC, pathC, opts);
 
   calloc.free(nameC);
@@ -82,6 +91,7 @@ List<String> list(Pointer<git_repository> repo) {
   final result = <String>[];
 
   if (error < 0) {
+    calloc.free(out);
     throw LibGit2Error(libgit2.git_error_last());
   } else {
     for (var i = 0; i < out.ref.count; i++) {

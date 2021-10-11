@@ -3,43 +3,44 @@ import 'package:libgit2dart/libgit2dart.dart';
 import 'bindings/libgit2_bindings.dart';
 import 'bindings/note.dart' as bindings;
 
-class Notes {
-  /// Initializes a new instance of the [Notes] class from
-  /// provided [Repository] object.
-  Notes(Repository repo) {
-    _repoPointer = repo.pointer;
-  }
+class Note {
+  /// Initializes a new instance of the [Note] class from provided
+  /// pointer to note and annotatedId objects in memory.
+  Note(this._notePointer, this._annotatedIdPointer);
 
-  /// Pointer to memory address for allocated repository object.
-  late final Pointer<git_repository> _repoPointer;
-
-  /// Reads the note for an object.
+  /// Reads the note for an [annotatedId].
   ///
-  /// The note must be freed manually by the user.
+  /// IMPORTANT: Notes must be freed manually when no longer needed to prevent
+  /// memory leak.
   ///
   /// Throws a [LibGit2Error] if error occured.
-  static Note lookup({
+  Note.lookup({
     required Repository repo,
     required Oid annotatedId,
     String notesRef = 'refs/notes/commits',
   }) {
-    final note = bindings.lookup(
+    _notePointer = bindings.lookup(
       repoPointer: repo.pointer,
       oidPointer: annotatedId.pointer,
       notesRef: notesRef,
     );
-
-    return Note(note, annotatedId.pointer, repo.pointer);
+    _annotatedIdPointer = annotatedId.pointer;
   }
 
-  /// Adds a note for an [object].
+  /// Pointer to memory address for allocated note object.
+  late final Pointer<git_note> _notePointer;
+
+  /// Pointer to memory address for allocated annotetedId object.
+  late final Pointer<git_oid> _annotatedIdPointer;
+
+  /// Adds a note for an [annotatedId].
   ///
   /// Throws a [LibGit2Error] if error occured.
   static Oid create({
     required Repository repo,
     required Signature author,
     required Signature committer,
-    required Oid object,
+    required Oid annotatedId,
     required String note,
     String notesRef = 'refs/notes/commits',
     bool force = false,
@@ -48,61 +49,48 @@ class Notes {
       repoPointer: repo.pointer,
       authorPointer: author.pointer,
       committerPointer: committer.pointer,
-      oidPointer: object.pointer,
+      oidPointer: annotatedId.pointer,
       note: note,
       notesRef: notesRef,
       force: force,
     ));
   }
 
-  /// Returns list of notes for repository.
-  ///
-  /// Notes must be freed manually by the user.
+  /// Deletes the note for an [annotatedId].
   ///
   /// Throws a [LibGit2Error] if error occured.
-  List<Note> get list {
-    final notesPointers = bindings.list(_repoPointer);
+  static void delete({
+    required Repository repo,
+    required Oid annotatedId,
+    required Signature author,
+    required Signature committer,
+    String notesRef = 'refs/notes/commits',
+  }) {
+    bindings.delete(
+      repoPointer: repo.pointer,
+      authorPointer: author.pointer,
+      committerPointer: committer.pointer,
+      oidPointer: annotatedId.pointer,
+    );
+  }
+
+  /// Returns list of notes for repository.
+  ///
+  /// IMPORTANT: Notes must be freed manually when no longer needed to prevent
+  /// memory leak.
+  ///
+  /// Throws a [LibGit2Error] if error occured.
+  static List<Note> list(Repository repo) {
+    final notesPointers = bindings.list(repo.pointer);
     var result = <Note>[];
     for (var note in notesPointers) {
       result.add(Note(
         note['note'] as Pointer<git_note>,
         note['annotatedId'] as Pointer<git_oid>,
-        _repoPointer,
       ));
     }
 
     return result;
-  }
-}
-
-class Note {
-  /// Initializes a new instance of the [Note] class from provided
-  /// pointer to note object in memory.
-  Note(this._notePointer, this._annotatedIdPointer, this._repoPointer);
-
-  /// Pointer to memory address for allocated note object.
-  final Pointer<git_note> _notePointer;
-
-  /// Pointer to memory address for allocated annotetedId object.
-  final Pointer<git_oid> _annotatedIdPointer;
-
-  /// Pointer to memory address for allocated repository object.
-  final Pointer<git_repository> _repoPointer;
-
-  /// Removes the note for an [object].
-  ///
-  /// Throws a [LibGit2Error] if error occured.
-  void remove({
-    required Signature author,
-    required Signature committer,
-    String notesRef = 'refs/notes/commits',
-  }) {
-    bindings.remove(
-      repoPointer: _repoPointer,
-      authorPointer: author.pointer,
-      committerPointer: committer.pointer,
-      oidPointer: annotatedId.pointer,
-    );
   }
 
   /// Returns the note object's [Oid].

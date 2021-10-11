@@ -7,14 +7,14 @@ void main() {
   late Repository repo;
   late Directory tmpDir;
 
-  setUp(() async {
-    tmpDir = await setupRepo(Directory('test/assets/testrepo/'));
+  setUp(() {
+    tmpDir = setupRepo(Directory('test/assets/testrepo/'));
     repo = Repository.open(tmpDir.path);
   });
 
-  tearDown(() async {
+  tearDown(() {
     repo.free();
-    await tmpDir.delete(recursive: true);
+    tmpDir.deleteSync(recursive: true);
   });
 
   group('PackBuilder', () {
@@ -86,12 +86,14 @@ void main() {
 
     test('successfully packs with provided packDelegate', () {
       void packDelegate(PackBuilder packBuilder) {
-        for (var branchName in repo.branches.list()) {
-          final branch = repo.references['refs/heads/$branchName'];
-          for (var commit in repo.log(sha: branch.target.sha)) {
+        final branches = repo.branches;
+        for (var branch in branches) {
+          final ref = repo.lookupReference('refs/heads/${branch.name}');
+          for (var commit in repo.log(sha: ref.target.sha)) {
             packBuilder.addRecursively(commit.id);
             commit.free();
           }
+          ref.free();
           branch.free();
         }
       }

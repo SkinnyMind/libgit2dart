@@ -9,14 +9,14 @@ void main() {
   const headSHA = '821ed6e80627b8769d170a293862f9fc60825226';
   const parentSHA = '78b8bf123e3952c970ae5c1ce0a3ea1d1336f6e8';
 
-  setUp(() async {
-    tmpDir = await setupRepo(Directory('test/assets/testrepo/'));
+  setUp(() {
+    tmpDir = setupRepo(Directory('test/assets/testrepo/'));
     repo = Repository.open(tmpDir.path);
   });
 
-  tearDown(() async {
+  tearDown(() {
     repo.free();
-    await tmpDir.delete(recursive: true);
+    tmpDir.deleteSync(recursive: true);
   });
 
   group('revParse', () {
@@ -36,7 +36,7 @@ void main() {
     });
 
     test('.ext() returns commit and reference', () {
-      final masterRef = repo.references['refs/heads/master'];
+      final masterRef = repo.lookupReference('refs/heads/master');
       var headParse = repo.revParseExt('master');
 
       expect(headParse.object.id.sha, headSHA);
@@ -46,7 +46,7 @@ void main() {
       headParse.object.free();
       headParse.reference?.free();
 
-      final featureRef = repo.references['refs/heads/feature'];
+      final featureRef = repo.lookupReference('refs/heads/feature');
       headParse = repo.revParseExt('feature');
 
       expect(
