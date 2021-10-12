@@ -24,6 +24,7 @@ Pointer<git_treebuilder> create({
   final error = libgit2.git_treebuilder_new(out, repoPointer, sourcePointer);
 
   if (error < 0) {
+    calloc.free(out);
     throw LibGit2Error(libgit2.git_error_last());
   } else {
     return out.value;
@@ -38,6 +39,7 @@ Pointer<git_oid> write(Pointer<git_treebuilder> bld) {
   final error = libgit2.git_treebuilder_write(out, bld);
 
   if (error < 0) {
+    calloc.free(out);
     throw LibGit2Error(libgit2.git_error_last());
   } else {
     return out;

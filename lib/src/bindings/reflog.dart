@@ -23,6 +23,7 @@ Pointer<git_reflog> read({
   calloc.free(nameC);
 
   if (error < 0) {
+    calloc.free(out);
     throw LibGit2Error(libgit2.git_error_last());
   } else {
     return out.value;
@@ -46,8 +47,7 @@ Pointer<git_reflog_entry> getByIndex({
 
 /// Get the log message.
 String entryMessage(Pointer<git_reflog_entry> entry) {
-  final result = libgit2.git_reflog_entry_message(entry);
-  return result.cast<Utf8>().toDartString();
+  return libgit2.git_reflog_entry_message(entry).cast<Utf8>().toDartString();
 }
 
 /// Get the committer of this entry.

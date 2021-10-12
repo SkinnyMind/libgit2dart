@@ -22,6 +22,7 @@ Pointer<git_revspec> revParse({
   calloc.free(specC);
 
   if (error < 0) {
+    calloc.free(out);
     throw LibGit2Error(libgit2.git_error_last());
   } else {
     return out;
@@ -47,6 +48,7 @@ Pointer<git_object> revParseSingle({
   calloc.free(specC);
 
   if (error < 0) {
+    calloc.free(out);
     throw LibGit2Error(libgit2.git_error_last());
   } else {
     return out.value;
@@ -72,7 +74,6 @@ List revParseExt({
   final objectOut = calloc<Pointer<git_object>>();
   final referenceOut = calloc<Pointer<git_reference>>();
   final specC = spec.toNativeUtf8().cast<Int8>();
-  var result = [];
 
   final error = libgit2.git_revparse_ext(
     objectOut,
@@ -84,8 +85,11 @@ List revParseExt({
   calloc.free(specC);
 
   if (error < 0) {
+    calloc.free(objectOut);
+    calloc.free(referenceOut);
     throw LibGit2Error(libgit2.git_error_last());
   } else {
+    var result = [];
     result.add(objectOut.value);
     if (referenceOut.value != nullptr) {
       result.add(referenceOut.value);

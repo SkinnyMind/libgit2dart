@@ -28,6 +28,10 @@ Pointer<git_worktree> create({
   );
 
   if (optsError < 0) {
+    calloc.free(out);
+    calloc.free(nameC);
+    calloc.free(pathC);
+    calloc.free(opts);
     throw LibGit2Error(libgit2.git_error_last());
   }
 
@@ -43,6 +47,7 @@ Pointer<git_worktree> create({
   calloc.free(opts);
 
   if (error < 0) {
+    calloc.free(out);
     throw LibGit2Error(libgit2.git_error_last());
   } else {
     return out.value;
@@ -63,6 +68,7 @@ Pointer<git_worktree> lookup({
   calloc.free(nameC);
 
   if (error < 0) {
+    calloc.free(out);
     throw LibGit2Error(libgit2.git_error_last());
   } else {
     return out.value;
@@ -88,12 +94,12 @@ void prune(Pointer<git_worktree> wt) {
 List<String> list(Pointer<git_repository> repo) {
   final out = calloc<git_strarray>();
   final error = libgit2.git_worktree_list(out, repo);
-  final result = <String>[];
 
   if (error < 0) {
     calloc.free(out);
     throw LibGit2Error(libgit2.git_error_last());
   } else {
+    final result = <String>[];
     for (var i = 0; i < out.ref.count; i++) {
       result.add(out.ref.strings[i].cast<Utf8>().toDartString());
     }

@@ -33,6 +33,7 @@ Pointer<git_describe_result> commit({
   calloc.free(opts);
 
   if (error < 0) {
+    calloc.free(out);
     throw LibGit2Error(libgit2.git_error_last());
   } else {
     return out.value;
@@ -68,6 +69,7 @@ Pointer<git_describe_result> workdir({
   calloc.free(opts);
 
   if (error < 0) {
+    calloc.free(out);
     throw LibGit2Error(libgit2.git_error_last());
   } else {
     return out.value;
@@ -91,6 +93,8 @@ String format({
   );
 
   if (optsError < 0) {
+    calloc.free(out);
+    calloc.free(opts);
     throw LibGit2Error(libgit2.git_error_last());
   }
 
@@ -106,7 +110,10 @@ String format({
 
   final error = libgit2.git_describe_format(out, describeResultPointer, opts);
 
+  calloc.free(opts);
+
   if (error < 0) {
+    calloc.free(out);
     throw LibGit2Error(libgit2.git_error_last());
   } else {
     final result = out.ref.ptr.cast<Utf8>().toDartString();

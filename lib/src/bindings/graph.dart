@@ -49,5 +49,8 @@ List<int> aheadBehind({
     upstreamPointer,
   );
 
-  return [ahead.value, behind.value];
+  final result = [ahead.value, behind.value];
+  calloc.free(ahead);
+  calloc.free(behind);
+  return result;
 }

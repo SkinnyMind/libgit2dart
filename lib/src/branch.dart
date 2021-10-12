@@ -52,15 +52,14 @@ class Branch {
         name: name,
       ),
     );
-    late final GitBranch type;
-    ref.isBranch ? type = GitBranch.local : GitBranch.remote;
-    ref.free();
 
     _branchPointer = bindings.lookup(
       repoPointer: repo.pointer,
       branchName: name,
-      branchType: type.value,
+      branchType: ref.isBranch ? GitBranch.local.value : GitBranch.remote.value,
     );
+
+    ref.free();
   }
 
   late final Pointer<git_reference> _branchPointer;
@@ -93,6 +92,7 @@ class Branch {
   static void delete({required Repository repo, required String name}) {
     final branch = Branch.lookup(repo: repo, name: name);
     bindings.delete(branch.pointer);
+    branch.free();
   }
 
   /// Renames an existing local branch reference.

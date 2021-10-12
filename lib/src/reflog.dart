@@ -9,9 +9,10 @@ class RefLog with IterableMixin<RefLogEntry> {
   ///
   /// Throws a [LibGit2Error] if error occured.
   RefLog(Reference ref) {
-    final repo = ref.owner;
-    final name = ref.name;
-    _reflogPointer = bindings.read(repoPointer: repo.pointer, name: name);
+    _reflogPointer = bindings.read(
+      repoPointer: ref.owner.pointer,
+      name: ref.name,
+    );
   }
 
   /// Pointer to memory address for allocated reflog object.

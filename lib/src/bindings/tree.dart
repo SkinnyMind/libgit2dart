@@ -18,6 +18,7 @@ Pointer<git_tree> lookup({
   final error = libgit2.git_tree_lookup(out, repoPointer, oidPointer);
 
   if (error < 0) {
+    calloc.free(out);
     throw LibGit2Error(libgit2.git_error_last());
   } else {
     return out.value;
@@ -86,6 +87,7 @@ Pointer<git_tree_entry> getByPath({
   calloc.free(pathC);
 
   if (error < 0) {
+    calloc.free(out);
     throw LibGit2Error(libgit2.git_error_last());
   } else {
     return out.value;

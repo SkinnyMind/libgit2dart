@@ -19,6 +19,7 @@ Pointer<git_credential> username(String username) {
   calloc.free(usernameC);
 
   if (error < 0) {
+    calloc.free(out);
     throw LibGit2Error(libgit2.git_error_last());
   } else {
     return out.value;
@@ -36,13 +37,17 @@ Pointer<git_credential> userPass({
   final usernameC = username.toNativeUtf8().cast<Int8>();
   final passwordC = password.toNativeUtf8().cast<Int8>();
 
-  final error =
-      libgit2.git_credential_userpass_plaintext_new(out, usernameC, passwordC);
+  final error = libgit2.git_credential_userpass_plaintext_new(
+    out,
+    usernameC,
+    passwordC,
+  );
 
   calloc.free(usernameC);
   calloc.free(passwordC);
 
   if (error < 0) {
+    calloc.free(out);
     throw LibGit2Error(libgit2.git_error_last());
   } else {
     return out.value;
@@ -78,6 +83,7 @@ Pointer<git_credential> sshKey({
   calloc.free(passPhraseC);
 
   if (error < 0) {
+    calloc.free(out);
     throw LibGit2Error(libgit2.git_error_last());
   } else {
     return out.value;
@@ -96,6 +102,7 @@ Pointer<git_credential> sshKeyFromAgent(String username) {
   calloc.free(usernameC);
 
   if (error < 0) {
+    calloc.free(out);
     throw LibGit2Error(libgit2.git_error_last());
   } else {
     return out.value;
@@ -131,6 +138,7 @@ Pointer<git_credential> sshKeyFromMemory({
   calloc.free(passPhraseC);
 
   if (error < 0) {
+    calloc.free(out);
     throw LibGit2Error(libgit2.git_error_last());
   } else {
     return out.value;

@@ -11,7 +11,7 @@ import 'libgit2_bindings.dart';
 Pointer<git_blame> file({
   required Pointer<git_repository> repoPointer,
   required String path,
-  int? flags,
+  required int flags,
   int? minMatchCharacters,
   Oid? newestCommit,
   Oid? oldestCommit,
@@ -27,12 +27,13 @@ Pointer<git_blame> file({
   );
 
   if (optionsError < 0) {
+    calloc.free(out);
+    calloc.free(pathC);
+    calloc.free(options);
     throw LibGit2Error(libgit2.git_error_last());
   }
 
-  if (flags != null) {
-    options.ref.flags = flags;
-  }
+  options.ref.flags = flags;
 
   if (minMatchCharacters != null) {
     options.ref.min_match_characters = minMatchCharacters;
@@ -56,7 +57,11 @@ Pointer<git_blame> file({
 
   final error = libgit2.git_blame_file(out, repoPointer, pathC, options);
 
+  calloc.free(pathC);
+  calloc.free(options);
+
   if (error < 0) {
+    calloc.free(out);
     throw LibGit2Error(libgit2.git_error_last());
   } else {
     return out.value;

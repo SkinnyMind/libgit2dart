@@ -96,11 +96,9 @@ class Diff {
     int breakRewriteThreshold = 60,
     int renameLimit = 200,
   }) {
-    final int flagsInt = flags.fold(0, (acc, e) => acc | e.value);
-
     bindings.findSimilar(
       diffPointer: _diffPointer,
-      flags: flagsInt,
+      flags: flags.fold(0, (acc, e) => acc | e.value),
       renameThreshold: renameThreshold,
       copyThreshold: copyThreshold,
       renameFromRewriteThreshold: renameFromRewriteThreshold,
@@ -229,11 +227,9 @@ class DiffStats {
   ///
   /// Throws a [LibGit2Error] if error occured.
   String print({required Set<GitDiffStats> format, required int width}) {
-    final int formatInt = format.fold(0, (acc, e) => acc | e.value);
-
     return bindings.statsPrint(
       statsPointer: _diffStatsPointer,
-      format: formatInt,
+      format: format.fold(0, (acc, e) => acc | e.value),
       width: width,
     );
   }

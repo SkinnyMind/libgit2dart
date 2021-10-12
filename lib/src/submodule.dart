@@ -140,10 +140,8 @@ class Submodule {
   Set<GitSubmoduleStatus> status({
     GitSubmoduleIgnore ignore = GitSubmoduleIgnore.unspecified,
   }) {
-    final repo = bindings.owner(_submodulePointer);
-
     final resultInt = bindings.status(
-      repoPointer: repo,
+      repoPointer: bindings.owner(_submodulePointer),
       name: name,
       ignore: ignore.value,
     );
@@ -192,8 +190,11 @@ class Submodule {
   ///
   /// Throws a [LibGit2Error] if error occured.
   set url(String url) {
-    final repo = bindings.owner(_submodulePointer);
-    bindings.setUrl(repoPointer: repo, name: name, url: url);
+    bindings.setUrl(
+      repoPointer: bindings.owner(_submodulePointer),
+      name: name,
+      url: url,
+    );
   }
 
   /// Returns the branch for the submodule.
@@ -206,8 +207,11 @@ class Submodule {
   ///
   /// Throws a [LibGit2Error] if error occured.
   set branch(String branch) {
-    final repo = bindings.owner(_submodulePointer);
-    bindings.setBranch(repoPointer: repo, name: name, branch: branch);
+    bindings.setBranch(
+      repoPointer: bindings.owner(_submodulePointer),
+      name: name,
+      branch: branch,
+    );
   }
 
   /// Returns the [Oid] for the submodule in the current HEAD tree or
@@ -266,8 +270,11 @@ class Submodule {
   ///
   /// Throws a [LibGit2Error] if error occured.
   set updateRule(GitSubmoduleUpdate rule) {
-    final repo = bindings.owner(_submodulePointer);
-    bindings.setUpdateRule(repoPointer: repo, name: name, update: rule.value);
+    bindings.setUpdateRule(
+      repoPointer: bindings.owner(_submodulePointer),
+      name: name,
+      update: rule.value,
+    );
   }
 
   /// Releases memory allocated for submodule object.

@@ -17,6 +17,7 @@ Pointer<git_commit> lookup({
   final error = libgit2.git_commit_lookup(out, repoPointer, oidPointer);
 
   if (error < 0) {
+    calloc.free(out);
     throw LibGit2Error(libgit2.git_error_last());
   } else {
     return out.value;
@@ -40,6 +41,7 @@ Pointer<git_commit> lookupPrefix({
   );
 
   if (error < 0) {
+    calloc.free(out);
     throw LibGit2Error(libgit2.git_error_last());
   } else {
     return out.value;
@@ -68,6 +70,7 @@ Pointer<Pointer<git_annotated_commit>> annotatedLookup({
   );
 
   if (error < 0) {
+    calloc.free(out);
     throw LibGit2Error(libgit2.git_error_last());
   } else {
     return out;
@@ -127,6 +130,7 @@ Pointer<git_oid> create({
   calloc.free(parentsC);
 
   if (error < 0) {
+    calloc.free(out);
     throw LibGit2Error(libgit2.git_error_last());
   } else {
     return out;
@@ -139,20 +143,14 @@ Pointer<git_oid> create({
 /// in that case UTF-8 is assumed.
 String messageEncoding(Pointer<git_commit> commit) {
   final result = libgit2.git_commit_message_encoding(commit);
-
-  if (result == nullptr) {
-    return 'utf-8';
-  } else {
-    return result.cast<Utf8>().toDartString();
-  }
+  return result == nullptr ? 'utf-8' : result.cast<Utf8>().toDartString();
 }
 
 /// Get the full message of a commit.
 ///
 /// The returned message will be slightly prettified by removing any potential leading newlines.
 String message(Pointer<git_commit> commit) {
-  final out = libgit2.git_commit_message(commit);
-  return out.cast<Utf8>().toDartString();
+  return libgit2.git_commit_message(commit).cast<Utf8>().toDartString();
 }
 
 /// Get the id of a commit.
@@ -215,6 +213,8 @@ Pointer<git_index> revertCommit({
       libgit2.git_merge_options_init(opts, GIT_MERGE_OPTIONS_VERSION);
 
   if (optsError < 0) {
+    calloc.free(out);
+    calloc.free(opts);
     throw LibGit2Error(libgit2.git_error_last());
   }
 
@@ -230,6 +230,7 @@ Pointer<git_index> revertCommit({
   calloc.free(opts);
 
   if (error < 0) {
+    calloc.free(out);
     throw LibGit2Error(libgit2.git_error_last());
   } else {
     return out.value;

@@ -41,6 +41,7 @@ Pointer<git_reference> resolve(Pointer<git_reference> ref) {
   final error = libgit2.git_reference_resolve(out, ref);
 
   if (error < 0) {
+    calloc.free(out);
     throw LibGit2Error(libgit2.git_error_last());
   } else {
     return out.value;
@@ -65,6 +66,7 @@ Pointer<git_reference> lookup({
   calloc.free(nameC);
 
   if (error < 0) {
+    calloc.free(out);
     throw LibGit2Error(libgit2.git_error_last());
   } else {
     return out.value;
@@ -88,6 +90,7 @@ Pointer<git_reference> lookupDWIM({
   calloc.free(nameC);
 
   if (error < 0) {
+    calloc.free(out);
     throw LibGit2Error(libgit2.git_error_last());
   } else {
     return out.value;
@@ -96,10 +99,7 @@ Pointer<git_reference> lookupDWIM({
 
 /// Get the full name of a reference.
 String name(Pointer<git_reference> ref) {
-  var result = calloc<Int8>();
-  result = libgit2.git_reference_name(ref);
-
-  return result.cast<Utf8>().toDartString();
+  return libgit2.git_reference_name(ref).cast<Utf8>().toDartString();
 }
 
 /// Get the reference's short name.
@@ -107,8 +107,7 @@ String name(Pointer<git_reference> ref) {
 /// This will transform the reference name into a name "human-readable" version.
 /// If no shortname is appropriate, it will return the full name.
 String shorthand(Pointer<git_reference> ref) {
-  final result = libgit2.git_reference_shorthand(ref);
-  return result.cast<Utf8>().toDartString();
+  return libgit2.git_reference_shorthand(ref).cast<Utf8>().toDartString();
 }
 
 /// Rename an existing reference.
@@ -146,6 +145,7 @@ Pointer<git_reference> rename({
   calloc.free(logMessageC);
 
   if (error < 0) {
+    calloc.free(out);
     throw LibGit2Error(libgit2.git_error_last());
   } else {
     return out.value;
@@ -195,26 +195,22 @@ bool hasLog({
 
 /// Check if a reference is a local branch.
 bool isBranch(Pointer<git_reference> ref) {
-  final result = libgit2.git_reference_is_branch(ref);
-  return result == 1 ? true : false;
+  return libgit2.git_reference_is_branch(ref) == 1 ? true : false;
 }
 
 /// Check if a reference is a note.
 bool isNote(Pointer<git_reference> ref) {
-  final result = libgit2.git_reference_is_note(ref);
-  return result == 1 ? true : false;
+  return libgit2.git_reference_is_note(ref) == 1 ? true : false;
 }
 
 /// Check if a reference is a remote tracking branch.
 bool isRemote(Pointer<git_reference> ref) {
-  final result = libgit2.git_reference_is_remote(ref);
-  return result == 1 ? true : false;
+  return libgit2.git_reference_is_remote(ref) == 1 ? true : false;
 }
 
 /// Check if a reference is a tag.
 bool isTag(Pointer<git_reference> ref) {
-  final result = libgit2.git_reference_is_tag(ref);
-  return result == 1 ? true : false;
+  return libgit2.git_reference_is_tag(ref) == 1 ? true : false;
 }
 
 /// Create a new direct reference.
@@ -263,6 +259,7 @@ Pointer<git_reference> createDirect({
   calloc.free(logMessageC);
 
   if (error < 0) {
+    calloc.free(out);
     throw (LibGit2Error(libgit2.git_error_last()));
   } else {
     return out.value;
@@ -317,6 +314,7 @@ Pointer<git_reference> createSymbolic({
   calloc.free(logMessageC);
 
   if (error < 0) {
+    calloc.free(out);
     throw (LibGit2Error(libgit2.git_error_last()));
   } else {
     return out.value;
@@ -365,6 +363,7 @@ Pointer<git_reference> setTarget({
   calloc.free(logMessageC);
 
   if (error < 0) {
+    calloc.free(out);
     throw LibGit2Error(libgit2.git_error_last());
   } else {
     return out.value;
@@ -401,6 +400,7 @@ Pointer<git_reference> setTargetSymbolic({
   calloc.free(logMessageC);
 
   if (error < 0) {
+    calloc.free(out);
     throw LibGit2Error(libgit2.git_error_last());
   } else {
     return out.value;
@@ -412,8 +412,9 @@ bool compare({
   required Pointer<git_reference> ref1Pointer,
   required Pointer<git_reference> ref2Pointer,
 }) {
-  final result = libgit2.git_reference_cmp(ref1Pointer, ref2Pointer);
-  return result == 0 ? true : false;
+  return libgit2.git_reference_cmp(ref1Pointer, ref2Pointer) == 0
+      ? true
+      : false;
 }
 
 /// Recursively peel reference until object of the specified type is found.
@@ -432,6 +433,7 @@ Pointer<git_object> peel({
   final error = libgit2.git_reference_peel(out, refPointer, type);
 
   if (error < 0) {
+    calloc.free(out);
     throw LibGit2Error(libgit2.git_error_last());
   } else {
     return out.value;

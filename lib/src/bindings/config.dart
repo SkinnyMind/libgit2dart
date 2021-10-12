@@ -15,6 +15,7 @@ Pointer<git_config> newConfig() {
   final error = libgit2.git_config_new(out);
 
   if (error < 0) {
+    calloc.free(out);
     throw LibGit2Error(libgit2.git_error_last());
   } else {
     return out.value;
@@ -32,6 +33,7 @@ Pointer<git_config> open(String path) {
   calloc.free(pathC);
 
   if (error < 0) {
+    calloc.free(out);
     throw LibGit2Error(libgit2.git_error_last());
   } else {
     return out.value;
@@ -50,6 +52,7 @@ Pointer<git_config> openDefault() {
   final error = libgit2.git_config_open_default(out);
 
   if (error < 0) {
+    calloc.free(out);
     throw LibGit2Error(libgit2.git_error_last());
   } else {
     return out.value;
@@ -74,9 +77,12 @@ String findGlobal() {
   final error = libgit2.git_config_find_global(out);
 
   if (error != 0) {
+    calloc.free(out);
     throw Error();
   } else {
-    return out.ref.ptr.cast<Utf8>().toDartString();
+    final result = out.ref.ptr.cast<Utf8>().toDartString();
+    calloc.free(out);
+    return result;
   }
 }
 
@@ -90,9 +96,12 @@ String findSystem() {
   final error = libgit2.git_config_find_system(out);
 
   if (error < 0) {
+    calloc.free(out);
     throw LibGit2Error(libgit2.git_error_last());
   } else {
-    return out.ref.ptr.cast<Utf8>().toDartString();
+    final result = out.ref.ptr.cast<Utf8>().toDartString();
+    calloc.free(out);
+    return result;
   }
 }
 
@@ -107,9 +116,12 @@ String findXdg() {
   final error = libgit2.git_config_find_xdg(out);
 
   if (error < 0) {
+    calloc.free(out);
     throw LibGit2Error(libgit2.git_error_last());
   } else {
-    return out.ref.ptr.cast<Utf8>().toDartString();
+    final result = out.ref.ptr.cast<Utf8>().toDartString();
+    calloc.free(out);
+    return result;
   }
 }
 
@@ -125,6 +137,7 @@ Pointer<git_config> snapshot(Pointer<git_config> config) {
   final error = libgit2.git_config_snapshot(out, config);
 
   if (error < 0) {
+    calloc.free(out);
     throw LibGit2Error(libgit2.git_error_last());
   } else {
     return out.value;
@@ -145,6 +158,7 @@ Pointer<git_config_entry> getEntry({
   calloc.free(name);
 
   if (error < 0) {
+    calloc.free(out);
     throw LibGit2Error(libgit2.git_error_last());
   } else {
     return out.value;

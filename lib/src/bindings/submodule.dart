@@ -62,6 +62,7 @@ Pointer<git_submodule> lookup({
   calloc.free(nameC);
 
   if (error < 0) {
+    calloc.free(out);
     throw LibGit2Error(libgit2.git_error_last());
   } else {
     return out.value;
@@ -113,6 +114,7 @@ void update({
   );
 
   if (optionsError < 0) {
+    calloc.free(options);
     throw LibGit2Error(libgit2.git_error_last());
   }
 
@@ -144,6 +146,7 @@ Pointer<git_repository> open(Pointer<git_submodule> submodule) {
   final error = libgit2.git_submodule_open(out, submodule);
 
   if (error < 0) {
+    calloc.free(out);
     throw LibGit2Error(libgit2.git_error_last());
   } else {
     return out.value;
@@ -180,6 +183,7 @@ Pointer<git_submodule> addSetup({
   calloc.free(pathC);
 
   if (error < 0) {
+    calloc.free(out);
     throw LibGit2Error(libgit2.git_error_last());
   } else {
     return out.value;
@@ -201,6 +205,8 @@ void clone({
   );
 
   if (optionsError < 0) {
+    calloc.free(out);
+    calloc.free(options);
     throw LibGit2Error(libgit2.git_error_last());
   }
 
@@ -254,9 +260,12 @@ int status({
   calloc.free(nameC);
 
   if (error < 0) {
+    calloc.free(out);
     throw LibGit2Error(libgit2.git_error_last());
   } else {
-    return out.value;
+    final result = out.value;
+    calloc.free(out);
+    return result;
   }
 }
 
@@ -296,8 +305,7 @@ void reload({
 
 /// Get the name of submodule.
 String name(Pointer<git_submodule> submodule) {
-  final result = libgit2.git_submodule_name(submodule);
-  return result.cast<Utf8>().toDartString();
+  return libgit2.git_submodule_name(submodule).cast<Utf8>().toDartString();
 }
 
 /// Get the path to the submodule.
@@ -305,14 +313,12 @@ String name(Pointer<git_submodule> submodule) {
 /// The path is almost always the same as the submodule name, but the two
 /// are actually not required to match.
 String path(Pointer<git_submodule> submodule) {
-  final result = libgit2.git_submodule_path(submodule);
-  return result.cast<Utf8>().toDartString();
+  return libgit2.git_submodule_path(submodule).cast<Utf8>().toDartString();
 }
 
 /// Get the URL for the submodule.
 String url(Pointer<git_submodule> submodule) {
-  final result = libgit2.git_submodule_url(submodule);
-  return result.cast<Utf8>().toDartString();
+  return libgit2.git_submodule_url(submodule).cast<Utf8>().toDartString();
 }
 
 /// Set the URL for the submodule in the configuration.

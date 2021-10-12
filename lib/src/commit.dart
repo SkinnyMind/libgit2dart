@@ -45,8 +45,6 @@ class Commit {
     String? updateRef,
     String? messageEncoding,
   }) {
-    final parentsPointers = parents.map((parent) => parent.pointer).toList();
-
     return Oid(bindings.create(
       repoPointer: repo.pointer,
       updateRef: updateRef,
@@ -56,7 +54,7 @@ class Commit {
       message: message,
       treePointer: tree.pointer,
       parentCount: parents.length,
-      parents: parentsPointers,
+      parents: parents.map((e) => e.pointer).toList(),
     ));
   }
 
@@ -101,9 +99,10 @@ class Commit {
 
   /// Get the tree pointed to by a commit.
   Tree get tree {
-    final repo = bindings.owner(_commitPointer);
-    final oid = bindings.tree(_commitPointer);
-    return Tree(tree_bindings.lookup(repoPointer: repo, oidPointer: oid));
+    return Tree(tree_bindings.lookup(
+      repoPointer: bindings.owner(_commitPointer),
+      oidPointer: bindings.tree(_commitPointer),
+    ));
   }
 
   /// Releases memory allocated for commit object.

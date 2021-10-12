@@ -21,6 +21,7 @@ List<Pointer<git_reference>> list({
   );
 
   if (iteratorError < 0) {
+    libgit2.git_branch_iterator_free(iterator.value);
     throw LibGit2Error(libgit2.git_error_last());
   }
 
@@ -65,6 +66,7 @@ Pointer<git_reference> lookup({
   calloc.free(branchNameC);
 
   if (error < 0) {
+    calloc.free(out);
     throw LibGit2Error(libgit2.git_error_last());
   } else {
     return out.value;
@@ -101,6 +103,7 @@ Pointer<git_reference> create({
   calloc.free(branchNameC);
 
   if (error < 0) {
+    calloc.free(out);
     throw LibGit2Error(libgit2.git_error_last());
   } else {
     return out.value;
@@ -109,17 +112,12 @@ Pointer<git_reference> create({
 
 /// Delete an existing branch reference.
 ///
-/// Note that if the deletion succeeds, the reference object will not be valid anymore,
-/// and will be freed.
-///
 /// Throws a [LibGit2Error] if error occured.
 void delete(Pointer<git_reference> branch) {
   final error = libgit2.git_branch_delete(branch);
 
   if (error < 0) {
     throw LibGit2Error(libgit2.git_error_last());
-  } else {
-    reference_bindings.free(branch);
   }
 }
 
@@ -136,15 +134,19 @@ void rename({
   final out = calloc<Pointer<git_reference>>();
   final newBranchNameC = newBranchName.toNativeUtf8().cast<Int8>();
   final forceC = force ? 1 : 0;
-  final error =
-      libgit2.git_branch_move(out, branchPointer, newBranchNameC, forceC);
+  final error = libgit2.git_branch_move(
+    out,
+    branchPointer,
+    newBranchNameC,
+    forceC,
+  );
 
   calloc.free(newBranchNameC);
+  reference_bindings.free(out.value);
+  calloc.free(out);
 
   if (error < 0) {
     throw LibGit2Error(libgit2.git_error_last());
-  } else {
-    reference_bindings.free(out.value);
   }
 }
 
@@ -188,6 +190,7 @@ String name(Pointer<git_reference> ref) {
   final error = libgit2.git_branch_name(out, ref);
 
   if (error < 0) {
+    calloc.free(out);
     throw LibGit2Error(libgit2.git_error_last());
   } else {
     final result = out.value.cast<Utf8>().toDartString();

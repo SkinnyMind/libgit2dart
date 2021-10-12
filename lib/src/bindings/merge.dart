@@ -16,6 +16,7 @@ Pointer<git_oid> mergeBase({
   final error = libgit2.git_merge_base(out, repoPointer, aPointer, bPointer);
 
   if (error < 0) {
+    calloc.free(out);
     throw LibGit2Error(libgit2.git_error_last());
   } else {
     return out;
@@ -45,6 +46,8 @@ List<int> analysis({
   var result = <int>[];
 
   if (error < 0) {
+    calloc.free(analysisOut);
+    calloc.free(preferenceOut);
     throw LibGit2Error(libgit2.git_error_last());
   } else {
     result.add(analysisOut.value);
@@ -67,10 +70,28 @@ void merge({
   required int theirHeadsLen,
 }) {
   final mergeOpts = calloc<git_merge_options>();
-  libgit2.git_merge_options_init(mergeOpts, GIT_MERGE_OPTIONS_VERSION);
+  final mergeError = libgit2.git_merge_options_init(
+    mergeOpts,
+    GIT_MERGE_OPTIONS_VERSION,
+  );
+
+  if (mergeError < 0) {
+    calloc.free(mergeOpts);
+    throw LibGit2Error(libgit2.git_error_last());
+  }
 
   final checkoutOpts = calloc<git_checkout_options>();
-  libgit2.git_checkout_options_init(checkoutOpts, GIT_CHECKOUT_OPTIONS_VERSION);
+  final checkoutError = libgit2.git_checkout_options_init(
+    checkoutOpts,
+    GIT_CHECKOUT_OPTIONS_VERSION,
+  );
+
+  if (checkoutError < 0) {
+    calloc.free(mergeOpts);
+    calloc.free(checkoutOpts);
+    throw LibGit2Error(libgit2.git_error_last());
+  }
+
   checkoutOpts.ref.checkout_strategy =
       git_checkout_strategy_t.GIT_CHECKOUT_SAFE |
           git_checkout_strategy_t.GIT_CHECKOUT_RECREATE_MISSING;
@@ -82,6 +103,9 @@ void merge({
     mergeOpts,
     checkoutOpts,
   );
+
+  calloc.free(mergeOpts);
+  calloc.free(checkoutOpts);
 
   if (error < 0) {
     throw LibGit2Error(libgit2.git_error_last());
@@ -110,6 +134,7 @@ String mergeFileFromIndex({
   );
 
   if (error < 0) {
+    calloc.free(out);
     throw LibGit2Error(libgit2.git_error_last());
   } else {
     final result = out.ref.ptr.cast<Utf8>().toDartString(length: out.ref.len);
@@ -152,6 +177,7 @@ Pointer<git_index> mergeCommits({
   calloc.free(opts);
 
   if (error < 0) {
+    calloc.free(out);
     throw LibGit2Error(libgit2.git_error_last());
   } else {
     return out.value;
@@ -194,6 +220,7 @@ Pointer<git_index> mergeTrees({
   calloc.free(opts);
 
   if (error < 0) {
+    calloc.free(out);
     throw LibGit2Error(libgit2.git_error_last());
   } else {
     return out.value;
@@ -207,12 +234,23 @@ void cherryPick({
   required Pointer<git_repository> repoPointer,
   required Pointer<git_commit> commitPointer,
 }) {
-  final opts = calloc<git_cherrypick_options>(sizeOf<git_cherrypick_options>());
-  libgit2.git_cherrypick_options_init(opts, GIT_CHERRYPICK_OPTIONS_VERSION);
+  final opts = calloc<git_cherrypick_options>();
+  final optsError = libgit2.git_cherrypick_options_init(
+    opts,
+    GIT_CHERRYPICK_OPTIONS_VERSION,
+  );
+
+  if (optsError < 0) {
+    calloc.free(opts);
+    throw LibGit2Error(libgit2.git_error_last());
+  }
+
   opts.ref.checkout_opts.checkout_strategy =
       git_checkout_strategy_t.GIT_CHECKOUT_SAFE;
 
   final error = libgit2.git_cherrypick(repoPointer, commitPointer, opts);
+
+  calloc.free(opts);
 
   if (error < 0) {
     throw LibGit2Error(libgit2.git_error_last());
@@ -231,6 +269,7 @@ Pointer<git_merge_options> _initMergeOptions({
   );
 
   if (error < 0) {
+    calloc.free(opts);
     throw LibGit2Error(libgit2.git_error_last());
   }
 

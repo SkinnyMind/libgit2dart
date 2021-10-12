@@ -241,8 +241,10 @@ class Reference {
   ///
   /// Throws a [LibGit2Error] if error occured.
   bool get hasLog {
-    final owner = bindings.owner(_refPointer);
-    return bindings.hasLog(repoPointer: owner, name: name);
+    return bindings.hasLog(
+      repoPointer: bindings.owner(_refPointer),
+      name: name,
+    );
   }
 
   /// Returns a [RefLog] object.

@@ -68,6 +68,7 @@ String transform({
   calloc.free(nameC);
 
   if (error < 0) {
+    calloc.free(out);
     throw LibGit2Error(libgit2.git_error_last());
   } else {
     final result = out.ref.ptr.cast<Utf8>().toDartString();
@@ -90,6 +91,7 @@ String rTransform({
   calloc.free(nameC);
 
   if (error < 0) {
+    calloc.free(out);
     throw LibGit2Error(libgit2.git_error_last());
   } else {
     final result = out.ref.ptr.cast<Utf8>().toDartString();

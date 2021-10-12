@@ -15,6 +15,7 @@ List<Map<String, Pointer>> list(Pointer<git_repository> repo) {
   final iteratorError = libgit2.git_note_iterator_new(iterator, repo, notesRef);
 
   if (iteratorError < 0) {
+    calloc.free(iterator);
     throw LibGit2Error(libgit2.git_error_last());
   }
 
@@ -32,6 +33,9 @@ List<Map<String, Pointer>> list(Pointer<git_repository> repo) {
       calloc.free(noteId);
 
       if (error < 0) {
+        calloc.free(out);
+        calloc.free(annotatedId);
+        calloc.free(iterator);
         throw LibGit2Error(libgit2.git_error_last());
       } else {
         result.add({'note': out.value, 'annotatedId': annotatedId});
@@ -64,6 +68,7 @@ Pointer<git_note> lookup({
   calloc.free(notesRefC);
 
   if (error < 0) {
+    calloc.free(out);
     throw LibGit2Error(libgit2.git_error_last());
   } else {
     return out.value;
@@ -101,6 +106,7 @@ Pointer<git_oid> create({
   calloc.free(noteC);
 
   if (error < 0) {
+    calloc.free(out);
     throw LibGit2Error(libgit2.git_error_last());
   } else {
     return out;

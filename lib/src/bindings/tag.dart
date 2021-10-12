@@ -14,6 +14,7 @@ List<String> list(Pointer<git_repository> repo) {
   var result = <String>[];
 
   if (error < 0) {
+    calloc.free(out);
     throw LibGit2Error(libgit2.git_error_last());
   } else {
     for (var i = 0; i < out.ref.count; i++) {
@@ -35,6 +36,7 @@ Pointer<git_tag> lookup({
   final error = libgit2.git_tag_lookup(out, repoPointer, oidPointer);
 
   if (error < 0) {
+    calloc.free(out);
     throw LibGit2Error(libgit2.git_error_last());
   } else {
     return out.value;
@@ -51,6 +53,7 @@ Pointer<git_object> target(Pointer<git_tag> tag) {
   final error = libgit2.git_tag_target(out, tag);
 
   if (error < 0) {
+    calloc.free(out);
     throw LibGit2Error(libgit2.git_error_last());
   } else {
     return out.value;
@@ -113,6 +116,7 @@ Pointer<git_oid> create({
   calloc.free(messageC);
 
   if (error < 0) {
+    calloc.free(out);
     throw LibGit2Error(libgit2.git_error_last());
   } else {
     return out;

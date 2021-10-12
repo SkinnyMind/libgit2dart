@@ -26,7 +26,10 @@ Pointer<git_oid> stash({
     flags,
   );
 
+  calloc.free(messageC);
+
   if (error < 0) {
+    calloc.free(out);
     throw LibGit2Error(libgit2.git_error_last());
   } else {
     return out;
@@ -44,12 +47,14 @@ void apply({
   String? directory,
   List<String>? paths,
 }) {
-  final options =
-      calloc<git_stash_apply_options>(sizeOf<git_stash_apply_options>());
+  final options = calloc<git_stash_apply_options>();
   final optionsError = libgit2.git_stash_apply_options_init(
-      options, GIT_STASH_APPLY_OPTIONS_VERSION);
+    options,
+    GIT_STASH_APPLY_OPTIONS_VERSION,
+  );
 
   if (optionsError < 0) {
+    calloc.free(options);
     throw LibGit2Error(libgit2.git_error_last());
   }
 
@@ -67,16 +72,16 @@ void apply({
 
   final error = libgit2.git_stash_apply(repoPointer, index, options);
 
-  if (error < 0) {
-    throw LibGit2Error(libgit2.git_error_last());
-  }
-
   for (final p in pathPointers) {
     calloc.free(p);
   }
   calloc.free(strArray);
   calloc.free(optsC);
   calloc.free(options);
+
+  if (error < 0) {
+    throw LibGit2Error(libgit2.git_error_last());
+  }
 }
 
 /// Remove a single stashed state from the stash list.
@@ -97,12 +102,14 @@ void pop({
   String? directory,
   List<String>? paths,
 }) {
-  final options =
-      calloc<git_stash_apply_options>(sizeOf<git_stash_apply_options>());
+  final options = calloc<git_stash_apply_options>();
   final optionsError = libgit2.git_stash_apply_options_init(
-      options, GIT_STASH_APPLY_OPTIONS_VERSION);
+    options,
+    GIT_STASH_APPLY_OPTIONS_VERSION,
+  );
 
   if (optionsError < 0) {
+    calloc.free(options);
     throw LibGit2Error(libgit2.git_error_last());
   }
 
@@ -120,16 +127,16 @@ void pop({
 
   final error = libgit2.git_stash_pop(repoPointer, index, options);
 
-  if (error < 0) {
-    throw LibGit2Error(libgit2.git_error_last());
-  }
-
   for (final p in pathPointers) {
     calloc.free(p);
   }
   calloc.free(strArray);
   calloc.free(optsC);
   calloc.free(options);
+
+  if (error < 0) {
+    throw LibGit2Error(libgit2.git_error_last());
+  }
 }
 
 /// List of stashed states.

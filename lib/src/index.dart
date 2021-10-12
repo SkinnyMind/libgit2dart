@@ -189,13 +189,10 @@ class Index with IterableMixin<IndexEntry> {
     int contextLines = 3,
     int interhunkLines = 0,
   }) {
-    final repo = bindings.owner(_indexPointer);
-    final int flagsInt = flags.fold(0, (acc, e) => acc | e.value);
-
     return Diff(diff_bindings.indexToWorkdir(
-      repoPointer: repo,
+      repoPointer: bindings.owner(_indexPointer),
       indexPointer: _indexPointer,
-      flags: flagsInt,
+      flags: flags.fold(0, (acc, e) => acc | e.value),
       contextLines: contextLines,
       interhunkLines: interhunkLines,
     ));
@@ -210,14 +207,11 @@ class Index with IterableMixin<IndexEntry> {
     int contextLines = 3,
     int interhunkLines = 0,
   }) {
-    final repo = bindings.owner(_indexPointer);
-    final int flagsInt = flags.fold(0, (acc, e) => acc | e.value);
-
     return Diff(diff_bindings.treeToIndex(
-      repoPointer: repo,
+      repoPointer: bindings.owner(_indexPointer),
       treePointer: tree.pointer,
       indexPointer: _indexPointer,
-      flags: flagsInt,
+      flags: flags.fold(0, (acc, e) => acc | e.value),
       contextLines: contextLines,
       interhunkLines: interhunkLines,
     ));
@@ -255,8 +249,9 @@ class IndexEntry {
 
   /// Returns the UNIX file attributes of a index entry.
   GitFilemode get mode {
-    final modeInt = _indexEntryPointer.ref.mode;
-    return GitFilemode.values.singleWhere((mode) => modeInt == mode.value);
+    return GitFilemode.values.singleWhere(
+      (mode) => _indexEntryPointer.ref.mode == mode.value,
+    );
   }
 
   /// Sets the UNIX file attributes of a index entry.

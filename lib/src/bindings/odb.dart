@@ -17,6 +17,7 @@ Pointer<git_odb> create() {
   final error = libgit2.git_odb_new(out);
 
   if (error < 0) {
+    calloc.free(out);
     throw LibGit2Error(libgit2.git_error_last());
   } else {
     return out.value;
@@ -65,6 +66,7 @@ Pointer<git_oid> existsPrefix({
   );
 
   if (error < 0) {
+    calloc.free(out);
     throw LibGit2Error(libgit2.git_error_last());
   } else {
     return out;
@@ -76,8 +78,7 @@ bool exists({
   required Pointer<git_odb> odbPointer,
   required Pointer<git_oid> oidPointer,
 }) {
-  final result = libgit2.git_odb_exists(odbPointer, oidPointer);
-  return result == 1 ? true : false;
+  return libgit2.git_odb_exists(odbPointer, oidPointer) == 1 ? true : false;
 }
 
 /// List of objects in the database.
@@ -100,11 +101,10 @@ int _forEachCb(
 /// Throws a [LibGit2Error] if error occured.
 List<Oid> objects(Pointer<git_odb> odb) {
   const except = -1;
-  final payload = calloc<Pointer<git_oid>>();
   final cb =
       Pointer.fromFunction<Int32 Function(Pointer<git_oid>, Pointer<Void>)>(
           _forEachCb, except);
-  final error = libgit2.git_odb_foreach(odb, cb, payload.cast());
+  final error = libgit2.git_odb_foreach(odb, cb, nullptr);
 
   if (error < 0) {
     _objects.clear();
@@ -133,6 +133,7 @@ Pointer<git_odb_object> read({
   final error = libgit2.git_odb_read(out, odbPointer, oidPointer);
 
   if (error < 0) {
+    calloc.free(out);
     throw LibGit2Error(libgit2.git_error_last());
   } else {
     return out.value;
@@ -155,9 +156,7 @@ int objectType(Pointer<git_odb_object> object) {
 ///
 /// This is the uncompressed, raw data as read from the ODB, without the leading header.
 String objectData(Pointer<git_odb_object> object) {
-  final out = libgit2.git_odb_object_data(object);
-
-  return out.cast<Utf8>().toDartString();
+  return libgit2.git_odb_object_data(object).cast<Utf8>().toDartString();
 }
 
 /// Return the size of an ODB object.
@@ -192,6 +191,7 @@ Pointer<git_oid> write({
   );
 
   if (streamError < 0) {
+    libgit2.git_odb_stream_free(stream.value);
     throw LibGit2Error(libgit2.git_error_last());
   }
 
@@ -203,6 +203,7 @@ Pointer<git_oid> write({
   );
 
   if (writeError < 0) {
+    calloc.free(buffer);
     libgit2.git_odb_stream_free(stream.value);
     throw LibGit2Error(libgit2.git_error_last());
   }
@@ -217,6 +218,7 @@ Pointer<git_oid> write({
   libgit2.git_odb_stream_free(stream.value);
 
   if (finalizeError < 0) {
+    calloc.free(out);
     throw LibGit2Error(libgit2.git_error_last());
   } else {
     return out;
@@ -237,6 +239,7 @@ Pointer<git_odb_backend> getBackend({
   final error = libgit2.git_odb_get_backend(out, odbPointer, position);
 
   if (error < 0) {
+    calloc.free(out);
     throw LibGit2Error(libgit2.git_error_last());
   } else {
     return out.value;

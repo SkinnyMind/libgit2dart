@@ -150,6 +150,7 @@ Pointer<git_diff> parse(String content) {
   calloc.free(contentC);
 
   if (error < 0) {
+    calloc.free(out);
     throw LibGit2Error(libgit2.git_error_last());
   } else {
     return out.value;
@@ -173,8 +174,16 @@ void findSimilar({
   required int renameLimit,
 }) {
   final opts = calloc<git_diff_find_options>();
-  final optsError =
-      libgit2.git_diff_find_options_init(opts, GIT_DIFF_FIND_OPTIONS_VERSION);
+  final optsError = libgit2.git_diff_find_options_init(
+    opts,
+    GIT_DIFF_FIND_OPTIONS_VERSION,
+  );
+
+  if (optsError < 0) {
+    calloc.free(opts);
+    throw LibGit2Error(libgit2.git_error_last());
+  }
+
   opts.ref.flags = flags;
   opts.ref.rename_threshold = renameThreshold;
   opts.ref.copy_threshold = copyThreshold;
@@ -182,17 +191,13 @@ void findSimilar({
   opts.ref.break_rewrite_threshold = breakRewriteThreshold;
   opts.ref.rename_limit = renameLimit;
 
-  if (optsError < 0) {
-    throw LibGit2Error(libgit2.git_error_last());
-  }
-
   final error = libgit2.git_diff_find_similar(diffPointer, opts);
+
+  calloc.free(opts);
 
   if (error < 0) {
     throw LibGit2Error(libgit2.git_error_last());
   }
-
-  calloc.free(opts);
 }
 
 /// Calculate the patch ID for the given patch.
@@ -210,6 +215,7 @@ Pointer<git_oid> patchId(Pointer<git_diff> diff) {
   final error = libgit2.git_diff_patchid(out, diff, nullptr);
 
   if (error < 0) {
+    calloc.free(out);
     throw LibGit2Error(libgit2.git_error_last());
   } else {
     return out;
@@ -239,8 +245,7 @@ Pointer<git_diff_delta> getDeltaByIndex({
 /// value into these letters for your own purposes. [GitDelta.untracked] will return
 /// a space (i.e. ' ').
 String statusChar(int status) {
-  final result = libgit2.git_diff_status_char(status);
-  return String.fromCharCode(result);
+  return String.fromCharCode(libgit2.git_diff_status_char(status));
 }
 
 /// Accumulate diff statistics for all patches.
@@ -251,6 +256,7 @@ Pointer<git_diff_stats> stats(Pointer<git_diff> diff) {
   final error = libgit2.git_diff_get_stats(out, diff);
 
   if (error < 0) {
+    calloc.free(out);
     throw LibGit2Error(libgit2.git_error_last());
   } else {
     return out.value;
@@ -281,6 +287,7 @@ String statsPrint({
   final error = libgit2.git_diff_stats_to_buf(out, statsPointer, format, width);
 
   if (error < 0) {
+    calloc.free(out);
     throw LibGit2Error(libgit2.git_error_last());
   } else {
     final result = out.ref.ptr.cast<Utf8>().toDartString();

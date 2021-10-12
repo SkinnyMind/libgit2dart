@@ -207,13 +207,10 @@ class Repository {
   ///
   /// Throws a [LibGit2Error] if error occured.
   void setHead(String target) {
-    late final Oid oid;
-
     if (isValidShaHex(target)) {
-      oid = Oid.fromSHA(repo: this, sha: target);
       bindings.setHeadDetached(
         repoPointer: _repoPointer,
-        commitishPointer: oid.pointer,
+        commitishPointer: this[target].pointer,
       );
     } else {
       bindings.setHead(repoPointer: _repoPointer, refname: target);
@@ -450,11 +447,10 @@ class Repository {
     required String sha,
     Set<GitSort> sorting = const {GitSort.none},
   }) {
-    final oid = Oid.fromSHA(repo: this, sha: sha);
     final walker = RevWalk(this);
 
     walker.sorting(sorting);
-    walker.push(oid);
+    walker.push(this[sha]);
     final result = walker.walk();
 
     walker.free();
@@ -759,12 +755,10 @@ class Repository {
   ///
   /// Throws a [LibGit2Error] if error occured.
   Oid mergeBase({required String a, required String b}) {
-    final oidA = Oid.fromSHA(repo: this, sha: a);
-    final oidB = Oid.fromSHA(repo: this, sha: b);
     return Oid(merge_bindings.mergeBase(
       repoPointer: _repoPointer,
-      aPointer: oidA.pointer,
-      bPointer: oidB.pointer,
+      aPointer: this[a].pointer,
+      bPointer: this[b].pointer,
     ));
   }
 
@@ -994,10 +988,9 @@ class Repository {
   ///
   /// Throws a [LibGit2Error] if error occured.
   void reset({required String target, required GitReset resetType}) {
-    final oid = Oid.fromSHA(repo: this, sha: target);
     final object = object_bindings.lookup(
       repoPointer: _repoPointer,
-      oidPointer: oid.pointer,
+      oidPointer: this[target].pointer,
       type: GitObject.any.value,
     );
 
@@ -1375,13 +1368,10 @@ class Repository {
   ///
   /// Throws a [LibGit2Error] if error occured.
   bool descendantOf({required String commitSHA, required String ancestorSHA}) {
-    final commit = Oid.fromSHA(repo: this, sha: commitSHA);
-    final ancestor = Oid.fromSHA(repo: this, sha: ancestorSHA);
-
     return graph_bindings.descendantOf(
       repoPointer: _repoPointer,
-      commitPointer: commit.pointer,
-      ancestorPointer: ancestor.pointer,
+      commitPointer: this[commitSHA].pointer,
+      ancestorPointer: this[ancestorSHA].pointer,
     );
   }
 
@@ -1394,13 +1384,10 @@ class Repository {
     required String localSHA,
     required String upstreamSHA,
   }) {
-    final local = Oid.fromSHA(repo: this, sha: localSHA);
-    final upstream = Oid.fromSHA(repo: this, sha: upstreamSHA);
-
     return graph_bindings.aheadBehind(
       repoPointer: _repoPointer,
-      localPointer: local.pointer,
-      upstreamPointer: upstream.pointer,
+      localPointer: this[localSHA].pointer,
+      upstreamPointer: this[upstreamSHA].pointer,
     );
   }
 

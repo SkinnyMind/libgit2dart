@@ -15,6 +15,7 @@ Pointer<git_blob> lookup({
   final error = libgit2.git_blob_lookup(out, repoPointer, oidPointer);
 
   if (error < 0) {
+    calloc.free(out);
     throw LibGit2Error(libgit2.git_error_last());
   } else {
     return out.value;
@@ -30,8 +31,7 @@ Pointer<git_oid> id(Pointer<git_blob> blob) => libgit2.git_blob_id(blob);
 /// Searching for NUL bytes and looking for a reasonable ratio of printable to
 /// non-printable characters among the first 8000 bytes.
 bool isBinary(Pointer<git_blob> blob) {
-  final result = libgit2.git_blob_is_binary(blob);
-  return result == 1 ? true : false;
+  return libgit2.git_blob_is_binary(blob) == 1 ? true : false;
 }
 
 /// Get a read-only buffer with the raw content of a blob.
@@ -40,8 +40,7 @@ bool isBinary(Pointer<git_blob> blob) {
 /// internally by the object and shall not be free'd. The pointer may be invalidated
 /// at a later time.
 String content(Pointer<git_blob> blob) {
-  final result = libgit2.git_blob_rawcontent(blob);
-  return result.cast<Utf8>().toDartString();
+  return libgit2.git_blob_rawcontent(blob).cast<Utf8>().toDartString();
 }
 
 /// Get the size in bytes of the contents of a blob.
@@ -57,12 +56,17 @@ Pointer<git_oid> create({
 }) {
   final out = calloc<git_oid>();
   final bufferC = buffer.toNativeUtf8().cast<Void>();
-  final error =
-      libgit2.git_blob_create_from_buffer(out, repoPointer, bufferC, len);
+  final error = libgit2.git_blob_create_from_buffer(
+    out,
+    repoPointer,
+    bufferC,
+    len,
+  );
 
   calloc.free(bufferC);
 
   if (error < 0) {
+    calloc.free(out);
     throw LibGit2Error(libgit2.git_error_last());
   } else {
     return out;
@@ -79,12 +83,16 @@ Pointer<git_oid> createFromWorkdir({
 }) {
   final out = calloc<git_oid>();
   final relativePathC = relativePath.toNativeUtf8().cast<Int8>();
-  final error =
-      libgit2.git_blob_create_from_workdir(out, repoPointer, relativePathC);
+  final error = libgit2.git_blob_create_from_workdir(
+    out,
+    repoPointer,
+    relativePathC,
+  );
 
   calloc.free(relativePathC);
 
   if (error < 0) {
+    calloc.free(out);
     throw LibGit2Error(libgit2.git_error_last());
   } else {
     return out;
@@ -102,7 +110,10 @@ Pointer<git_oid> createFromDisk({
   final pathC = path.toNativeUtf8().cast<Int8>();
   final error = libgit2.git_blob_create_from_disk(out, repoPointer, pathC);
 
+  calloc.free(pathC);
+
   if (error < 0) {
+    calloc.free(out);
     throw LibGit2Error(libgit2.git_error_last());
   } else {
     return out;

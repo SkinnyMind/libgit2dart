@@ -31,6 +31,8 @@ Pointer<git_rebase> init({
   );
 
   if (optsError < 0) {
+    calloc.free(out);
+    calloc.free(opts);
     throw LibGit2Error(libgit2.git_error_last());
   }
 
@@ -43,7 +45,10 @@ Pointer<git_rebase> init({
     opts,
   );
 
+  calloc.free(opts);
+
   if (error < 0) {
+    calloc.free(out);
     throw LibGit2Error(libgit2.git_error_last());
   } else {
     return out.value;
@@ -63,13 +68,14 @@ int operationsCount(Pointer<git_rebase> rebase) {
 ///
 /// Throws a [LibGit2Error] if error occured.
 Pointer<git_rebase_operation> next(Pointer<git_rebase> rebase) {
-  final operation = calloc<Pointer<git_rebase_operation>>();
-  final error = libgit2.git_rebase_next(operation, rebase);
+  final out = calloc<Pointer<git_rebase_operation>>();
+  final error = libgit2.git_rebase_next(out, rebase);
 
   if (error < 0) {
+    calloc.free(out);
     throw LibGit2Error(libgit2.git_error_last());
   } else {
-    return operation.value;
+    return out.value;
   }
 }
 
@@ -83,11 +89,11 @@ void commit({
   required Pointer<git_signature> committerPointer,
   required String? message,
 }) {
-  final id = calloc<git_oid>();
+  final out = calloc<git_oid>();
   final messageC = message?.toNativeUtf8().cast<Int8>() ?? nullptr;
 
   final error = libgit2.git_rebase_commit(
-    id,
+    out,
     rebasePointer,
     authorPointer ?? nullptr,
     committerPointer,
@@ -95,6 +101,7 @@ void commit({
     messageC,
   );
 
+  calloc.free(out);
   calloc.free(messageC);
 
   if (error < 0) {

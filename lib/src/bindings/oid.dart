@@ -13,9 +13,11 @@ Pointer<git_oid> fromStrN(String hex) {
   final out = calloc<git_oid>();
   final str = hex.toNativeUtf8().cast<Int8>();
   final error = libgit2.git_oid_fromstrn(out, str, hex.length);
+
   calloc.free(str);
 
   if (error < 0) {
+    calloc.free(out);
     throw LibGit2Error(libgit2.git_error_last());
   } else {
     return out;
@@ -29,9 +31,11 @@ Pointer<git_oid> fromSHA(String hex) {
   final out = calloc<git_oid>();
   final str = hex.toNativeUtf8().cast<Int8>();
   final error = libgit2.git_oid_fromstr(out, str);
+
   calloc.free(str);
 
   if (error < 0) {
+    calloc.free(out);
     throw LibGit2Error(libgit2.git_error_last());
   } else {
     return out;
@@ -52,6 +56,7 @@ Pointer<git_oid> fromRaw(Array<Uint8> raw) {
   calloc.free(rawC);
 
   if (error < 0) {
+    calloc.free(out);
     throw LibGit2Error(libgit2.git_error_last());
   } else {
     return out;
@@ -64,13 +69,13 @@ Pointer<git_oid> fromRaw(Array<Uint8> raw) {
 String toSHA(Pointer<git_oid> id) {
   final out = calloc<Int8>(40);
   final error = libgit2.git_oid_fmt(out, id);
-  final result = out.cast<Utf8>().toDartString(length: 40);
-
-  calloc.free(out);
 
   if (error < 0) {
+    calloc.free(out);
     throw LibGit2Error(libgit2.git_error_last());
   } else {
+    final result = out.cast<Utf8>().toDartString(length: 40);
+    calloc.free(out);
     return result;
   }
 }
@@ -93,6 +98,7 @@ Pointer<git_oid> copy(Pointer<git_oid> src) {
   final error = libgit2.git_oid_cpy(out, src);
 
   if (error < 0) {
+    calloc.free(out);
     throw LibGit2Error(libgit2.git_error_last());
   } else {
     return out;

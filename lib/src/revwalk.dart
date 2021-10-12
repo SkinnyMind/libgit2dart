@@ -17,10 +17,8 @@ class RevWalk {
   ///
   /// Default sorting is reverse chronological order (default in git).
   List<Commit> walk() {
-    final repoPointer = bindings.repository(_revWalkPointer);
-
     final pointers = bindings.walk(
-      repoPointer: repoPointer,
+      repoPointer: bindings.repository(_revWalkPointer),
       walkerPointer: _revWalkPointer,
     );
 

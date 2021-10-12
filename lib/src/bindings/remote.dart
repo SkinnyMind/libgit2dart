@@ -15,6 +15,7 @@ List<String> list(Pointer<git_repository> repo) {
   final error = libgit2.git_remote_list(out, repo);
 
   if (error < 0) {
+    calloc.free(out);
     throw LibGit2Error(libgit2.git_error_last());
   } else {
     var result = <String>[];
@@ -42,6 +43,7 @@ Pointer<git_remote> lookup({
   calloc.free(nameC);
 
   if (error < 0) {
+    calloc.free(out);
     throw LibGit2Error(libgit2.git_error_last());
   } else {
     return out.value;
@@ -65,6 +67,7 @@ Pointer<git_remote> create({
   calloc.free(urlC);
 
   if (error < 0) {
+    calloc.free(out);
     throw LibGit2Error(libgit2.git_error_last());
   } else {
     return out.value;
@@ -97,6 +100,7 @@ Pointer<git_remote> createWithFetchSpec({
   calloc.free(fetchC);
 
   if (error < 0) {
+    calloc.free(out);
     throw LibGit2Error(libgit2.git_error_last());
   } else {
     return out.value;
@@ -148,6 +152,7 @@ List<String> rename({
   calloc.free(newNameC);
 
   if (error < 0) {
+    calloc.free(out);
     throw LibGit2Error(libgit2.git_error_last());
   } else {
     var result = <String>[];
@@ -374,11 +379,13 @@ List<Map<String, dynamic>> lsRemotes(Pointer<git_remote> remote) {
   final size = calloc<Uint64>();
   final error = libgit2.git_remote_ls(out, size, remote);
 
-  var result = <Map<String, dynamic>>[];
-
   if (error < 0) {
+    calloc.free(out);
+    calloc.free(size);
     throw LibGit2Error(libgit2.git_error_last());
   } else {
+    var result = <Map<String, dynamic>>[];
+
     for (var i = 0; i < size.value; i++) {
       var remote = <String, dynamic>{};
       Oid? loid;
@@ -400,6 +407,9 @@ List<Map<String, dynamic>> lsRemotes(Pointer<git_remote> remote) {
 
       result.add(remote);
     }
+
+    calloc.free(out);
+    calloc.free(size);
 
     return result;
   }
@@ -441,6 +451,14 @@ void fetch({
   );
 
   if (optsError < 0) {
+    for (final p in refspecsPointers) {
+      calloc.free(p);
+    }
+    calloc.free(refspecsC);
+    calloc.free(strArray);
+    calloc.free(proxyOptions);
+    calloc.free(reflogMessageC);
+    calloc.free(opts);
     throw LibGit2Error(libgit2.git_error_last());
   }
 
@@ -501,6 +519,13 @@ void push({
       libgit2.git_push_options_init(opts, GIT_PUSH_OPTIONS_VERSION);
 
   if (optsError < 0) {
+    for (final p in refspecsPointers) {
+      calloc.free(p);
+    }
+    calloc.free(strArray);
+    calloc.free(refspecsC);
+    calloc.free(proxyOptions);
+    calloc.free(opts);
     throw LibGit2Error(libgit2.git_error_last());
   }
 
@@ -555,6 +580,7 @@ void prune({
   );
 
   if (callbacksError < 0) {
+    calloc.free(callbacksOptions);
     throw LibGit2Error(libgit2.git_error_last());
   }
 
@@ -586,6 +612,7 @@ Pointer<git_proxy_options> _proxyOptionsInit(String? proxyOption) {
       libgit2.git_proxy_options_init(proxyOptions, GIT_PROXY_OPTIONS_VERSION);
 
   if (proxyOptionsError < 0) {
+    calloc.free(proxyOptions);
     throw LibGit2Error(libgit2.git_error_last());
   }
 

@@ -15,6 +15,7 @@ Pointer<git_mailmap> init() {
   final error = libgit2.git_mailmap_new(out);
 
   if (error < 0) {
+    calloc.free(out);
     throw LibGit2Error(libgit2.git_error_last());
   } else {
     return out.value;
@@ -33,6 +34,7 @@ Pointer<git_mailmap> fromBuffer(String buffer) {
   calloc.free(bufferC);
 
   if (error < 0) {
+    calloc.free(out);
     throw LibGit2Error(libgit2.git_error_last());
   } else {
     return out.value;
@@ -55,6 +57,7 @@ Pointer<git_mailmap> fromRepository(Pointer<git_repository> repo) {
   final error = libgit2.git_mailmap_from_repository(out, repo);
 
   if (error < 0) {
+    calloc.free(out);
     throw LibGit2Error(libgit2.git_error_last());
   } else {
     return out.value;
@@ -114,6 +117,7 @@ Pointer<git_signature> resolveSignature({
   );
 
   if (error < 0) {
+    calloc.free(out);
     throw LibGit2Error(libgit2.git_error_last());
   } else {
     return out.value;

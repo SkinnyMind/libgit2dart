@@ -4,7 +4,6 @@ import 'package:ffi/ffi.dart';
 import 'package:libgit2dart/libgit2dart.dart';
 import 'bindings/libgit2_bindings.dart';
 import 'bindings/blame.dart' as bindings;
-import 'util.dart';
 
 class Blame with IterableMixin<BlameHunk> {
   /// Initializes a new instance of the [Blame] class from
@@ -44,14 +43,10 @@ class Blame with IterableMixin<BlameHunk> {
     int? minLine,
     int? maxLine,
   }) {
-    libgit2.git_libgit2_init();
-
-    final int flagsInt = flags.fold(0, (acc, e) => acc | e.value);
-
     _blamePointer = bindings.file(
       repoPointer: repo.pointer,
       path: path,
-      flags: flagsInt,
+      flags: flags.fold(0, (acc, e) => acc | e.value),
       minMatchCharacters: minMatchCharacters,
       newestCommit: newestCommit,
       oldestCommit: oldestCommit,

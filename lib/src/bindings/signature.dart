@@ -25,6 +25,7 @@ Pointer<git_signature> create({
   calloc.free(emailC);
 
   if (error < 0) {
+    calloc.free(out);
     throw LibGit2Error(libgit2.git_error_last());
   } else {
     return out.value;
@@ -44,6 +45,7 @@ Pointer<git_signature> now({required String name, required String email}) {
   calloc.free(emailC);
 
   if (error < 0) {
+    calloc.free(out);
     throw LibGit2Error(libgit2.git_error_last());
   } else {
     return out.value;
@@ -61,6 +63,7 @@ Pointer<git_signature> defaultSignature(Pointer<git_repository> repo) {
   final error = libgit2.git_signature_default(out, repo);
 
   if (error < 0) {
+    calloc.free(out);
     throw LibGit2Error(libgit2.git_error_last());
   } else {
     return out.value;

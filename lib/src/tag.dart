@@ -52,6 +52,7 @@ class Tag {
       oidPointer: target.pointer,
       type: targetType.value,
     );
+
     final result = bindings.create(
       repoPointer: repo.pointer,
       tagName: tagName,
@@ -62,6 +63,7 @@ class Tag {
     );
 
     object_bindings.free(object);
+
     return Oid(result);
   }
 

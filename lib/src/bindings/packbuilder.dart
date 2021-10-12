@@ -12,6 +12,7 @@ Pointer<git_packbuilder> init(Pointer<git_repository> repo) {
   final error = libgit2.git_packbuilder_new(out, repo);
 
   if (error < 0) {
+    calloc.free(out);
     throw LibGit2Error(libgit2.git_error_last());
   } else {
     return out.value;

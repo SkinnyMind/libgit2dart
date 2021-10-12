@@ -43,13 +43,12 @@ Map<String, dynamic> fromBuffers({
     opts,
   );
 
-  final result = <String, dynamic>{};
-
   calloc.free(oldAsPathC);
   calloc.free(newAsPathC);
   calloc.free(opts);
 
   if (error < 0) {
+    calloc.free(out);
     calloc.free(oldBufferC);
     calloc.free(newBufferC);
     throw LibGit2Error(libgit2.git_error_last());
@@ -57,10 +56,7 @@ Map<String, dynamic> fromBuffers({
     // Returning map with pointers to patch and buffers because patch object does not
     // have refenrece to underlying buffers or blobs. So if the buffer or blob is freed/removed
     // the patch text becomes corrupted.
-    result['patch'] = out.value;
-    result['a'] = oldBufferC;
-    result['b'] = newBufferC;
-    return result;
+    return {'patch': out.value, 'a': oldBufferC, 'b': newBufferC};
   }
 }
 
@@ -97,22 +93,18 @@ Map<String, dynamic> fromBlobs({
     opts,
   );
 
-  final result = <String, dynamic>{};
-
   calloc.free(oldAsPathC);
   calloc.free(newAsPathC);
   calloc.free(opts);
 
   if (error < 0) {
+    calloc.free(out);
     throw LibGit2Error(libgit2.git_error_last());
   } else {
     // Returning map with pointers to patch and blobs because patch object does not
     // have reference to underlying blobs. So if the blob is freed/removed the patch
     // text becomes corrupted.
-    result['patch'] = out.value;
-    result['a'] = oldBlobPointer;
-    result['b'] = newBlobPointer;
-    return result;
+    return {'patch': out.value, 'a': oldBlobPointer, 'b': newBlobPointer};
   }
 }
 
@@ -152,23 +144,19 @@ Map<String, dynamic> fromBlobAndBuffer({
     opts,
   );
 
-  final result = <String, dynamic>{};
-
   calloc.free(oldAsPathC);
   calloc.free(bufferAsPathC);
   calloc.free(opts);
 
   if (error < 0) {
+    calloc.free(out);
     calloc.free(bufferC);
     throw LibGit2Error(libgit2.git_error_last());
   } else {
     // Returning map with pointers to patch and buffers because patch object does not
     // have reference to underlying buffers or blobs. So if the buffer or blob is freed/removed
     // the patch text becomes corrupted.
-    result['patch'] = out.value;
-    result['a'] = oldBlobPointer;
-    result['b'] = bufferC;
-    return result;
+    return {'patch': out.value, 'a': oldBlobPointer, 'b': bufferC};
   }
 }
 
@@ -187,6 +175,7 @@ Pointer<git_patch> fromDiff({
   final error = libgit2.git_patch_from_diff(out, diffPointer, index);
 
   if (error < 0) {
+    calloc.free(out);
     throw LibGit2Error(libgit2.git_error_last());
   } else {
     return out.value;
@@ -217,14 +206,15 @@ Map<String, dynamic> hunk({
     patchPointer,
     hunkIndex,
   );
-  final result = <String, dynamic>{};
 
   if (error < 0) {
+    calloc.free(out);
+    calloc.free(linesInHunk);
     throw LibGit2Error(libgit2.git_error_last());
   } else {
-    result['hunk'] = out.value;
-    result['linesN'] = linesInHunk.value;
-    return result;
+    final linesN = linesInHunk.value;
+    calloc.free(linesInHunk);
+    return {'hunk': out.value, 'linesN': linesN};
   }
 }
 
@@ -245,6 +235,7 @@ Pointer<git_diff_line> lines({
   );
 
   if (error < 0) {
+    calloc.free(out);
     throw LibGit2Error(libgit2.git_error_last());
   } else {
     return out.value;
@@ -259,6 +250,7 @@ String text(Pointer<git_patch> patch) {
   final error = libgit2.git_patch_to_buf(out, patch);
 
   if (error < 0) {
+    calloc.free(out);
     throw LibGit2Error(libgit2.git_error_last());
   } else {
     final result = out.ref.ptr.cast<Utf8>().toDartString();
@@ -302,15 +294,19 @@ Pointer<git_diff_options> _diffOptionsInit({
   required int interhunkLines,
 }) {
   final opts = calloc<git_diff_options>();
-  final optsError =
-      libgit2.git_diff_options_init(opts, GIT_DIFF_OPTIONS_VERSION);
+  final optsError = libgit2.git_diff_options_init(
+    opts,
+    GIT_DIFF_OPTIONS_VERSION,
+  );
+
+  if (optsError < 0) {
+    calloc.free(opts);
+    throw LibGit2Error(libgit2.git_error_last());
+  }
+
   opts.ref.flags = flags;
   opts.ref.context_lines = contextLines;
   opts.ref.interhunk_lines = interhunkLines;
 
-  if (optsError < 0) {
-    throw LibGit2Error(libgit2.git_error_last());
-  } else {
-    return opts;
-  }
+  return opts;
 }

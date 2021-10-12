@@ -57,6 +57,7 @@ Pointer<git_oid> writeTree(Pointer<git_index> index) {
   final error = libgit2.git_index_write_tree(out, index);
 
   if (error < 0) {
+    calloc.free(out);
     throw LibGit2Error(libgit2.git_error_last());
   } else {
     return out;
@@ -79,6 +80,7 @@ Pointer<git_oid> writeTreeTo({
   final error = libgit2.git_index_write_tree_to(out, indexPointer, repoPointer);
 
   if (error < 0) {
+    calloc.free(out);
     throw LibGit2Error(libgit2.git_error_last());
   } else {
     return out;
@@ -210,9 +212,9 @@ void addAll({
   required List<String> pathspec,
 }) {
   var pathspecC = calloc<git_strarray>();
-  final List<Pointer<Int8>> pathPointers =
+  final pathPointers =
       pathspec.map((e) => e.toNativeUtf8().cast<Int8>()).toList();
-  final Pointer<Pointer<Int8>> strArray = calloc(pathspec.length);
+  final strArray = calloc<Pointer<Int8>>(pathspec.length);
 
   for (var i = 0; i < pathspec.length; i++) {
     strArray[i] = pathPointers[i];
@@ -277,9 +279,9 @@ void removeAll({
   required List<String> pathspec,
 }) {
   final pathspecC = calloc<git_strarray>();
-  final List<Pointer<Int8>> pathPointers =
+  final pathPointers =
       pathspec.map((e) => e.toNativeUtf8().cast<Int8>()).toList();
-  final Pointer<Pointer<Int8>> strArray = calloc(pathspec.length);
+  final strArray = calloc<Pointer<Int8>>(pathspec.length);
 
   for (var i = 0; i < pathspec.length; i++) {
     strArray[i] = pathPointers[i];
@@ -318,10 +320,13 @@ List<Map<String, Pointer<git_index_entry>>> conflictList(
   Pointer<git_index> index,
 ) {
   final iterator = calloc<Pointer<git_index_conflict_iterator>>();
-  final iteratorError =
-      libgit2.git_index_conflict_iterator_new(iterator, index);
+  final iteratorError = libgit2.git_index_conflict_iterator_new(
+    iterator,
+    index,
+  );
 
   if (iteratorError < 0) {
+    calloc.free(iterator);
     throw LibGit2Error(libgit2.git_error_last());
   }
 
