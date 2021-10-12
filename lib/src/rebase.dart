@@ -121,14 +121,9 @@ class RebaseOperation {
 
   /// Returns the type of rebase operation.
   GitRebaseOperation get type {
-    late final GitRebaseOperation result;
-    for (var operation in GitRebaseOperation.values) {
-      if (_rebaseOperationPointer.ref.type == operation.value) {
-        result = operation;
-        break;
-      }
-    }
-    return result;
+    return GitRebaseOperation.values.singleWhere(
+      (e) => _rebaseOperationPointer.ref.type == e.value,
+    );
   }
 
   /// The commit ID being cherry-picked. This will be populated for

@@ -66,14 +66,13 @@ void merge({
   required Pointer<Pointer<git_annotated_commit>> theirHeadsPointer,
   required int theirHeadsLen,
 }) {
-  final mergeOpts = calloc<git_merge_options>(sizeOf<git_merge_options>());
+  final mergeOpts = calloc<git_merge_options>();
   libgit2.git_merge_options_init(mergeOpts, GIT_MERGE_OPTIONS_VERSION);
 
-  final checkoutOpts =
-      calloc<git_checkout_options>(sizeOf<git_checkout_options>());
+  final checkoutOpts = calloc<git_checkout_options>();
   libgit2.git_checkout_options_init(checkoutOpts, GIT_CHECKOUT_OPTIONS_VERSION);
   checkoutOpts.ref.checkout_strategy =
-      git_checkout_strategy_t.GIT_CHECKOUT_SAFE +
+      git_checkout_strategy_t.GIT_CHECKOUT_SAFE |
           git_checkout_strategy_t.GIT_CHECKOUT_RECREATE_MISSING;
 
   final error = libgit2.git_merge(
@@ -131,24 +130,26 @@ Pointer<git_index> mergeCommits({
   required Pointer<git_repository> repoPointer,
   required Pointer<git_commit> ourCommitPointer,
   required Pointer<git_commit> theirCommitPointer,
-  required Map<String, int> opts,
+  required int favor,
+  required int mergeFlags,
+  required int fileFlags,
 }) {
   final out = calloc<Pointer<git_index>>();
-  final optsC = calloc<git_merge_options>(sizeOf<git_merge_options>());
-  optsC.ref.file_favor = opts['favor']!;
-  optsC.ref.flags = opts['mergeFlags']!;
-  optsC.ref.file_flags = opts['fileFlags']!;
-  optsC.ref.version = GIT_MERGE_OPTIONS_VERSION;
+  final opts = _initMergeOptions(
+    favor: favor,
+    mergeFlags: mergeFlags,
+    fileFlags: fileFlags,
+  );
 
   final error = libgit2.git_merge_commits(
     out,
     repoPointer,
     ourCommitPointer,
     theirCommitPointer,
-    optsC,
+    opts,
   );
 
-  calloc.free(optsC);
+  calloc.free(opts);
 
   if (error < 0) {
     throw LibGit2Error(libgit2.git_error_last());
@@ -170,14 +171,16 @@ Pointer<git_index> mergeTrees({
   required Pointer<git_tree> ancestorTreePointer,
   required Pointer<git_tree> ourTreePointer,
   required Pointer<git_tree> theirTreePointer,
-  required Map<String, int> opts,
+  required int favor,
+  required int mergeFlags,
+  required int fileFlags,
 }) {
   final out = calloc<Pointer<git_index>>();
-  final optsC = calloc<git_merge_options>(sizeOf<git_merge_options>());
-  optsC.ref.file_favor = opts['favor']!;
-  optsC.ref.flags = opts['mergeFlags']!;
-  optsC.ref.file_flags = opts['fileFlags']!;
-  optsC.ref.version = GIT_MERGE_OPTIONS_VERSION;
+  final opts = _initMergeOptions(
+    favor: favor,
+    mergeFlags: mergeFlags,
+    fileFlags: fileFlags,
+  );
 
   final error = libgit2.git_merge_trees(
     out,
@@ -185,10 +188,10 @@ Pointer<git_index> mergeTrees({
     ancestorTreePointer,
     ourTreePointer,
     theirTreePointer,
-    optsC,
+    opts,
   );
 
-  calloc.free(optsC);
+  calloc.free(opts);
 
   if (error < 0) {
     throw LibGit2Error(libgit2.git_error_last());
@@ -214,4 +217,26 @@ void cherryPick({
   if (error < 0) {
     throw LibGit2Error(libgit2.git_error_last());
   }
+}
+
+Pointer<git_merge_options> _initMergeOptions({
+  required int favor,
+  required int mergeFlags,
+  required int fileFlags,
+}) {
+  final opts = calloc<git_merge_options>();
+  final error = libgit2.git_merge_options_init(
+    opts,
+    GIT_MERGE_OPTIONS_VERSION,
+  );
+
+  if (error < 0) {
+    throw LibGit2Error(libgit2.git_error_last());
+  }
+
+  opts.ref.file_favor = favor;
+  opts.ref.flags = mergeFlags;
+  opts.ref.file_flags = fileFlags;
+
+  return opts;
 }

@@ -96,8 +96,7 @@ class Diff {
     int breakRewriteThreshold = 60,
     int renameLimit = 200,
   }) {
-    final int flagsInt =
-        flags.fold(0, (previousValue, e) => previousValue | e.value);
+    final int flagsInt = flags.fold(0, (acc, e) => acc | e.value);
 
     bindings.findSimilar(
       diffPointer: _diffPointer,
@@ -136,14 +135,9 @@ class DiffDelta {
 
   /// Returns type of change.
   GitDelta get status {
-    late final GitDelta status;
-    for (var type in GitDelta.values) {
-      if (_diffDeltaPointer.ref.status == type.value) {
-        status = type;
-        break;
-      }
-    }
-    return status;
+    return GitDelta.values.singleWhere(
+      (e) => _diffDeltaPointer.ref.status == e.value,
+    );
   }
 
   /// Looks up the single character abbreviation for a delta status code.
@@ -156,14 +150,9 @@ class DiffDelta {
 
   /// Returns flags for the delta object.
   Set<GitDiffFlag> get flags {
-    var flags = <GitDiffFlag>{};
-    for (var flag in GitDiffFlag.values) {
-      if (_diffDeltaPointer.ref.flags & flag.value == flag.value) {
-        flags.add(flag);
-      }
-    }
-
-    return flags;
+    return GitDiffFlag.values
+        .where((e) => _diffDeltaPointer.ref.flags & e.value == e.value)
+        .toSet();
   }
 
   /// Returns a similarity score for renamed or copied files between 0 and 100
@@ -206,26 +195,14 @@ class DiffFile {
 
   /// Returns flags for the diff file object.
   Set<GitDiffFlag> get flags {
-    var flags = <GitDiffFlag>{};
-    for (var flag in GitDiffFlag.values) {
-      if (_diffFile.flags & flag.value == flag.value) {
-        flags.add(flag);
-      }
-    }
-
-    return flags;
+    return GitDiffFlag.values
+        .where((e) => _diffFile.flags & e.value == e.value)
+        .toSet();
   }
 
   /// Returns one of the [GitFilemode] values.
   GitFilemode get mode {
-    late final GitFilemode result;
-    for (var mode in GitFilemode.values) {
-      if (_diffFile.mode == mode.value) {
-        result = mode;
-        break;
-      }
-    }
-    return result;
+    return GitFilemode.values.singleWhere((e) => _diffFile.mode == e.value);
   }
 }
 
@@ -252,8 +229,7 @@ class DiffStats {
   ///
   /// Throws a [LibGit2Error] if error occured.
   String print({required Set<GitDiffStats> format, required int width}) {
-    final int formatInt =
-        format.fold(0, (previousValue, e) => previousValue | e.value);
+    final int formatInt = format.fold(0, (acc, e) => acc | e.value);
 
     return bindings.statsPrint(
       statsPointer: _diffStatsPointer,
@@ -335,15 +311,9 @@ class DiffLine {
 
   /// Returns type of the line.
   GitDiffLine get origin {
-    final originInt = _diffLinePointer.ref.origin;
-    late final GitDiffLine result;
-    for (var type in GitDiffLine.values) {
-      if (originInt == type.value) {
-        result = type;
-        break;
-      }
-    }
-    return result;
+    return GitDiffLine.values.singleWhere(
+      (e) => _diffLinePointer.ref.origin == e.value,
+    );
   }
 
   /// Returns line number in old file or -1 for added line.

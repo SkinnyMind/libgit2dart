@@ -19,15 +19,18 @@ void head({
   String? directory,
   List<String>? paths,
 }) {
-  final initOpts =
-      initOptions(strategy: strategy, directory: directory, paths: paths);
+  final initOpts = initOptions(
+    strategy: strategy,
+    directory: directory,
+    paths: paths,
+  );
   final optsC = initOpts[0];
   final pathPointers = initOpts[1];
   final strArray = initOpts[2];
 
   final error = libgit2.git_checkout_head(repoPointer, optsC);
 
-  for (var p in pathPointers) {
+  for (final p in pathPointers) {
     calloc.free(p);
   }
 
@@ -48,15 +51,18 @@ void index({
   String? directory,
   List<String>? paths,
 }) {
-  final initOpts =
-      initOptions(strategy: strategy, directory: directory, paths: paths);
+  final initOpts = initOptions(
+    strategy: strategy,
+    directory: directory,
+    paths: paths,
+  );
   final optsC = initOpts[0];
   final pathPointers = initOpts[1];
   final strArray = initOpts[2];
 
   final error = libgit2.git_checkout_index(repoPointer, nullptr, optsC);
 
-  for (var p in pathPointers) {
+  for (final p in pathPointers) {
     calloc.free(p);
   }
 
@@ -90,7 +96,7 @@ void tree({
 
   final error = libgit2.git_checkout_tree(repoPointer, treeishPointer, optsC);
 
-  for (var p in pathPointers) {
+  for (final p in pathPointers) {
     calloc.free(p);
   }
 
@@ -128,9 +134,5 @@ List<dynamic> initOptions({
     optsC.ref.paths.count = paths.length;
   }
 
-  var result = <dynamic>[];
-  result.add(optsC);
-  result.add(pathPointers);
-  result.add(strArray);
-  return result;
+  return [optsC, pathPointers, strArray];
 }

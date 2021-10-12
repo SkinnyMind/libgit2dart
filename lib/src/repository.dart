@@ -42,7 +42,7 @@ class Repository {
   }) {
     libgit2.git_libgit2_init();
 
-    int flagsInt = flags.fold(0, (previousValue, e) => previousValue | e.value);
+    int flagsInt = flags.fold(0, (acc, e) => acc | e.value);
 
     if (bare) {
       flagsInt |= GitRepositoryInit.bare.value;
@@ -717,15 +717,12 @@ class Repository {
             .toDartString();
       }
 
-      var statuses = <GitStatus>{};
       // Skipping GitStatus.current because entry that is in the list can't be without changes
       // but `&` on `0` value falsly adds it to the set of flags
-      for (var status in GitStatus.values.skip(1)) {
-        if (entry.ref.status & status.value == status.value) {
-          statuses.add(status);
-        }
-      }
-      result[path] = statuses;
+      result[path] = GitStatus.values
+          .skip(1)
+          .where((e) => entry.ref.status & e.value == e.value)
+          .toSet();
     }
 
     status_bindings.listFree(list);
@@ -747,19 +744,15 @@ class Repository {
       path: path,
     );
 
-    var statuses = <GitStatus>{};
     if (statusInt == GitStatus.current.value) {
-      statuses.add(GitStatus.current);
+      return {GitStatus.current};
     } else {
       // Skipping GitStatus.current because `&` on `0` value falsly adds it to the set of flags
-      for (var status in GitStatus.values.skip(1)) {
-        if (statusInt & status.value == status.value) {
-          statuses.add(status);
-        }
-      }
+      return GitStatus.values
+          .skip(1)
+          .where((e) => statusInt & e.value == e.value)
+          .toSet();
     }
-
-    return statuses;
   }
 
   /// Finds a merge base between two commits.
@@ -782,7 +775,7 @@ class Repository {
   /// respectively.
   ///
   /// Throws a [LibGit2Error] if error occured.
-  List<Set<dynamic>> mergeAnalysis({
+  List mergeAnalysis({
     required Oid theirHead,
     String ourRef = 'HEAD',
   }) {
@@ -791,29 +784,24 @@ class Repository {
       repoPointer: _repoPointer,
       oidPointer: theirHead.pointer,
     );
-
-    var result = <Set<dynamic>>[];
-    var analysisSet = <GitMergeAnalysis>{};
     final analysisInt = merge_bindings.analysis(
       repoPointer: _repoPointer,
       ourRefPointer: ref.pointer,
       theirHeadPointer: head,
       theirHeadsLen: 1,
     );
-    for (var analysis in GitMergeAnalysis.values) {
-      if (analysisInt[0] & analysis.value == analysis.value) {
-        analysisSet.add(analysis);
-      }
-    }
-    result.add(analysisSet);
-    result.add(
-      {GitMergePreference.values.singleWhere((e) => analysisInt[1] == e.value)},
+
+    final analysisSet = GitMergeAnalysis.values
+        .where((e) => analysisInt[0] & e.value == e.value)
+        .toSet();
+    final mergePreference = GitMergePreference.values.singleWhere(
+      (e) => analysisInt[1] == e.value,
     );
 
     commit_bindings.annotatedFree(head.value);
     ref.free();
 
-    return result;
+    return [analysisSet, mergePreference];
   }
 
   /// Merges the given commit(s) oid into HEAD, writing the results into the working directory.
@@ -870,21 +858,14 @@ class Repository {
     Set<GitMergeFlag> mergeFlags = const {GitMergeFlag.findRenames},
     Set<GitMergeFileFlag> fileFlags = const {GitMergeFileFlag.defaults},
   }) {
-    var opts = <String, int>{};
-    opts['favor'] = favor.value;
-    opts['mergeFlags'] =
-        mergeFlags.fold(0, (previousValue, e) => previousValue | e.value);
-    opts['fileFlags'] =
-        fileFlags.fold(0, (previousValue, e) => previousValue | e.value);
-
-    final result = merge_bindings.mergeCommits(
+    return Index(merge_bindings.mergeCommits(
       repoPointer: _repoPointer,
       ourCommitPointer: ourCommit.pointer,
       theirCommitPointer: theirCommit.pointer,
-      opts: opts,
-    );
-
-    return Index(result);
+      favor: favor.value,
+      mergeFlags: mergeFlags.fold(0, (acc, e) => acc | e.value),
+      fileFlags: fileFlags.fold(0, (acc, e) => acc | e.value),
+    ));
   }
 
   /// Reverts the given commit against the given "our" commit, producing an index that
@@ -924,26 +905,15 @@ class Repository {
     List<GitMergeFlag> mergeFlags = const [GitMergeFlag.findRenames],
     List<GitMergeFileFlag> fileFlags = const [GitMergeFileFlag.defaults],
   }) {
-    var opts = <String, int>{};
-    opts['favor'] = favor.value;
-    opts['mergeFlags'] = mergeFlags.fold(
-      0,
-      (previousValue, element) => previousValue + element.value,
-    );
-    opts['fileFlags'] = fileFlags.fold(
-      0,
-      (previousValue, element) => previousValue + element.value,
-    );
-
-    final result = merge_bindings.mergeTrees(
+    return Index(merge_bindings.mergeTrees(
       repoPointer: _repoPointer,
       ancestorTreePointer: ancestorTree.pointer,
       ourTreePointer: ourTree.pointer,
       theirTreePointer: theirTree.pointer,
-      opts: opts,
-    );
-
-    return Index(result);
+      favor: favor.value,
+      mergeFlags: mergeFlags.fold(0, (acc, element) => acc | element.value),
+      fileFlags: fileFlags.fold(0, (acc, element) => acc | element.value),
+    ));
   }
 
   /// Cherry-picks the provided commit, producing changes in the index and working directory.
@@ -980,8 +950,7 @@ class Repository {
     String? directory,
     List<String>? paths,
   }) {
-    final int strat =
-        strategy.fold(0, (previousValue, e) => previousValue | e.value);
+    final int strat = strategy.fold(0, (acc, e) => acc | e.value);
 
     if (refName == null) {
       checkout_bindings.index(
@@ -1057,8 +1026,7 @@ class Repository {
     int contextLines = 3,
     int interhunkLines = 0,
   }) {
-    final int flagsInt =
-        flags.fold(0, (previousValue, e) => previousValue | e.value);
+    final int flagsInt = flags.fold(0, (acc, e) => acc | e.value);
 
     if (a is Tree && b is Tree) {
       return Diff(diff_bindings.treeToTree(
@@ -1173,15 +1141,11 @@ class Repository {
     String? directory,
     List<String>? paths,
   }) {
-    int flags = reinstateIndex ? GitStashApply.reinstateIndex.value : 0;
-    final int strat =
-        strategy.fold(0, (previousValue, e) => previousValue | e.value);
-
     stash_bindings.apply(
       repoPointer: _repoPointer,
       index: index,
-      flags: flags,
-      strategy: strat,
+      flags: reinstateIndex ? GitStashApply.reinstateIndex.value : 0,
+      strategy: strategy.fold(0, (acc, e) => acc | e.value),
       directory: directory,
       paths: paths,
     );
@@ -1210,15 +1174,11 @@ class Repository {
     String? directory,
     List<String>? paths,
   }) {
-    int flags = reinstateIndex ? GitStashApply.reinstateIndex.value : 0;
-    final int strat =
-        strategy.fold(0, (previousValue, e) => previousValue | e.value);
-
     stash_bindings.pop(
       repoPointer: _repoPointer,
       index: index,
-      flags: flags,
-      strategy: strat,
+      flags: reinstateIndex ? GitStashApply.reinstateIndex.value : 0,
+      strategy: strategy.fold(0, (acc, e) => acc | e.value),
       directory: directory,
       paths: paths,
     );
@@ -1292,12 +1252,9 @@ class Repository {
     required String name,
     Set<GitAttributeCheck> flags = const {GitAttributeCheck.fileThenIndex},
   }) {
-    final int flagsInt =
-        flags.fold(0, (previousValue, e) => previousValue | e.value);
-
     return attr_bindings.getAttribute(
       repoPointer: _repoPointer,
-      flags: flagsInt,
+      flags: flags.fold(0, (acc, e) => acc | e.value),
       path: path,
       name: name,
     );
@@ -1532,10 +1489,13 @@ class Repository {
   /// let libgit2 to autodetect number of CPUs.
   ///
   /// Throws a [LibGit2Error] if error occured.
-  int pack(
-      {String? path, void Function(PackBuilder)? packDelegate, int? threads}) {
+  int pack({
+    String? path,
+    void Function(PackBuilder)? packDelegate,
+    int? threads,
+  }) {
     void packAll(PackBuilder packbuilder) {
-      for (var object in odb.objects) {
+      for (final object in odb.objects) {
         packbuilder.add(object);
       }
     }

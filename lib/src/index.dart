@@ -55,7 +55,7 @@ class Index with IterableMixin<IndexEntry> {
     final conflicts = bindings.conflictList(_indexPointer);
     var result = <String, ConflictEntry>{};
 
-    for (var entry in conflicts) {
+    for (final entry in conflicts) {
       IndexEntry? ancestor, our, their;
       String path;
 
@@ -190,8 +190,7 @@ class Index with IterableMixin<IndexEntry> {
     int interhunkLines = 0,
   }) {
     final repo = bindings.owner(_indexPointer);
-    final int flagsInt =
-        flags.fold(0, (previousValue, e) => previousValue | e.value);
+    final int flagsInt = flags.fold(0, (acc, e) => acc | e.value);
 
     return Diff(diff_bindings.indexToWorkdir(
       repoPointer: repo,
@@ -212,8 +211,7 @@ class Index with IterableMixin<IndexEntry> {
     int interhunkLines = 0,
   }) {
     final repo = bindings.owner(_indexPointer);
-    final int flagsInt =
-        flags.fold(0, (previousValue, e) => previousValue | e.value);
+    final int flagsInt = flags.fold(0, (acc, e) => acc | e.value);
 
     return Diff(diff_bindings.treeToIndex(
       repoPointer: repo,

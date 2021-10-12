@@ -148,7 +148,7 @@ Santa Claus <santa.claus@northpole.xx> <me@company.xx>
       final mailmap = Mailmap.fromBuffer(testMailmap);
       expect(mailmap, isA<Mailmap>());
 
-      for (var entry in testResolve) {
+      for (final entry in testResolve) {
         expect(
           mailmap.resolve(name: entry['name']!, email: entry['email']!),
           [entry['realName'], entry['realEmail']],
@@ -162,7 +162,7 @@ Santa Claus <santa.claus@northpole.xx> <me@company.xx>
       final mailmap = Mailmap.fromRepository(repo);
       expect(mailmap, isA<Mailmap>());
 
-      for (var entry in testResolve) {
+      for (final entry in testResolve) {
         expect(
           mailmap.resolve(name: entry['name']!, email: entry['email']!),
           [entry['realName'], entry['realEmail']],
@@ -175,7 +175,7 @@ Santa Claus <santa.claus@northpole.xx> <me@company.xx>
     test('successfully resolves names and emails when mailmap is empty', () {
       final mailmap = Mailmap.empty();
 
-      for (var entry in testResolve) {
+      for (final entry in testResolve) {
         expect(
           mailmap.resolve(name: entry['name']!, email: entry['email']!),
           [entry['name'], entry['email']],
@@ -188,7 +188,7 @@ Santa Claus <santa.claus@northpole.xx> <me@company.xx>
     test('successfully adds entries and resolves them', () {
       final mailmap = Mailmap.empty();
 
-      for (var entry in testEntries) {
+      for (final entry in testEntries) {
         mailmap.addEntry(
           realName: entry['realName'],
           realEmail: entry['realEmail'],
@@ -197,7 +197,7 @@ Santa Claus <santa.claus@northpole.xx> <me@company.xx>
         );
       }
 
-      for (var entry in testResolve) {
+      for (final entry in testResolve) {
         expect(
           mailmap.resolve(name: entry['name']!, email: entry['email']!),
           [entry['realName'], entry['realEmail']],

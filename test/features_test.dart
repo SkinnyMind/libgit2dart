@@ -6,7 +6,7 @@ void main() {
     test('returns list of compile time options for libgit2', () {
       expect(
         Features.list,
-        [GitFeature.threads, GitFeature.https, GitFeature.ssh, GitFeature.nsec],
+        {GitFeature.threads, GitFeature.https, GitFeature.ssh, GitFeature.nsec},
       );
     });
   });

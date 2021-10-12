@@ -230,7 +230,7 @@ void addAll({
   );
 
   calloc.free(pathspecC);
-  for (var p in pathPointers) {
+  for (final p in pathPointers) {
     calloc.free(p);
   }
   calloc.free(strArray);
@@ -296,7 +296,7 @@ void removeAll({
   );
 
   calloc.free(pathspecC);
-  for (var p in pathPointers) {
+  for (final p in pathPointers) {
     calloc.free(p);
   }
   calloc.free(strArray);

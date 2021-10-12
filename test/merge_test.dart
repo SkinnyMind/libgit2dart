@@ -27,8 +27,10 @@ void main() {
         );
 
         final result = repo.mergeAnalysis(theirHead: commit.id);
-        expect(result[0], {GitMergeAnalysis.upToDate});
-        expect(result[1], {GitMergePreference.none});
+        expect(result, [
+          {GitMergeAnalysis.upToDate},
+          GitMergePreference.none,
+        ]);
         expect(repo.status, isEmpty);
 
         commit.free();

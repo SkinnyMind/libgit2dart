@@ -82,15 +82,12 @@ class Note {
   /// Throws a [LibGit2Error] if error occured.
   static List<Note> list(Repository repo) {
     final notesPointers = bindings.list(repo.pointer);
-    var result = <Note>[];
-    for (var note in notesPointers) {
-      result.add(Note(
-        note['note'] as Pointer<git_note>,
-        note['annotatedId'] as Pointer<git_oid>,
-      ));
-    }
-
-    return result;
+    return notesPointers
+        .map((e) => Note(
+              e['note'] as Pointer<git_note>,
+              e['annotatedId'] as Pointer<git_oid>,
+            ))
+        .toList();
   }
 
   /// Returns the note object's [Oid].

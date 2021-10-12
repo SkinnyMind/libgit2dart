@@ -78,22 +78,15 @@ class RevSpec {
 
   /// The right element of the revspec; must be freed by the user.
   Commit? get to {
-    if (_revSpecPointer.ref.to == nullptr) {
-      return null;
-    } else {
-      return Commit(_revSpecPointer.ref.to.cast());
-    }
+    return _revSpecPointer.ref.to == nullptr
+        ? null
+        : Commit(_revSpecPointer.ref.to.cast());
   }
 
   /// The intent of the revspec.
   Set<GitRevSpec> get flags {
-    final flagInt = _revSpecPointer.ref.flags;
-    var flags = <GitRevSpec>{};
-    for (var flag in GitRevSpec.values) {
-      if (flagInt & flag.value == flag.value) {
-        flags.add(flag);
-      }
-    }
-    return flags;
+    return GitRevSpec.values
+        .where((e) => _revSpecPointer.ref.flags & e.value == e.value)
+        .toSet();
   }
 }

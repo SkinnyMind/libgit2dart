@@ -45,7 +45,7 @@ void main() {
         expect(commits[i].id.sha, log[i]);
       }
 
-      for (var c in commits) {
+      for (final c in commits) {
         c.free();
       }
     });

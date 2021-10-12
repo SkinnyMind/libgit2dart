@@ -83,14 +83,10 @@ class Tree {
     int contextLines = 3,
     int interhunkLines = 0,
   }) {
-    final repo = bindings.owner(_treePointer);
-    final int flagsInt =
-        flags.fold(0, (previousValue, e) => previousValue | e.value);
-
     return Diff(diff_bindings.treeToWorkdir(
-      repoPointer: repo,
+      repoPointer: bindings.owner(_treePointer),
       treePointer: _treePointer,
-      flags: flagsInt,
+      flags: flags.fold(0, (acc, e) => acc | e.value),
       contextLines: contextLines,
       interhunkLines: interhunkLines,
     ));
@@ -105,15 +101,11 @@ class Tree {
     int contextLines = 3,
     int interhunkLines = 0,
   }) {
-    final repo = bindings.owner(_treePointer);
-    final int flagsInt =
-        flags.fold(0, (previousValue, e) => previousValue | e.value);
-
     return Diff(diff_bindings.treeToIndex(
-      repoPointer: repo,
+      repoPointer: bindings.owner(_treePointer),
       treePointer: _treePointer,
       indexPointer: index.pointer,
-      flags: flagsInt,
+      flags: flags.fold(0, (acc, e) => acc | e.value),
       contextLines: contextLines,
       interhunkLines: interhunkLines,
     ));
@@ -128,15 +120,11 @@ class Tree {
     int contextLines = 3,
     int interhunkLines = 0,
   }) {
-    final repo = bindings.owner(_treePointer);
-    final int flagsInt =
-        flags.fold(0, (previousValue, e) => previousValue | e.value);
-
     return Diff(diff_bindings.treeToTree(
-      repoPointer: repo,
+      repoPointer: bindings.owner(_treePointer),
       oldTreePointer: _treePointer,
       newTreePointer: tree.pointer,
-      flags: flagsInt,
+      flags: flags.fold(0, (acc, e) => acc | e.value),
       contextLines: contextLines,
       interhunkLines: interhunkLines,
     ));

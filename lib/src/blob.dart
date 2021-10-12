@@ -87,8 +87,7 @@ class Blob {
     int contextLines = 3,
     int interhunkLines = 0,
   }) {
-    final int flagsInt =
-        flags.fold(0, (previousValue, e) => previousValue | e.value);
+    final int flagsInt = flags.fold(0, (acc, e) => acc | e.value);
 
     final result = patch_bindings.fromBlobs(
       oldBlobPointer: _blobPointer,
@@ -116,8 +115,7 @@ class Blob {
     int contextLines = 3,
     int interhunkLines = 0,
   }) {
-    final int flagsInt =
-        flags.fold(0, (previousValue, e) => previousValue | e.value);
+    final int flagsInt = flags.fold(0, (acc, e) => acc | e.value);
 
     final result = patch_bindings.fromBlobAndBuffer(
       oldBlobPointer: _blobPointer,

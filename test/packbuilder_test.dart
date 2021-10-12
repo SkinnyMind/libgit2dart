@@ -87,9 +87,9 @@ void main() {
     test('successfully packs with provided packDelegate', () {
       void packDelegate(PackBuilder packBuilder) {
         final branches = repo.branches;
-        for (var branch in branches) {
+        for (final branch in branches) {
           final ref = repo.lookupReference('refs/heads/${branch.name}');
-          for (var commit in repo.log(sha: ref.target.sha)) {
+          for (final commit in repo.log(sha: ref.target.sha)) {
             packBuilder.addRecursively(commit.id);
             commit.free();
           }

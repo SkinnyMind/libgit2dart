@@ -313,7 +313,7 @@ index e69de29..c217c63 100644
       expect(patches.length, 8);
       expect(patches.first.delta.status, GitDelta.deleted);
 
-      for (var p in patches) {
+      for (final p in patches) {
         p.free();
       }
       diff.free();

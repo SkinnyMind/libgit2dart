@@ -46,8 +46,7 @@ class Blame with IterableMixin<BlameHunk> {
   }) {
     libgit2.git_libgit2_init();
 
-    final int flagsInt =
-        flags.fold(0, (previousValue, e) => previousValue | e.value);
+    final int flagsInt = flags.fold(0, (acc, e) => acc | e.value);
 
     _blamePointer = bindings.file(
       repoPointer: repo.pointer,

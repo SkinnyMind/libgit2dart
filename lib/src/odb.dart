@@ -109,15 +109,8 @@ class OdbObject {
 
   /// Returns the type of an ODB object.
   GitObject get type {
-    late GitObject result;
     final typeInt = bindings.objectType(_odbObjectPointer);
-    for (var type in GitObject.values) {
-      if (typeInt == type.value) {
-        result = type;
-        break;
-      }
-    }
-    return result;
+    return GitObject.values.singleWhere((e) => typeInt == e.value);
   }
 
   /// Returns the data of an ODB object.

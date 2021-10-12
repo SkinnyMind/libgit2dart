@@ -84,12 +84,7 @@ class Branch {
       flags: type.value,
     );
 
-    final result = <Branch>[];
-    for (var pointer in pointers) {
-      result.add(Branch(pointer));
-    }
-
-    return result;
+    return pointers.map((e) => Branch(e)).toList();
   }
 
   /// Deletes an existing branch reference.

@@ -196,14 +196,9 @@ class ConfigEntry {
 
   /// Returns which config file this was found in.
   GitConfigLevel get level {
-    late GitConfigLevel result;
-    for (var level in GitConfigLevel.values) {
-      if (_configEntryPointer.ref.level == level.value) {
-        result = level;
-        break;
-      }
-    }
-    return result;
+    return GitConfigLevel.values.singleWhere(
+      (e) => _configEntryPointer.ref.level == e.value,
+    );
   }
 
   /// Releases memory allocated for config entry object.

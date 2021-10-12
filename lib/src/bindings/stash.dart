@@ -71,10 +71,9 @@ void apply({
     throw LibGit2Error(libgit2.git_error_last());
   }
 
-  for (var p in pathPointers) {
+  for (final p in pathPointers) {
     calloc.free(p);
   }
-
   calloc.free(strArray);
   calloc.free(optsC);
   calloc.free(options);
@@ -125,10 +124,9 @@ void pop({
     throw LibGit2Error(libgit2.git_error_last());
   }
 
-  for (var p in pathPointers) {
+  for (final p in pathPointers) {
     calloc.free(p);
   }
-
   calloc.free(strArray);
   calloc.free(optsC);
   calloc.free(options);

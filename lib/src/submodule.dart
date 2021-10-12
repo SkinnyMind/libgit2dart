@@ -141,20 +141,16 @@ class Submodule {
     GitSubmoduleIgnore ignore = GitSubmoduleIgnore.unspecified,
   }) {
     final repo = bindings.owner(_submodulePointer);
+
     final resultInt = bindings.status(
       repoPointer: repo,
       name: name,
       ignore: ignore.value,
     );
 
-    var result = <GitSubmoduleStatus>{};
-    for (var status in GitSubmoduleStatus.values) {
-      if (resultInt & status.value == status.value) {
-        result.add(status);
-      }
-    }
-
-    return result;
+    return GitSubmoduleStatus.values
+        .where((e) => resultInt & e.value == e.value)
+        .toSet();
   }
 
   /// Copies submodule remote info into submodule repo.
@@ -242,17 +238,8 @@ class Submodule {
 
   /// Returns the ignore rule that will be used for the submodule.
   GitSubmoduleIgnore get ignore {
-    late GitSubmoduleIgnore result;
     final ruleInt = bindings.ignore(_submodulePointer);
-
-    for (var rule in GitSubmoduleIgnore.values) {
-      if (ruleInt == rule.value) {
-        result = rule;
-        break;
-      }
-    }
-
-    return result;
+    return GitSubmoduleIgnore.values.singleWhere((e) => ruleInt == e.value);
   }
 
   /// Sets the ignore rule for the submodule in the configuration.
@@ -269,17 +256,8 @@ class Submodule {
   ///
   /// This value controls the behavior of the `git submodule update` command.
   GitSubmoduleUpdate get updateRule {
-    late GitSubmoduleUpdate result;
     final ruleInt = bindings.updateRule(_submodulePointer);
-
-    for (var rule in GitSubmoduleUpdate.values) {
-      if (ruleInt == rule.value) {
-        result = rule;
-        break;
-      }
-    }
-
-    return result;
+    return GitSubmoduleUpdate.values.singleWhere((e) => ruleInt == e.value);
   }
 
   /// Sets the update rule for the submodule in the configuration.

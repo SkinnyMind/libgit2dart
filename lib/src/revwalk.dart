@@ -18,17 +18,13 @@ class RevWalk {
   /// Default sorting is reverse chronological order (default in git).
   List<Commit> walk() {
     final repoPointer = bindings.repository(_revWalkPointer);
-    var result = <Commit>[];
 
-    final commits = bindings.walk(
+    final pointers = bindings.walk(
       repoPointer: repoPointer,
       walkerPointer: _revWalkPointer,
     );
-    for (var commit in commits) {
-      result.add(Commit(commit));
-    }
 
-    return result;
+    return pointers.map((e) => Commit(e)).toList();
   }
 
   /// Changes the sorting mode when iterating through the repository's contents.
@@ -37,11 +33,10 @@ class RevWalk {
   ///
   /// Throws a [LibGit2Error] if error occured.
   void sorting(Set<GitSort> sorting) {
-    final int sort = sorting.fold(
-      0,
-      (previousValue, e) => previousValue | e.value,
+    bindings.sorting(
+      walkerPointer: _revWalkPointer,
+      sortMode: sorting.fold(0, (acc, e) => acc | e.value),
     );
-    bindings.sorting(walkerPointer: _revWalkPointer, sortMode: sort);
   }
 
   /// Adds a new root for the traversal.
