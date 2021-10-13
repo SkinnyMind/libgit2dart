@@ -1237,7 +1237,7 @@ class Repository {
   /// or a [String] value, if the attribute was set to an actual string.
   ///
   /// Throws a [LibGit2Error] if error occured.
-  dynamic getAttribute({
+  Object? getAttribute({
     required String path,
     required String name,
     Set<GitAttributeCheck> flags = const {GitAttributeCheck.fileThenIndex},

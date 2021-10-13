@@ -52,7 +52,7 @@ index e69de29..0000000
 
   group('Patch', () {
     test('successfully creates from buffers', () {
-      final patch = Patch.createFrom(
+      final patch = Patch.create(
         a: oldBlob,
         b: newBlob,
         aPath: path,
@@ -66,7 +66,7 @@ index e69de29..0000000
     });
 
     test('successfully creates from one buffer (add)', () {
-      final patch = Patch.createFrom(
+      final patch = Patch.create(
         a: null,
         b: newBlob,
         aPath: path,
@@ -79,7 +79,7 @@ index e69de29..0000000
     });
 
     test('successfully creates from one buffer (delete)', () {
-      final patch = Patch.createFrom(
+      final patch = Patch.create(
         a: oldBlob,
         b: null,
         aPath: path,
@@ -94,7 +94,7 @@ index e69de29..0000000
     test('successfully creates from blobs', () {
       final a = repo.lookupBlob(oldBlobID);
       final b = repo.lookupBlob(newBlobID);
-      final patch = Patch.createFrom(
+      final patch = Patch.create(
         a: a,
         b: b,
         aPath: path,
@@ -108,7 +108,7 @@ index e69de29..0000000
 
     test('successfully creates from one blob (add)', () {
       final b = repo.lookupBlob(newBlobID);
-      final patch = Patch.createFrom(
+      final patch = Patch.create(
         a: null,
         b: b,
         aPath: path,
@@ -122,7 +122,7 @@ index e69de29..0000000
 
     test('successfully creates from one blob (delete)', () {
       final a = repo.lookupBlob(oldBlobID);
-      final patch = Patch.createFrom(
+      final patch = Patch.create(
         a: a,
         b: null,
         aPath: path,
@@ -136,7 +136,7 @@ index e69de29..0000000
 
     test('successfully creates from blob and buffer', () {
       final a = repo.lookupBlob(oldBlobID);
-      final patch = Patch.createFrom(
+      final patch = Patch.create(
         a: a,
         b: newBlob,
         aPath: path,
@@ -153,7 +153,7 @@ index e69de29..0000000
         repo['fc38877b2552ab554752d9a77e1f48f738cca79b'],
       );
       expect(
-        () => Patch.createFrom(
+        () => Patch.create(
           a: commit,
           b: null,
           aPath: 'file',
@@ -163,7 +163,7 @@ index e69de29..0000000
       );
 
       expect(
-        () => Patch.createFrom(
+        () => Patch.create(
           a: null,
           b: commit,
           aPath: 'file',

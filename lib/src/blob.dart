@@ -97,7 +97,11 @@ class Blob {
       interhunkLines: interhunkLines,
     );
 
-    return Patch(result['patch'], result['a'], result['b']);
+    return Patch(
+      result['patch'] as Pointer<git_patch>,
+      result['a'],
+      result['b'],
+    );
   }
 
   /// Directly generate a [Patch] from the difference between the blob and a buffer.
@@ -123,7 +127,11 @@ class Blob {
       interhunkLines: interhunkLines,
     );
 
-    return Patch(result['patch'], result['a'], result['b']);
+    return Patch(
+      result['patch'] as Pointer<git_patch>,
+      result['a'],
+      result['b'],
+    );
   }
 
   /// Releases memory allocated for blob object.

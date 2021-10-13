@@ -146,7 +146,7 @@ index e69de29..0000000
         final a = repo.lookupBlob(
           repo['e69de29bb2d1d6434b8b29ae775ad8c2e48c5391'],
         );
-        final patch = Patch.createFrom(
+        final patch = Patch.create(
           a: a,
           b: 'Feature edit\n',
           aPath: path,
@@ -162,7 +162,7 @@ index e69de29..0000000
         final a = repo.lookupBlob(
           repo['e69de29bb2d1d6434b8b29ae775ad8c2e48c5391'],
         );
-        final patch = Patch.createFrom(
+        final patch = Patch.create(
           a: a,
           b: null,
           aPath: path,

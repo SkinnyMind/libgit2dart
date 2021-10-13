@@ -99,7 +99,9 @@ class Config with IterableMixin<ConfigEntry> {
   }
 
   /// Sets the [value] of config [variable].
-  void operator []=(String variable, dynamic value) {
+  ///
+  /// Throws [ArgumentError] if provided [value] is not bool, int or String.
+  void operator []=(String variable, Object value) {
     if (value is bool) {
       bindings.setBool(
         configPointer: _configPointer,
@@ -112,12 +114,14 @@ class Config with IterableMixin<ConfigEntry> {
         variable: variable,
         value: value,
       );
-    } else {
+    } else if (value is String) {
       bindings.setString(
         configPointer: _configPointer,
         variable: variable,
         value: value,
       );
+    } else {
+      throw ArgumentError.value('$value must be either bool, int or String');
     }
   }
 

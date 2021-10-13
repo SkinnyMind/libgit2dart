@@ -8,7 +8,7 @@ void main() {
   late Directory tmpDir;
   late Signature sig1;
   late Signature sig2;
-  var hunks = <Map<String, dynamic>>[];
+  var hunks = <Map<String, Object>>[];
 
   setUp(() {
     tmpDir = setupRepo(Directory('test/assets/blamerepo/'));

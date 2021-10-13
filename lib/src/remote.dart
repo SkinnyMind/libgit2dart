@@ -194,7 +194,7 @@ class Remote {
   /// specified url. By default connection isn't done through proxy.
   ///
   /// Throws a [LibGit2Error] if error occured.
-  List<Map<String, dynamic>> ls({
+  List<Map<String, Object?>> ls({
     String? proxy,
     Callbacks callbacks = const Callbacks(),
   }) {

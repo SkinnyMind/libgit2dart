@@ -374,7 +374,7 @@ void connect({
 /// remains available after disconnecting.
 ///
 /// Throws a [LibGit2Error] if error occured.
-List<Map<String, dynamic>> lsRemotes(Pointer<git_remote> remote) {
+List<Map<String, Object?>> lsRemotes(Pointer<git_remote> remote) {
   final out = calloc<Pointer<Pointer<git_remote_head>>>();
   final size = calloc<Uint64>();
   final error = libgit2.git_remote_ls(out, size, remote);
@@ -384,10 +384,10 @@ List<Map<String, dynamic>> lsRemotes(Pointer<git_remote> remote) {
     calloc.free(size);
     throw LibGit2Error(libgit2.git_error_last());
   } else {
-    var result = <Map<String, dynamic>>[];
+    var result = <Map<String, Object?>>[];
 
     for (var i = 0; i < size.value; i++) {
-      var remote = <String, dynamic>{};
+      var remote = <String, Object?>{};
       Oid? loid;
 
       final bool local = out[0][i].ref.local == 1 ? true : false;

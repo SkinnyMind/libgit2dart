@@ -20,9 +20,9 @@ class Patch {
   /// Should be freed with `free()` to release allocated memory.
   ///
   /// Throws a [LibGit2Error] if error occured.
-  Patch.createFrom({
-    required dynamic a,
-    required dynamic b,
+  Patch.create({
+    required Object? a,
+    required Object? b,
     String? aPath,
     String? bPath,
     Set<GitDiff> flags = const {GitDiff.normal},
@@ -32,12 +32,12 @@ class Patch {
     libgit2.git_libgit2_init();
 
     final int flagsInt = flags.fold(0, (acc, e) => acc | e.value);
-    var result = <String, dynamic>{};
+    var result = <String, Pointer?>{};
 
-    if (a is Blob || a == null) {
+    if (a is Blob?) {
       if (b is Blob) {
         result = bindings.fromBlobs(
-          oldBlobPointer: a?.pointer,
+          oldBlobPointer: a?.pointer ?? nullptr,
           oldAsPath: aPath,
           newBlobPointer: b.pointer,
           newAsPath: bPath,
@@ -45,7 +45,7 @@ class Patch {
           contextLines: contextLines,
           interhunkLines: interhunkLines,
         );
-      } else if (b is String || b == null) {
+      } else if (b is String?) {
         result = bindings.fromBlobAndBuffer(
           oldBlobPointer: a?.pointer,
           oldAsPath: aPath,
@@ -58,9 +58,9 @@ class Patch {
       } else {
         throw ArgumentError('Provided argument(s) is not Blob or String');
       }
-    } else if ((a is String || a == null) && (b is String || b == null)) {
+    } else if ((a is String?) && (b is String?)) {
       result = bindings.fromBuffers(
-        oldBuffer: a,
+        oldBuffer: a as String?,
         oldAsPath: aPath,
         newBuffer: b,
         newAsPath: bPath,
@@ -72,7 +72,7 @@ class Patch {
       throw ArgumentError('Provided argument(s) is not Blob or String');
     }
 
-    _patchPointer = result['patch'];
+    _patchPointer = result['patch'] as Pointer<git_patch>;
     _aPointer = result['a'];
     _bPointer = result['b'];
   }
@@ -90,8 +90,8 @@ class Patch {
 
   late final Pointer<git_patch> _patchPointer;
 
-  dynamic _aPointer;
-  dynamic _bPointer;
+  Pointer<NativeType>? _aPointer;
+  Pointer<NativeType>? _bPointer;
 
   /// Pointer to memory address for allocated patch object.
   Pointer<git_patch> get pointer => _patchPointer;
@@ -134,7 +134,12 @@ class Patch {
 
     for (var i = 0; i < length; i++) {
       final hunk = bindings.hunk(patchPointer: _patchPointer, hunkIndex: i);
-      hunks.add(DiffHunk(_patchPointer, hunk['hunk'], hunk['linesN'], i));
+      hunks.add(DiffHunk(
+        _patchPointer,
+        hunk['hunk'] as Pointer<git_diff_hunk>,
+        hunk['linesN'] as int,
+        i,
+      ));
     }
 
     return hunks;
@@ -143,10 +148,10 @@ class Patch {
   /// Releases memory allocated for patch object.
   void free() {
     if (_aPointer != null) {
-      calloc.free(_aPointer);
+      calloc.free(_aPointer!);
     }
     if (_bPointer != null) {
-      calloc.free(_bPointer);
+      calloc.free(_bPointer!);
     }
     bindings.free(_patchPointer);
   }

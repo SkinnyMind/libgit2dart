@@ -10,7 +10,7 @@ import '../util.dart';
 /// you must call `free()` on the patch when done.
 ///
 /// Throws a [LibGit2Error] if error occured.
-Map<String, dynamic> fromBuffers({
+Map<String, Pointer?> fromBuffers({
   String? oldBuffer,
   String? oldAsPath,
   String? newBuffer,
@@ -66,7 +66,7 @@ Map<String, dynamic> fromBuffers({
 /// must call `free()` on the patch when done.
 ///
 /// Throws a [LibGit2Error] if error occured.
-Map<String, dynamic> fromBlobs({
+Map<String, Pointer?> fromBlobs({
   Pointer<git_blob>? oldBlobPointer,
   String? oldAsPath,
   Pointer<git_blob>? newBlobPointer,
@@ -114,7 +114,7 @@ Map<String, dynamic> fromBlobs({
 /// call `free()` on the patch when done.
 ///
 /// Throws a [LibGit2Error] if error occured.
-Map<String, dynamic> fromBlobAndBuffer({
+Map<String, Pointer?> fromBlobAndBuffer({
   Pointer<git_blob>? oldBlobPointer,
   String? oldAsPath,
   String? buffer,
@@ -194,7 +194,7 @@ int numHunks(Pointer<git_patch> patch) => libgit2.git_patch_num_hunks(patch);
 /// Given a patch and a hunk index into the patch, this returns detailed information about that hunk.
 ///
 /// Throws a [LibGit2Error] if error occured.
-Map<String, dynamic> hunk({
+Map<String, Object> hunk({
   required Pointer<git_patch> patchPointer,
   required int hunkIndex,
 }) {

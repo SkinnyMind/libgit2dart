@@ -10,7 +10,7 @@ import 'libgit2_bindings.dart';
 /// or a [String] value, if the attribute was set to an actual string.
 ///
 /// Throws a [LibGit2Error] if error occured.
-dynamic getAttribute({
+Object? getAttribute({
   required Pointer<git_repository> repoPointer,
   required int flags,
   required String path,

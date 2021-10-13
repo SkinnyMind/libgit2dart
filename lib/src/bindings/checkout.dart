@@ -28,12 +28,15 @@ void head({
   final pathPointers = initOpts[1];
   final strArray = initOpts[2];
 
-  final error = libgit2.git_checkout_head(repoPointer, optsC);
+  final error = libgit2.git_checkout_head(
+    repoPointer,
+    optsC as Pointer<git_checkout_options>,
+  );
 
-  for (final p in pathPointers) {
+  for (final p in pathPointers as List) {
     calloc.free(p);
   }
-  calloc.free(strArray);
+  calloc.free(strArray as Pointer);
   calloc.free(optsC);
 
   if (error < 0) {
@@ -59,12 +62,16 @@ void index({
   final pathPointers = initOpts[1];
   final strArray = initOpts[2];
 
-  final error = libgit2.git_checkout_index(repoPointer, nullptr, optsC);
+  final error = libgit2.git_checkout_index(
+    repoPointer,
+    nullptr,
+    optsC as Pointer<git_checkout_options>,
+  );
 
-  for (final p in pathPointers) {
+  for (final p in pathPointers as List) {
     calloc.free(p);
   }
-  calloc.free(strArray);
+  calloc.free(strArray as Pointer);
   calloc.free(optsC);
 
   if (error < 0) {
@@ -92,12 +99,16 @@ void tree({
   final pathPointers = initOpts[1];
   final strArray = initOpts[2];
 
-  final error = libgit2.git_checkout_tree(repoPointer, treeishPointer, optsC);
+  final error = libgit2.git_checkout_tree(
+    repoPointer,
+    treeishPointer,
+    optsC as Pointer<git_checkout_options>,
+  );
 
-  for (final p in pathPointers) {
+  for (final p in pathPointers as List) {
     calloc.free(p);
   }
-  calloc.free(strArray);
+  calloc.free(strArray as Pointer);
   calloc.free(optsC);
 
   if (error < 0) {
@@ -105,12 +116,12 @@ void tree({
   }
 }
 
-List<dynamic> initOptions({
+List<Object> initOptions({
   required int strategy,
   String? directory,
   List<String>? paths,
 }) {
-  final optsC = calloc<git_checkout_options>(sizeOf<git_checkout_options>());
+  final optsC = calloc<git_checkout_options>();
   libgit2.git_checkout_options_init(optsC, GIT_CHECKOUT_OPTIONS_VERSION);
 
   optsC.ref.checkout_strategy = strategy;
