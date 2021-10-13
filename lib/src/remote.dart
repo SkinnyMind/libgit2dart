@@ -263,6 +263,11 @@ class Remote {
 
   /// Releases memory allocated for remote object.
   void free() => bindings.free(_remotePointer);
+
+  @override
+  String toString() {
+    return 'Remote{name: $name, url: $url, pushUrl: $pushUrl, refspecCount: $refspecCount}';
+  }
 }
 
 /// Provides callers information about the progress of indexing a packfile, either
@@ -295,4 +300,11 @@ class TransferProgress {
 
   /// Returns number of bytes received up to now.
   int get receivedBytes => _transferProgressPointer.ref.received_bytes;
+
+  @override
+  String toString() {
+    return 'TransferProgress{totalObjects: $totalObjects, indexedObjects: $indexedObjects, '
+        'receivedObjects: $receivedObjects, localObjects: $localObjects, totalDeltas: $totalDeltas, '
+        'indexedDeltas: $indexedDeltas, receivedBytes: $receivedBytes}';
+  }
 }

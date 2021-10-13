@@ -101,4 +101,9 @@ class Note {
 
   /// Releases memory allocated for note object.
   void free() => bindings.free(_notePointer);
+
+  @override
+  String toString() {
+    return 'Note{oid: $oid, message: $message, annotatedOid: $annotatedOid}';
+  }
 }

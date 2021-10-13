@@ -133,4 +133,9 @@ class Tag {
 
   /// Releases memory allocated for tag object.
   void free() => bindings.free(_tagPointer);
+
+  @override
+  String toString() {
+    return 'Tag{oid: $oid, name: $name, message: $message, target: $target, tagger: $tagger}';
+  }
 }

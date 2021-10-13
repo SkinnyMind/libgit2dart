@@ -61,4 +61,9 @@ class Worktree {
 
   /// Releases memory allocated for worktree object.
   void free() => bindings.free(_worktreePointer);
+
+  @override
+  String toString() {
+    return 'Worktree{name: $name, path: $path}';
+  }
 }

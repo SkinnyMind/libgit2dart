@@ -109,5 +109,8 @@ class Commit {
   void free() => bindings.free(_commitPointer);
 
   @override
-  String toString() => 'Commit{oid: $oid}';
+  String toString() {
+    return 'Commit{oid: $oid, message: $message, messageEncoding: $messageEncoding, '
+        'time: $time, committer: $committer, author: $author}';
+  }
 }

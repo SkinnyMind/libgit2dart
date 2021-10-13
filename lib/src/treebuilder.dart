@@ -81,4 +81,9 @@ class TreeBuilder {
 
   /// Releases memory allocated for tree builder object and all the entries.
   void free() => bindings.free(_treeBuilderPointer);
+
+  @override
+  String toString() {
+    return 'TreeBuilder{length: $length}';
+  }
 }

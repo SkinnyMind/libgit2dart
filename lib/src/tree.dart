@@ -132,6 +132,11 @@ class Tree {
 
   /// Releases memory allocated for tree object.
   void free() => bindings.free(_treePointer);
+
+  @override
+  String toString() {
+    return 'Tree{oid: $oid, length: $length}';
+  }
 }
 
 class TreeEntry {
@@ -194,12 +199,12 @@ class TreeEntry {
             1);
   }
 
-  @override
-  int get hashCode => _treeEntryPointer.address.hashCode;
-
   /// Releases memory allocated for tree entry object.
   void free() => bindings.entryFree(_treeEntryPointer);
 
   @override
-  String toString() => 'TreeEntry{oid: $oid, name: $name}';
+  int get hashCode => _treeEntryPointer.address.hashCode;
+
+  @override
+  String toString() => 'TreeEntry{oid: $oid, name: $name, filemode: $filemode}';
 }

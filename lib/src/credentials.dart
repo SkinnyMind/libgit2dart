@@ -14,6 +14,9 @@ class Username implements Credentials {
 
   @override
   GitCredential get credentialType => GitCredential.username;
+
+  @override
+  String toString() => 'Username{username: $username}';
 }
 
 /// Plain-text username and password credential.
@@ -28,6 +31,11 @@ class UserPass implements Credentials {
 
   @override
   GitCredential get credentialType => GitCredential.userPassPlainText;
+
+  @override
+  String toString() {
+    return 'UserPass{username: $username, password: $password}';
+  }
 }
 
 /// Passphrase-protected ssh key credential.
@@ -53,6 +61,12 @@ class Keypair implements Credentials {
 
   @override
   GitCredential get credentialType => GitCredential.sshKey;
+
+  @override
+  String toString() {
+    return 'Keypair{username: $username, pubKey: $pubKey, privateKey: $privateKey, '
+        'passPhrase: $passPhrase}';
+  }
 }
 
 /// Ssh key credential used for querying an ssh-agent.
@@ -89,4 +103,10 @@ class KeypairFromMemory implements Credentials {
 
   @override
   GitCredential get credentialType => GitCredential.sshMemory;
+
+  @override
+  String toString() {
+    return 'KeypairFromAgent{username: $username, pubKey: $pubKey, privateKey: $privateKey, '
+        'passPhrase: $passPhrase}';
+  }
 }

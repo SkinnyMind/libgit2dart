@@ -279,4 +279,11 @@ class Submodule {
 
   /// Releases memory allocated for submodule object.
   void free() => bindings.free(_submodulePointer);
+
+  @override
+  String toString() {
+    return 'Submodule{name: $name, path: $path, url: $url, status: $status, '
+        'branch: $branch, headOid: $headOid, indexOid: $indexOid, workdirOid: $workdirOid, '
+        'ignore: $ignore, updateRule: $updateRule}';
+  }
 }

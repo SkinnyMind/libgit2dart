@@ -137,4 +137,7 @@ class RebaseOperation {
         ? ''
         : _rebaseOperationPointer.ref.exec.cast<Utf8>().toDartString();
   }
+
+  @override
+  String toString() => 'RebaseOperation{type: $type, oid: $oid}';
 }

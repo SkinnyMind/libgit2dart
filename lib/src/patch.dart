@@ -155,4 +155,7 @@ class Patch {
     }
     bindings.free(_patchPointer);
   }
+
+  @override
+  String toString() => 'Patch{size: $size, delta: $delta}';
 }

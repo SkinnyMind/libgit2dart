@@ -272,14 +272,15 @@ class Reference {
         );
   }
 
-  @override
-  int get hashCode => _refPointer.address.hashCode;
-
   /// Releases memory allocated for reference object.
   void free() => bindings.free(_refPointer);
 
   @override
+  int get hashCode => _refPointer.address.hashCode;
+
+  @override
   String toString() {
-    return 'Reference{name: $name, target: $target}';
+    return 'Reference{name: $name, target: $target, type: $type, isBranch: $isBranch, '
+        'isNote: $isNote, isRemote: $isRemote, isTag: $isTag}';
   }
 }

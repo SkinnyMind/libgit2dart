@@ -75,11 +75,11 @@ class Signature {
             other._signaturePointer.ref.when.sign);
   }
 
-  @override
-  int get hashCode => _signaturePointer.address.hashCode;
-
   /// Releases memory allocated for signature object.
   void free() => bindings.free(_signaturePointer);
+
+  @override
+  int get hashCode => _signaturePointer.address.hashCode;
 
   @override
   String toString() {

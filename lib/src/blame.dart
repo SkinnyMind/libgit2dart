@@ -132,6 +132,15 @@ class BlameHunk {
   /// specified by [originCommitOid].
   String get originPath =>
       _blameHunkPointer.ref.orig_path.cast<Utf8>().toDartString();
+
+  @override
+  String toString() {
+    return 'BlameHunk{linesCount: $linesCount, isBoundary: $isBoundary, '
+        'finalStartLineNumber: $finalStartLineNumber, finalCommitter: $finalCommitter, '
+        'finalCommitOid: $finalCommitOid, originStartLineNumber: $originStartLineNumber, '
+        'originCommitter: $originCommitter, originCommitOid: $originCommitOid, '
+        'originPath: $originPath}';
+  }
 }
 
 class _BlameIterator implements Iterator<BlameHunk> {

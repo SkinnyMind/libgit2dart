@@ -136,4 +136,9 @@ class Blob {
 
   /// Releases memory allocated for blob object.
   void free() => bindings.free(_blobPointer);
+
+  @override
+  String toString() {
+    return 'Blob{oid: $oid, isBinary: $isBinary, size: $size}';
+  }
 }

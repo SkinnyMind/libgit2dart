@@ -13,7 +13,7 @@ To run all tests and generate coverage report use the following commands:
 ```sh
 $ dart pub global activate coverage
 $ dart test --coverage="coverage"
-$ format_coverage --lcov --in=coverage --out=coverage/lcov.info --packages=.packages --report-on=lib
+$ format_coverage --lcov --check-ignore --in=coverage --out=coverage/lcov.info --packages=.packages --report-on=lib
 ```
 
 To view the generated coverage report you can use [lcov](https://github.com/linux-test-project/lcov):

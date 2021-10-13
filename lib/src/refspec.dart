@@ -65,4 +65,9 @@ class Refspec {
       name: name,
     );
   }
+
+  @override
+  String toString() {
+    return 'Refspec{source: $source, destination: $destination, force: $force, string: $string}';
+  }
 }

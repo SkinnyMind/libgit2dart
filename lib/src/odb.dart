@@ -125,4 +125,9 @@ class OdbObject {
 
   /// Releases memory allocated for odbObject object.
   void free() => bindings.objectFree(_odbObjectPointer);
+
+  @override
+  String toString() {
+    return 'OdbObject{oid: $oid, type: $type, size: $size}';
+  }
 }

@@ -63,6 +63,11 @@ class RevParse {
       spec: spec,
     ));
   }
+
+  @override
+  String toString() {
+    return 'RevParse{object: $object, reference: $reference}';
+  }
 }
 
 class RevSpec {
@@ -88,5 +93,10 @@ class RevSpec {
     return GitRevSpec.values
         .where((e) => _revSpecPointer.ref.flags & e.value == e.value)
         .toSet();
+  }
+
+  @override
+  String toString() {
+    return 'RevSpec{from: $from, to: $to, flags: $flags}';
   }
 }

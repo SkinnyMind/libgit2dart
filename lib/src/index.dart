@@ -221,6 +221,9 @@ class Index with IterableMixin<IndexEntry> {
   void free() => bindings.free(_indexPointer);
 
   @override
+  String toString() => 'Index{hasConflicts: $hasConflicts}';
+
+  @override
   Iterator<IndexEntry> get iterator => _IndexIterator(_indexPointer);
 }
 
@@ -261,7 +264,7 @@ class IndexEntry {
 
   @override
   String toString() {
-    return 'IndexEntry{path: $path, sha: $sha}';
+    return 'IndexEntry{oid: $oid, path: $path, mode: $mode}';
   }
 
   String _oidToHex(git_oid oid) {
@@ -306,7 +309,7 @@ class ConflictEntry {
 
   @override
   String toString() =>
-      'ConflictEntry{ancestor: $ancestor, our: $our, their: $their}';
+      'ConflictEntry{ancestor: $ancestor, our: $our, their: $their, path: $_path}';
 }
 
 class _IndexIterator implements Iterator<IndexEntry> {

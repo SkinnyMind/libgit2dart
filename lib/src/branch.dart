@@ -150,6 +150,6 @@ class Branch {
 
   @override
   String toString() {
-    return 'Branch{name: $name, target: $target}';
+    return 'Branch{name: $name, target: $target, isHead: $isHead, isCheckedOut: $isCheckedOut}';
   }
 }

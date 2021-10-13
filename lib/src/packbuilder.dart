@@ -70,4 +70,9 @@ class PackBuilder {
 
   /// Releases memory allocated for packbuilder object.
   void free() => bindings.free(_packbuilderPointer);
+
+  @override
+  String toString() {
+    return 'PackBuilder{length: $length, writtenLength: $writtenLength}';
+  }
 }

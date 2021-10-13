@@ -106,6 +106,6 @@ class Stash {
 
   @override
   String toString() {
-    return 'Stash{index: $index, message: $message, sha: ${oid.sha}}';
+    return 'Stash{index: $index, message: $message, oid: $oid}';
   }
 }

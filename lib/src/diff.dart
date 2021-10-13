@@ -119,6 +119,11 @@ class Diff {
 
   /// Releases memory allocated for diff object.
   void free() => bindings.free(_diffPointer);
+
+  @override
+  String toString() {
+    return 'Diff{length: $length}';
+  }
 }
 
 class DiffDelta {
@@ -166,6 +171,12 @@ class DiffDelta {
 
   /// Represents the "to" side of the diff.
   DiffFile get newFile => DiffFile(_diffDeltaPointer.ref.new_file);
+
+  @override
+  String toString() {
+    return 'DiffDelta{status: $status, flags: $flags, similarity: $similarity, '
+        'numberOfFiles: $numberOfFiles, oldFile: $oldFile, newFile: $newFile}';
+  }
 }
 
 /// Description of one side of a delta.
@@ -199,6 +210,11 @@ class DiffFile {
   /// Returns one of the [GitFilemode] values.
   GitFilemode get mode {
     return GitFilemode.values.singleWhere((e) => _diffFile.mode == e.value);
+  }
+
+  @override
+  String toString() {
+    return 'DiffFile{oid: $oid, path: $path, size: $size, flags: $flags, mode: $mode}';
   }
 }
 
@@ -234,6 +250,11 @@ class DiffStats {
 
   /// Releases memory allocated for diff stats object.
   void free() => bindings.statsFree(_diffStatsPointer);
+
+  @override
+  String toString() {
+    return 'DiffStats{insertions: $insertions, deletions: $deletions, filesChanged: $filesChanged}';
+  }
 }
 
 class DiffHunk {
@@ -293,6 +314,12 @@ class DiffHunk {
     }
     return lines;
   }
+
+  @override
+  String toString() {
+    return 'DiffHunk{linesCount: $linesCount, index: $index, oldStart: $oldStart, '
+        'oldLines: $oldLines, newStart: $newStart, newLines: $newLines, header: $header}';
+  }
 }
 
 class DiffLine {
@@ -325,4 +352,10 @@ class DiffLine {
   /// Returns content of the diff line.
   String get content =>
       _diffLinePointer.ref.content.cast<Utf8>().toDartString();
+
+  @override
+  String toString() {
+    return 'DiffLine{oldLineNumber: $oldLineNumber, newLineNumber: $newLineNumber, '
+        'numLines: $numLines, contentOffset: $contentOffset, content: $content}';
+  }
 }

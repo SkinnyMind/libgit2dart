@@ -308,6 +308,14 @@ class Repository {
   /// Releases memory allocated for repository object.
   void free() => bindings.free(_repoPointer);
 
+  @override
+  String toString() {
+    return 'Repository{path: $path, commonDir: $commonDir, namespace: $namespace, '
+        'isBare: $isBare, isEmpty: $isEmpty, isHeadDetached: $isHeadDetached, '
+        'isBranchUnborn: $isBranchUnborn, isShallow: $isShallow, isWorktree: $isWorktree, '
+        'state: $state, workdir: $workdir}';
+  }
+
   /// Returns the configuration file for this repository.
   ///
   /// If a configuration file has not been set, the default config set for the repository
