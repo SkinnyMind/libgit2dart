@@ -30,7 +30,7 @@ void main() {
         mode: FileMode.append,
       );
 
-      repo.stash(stasher: stasher, includeUntracked: true);
+      repo.createStash(stasher: stasher, includeUntracked: true);
       expect(repo.status.isEmpty, true);
     });
 
@@ -40,10 +40,10 @@ void main() {
         mode: FileMode.append,
       );
 
-      repo.stash(stasher: stasher);
+      repo.createStash(stasher: stasher);
       expect(repo.status.isEmpty, true);
 
-      repo.stashApply();
+      repo.applyStash();
       expect(repo.status, contains('file'));
     });
 
@@ -53,10 +53,10 @@ void main() {
         mode: FileMode.append,
       );
 
-      repo.stash(stasher: stasher);
-      final stash = repo.stashList.first;
-      repo.stashDrop(stash.index);
-      expect(() => repo.stashApply(), throwsA(isA<LibGit2Error>()));
+      repo.createStash(stasher: stasher);
+      final stash = repo.stashes.first;
+      repo.dropStash(stash.index);
+      expect(() => repo.applyStash(), throwsA(isA<LibGit2Error>()));
     });
 
     test('successfully pops from stash', () {
@@ -65,10 +65,10 @@ void main() {
         mode: FileMode.append,
       );
 
-      repo.stash(stasher: stasher);
-      repo.stashPop();
+      repo.createStash(stasher: stasher);
+      repo.popStash();
       expect(repo.status, contains('file'));
-      expect(() => repo.stashApply(), throwsA(isA<LibGit2Error>()));
+      expect(() => repo.applyStash(), throwsA(isA<LibGit2Error>()));
     });
 
     test('returns list of stashes', () {
@@ -77,11 +77,11 @@ void main() {
         mode: FileMode.append,
       );
 
-      repo.stash(stasher: stasher, message: 'WIP');
+      repo.createStash(stasher: stasher, message: 'WIP');
 
-      final stash = repo.stashList.first;
+      final stash = repo.stashes.first;
 
-      expect(repo.stashList.length, 1);
+      expect(repo.stashes.length, 1);
       expect(stash.index, 0);
       expect(stash.message, 'On master: WIP');
     });

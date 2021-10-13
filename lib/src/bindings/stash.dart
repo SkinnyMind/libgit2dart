@@ -10,7 +10,7 @@ import '../util.dart';
 /// Save the local modifications to a new stash.
 ///
 /// Throws a [LibGit2Error] if error occured.
-Pointer<git_oid> stash({
+Pointer<git_oid> save({
   required Pointer<git_repository> repoPointer,
   required Pointer<git_signature> stasherPointer,
   String? message,

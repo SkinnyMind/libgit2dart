@@ -10,7 +10,6 @@ import 'bindings/commit.dart' as commit_bindings;
 import 'bindings/checkout.dart' as checkout_bindings;
 import 'bindings/reset.dart' as reset_bindings;
 import 'bindings/diff.dart' as diff_bindings;
-import 'bindings/stash.dart' as stash_bindings;
 import 'bindings/attr.dart' as attr_bindings;
 import 'bindings/graph.dart' as graph_bindings;
 import 'bindings/describe.dart' as describe_bindings;
@@ -1098,33 +1097,33 @@ class Repository {
     );
   }
 
+  /// Returns list of all the stashed states, first being the most recent.
+  List<Stash> get stashes => Stash.list(this);
+
   /// Saves the local modifications to a new stash.
   ///
   /// Throws a [LibGit2Error] if error occured.
-  Oid stash({
+  Oid createStash({
     required Signature stasher,
     String? message,
     bool keepIndex = false,
     bool includeUntracked = false,
     bool includeIgnored = false,
   }) {
-    int flags = 0;
-    if (keepIndex) flags |= GitStash.keepIndex.value;
-    if (includeUntracked) flags |= GitStash.includeUntracked.value;
-    if (includeIgnored) flags |= GitStash.includeIgnored.value;
-
-    return Oid(stash_bindings.stash(
-      repoPointer: _repoPointer,
-      stasherPointer: stasher.pointer,
+    return Stash.create(
+      repo: this,
+      stasher: stasher,
       message: message,
-      flags: flags,
-    ));
+      keepIndex: keepIndex,
+      includeUntracked: includeUntracked,
+      includeIgnored: includeIgnored,
+    );
   }
 
   /// Applies a single stashed state from the stash list.
   ///
   /// Throws a [LibGit2Error] if error occured.
-  void stashApply({
+  void applyStash({
     int index = 0,
     bool reinstateIndex = false,
     Set<GitCheckout> strategy = const {
@@ -1134,11 +1133,11 @@ class Repository {
     String? directory,
     List<String>? paths,
   }) {
-    stash_bindings.apply(
-      repoPointer: _repoPointer,
+    Stash.apply(
+      repo: this,
       index: index,
-      flags: reinstateIndex ? GitStashApply.reinstateIndex.value : 0,
-      strategy: strategy.fold(0, (acc, e) => acc | e.value),
+      reinstateIndex: reinstateIndex,
+      strategy: strategy,
       directory: directory,
       paths: paths,
     );
@@ -1147,17 +1146,15 @@ class Repository {
   /// Removes a single stashed state from the stash list.
   ///
   /// Throws a [LibGit2Error] if error occured.
-  void stashDrop([int index = 0]) {
-    stash_bindings.drop(
-      repoPointer: _repoPointer,
-      index: index,
-    );
+  void dropStash([int index = 0]) {
+    Stash.drop(repo: this, index: index);
   }
 
-  /// Applies a single stashed state from the stash list and remove it from the list if successful.
+  /// Applies a single stashed state from the stash list and remove it from
+  /// the list if successful.
   ///
   /// Throws a [LibGit2Error] if error occured.
-  void stashPop({
+  void popStash({
     int index = 0,
     bool reinstateIndex = false,
     Set<GitCheckout> strategy = const {
@@ -1167,19 +1164,14 @@ class Repository {
     String? directory,
     List<String>? paths,
   }) {
-    stash_bindings.pop(
-      repoPointer: _repoPointer,
+    Stash.pop(
+      repo: this,
       index: index,
-      flags: reinstateIndex ? GitStashApply.reinstateIndex.value : 0,
-      strategy: strategy.fold(0, (acc, e) => acc | e.value),
+      reinstateIndex: reinstateIndex,
+      strategy: strategy,
       directory: directory,
       paths: paths,
     );
-  }
-
-  /// Returns list of all the stashed states, first being the most recent.
-  List<Stash> get stashList {
-    return stash_bindings.list(_repoPointer);
   }
 
   /// Returns a list of the configured remotes for a repository.
