@@ -216,26 +216,26 @@ class Submodule {
 
   /// Returns the [Oid] for the submodule in the current HEAD tree or
   /// null if submodule is not in the HEAD.
-  Oid? get headId {
+  Oid? get headOid {
     final result = bindings.headId(_submodulePointer);
     return result == null ? null : Oid(result);
   }
 
   /// Returns the [Oid] for the submodule in the index or null if submodule
   /// is not in the index.
-  Oid? get indexId {
+  Oid? get indexOid {
     final result = bindings.indexId(_submodulePointer);
     return result == null ? null : Oid(result);
   }
 
-  /// Returns the OID for the submodule in the current working directory or null if
+  /// Returns the [Oid] for the submodule in the current working directory or null if
   /// submodule is not checked out.
   ///
-  /// This returns the OID that corresponds to looking up `HEAD` in the checked out
+  /// This returns the [Oid] that corresponds to looking up `HEAD` in the checked out
   /// submodule. If there are pending changes in the index or anything else, this
   /// won't notice that. You should call [status] for a more complete picture about
   /// the state of the working directory.
-  Oid? get workdirId {
+  Oid? get workdirOid {
     final result = bindings.workdirId(_submodulePointer);
     return result == null ? null : Oid(result);
   }

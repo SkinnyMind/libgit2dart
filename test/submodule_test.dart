@@ -33,9 +33,9 @@ void main() {
       expect(submodule.path, testSubmodule);
       expect(submodule.url, submoduleUrl);
       expect(submodule.branch, '');
-      expect(submodule.headId?.sha, submoduleHeadSha);
-      expect(submodule.indexId?.sha, submoduleHeadSha);
-      expect(submodule.workdirId?.sha, null);
+      expect(submodule.headOid?.sha, submoduleHeadSha);
+      expect(submodule.indexOid?.sha, submoduleHeadSha);
+      expect(submodule.workdirOid?.sha, null);
       expect(submodule.ignore, GitSubmoduleIgnore.none);
       expect(submodule.updateRule, GitSubmoduleUpdate.checkout);
 

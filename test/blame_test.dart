@@ -28,19 +28,19 @@ void main() {
 
     hunks = [
       {
-        'finalCommitId': 'fc38877b2552ab554752d9a77e1f48f738cca79b',
+        'finalCommitOid': 'fc38877b2552ab554752d9a77e1f48f738cca79b',
         'finalStartLineNumber': 1,
         'finalCommitter': sig1,
-        'originCommitId': 'fc38877b2552ab554752d9a77e1f48f738cca79b',
+        'originCommitOid': 'fc38877b2552ab554752d9a77e1f48f738cca79b',
         'originStartLineNumber': 1,
         'originCommitter': sig1,
         'isBoundary': false,
       },
       {
-        'finalCommitId': 'a07a01e325c2c04e05d2450ad37785fbfe0a0014',
+        'finalCommitOid': 'a07a01e325c2c04e05d2450ad37785fbfe0a0014',
         'finalStartLineNumber': 2,
         'finalCommitter': sig2,
-        'originCommitId': 'a07a01e325c2c04e05d2450ad37785fbfe0a0014',
+        'originCommitOid': 'a07a01e325c2c04e05d2450ad37785fbfe0a0014',
         'originStartLineNumber': 2,
         'originCommitter': sig2,
         'isBoundary': false,
@@ -63,10 +63,10 @@ void main() {
 
       for (var i = 0; i < blame.length; i++) {
         expect(blame[i].linesCount, 1);
-        expect(blame[i].finalCommitId.sha, hunks[i]['finalCommitId']);
+        expect(blame[i].finalCommitOid.sha, hunks[i]['finalCommitOid']);
         expect(blame[i].finalStartLineNumber, hunks[i]['finalStartLineNumber']);
         expect(blame[i].finalCommitter, hunks[i]['finalCommitter']);
-        expect(blame[i].originCommitId.sha, hunks[i]['originCommitId']);
+        expect(blame[i].originCommitOid.sha, hunks[i]['originCommitOid']);
         expect(
           blame[i].originStartLineNumber,
           hunks[i]['originStartLineNumber'],
@@ -85,10 +85,10 @@ void main() {
       final hunk = blame.forLine(1);
 
       expect(hunk.linesCount, 1);
-      expect(hunk.finalCommitId.sha, hunks[0]['finalCommitId']);
+      expect(hunk.finalCommitOid.sha, hunks[0]['finalCommitOid']);
       expect(hunk.finalStartLineNumber, hunks[0]['finalStartLineNumber']);
       expect(hunk.finalCommitter, hunks[0]['finalCommitter']);
-      expect(hunk.originCommitId.sha, hunks[0]['originCommitId']);
+      expect(hunk.originCommitOid.sha, hunks[0]['originCommitOid']);
       expect(
         hunk.originStartLineNumber,
         hunks[0]['originStartLineNumber'],
@@ -117,13 +117,9 @@ void main() {
     test(
         'successfully gets the blame for provided file with newestCommit argument',
         () {
-      final newestCommit = Oid.fromSHA(
-        repo: repo,
-        sha: 'fc38877b2552ab554752d9a77e1f48f738cca79b',
-      );
       final blame = repo.blame(
         path: 'feature_file',
-        newestCommit: newestCommit,
+        newestCommit: repo['fc38877b2552ab554752d9a77e1f48f738cca79b'],
         flags: {GitBlameFlag.ignoreWhitespace},
       );
 
@@ -132,10 +128,10 @@ void main() {
       final hunk = blame.first;
 
       expect(hunk.linesCount, 1);
-      expect(hunk.finalCommitId.sha, hunks[0]['finalCommitId']);
+      expect(hunk.finalCommitOid.sha, hunks[0]['finalCommitOid']);
       expect(hunk.finalStartLineNumber, hunks[0]['finalStartLineNumber']);
       expect(hunk.finalCommitter, hunks[0]['finalCommitter']);
-      expect(hunk.originCommitId.sha, hunks[0]['originCommitId']);
+      expect(hunk.originCommitOid.sha, hunks[0]['originCommitOid']);
       expect(
         hunk.originStartLineNumber,
         hunks[0]['originStartLineNumber'],

@@ -22,13 +22,13 @@ void main() {
   group('revParse', () {
     test('.single() returns commit with different spec strings', () {
       final headCommit = repo.revParseSingle('HEAD');
-      expect(headCommit.id.sha, headSHA);
+      expect(headCommit.oid.sha, headSHA);
 
       final parentCommit = repo.revParseSingle('HEAD^');
-      expect(parentCommit.id.sha, parentSHA);
+      expect(parentCommit.oid.sha, parentSHA);
 
       final initCommit = repo.revParseSingle('@{-1}');
-      expect(initCommit.id.sha, '5aecfa0fb97eadaac050ccb99f03c3fb65460ad4');
+      expect(initCommit.oid.sha, '5aecfa0fb97eadaac050ccb99f03c3fb65460ad4');
 
       headCommit.free();
       parentCommit.free();
@@ -39,7 +39,7 @@ void main() {
       final masterRef = repo.lookupReference('refs/heads/master');
       var headParse = repo.revParseExt('master');
 
-      expect(headParse.object.id.sha, headSHA);
+      expect(headParse.object.oid.sha, headSHA);
       expect(headParse.reference, masterRef);
 
       masterRef.free();
@@ -50,7 +50,9 @@ void main() {
       headParse = repo.revParseExt('feature');
 
       expect(
-          headParse.object.id.sha, '5aecfa0fb97eadaac050ccb99f03c3fb65460ad4');
+        headParse.object.oid.sha,
+        '5aecfa0fb97eadaac050ccb99f03c3fb65460ad4',
+      );
       expect(headParse.reference, featureRef);
 
       featureRef.free();
@@ -61,7 +63,7 @@ void main() {
     test('.ext() returns only commit when no intermidiate reference found', () {
       final headParse = repo.revParseExt('HEAD^');
 
-      expect(headParse.object.id.sha, parentSHA);
+      expect(headParse.object.oid.sha, parentSHA);
       expect(headParse.reference, isNull);
 
       headParse.object.free();
@@ -72,7 +74,7 @@ void main() {
         () {
       var revspec = repo.revParse('master');
 
-      expect(revspec.from.id.sha, headSHA);
+      expect(revspec.from.oid.sha, headSHA);
       expect(revspec.to, isNull);
       expect(revspec.flags, {GitRevSpec.single});
 
@@ -80,8 +82,8 @@ void main() {
 
       revspec = repo.revParse('HEAD^1..5aecfa');
 
-      expect(revspec.from.id.sha, parentSHA);
-      expect(revspec.to?.id.sha, '5aecfa0fb97eadaac050ccb99f03c3fb65460ad4');
+      expect(revspec.from.oid.sha, parentSHA);
+      expect(revspec.to?.oid.sha, '5aecfa0fb97eadaac050ccb99f03c3fb65460ad4');
       expect(revspec.flags, {GitRevSpec.range});
 
       revspec.from.free();
@@ -89,11 +91,11 @@ void main() {
 
       revspec = repo.revParse('HEAD...feature');
 
-      expect(revspec.from.id.sha, headSHA);
-      expect(revspec.to?.id.sha, '5aecfa0fb97eadaac050ccb99f03c3fb65460ad4');
+      expect(revspec.from.oid.sha, headSHA);
+      expect(revspec.to?.oid.sha, '5aecfa0fb97eadaac050ccb99f03c3fb65460ad4');
       expect(revspec.flags, {GitRevSpec.range, GitRevSpec.mergeBase});
       expect(
-        repo.mergeBase(a: revspec.from.id.sha, b: revspec.to!.id.sha),
+        repo.mergeBase(a: revspec.from.oid, b: revspec.to!.oid),
         isA<Oid>(),
       );
 

@@ -356,7 +356,7 @@ Total 69 (delta 0), reused 1 (delta 0), pack-reused 68
 
       remote.push(refspecs: ['refs/heads/master'], callbacks: callbacks);
       expect(
-        originRepo.lookupCommit(originRepo.head.target).id.sha,
+        originRepo.lookupCommit(originRepo.head.target).oid.sha,
         '821ed6e80627b8769d170a293862f9fc60825226',
       );
       expect(updateRefOutput, {'refs/heads/master': ''});

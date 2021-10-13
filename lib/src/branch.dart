@@ -119,7 +119,7 @@ class Branch {
     branch.free();
   }
 
-  /// Returns the OID pointed to by a branch.
+  /// Returns the [Oid] pointed to by a branch.
   ///
   /// Throws an exception if error occured.
   Oid get target => Oid(reference_bindings.target(_branchPointer));

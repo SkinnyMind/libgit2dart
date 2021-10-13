@@ -54,15 +54,15 @@ void main() {
       final entry = index['file'];
       final otherEntry = index['feature_file'];
 
-      expect(entry.id == otherEntry.id, false);
+      expect(entry.oid == otherEntry.oid, false);
       expect(entry.mode, isNot(GitFilemode.blobExecutable));
 
       entry.path = 'some.txt';
-      entry.id = otherEntry.id;
+      entry.oid = otherEntry.oid;
       entry.mode = GitFilemode.blobExecutable;
 
       expect(entry.path, 'some.txt');
-      expect(entry.id == otherEntry.id, true);
+      expect(entry.oid == otherEntry.oid, true);
       expect(entry.mode, GitFilemode.blobExecutable);
     });
 

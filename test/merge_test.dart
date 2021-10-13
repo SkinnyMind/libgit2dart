@@ -26,7 +26,7 @@ void main() {
           repo['c68ff54aabf660fcdd9a2838d401583fe31249e3'],
         );
 
-        final result = repo.mergeAnalysis(theirHead: commit.id);
+        final result = repo.mergeAnalysis(theirHead: commit.oid);
         expect(result, [
           {GitMergeAnalysis.upToDate},
           GitMergePreference.none,
@@ -42,7 +42,7 @@ void main() {
         );
 
         final result = repo.mergeAnalysis(
-          theirHead: commit.id,
+          theirHead: commit.oid,
           ourRef: 'refs/tags/v0.1',
         );
         expect(result[0], {GitMergeAnalysis.upToDate});
@@ -64,7 +64,7 @@ void main() {
         );
 
         final result = repo.mergeAnalysis(
-          theirHead: theirHead.id,
+          theirHead: theirHead.oid,
           ourRef: 'refs/heads/${ffBranch.name}',
         );
         expect(
@@ -83,7 +83,7 @@ void main() {
           repo['5aecfa0fb97eadaac050ccb99f03c3fb65460ad4'],
         );
 
-        final result = repo.mergeAnalysis(theirHead: commit.id);
+        final result = repo.mergeAnalysis(theirHead: commit.oid);
         expect(result[0], {GitMergeAnalysis.normal});
         expect(repo.status, isEmpty);
 
@@ -192,7 +192,7 @@ conflict branch edit
         expect(mergeIndex.conflicts, isEmpty);
         final mergeCommitsTree = mergeIndex.writeTree(repo);
 
-        repo.merge(theirCommit.id);
+        repo.merge(theirCommit.oid);
         final index = repo.index;
         expect(index.conflicts, isEmpty);
         final mergeTree = index.writeTree();
@@ -263,7 +263,7 @@ conflict branch edit
           repo['14905459d775f3f56a39ebc2ff081163f7da3529'],
         );
         final baseCommit = repo.lookupCommit(
-          repo.mergeBase(a: ourCommit.id.sha, b: theirCommit.id.sha),
+          repo.mergeBase(a: ourCommit.oid, b: theirCommit.oid),
         );
         final theirTree = theirCommit.tree;
         final ourTree = ourCommit.tree;
@@ -277,8 +277,8 @@ conflict branch edit
         expect(mergeIndex.conflicts, isEmpty);
         final mergeTreesTree = mergeIndex.writeTree(repo);
 
-        repo.setHead('14905459d775f3f56a39ebc2ff081163f7da3529');
-        repo.merge(theirCommit.id);
+        repo.setHead(ourCommit.oid);
+        repo.merge(theirCommit.oid);
         final index = repo.index;
         expect(index.conflicts, isEmpty);
         final mergeTree = index.writeTree();
@@ -303,7 +303,7 @@ conflict branch edit
           repo['14905459d775f3f56a39ebc2ff081163f7da3529'],
         );
         final baseCommit = repo.lookupCommit(
-          repo.mergeBase(a: ourCommit.id.sha, b: theirCommit.id.sha),
+          repo.mergeBase(a: ourCommit.oid, b: theirCommit.oid),
         );
         final theirTree = theirCommit.tree;
         final ourTree = ourCommit.tree;

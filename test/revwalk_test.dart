@@ -33,7 +33,7 @@ void main() {
       final commits = walker.walk();
 
       for (var i = 0; i < commits.length; i++) {
-        expect(commits[i].id.sha, log[i]);
+        expect(commits[i].oid.sha, log[i]);
       }
 
       for (final c in commits) {
@@ -51,7 +51,7 @@ void main() {
       final commits = walker.walk();
 
       for (var i = 0; i < commits.length; i++) {
-        expect(commits[i].id.sha, log.reversed.toList()[i]);
+        expect(commits[i].oid.sha, log.reversed.toList()[i]);
       }
 
       for (final c in commits) {
@@ -68,13 +68,13 @@ void main() {
       final timeSortedCommits = walker.walk();
 
       for (var i = 0; i < timeSortedCommits.length; i++) {
-        expect(timeSortedCommits[i].id.sha, log[i]);
+        expect(timeSortedCommits[i].oid.sha, log[i]);
       }
 
       walker.sorting({GitSort.time, GitSort.reverse});
       final reverseSortedCommits = walker.walk();
       for (var i = 0; i < reverseSortedCommits.length; i++) {
-        expect(reverseSortedCommits[i].id.sha, log.reversed.toList()[i]);
+        expect(reverseSortedCommits[i].oid.sha, log.reversed.toList()[i]);
       }
 
       for (final c in timeSortedCommits) {

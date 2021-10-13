@@ -54,7 +54,7 @@ void main() {
       );
       final featureTree = featureHead.tree;
       final repoHead = repo.head;
-      expect(repoHead.target.sha, featureHead.id.sha);
+      expect(repoHead.target, featureHead.oid);
       expect(repo.status, isEmpty);
       expect(
         featureTree.entries.any((e) => e.name == 'another_feature_file'),

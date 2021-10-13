@@ -19,7 +19,7 @@ Pointer<git_oid> target(Pointer<git_reference> ref) {
   final result = libgit2.git_reference_target(ref);
 
   if (result == nullptr) {
-    throw Exception('OID for reference isn\'t available');
+    throw Exception('Oid for reference isn\'t available');
   } else {
     return result;
   }

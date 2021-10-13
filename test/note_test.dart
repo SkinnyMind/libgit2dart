@@ -8,14 +8,14 @@ void main() {
   late Directory tmpDir;
   const notesExpected = [
     {
-      'id': 'd854ba919e1bb303f4d6bb4ca9a15c5cab2a2a50',
+      'oid': 'd854ba919e1bb303f4d6bb4ca9a15c5cab2a2a50',
       'message': 'Another note\n',
-      'annotatedId': '78b8bf123e3952c970ae5c1ce0a3ea1d1336f6e8',
+      'annotatedOid': '78b8bf123e3952c970ae5c1ce0a3ea1d1336f6e8',
     },
     {
-      'id': 'd2ffe6b06b11dd90c2ee3f15d2c6b62f018554ed',
+      'oid': 'd2ffe6b06b11dd90c2ee3f15d2c6b62f018554ed',
       'message': 'Note for HEAD\n',
-      'annotatedId': '821ed6e80627b8769d170a293862f9fc60825226',
+      'annotatedOid': '821ed6e80627b8769d170a293862f9fc60825226',
     },
   ];
 
@@ -36,20 +36,20 @@ void main() {
       expect(notes.length, 2);
 
       for (var i = 0; i < notes.length; i++) {
-        expect(notes[i].id.sha, notesExpected[i]['id']);
+        expect(notes[i].oid.sha, notesExpected[i]['oid']);
         expect(notes[i].message, notesExpected[i]['message']);
-        expect(notes[i].annotatedId.sha, notesExpected[i]['annotatedId']);
+        expect(notes[i].annotatedOid.sha, notesExpected[i]['annotatedOid']);
         notes[i].free();
       }
     });
 
     test('successfully lookups note', () {
       final head = repo.head;
-      final note = repo.lookupNote(annotatedId: head.target);
+      final note = repo.lookupNote(annotatedOid: head.target);
 
-      expect(note.id.sha, notesExpected[1]['id']);
+      expect(note.oid.sha, notesExpected[1]['oid']);
       expect(note.message, notesExpected[1]['message']);
-      expect(note.annotatedId.sha, notesExpected[1]['annotatedId']);
+      expect(note.annotatedOid.sha, notesExpected[1]['annotatedOid']);
 
       note.free();
       head.free();
@@ -61,7 +61,7 @@ void main() {
       final noteOid = repo.createNote(
         author: signature,
         committer: signature,
-        annotatedId: head.target,
+        annotatedOid: head.target,
         note: 'New note for HEAD',
         force: true,
       );
@@ -80,13 +80,13 @@ void main() {
       final head = repo.head;
 
       repo.deleteNote(
-        annotatedId: repo.head.target,
+        annotatedOid: repo.head.target,
         author: signature,
         committer: signature,
       );
 
       expect(
-        () => repo.lookupNote(annotatedId: head.target),
+        () => repo.lookupNote(annotatedOid: head.target),
         throwsA(isA<LibGit2Error>()),
       );
 

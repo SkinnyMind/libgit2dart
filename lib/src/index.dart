@@ -153,7 +153,7 @@ class Index with IterableMixin<IndexEntry> {
   ///
   /// This method will scan the index and write a representation of its current state back to disk;
   /// it recursively creates tree objects for each of the subtrees stored in the index, but only
-  /// returns the OID of the root tree. This is the OID that can be used e.g. to create a commit.
+  /// returns the [Oid] of the root tree. This is the OID that can be used e.g. to create a commit.
   ///
   /// The index must not contain any file in conflict.
   ///
@@ -233,18 +233,20 @@ class IndexEntry {
   /// Pointer to memory address for allocated index entry object.
   Pointer<git_index_entry> get pointer => _indexEntryPointer;
 
-  /// Unique identity of the index entry.
-  Oid get id => Oid.fromRaw(_indexEntryPointer.ref.id);
+  /// Returns inique identity of the index entry.
+  Oid get oid => Oid.fromRaw(_indexEntryPointer.ref.id);
 
-  set id(Oid oid) => _indexEntryPointer.ref.id = oid.pointer.ref;
+  /// Sets inique identity of the index entry.
+  set oid(Oid oid) => _indexEntryPointer.ref.id = oid.pointer.ref;
 
-  /// Path of the index entry.
+  /// Returns path of the index entry.
   String get path => _indexEntryPointer.ref.path.cast<Utf8>().toDartString();
 
+  /// Sets path of the index entry.
   set path(String path) =>
       _indexEntryPointer.ref.path = path.toNativeUtf8().cast<Int8>();
 
-  /// Returns id of the index entry as sha-1 hex.
+  /// Returns id of the index entry as sha hex.
   String get sha => _oidToHex(_indexEntryPointer.ref.id);
 
   /// Returns the UNIX file attributes of a index entry.

@@ -43,7 +43,7 @@ void main() {
       for (var i = 0; i < operationsCount; i++) {
         final operation = rebase.next();
         expect(operation.type, GitRebaseOperation.pick);
-        expect(operation.id.sha, shas[i]);
+        expect(operation.oid.sha, shas[i]);
         expect(operation.exec, '');
 
         rebase.commit(committer: signature);
@@ -74,7 +74,7 @@ void main() {
         repo: repo,
         branch: master.target,
         onto: feature.target,
-        upstream: startCommit.id,
+        upstream: startCommit.oid,
       );
 
       final operationsCount = rebase.operationsCount;

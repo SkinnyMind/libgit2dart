@@ -204,15 +204,19 @@ class Repository {
   ///
   /// Otherwise, the HEAD will be detached and will directly point to the Commit.
   ///
-  /// Throws a [LibGit2Error] if error occured.
-  void setHead(String target) {
-    if (isValidShaHex(target)) {
+  /// Throws a [LibGit2Error] if error occured or [ArgumentError] if provided [target]
+  /// is not Oid or String.
+  void setHead(Object target) {
+    if (target is Oid) {
       bindings.setHeadDetached(
         repoPointer: _repoPointer,
-        commitishPointer: this[target].pointer,
+        commitishPointer: target.pointer,
       );
-    } else {
+    } else if (target is String) {
       bindings.setHead(repoPointer: _repoPointer, refname: target);
+    } else {
+      throw ArgumentError.value(
+          '$target must be either Oid or String reference name');
     }
   }
 
@@ -267,8 +271,9 @@ class Repository {
   /// (merge, cherry-pick, etc) is in progress.
   GitRepositoryState get state {
     final stateInt = bindings.state(_repoPointer);
-    return GitRepositoryState.values
-        .singleWhere((state) => stateInt == state.value);
+    return GitRepositoryState.values.singleWhere(
+      (state) => stateInt == state.value,
+    );
   }
 
   /// Removes all the metadata associated with an ongoing command like
@@ -424,11 +429,11 @@ class Repository {
   /// Throws a [LibGit2Error] if error occured.
   Odb get odb => Odb(bindings.odb(_repoPointer));
 
-  /// Lookups a tree object for provided [id].
+  /// Lookups a tree object for provided [oid].
   ///
   /// Should be freed to release allocated memory.
-  Tree lookupTree(Oid id) {
-    return Tree.lookup(repo: this, id: id);
+  Tree lookupTree(Oid oid) {
+    return Tree.lookup(repo: this, oid: oid);
   }
 
   /// Creates a new action signature with default user and now timestamp.
@@ -439,17 +444,17 @@ class Repository {
   /// Throws a [LibGit2Error] if error occured.
   Signature get defaultSignature => Signature.defaultSignature(this);
 
-  /// Returns the list of commits starting from provided [sha] hex string.
+  /// Returns the list of commits starting from provided commit [oid].
   ///
   /// If [sorting] isn't provided default will be used (reverse chronological order, like in git).
   List<Commit> log({
-    required String sha,
+    required Oid oid,
     Set<GitSort> sorting = const {GitSort.none},
   }) {
     final walker = RevWalk(this);
 
     walker.sorting(sorting);
-    walker.push(this[sha]);
+    walker.push(oid);
     final result = walker.walk();
 
     walker.free();
@@ -468,11 +473,11 @@ class Repository {
     return RevParse.single(repo: this, spec: spec);
   }
 
-  /// Lookups commit object for provided [id].
+  /// Lookups commit object for provided [oid].
   ///
   /// Should be freed to release allocated memory.
-  Commit lookupCommit(Oid id) {
-    return Commit.lookup(repo: this, id: id);
+  Commit lookupCommit(Oid oid) {
+    return Commit.lookup(repo: this, oid: oid);
   }
 
   /// Creates new commit in the repository.
@@ -529,11 +534,11 @@ class Repository {
     return RevParse.range(repo: this, spec: spec);
   }
 
-  /// Lookups a blob object for provided [id].
+  /// Lookups a blob object for provided [oid].
   ///
   /// Should be freed to release allocated memory.
-  Blob lookupBlob(Oid id) {
-    return Blob.lookup(repo: this, id: id);
+  Blob lookupBlob(Oid oid) {
+    return Blob.lookup(repo: this, oid: oid);
   }
 
   /// Creates a new blob from a [content] string and writes it to ODB.
@@ -564,10 +569,10 @@ class Repository {
   /// Throws a [LibGit2Error] if error occured.
   List<String> get tags => Tag.list(this);
 
-  /// Lookups tag object for provided [id].
+  /// Lookups tag object for provided [oid].
   ///
   /// Should be freed to release allocated memory.
-  Tag lookupTag(Oid id) => Tag.lookup(repo: this, id: id);
+  Tag lookupTag(Oid oid) => Tag.lookup(repo: this, oid: oid);
 
   /// Creates a new tag in the repository for provided [target] object.
   ///
@@ -753,11 +758,11 @@ class Repository {
   /// Finds a merge base between two commits.
   ///
   /// Throws a [LibGit2Error] if error occured.
-  Oid mergeBase({required String a, required String b}) {
+  Oid mergeBase({required Oid a, required Oid b}) {
     return Oid(merge_bindings.mergeBase(
       repoPointer: _repoPointer,
-      aPointer: this[a].pointer,
-      bPointer: this[b].pointer,
+      aPointer: a.pointer,
+      bPointer: b.pointer,
     ));
   }
 
@@ -797,7 +802,7 @@ class Repository {
     return [analysisSet, mergePreference];
   }
 
-  /// Merges the given commit(s) oid into HEAD, writing the results into the working directory.
+  /// Merges the given commit [oid] into HEAD, writing the results into the working directory.
   /// Any changes are staged for commit and any conflicts are written to the index. Callers
   /// should inspect the repository's index after this completes, resolve any conflicts and
   /// prepare a commit.
@@ -909,7 +914,7 @@ class Repository {
     ));
   }
 
-  /// Cherry-picks the provided commit, producing changes in the index and working directory.
+  /// Cherry-picks the provided [commit], producing changes in the index and working directory.
   ///
   /// Any changes are staged for commit and any conflicts are written to the index. Callers
   /// should inspect the repository's index after this completes, resolve any conflicts and
@@ -982,14 +987,14 @@ class Repository {
     }
   }
 
-  /// Sets the current head to the specified commit and optionally resets the index
+  /// Sets the current head to the specified commit [oid] and optionally resets the index
   /// and working tree to match.
   ///
   /// Throws a [LibGit2Error] if error occured.
-  void reset({required String target, required GitReset resetType}) {
+  void reset({required Oid oid, required GitReset resetType}) {
     final object = object_bindings.lookup(
       repoPointer: _repoPointer,
-      oidPointer: this[target].pointer,
+      oidPointer: oid.pointer,
       type: GitObject.any.value,
     );
 
@@ -1296,30 +1301,30 @@ class Repository {
   /// Throws a [LibGit2Error] if error occured.
   List<Note> get notes => Note.list(this);
 
-  /// Reads the note for an [annotatedId].
+  /// Reads the note for an [annotatedOid].
   ///
   /// IMPORTANT: Notes must be freed manually when no longer needed to prevent
   /// memory leak.
   ///
   /// Throws a [LibGit2Error] if error occured.
   Note lookupNote({
-    required Oid annotatedId,
+    required Oid annotatedOid,
     String notesRef = 'refs/notes/commits',
   }) {
     return Note.lookup(
       repo: this,
-      annotatedId: annotatedId,
+      annotatedOid: annotatedOid,
       notesRef: notesRef,
     );
   }
 
-  /// Adds a note for an [annotatedId].
+  /// Adds a note for an [annotatedOid].
   ///
   /// Throws a [LibGit2Error] if error occured.
   Oid createNote({
     required Signature author,
     required Signature committer,
-    required Oid annotatedId,
+    required Oid annotatedOid,
     required String note,
     String notesRef = 'refs/notes/commits',
     bool force = false,
@@ -1328,25 +1333,25 @@ class Repository {
       repo: this,
       author: author,
       committer: committer,
-      annotatedId: annotatedId,
+      annotatedOid: annotatedOid,
       note: note,
       notesRef: notesRef,
       force: force,
     );
   }
 
-  /// Deletes the note for an [annotatedId].
+  /// Deletes the note for an [annotatedOid].
   ///
   /// Throws a [LibGit2Error] if error occured.
   void deleteNote({
-    required Oid annotatedId,
+    required Oid annotatedOid,
     required Signature author,
     required Signature committer,
     String notesRef = 'refs/notes/commits',
   }) {
     Note.delete(
       repo: this,
-      annotatedId: annotatedId,
+      annotatedOid: annotatedOid,
       author: author,
       committer: committer,
       notesRef: notesRef,
@@ -1359,11 +1364,11 @@ class Repository {
   /// `git merge-base --is-ancestor`.
   ///
   /// Throws a [LibGit2Error] if error occured.
-  bool descendantOf({required String commitSHA, required String ancestorSHA}) {
+  bool descendantOf({required Oid commit, required Oid ancestor}) {
     return graph_bindings.descendantOf(
       repoPointer: _repoPointer,
-      commitPointer: this[commitSHA].pointer,
-      ancestorPointer: this[ancestorSHA].pointer,
+      commitPointer: commit.pointer,
+      ancestorPointer: ancestor.pointer,
     );
   }
 
@@ -1373,13 +1378,13 @@ class Repository {
   /// but it helps to think of one as a branch and the other as its upstream, the ahead and
   /// behind values will be what git would report for the branches.
   List<int> aheadBehind({
-    required String localSHA,
-    required String upstreamSHA,
+    required Oid local,
+    required Oid upstream,
   }) {
     return graph_bindings.aheadBehind(
       repoPointer: _repoPointer,
-      localPointer: this[localSHA].pointer,
-      upstreamPointer: this[upstreamSHA].pointer,
+      localPointer: local.pointer,
+      upstreamPointer: upstream.pointer,
     );
   }
 

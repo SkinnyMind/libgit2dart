@@ -45,7 +45,7 @@ class Oid {
   /// Pointer to memory address for allocated oid object.
   Pointer<git_oid> get pointer => _oidPointer;
 
-  /// Returns hexadecimal SHA-1 string.
+  /// Returns hexadecimal SHA string.
   String get sha => bindings.toSHA(_oidPointer);
 
   @override

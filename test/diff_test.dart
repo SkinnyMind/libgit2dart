@@ -218,7 +218,7 @@ index e69de29..c217c63 100644
       final file = File('${tmpDir.path}/subdir/modified_file');
 
       repo.reset(
-        target: 'a763aa560953e7cfb87ccbc2f536d665aa4dff22',
+        oid: repo['a763aa560953e7cfb87ccbc2f536d665aa4dff22'],
         resetType: GitReset.hard,
       );
       expect(file.readAsStringSync(), '');
@@ -280,11 +280,11 @@ index e69de29..c217c63 100644
 
       expect(diff.deltas[0].oldFile.path, indexToWorkdir[0]);
       expect(
-        diff.deltas[0].oldFile.id.sha,
+        diff.deltas[0].oldFile.oid.sha,
         'e69de29bb2d1d6434b8b29ae775ad8c2e48c5391',
       );
       expect(
-        diff.deltas[0].newFile.id.sha,
+        diff.deltas[0].newFile.oid.sha,
         '0000000000000000000000000000000000000000',
       );
 

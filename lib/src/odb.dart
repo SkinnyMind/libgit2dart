@@ -45,7 +45,7 @@ class Odb {
     );
   }
 
-  /// Returns list of all objects available in the database.
+  /// Returns list of all objects [Oid]s available in the database.
   ///
   /// Throws a [LibGit2Error] if error occured.
   List<Oid> get objects => bindings.objects(_odbPointer);
@@ -102,10 +102,10 @@ class OdbObject {
   /// Pointer to memory address for allocated odbObject object.
   final Pointer<git_odb_object> _odbObjectPointer;
 
-  /// Returns the OID of an ODB object.
+  /// Returns the [Oid] of an ODB object.
   ///
-  /// This is the OID from which the object was read from.
-  Oid get id => Oid(bindings.objectId(_odbObjectPointer));
+  /// This is the [Oid] from which the object was read from.
+  Oid get oid => Oid(bindings.objectId(_odbObjectPointer));
 
   /// Returns the type of an ODB object.
   GitObject get type {

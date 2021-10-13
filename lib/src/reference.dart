@@ -149,9 +149,9 @@ class Reference {
         : ReferenceType.symbolic;
   }
 
-  /// Returns the OID pointed to by a reference.
+  /// Returns the [Oid] pointed to by a reference.
   ///
-  /// Throws an exception if error occured.
+  /// Throws an [Exception] if error occured.
   Oid get target {
     late final Pointer<git_oid> oidPointer;
 
@@ -163,37 +163,33 @@ class Reference {
     return Oid(oidPointer);
   }
 
-  /// Conditionally creates a new reference with the same name as the given reference
-  /// but a different OID target.
+  /// Updates the [target] of this reference.
   ///
-  /// The new reference will be written to disk, overwriting the given reference.
+  /// [target] being either Oid for direct reference or String reference name for symbolic
+  /// reference.
   ///
-  /// Throws a [LibGit2Error] if error occured.
-  void setTarget({required String target, String? logMessage}) {
-    late final Oid oid;
-    final owner = bindings.owner(_refPointer);
-
-    if (isValidShaHex(target)) {
-      final repo = Repository(owner);
-      oid = Oid.fromSHA(repo: repo, sha: target);
-    } else {
-      final ref = Reference(bindings.lookup(repoPointer: owner, name: target));
-      oid = ref.target;
-      ref.free();
-    }
-
-    if (type == ReferenceType.direct) {
-      _refPointer = bindings.setTarget(
+  /// Throws a [LibGit2Error] if error occured or [ArgumentError] if [target] is not
+  /// [Oid] or String.
+  void setTarget({required Object target, String? logMessage}) {
+    if (target is Oid) {
+      final newPointer = bindings.setTarget(
         refPointer: _refPointer,
-        oidPointer: oid.pointer,
+        oidPointer: target.pointer,
         logMessage: logMessage,
       );
-    } else {
-      _refPointer = bindings.setTargetSymbolic(
+      free();
+      _refPointer = newPointer;
+    } else if (target is String) {
+      final newPointer = bindings.setTargetSymbolic(
         refPointer: _refPointer,
         target: target,
         logMessage: logMessage,
       );
+      free();
+      _refPointer = newPointer;
+    } else {
+      throw ArgumentError.value(
+          '$target must be either Oid or String reference name');
     }
   }
 

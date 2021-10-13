@@ -11,13 +11,13 @@ class Blob {
   /// Should be freed to release allocated memory.
   Blob(this._blobPointer);
 
-  /// Lookups a blob object for provided [id] in a [repo]sitory.
+  /// Lookups a blob object for provided [oid] in a [repo]sitory.
   ///
   /// Should be freed to release allocated memory.
-  Blob.lookup({required Repository repo, required Oid id}) {
+  Blob.lookup({required Repository repo, required Oid oid}) {
     _blobPointer = bindings.lookup(
       repoPointer: repo.pointer,
-      oidPointer: id.pointer,
+      oidPointer: oid.pointer,
     );
   }
 
@@ -58,8 +58,8 @@ class Blob {
     return Oid(bindings.createFromDisk(repoPointer: repo.pointer, path: path));
   }
 
-  /// Returns the Oid of the blob.
-  Oid get id => Oid(bindings.id(_blobPointer));
+  /// Returns the [Oid] of the blob.
+  Oid get oid => Oid(bindings.id(_blobPointer));
 
   /// Determines if the blob content is most certainly binary or not.
   ///

@@ -89,8 +89,8 @@ void main() {
         final branches = repo.branches;
         for (final branch in branches) {
           final ref = repo.lookupReference('refs/heads/${branch.name}');
-          for (final commit in repo.log(sha: ref.target.sha)) {
-            packBuilder.addRecursively(commit.id);
+          for (final commit in repo.log(oid: ref.target)) {
+            packBuilder.addRecursively(commit.oid);
             commit.free();
           }
           ref.free();

@@ -23,22 +23,22 @@ List<Map<String, Pointer>> list(Pointer<git_repository> repo) {
   var nextError = 0;
 
   while (nextError >= 0) {
-    final noteId = calloc<git_oid>();
-    var annotatedId = calloc<git_oid>();
-    nextError = libgit2.git_note_next(noteId, annotatedId, iterator.value);
+    final noteOid = calloc<git_oid>();
+    var annotatedOid = calloc<git_oid>();
+    nextError = libgit2.git_note_next(noteOid, annotatedOid, iterator.value);
     if (nextError >= 0) {
       final out = calloc<Pointer<git_note>>();
-      final error = libgit2.git_note_read(out, repo, notesRef, annotatedId);
+      final error = libgit2.git_note_read(out, repo, notesRef, annotatedOid);
 
-      calloc.free(noteId);
+      calloc.free(noteOid);
 
       if (error < 0) {
         calloc.free(out);
-        calloc.free(annotatedId);
+        calloc.free(annotatedOid);
         calloc.free(iterator);
         throw LibGit2Error(libgit2.git_error_last());
       } else {
-        result.add({'note': out.value, 'annotatedId': annotatedId});
+        result.add({'note': out.value, 'annotatedOid': annotatedOid});
       }
     } else {
       break;

@@ -126,9 +126,9 @@ class RebaseOperation {
     );
   }
 
-  /// The commit ID being cherry-picked. This will be populated for
+  /// Returns the commit [Oid] being cherry-picked. This will be populated for
   /// all operations except those of type [GitRebaseOperation.exec].
-  Oid get id => Oid.fromRaw(_rebaseOperationPointer.ref.id);
+  Oid get oid => Oid.fromRaw(_rebaseOperationPointer.ref.id);
 
   /// The executable the user has requested be run. This will only
   /// be populated for operations of type [GitRebaseOperation.exec].

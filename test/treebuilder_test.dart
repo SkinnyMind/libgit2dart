@@ -33,7 +33,7 @@ void main() {
 
       expect(builder, isA<TreeBuilder>());
       expect(builder.length, tree.length);
-      expect(oid, tree.id);
+      expect(oid, tree.oid);
 
       builder.free();
     });
@@ -56,7 +56,7 @@ void main() {
 
       builder.add(
         filename: entry.name,
-        oid: entry.id,
+        oid: entry.oid,
         filemode: entry.filemode,
       );
       expect(builder[entry.name].name, entry.name);

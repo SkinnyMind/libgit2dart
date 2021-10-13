@@ -11,13 +11,13 @@ class Tree {
   /// Should be freed to release allocated memory.
   Tree(this._treePointer);
 
-  /// Lookups a tree object for provided [id] in a [repo]sitory.
+  /// Lookups a tree object for provided [oid] in a [repo]sitory.
   ///
   /// Should be freed to release allocated memory.
-  Tree.lookup({required Repository repo, required Oid id}) {
+  Tree.lookup({required Repository repo, required Oid oid}) {
     _treePointer = bindings.lookup(
       repoPointer: repo.pointer,
-      oidPointer: id.pointer,
+      oidPointer: oid.pointer,
     );
   }
 
@@ -69,8 +69,8 @@ class Tree {
     }
   }
 
-  /// Returns the Oid of a tree.
-  Oid get id => Oid(bindings.id(_treePointer));
+  /// Returns the [Oid] of a tree.
+  Oid get oid => Oid(bindings.id(_treePointer));
 
   /// Get the number of entries listed in a tree.
   int get length => bindings.entryCount(_treePointer);
@@ -141,8 +141,8 @@ class TreeEntry {
   /// Pointer to memory address for allocated tree entry object.
   final Pointer<git_tree_entry> _treeEntryPointer;
 
-  /// Returns the Oid of the object pointed by the entry.
-  Oid get id => Oid(bindings.entryId(_treeEntryPointer));
+  /// Returns the [Oid] of the object pointed by the entry.
+  Oid get oid => Oid(bindings.entryId(_treeEntryPointer));
 
   /// Returns the filename of a tree entry.
   String get name => bindings.entryName(_treeEntryPointer);
@@ -201,5 +201,5 @@ class TreeEntry {
   void free() => bindings.entryFree(_treeEntryPointer);
 
   @override
-  String toString() => 'TreeEntry{id: $id, name: $name}';
+  String toString() => 'TreeEntry{oid: $oid, name: $name}';
 }

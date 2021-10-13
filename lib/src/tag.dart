@@ -11,13 +11,13 @@ class Tag {
   /// Should be freed to release allocated memory.
   Tag(this._tagPointer);
 
-  /// Lookups tag object for provided [id] in a [repo]sitory.
+  /// Lookups tag object for provided [oid] in a [repo]sitory.
   ///
   /// Should be freed to release allocated memory.
-  Tag.lookup({required Repository repo, required Oid id}) {
+  Tag.lookup({required Repository repo, required Oid oid}) {
     _tagPointer = bindings.lookup(
       repoPointer: repo.pointer,
-      oidPointer: id.pointer,
+      oidPointer: oid.pointer,
     );
   }
 
@@ -112,8 +112,8 @@ class Tag {
     }
   }
 
-  /// Get the id of a tag.
-  Oid get id => Oid(bindings.id(_tagPointer));
+  /// Returns the [Oid] of a tag.
+  Oid get oid => Oid(bindings.id(_tagPointer));
 
   /// Returns the name of a tag.
   String get name => bindings.name(_tagPointer);

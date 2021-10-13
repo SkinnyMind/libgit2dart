@@ -39,10 +39,10 @@ void main() {
         '6cbc22e509d72758ab4c8d9f287ea846b90c448b',
         'f17d0d48eae3aa08cecf29128a35e310c97b3521',
       ];
-      final commits = repo.log(sha: lastCommit);
+      final commits = repo.log(oid: repo[lastCommit]);
 
       for (var i = 0; i < commits.length; i++) {
-        expect(commits[i].id.sha, log[i]);
+        expect(commits[i].oid.sha, log[i]);
       }
 
       for (final c in commits) {
@@ -100,14 +100,7 @@ void main() {
 
       test('successfully sets head when target is sha hex', () {
         expect(repo.head.target.sha, lastCommit);
-        repo.setHead(featureCommit);
-        expect(repo.head.target.sha, featureCommit);
-        expect(repo.isHeadDetached, true);
-      });
-
-      test('successfully sets head when target is short sha hex', () {
-        expect(repo.head.target.sha, lastCommit);
-        repo.setHead(featureCommit.substring(0, 5));
+        repo.setHead(repo[featureCommit]);
         expect(repo.head.target.sha, featureCommit);
         expect(repo.isHeadDetached, true);
       });
@@ -176,11 +169,11 @@ void main() {
       final tagger = newTag.tagger;
       final newTagTarget = newTag.target as Commit;
 
-      expect(newTag.id.sha, '131a5eb6b7a880b5096c550ee7351aeae7b95a42');
+      expect(newTag.oid.sha, '131a5eb6b7a880b5096c550ee7351aeae7b95a42');
       expect(newTag.name, tagName);
       expect(newTag.message, message);
       expect(tagger, signature);
-      expect(newTagTarget.id, target);
+      expect(newTagTarget.oid, target);
 
       newTag.free();
       newTagTarget.free();
@@ -255,26 +248,15 @@ void main() {
       final commit2 = repo.lookupCommit(repo['78b8bf12']);
 
       expect(
-        repo.descendantOf(
-          commitSHA: commit1.id.sha,
-          ancestorSHA: commit2.id.sha,
-        ),
+        repo.descendantOf(commit: commit1.oid, ancestor: commit2.oid),
         true,
       );
-
       expect(
-        repo.descendantOf(
-          commitSHA: commit1.id.sha,
-          ancestorSHA: commit1.id.sha,
-        ),
+        repo.descendantOf(commit: commit1.oid, ancestor: commit1.oid),
         false,
       );
-
       expect(
-        repo.descendantOf(
-          commitSHA: commit2.id.sha,
-          ancestorSHA: commit1.id.sha,
-        ),
+        repo.descendantOf(commit: commit2.oid, ancestor: commit1.oid),
         false,
       );
 
@@ -287,15 +269,15 @@ void main() {
       final commit2 = repo.lookupCommit(repo['c68ff54a']);
 
       expect(
-        repo.aheadBehind(localSHA: commit1.id.sha, upstreamSHA: commit2.id.sha),
+        repo.aheadBehind(local: commit1.oid, upstream: commit2.oid),
         [4, 0],
       );
       expect(
-        repo.aheadBehind(localSHA: commit2.id.sha, upstreamSHA: commit1.id.sha),
+        repo.aheadBehind(local: commit2.oid, upstream: commit1.oid),
         [0, 4],
       );
       expect(
-        repo.aheadBehind(localSHA: commit1.id.sha, upstreamSHA: commit1.id.sha),
+        repo.aheadBehind(local: commit1.oid, upstream: commit1.oid),
         [0, 0],
       );
 

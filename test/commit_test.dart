@@ -28,7 +28,7 @@ void main() {
     mergeCommit = repo['78b8bf123e3952c970ae5c1ce0a3ea1d1336f6e8'];
     tree = Tree.lookup(
       repo: repo,
-      id: repo['7796359a96eb722939c24bafdb1afe9f07f2f628'],
+      oid: repo['7796359a96eb722939c24bafdb1afe9f07f2f628'],
     );
   });
 
@@ -78,13 +78,13 @@ void main() {
 
       final commit = repo.lookupCommit(oid);
 
-      expect(commit.id.sha, oid.sha);
+      expect(commit.oid, oid);
       expect(commit.message, message);
       expect(commit.messageEncoding, 'utf-8');
       expect(commit.author, author);
       expect(commit.committer, commiter);
       expect(commit.time, 124);
-      expect(commit.tree.id, tree.id);
+      expect(commit.tree.oid, tree.oid);
       expect(commit.parents.length, 1);
       expect(commit.parents[0], mergeCommit);
 
@@ -103,13 +103,13 @@ void main() {
 
       final commit = repo.lookupCommit(oid);
 
-      expect(commit.id.sha, oid.sha);
+      expect(commit.oid, oid);
       expect(commit.message, message);
       expect(commit.messageEncoding, 'utf-8');
       expect(commit.author, author);
       expect(commit.committer, commiter);
       expect(commit.time, 124);
-      expect(commit.tree.id, tree.id);
+      expect(commit.tree.oid, tree.oid);
       expect(commit.parents.length, 0);
 
       commit.free();
@@ -132,16 +132,16 @@ void main() {
 
       final commit = repo.lookupCommit(oid);
 
-      expect(commit.id.sha, oid.sha);
+      expect(commit.oid, oid);
       expect(commit.message, message);
       expect(commit.messageEncoding, 'utf-8');
       expect(commit.author, author);
       expect(commit.committer, commiter);
       expect(commit.time, 124);
-      expect(commit.tree.id, tree.id);
+      expect(commit.tree.oid, tree.oid);
       expect(commit.parents.length, 2);
       expect(commit.parents[0], mergeCommit);
-      expect(commit.parents[1], parent2.id);
+      expect(commit.parents[1], parent2.oid);
 
       parent1.free();
       parent2.free();

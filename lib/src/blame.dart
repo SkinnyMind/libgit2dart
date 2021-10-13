@@ -106,30 +106,30 @@ class BlameHunk {
   /// version of the file.
   int get finalStartLineNumber => _blameHunkPointer.ref.final_start_line_number;
 
-  /// Returns the author of [finalCommitId]. If [GitBlameFlag.useMailmap] has been
+  /// Returns the author of [finalCommitOid]. If [GitBlameFlag.useMailmap] has been
   /// specified, it will contain the canonical real name and email address.
   Signature get finalCommitter =>
       Signature(_blameHunkPointer.ref.final_signature);
 
   /// Returns the [Oid] of the commit where this line was last changed.
-  Oid get finalCommitId => Oid.fromRaw(_blameHunkPointer.ref.final_commit_id);
+  Oid get finalCommitOid => Oid.fromRaw(_blameHunkPointer.ref.final_commit_id);
 
   /// Returns the 1-based line number where this hunk begins, in the file
   /// named by [originPath] in the commit specified by [originCommitId].
   int get originStartLineNumber => _blameHunkPointer.ref.orig_start_line_number;
 
-  /// Returns the author of [originCommitId]. If [GitBlameFlag.useMailmap] has been
+  /// Returns the author of [originCommitOid]. If [GitBlameFlag.useMailmap] has been
   /// specified, it will contain the canonical real name and email address.
   Signature get originCommitter =>
       Signature(_blameHunkPointer.ref.orig_signature);
 
   /// Returns the [Oid] of the commit where this hunk was found. This will usually be
-  /// the same as [finalCommitId], except when [GitBlameFlag.trackCopiesAnyCommitCopies]
+  /// the same as [finalCommitOid], except when [GitBlameFlag.trackCopiesAnyCommitCopies]
   /// been specified.
-  Oid get originCommitId => Oid.fromRaw(_blameHunkPointer.ref.orig_commit_id);
+  Oid get originCommitOid => Oid.fromRaw(_blameHunkPointer.ref.orig_commit_id);
 
   /// Returns the path to the file where this hunk originated, as of the commit
-  /// specified by [originCommitId].
+  /// specified by [originCommitOid].
   String get originPath =>
       _blameHunkPointer.ref.orig_path.cast<Utf8>().toDartString();
 }

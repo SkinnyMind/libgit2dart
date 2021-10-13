@@ -29,7 +29,7 @@ void main() {
     });
 
     test('returns correct values', () {
-      expect(blob.id.sha, blobSHA);
+      expect(blob.oid.sha, blobSHA);
       expect(blob.isBinary, false);
       expect(blob.size, 13);
       expect(blob.content, blobContent);
@@ -39,7 +39,7 @@ void main() {
       final oid = repo.createBlob(newBlobContent);
       final newBlob = repo.lookupBlob(oid);
 
-      expect(newBlob.id.sha, '18fdaeef018e57a92bcad2d4a35b577f34089af6');
+      expect(newBlob.oid.sha, '18fdaeef018e57a92bcad2d4a35b577f34089af6');
       expect(newBlob.isBinary, false);
       expect(newBlob.size, 9);
       expect(newBlob.content, newBlobContent);
@@ -52,7 +52,7 @@ void main() {
       final oid = repo.createBlobFromWorkdir('feature_file');
       final newBlob = repo.lookupBlob(oid);
 
-      expect(newBlob.id.sha, blobSHA);
+      expect(newBlob.oid.sha, blobSHA);
       expect(newBlob.isBinary, false);
       expect(newBlob.size, 13);
       expect(newBlob.content, blobContent);

@@ -107,9 +107,7 @@ class Diff {
     );
   }
 
-  /// Calculate the patch ID for the given patch.
-  ///
-  /// Calculate a stable patch ID for the given patch by summing the hash of the file diffs,
+  /// Calculates a stable patch [Oid] for the given patch by summing the hash of the file diffs,
   /// ignoring whitespace and line numbers. This can be used to derive whether two diffs are
   /// the same with a high probability.
   ///
@@ -181,9 +179,9 @@ class DiffFile {
 
   final git_diff_file _diffFile;
 
-  /// Returns oid of the item. If the entry represents an absent side of a diff
+  /// Returns [Oid] of the item. If the entry represents an absent side of a diff
   /// then the oid will be zeroes.
-  Oid get id => Oid.fromRaw(_diffFile.id);
+  Oid get oid => Oid.fromRaw(_diffFile.id);
 
   /// Returns path to the entry relative to the working directory of the repository.
   String get path => _diffFile.path.cast<Utf8>().toDartString();

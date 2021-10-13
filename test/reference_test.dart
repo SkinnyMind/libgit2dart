@@ -343,23 +343,16 @@ void main() {
     });
 
     group('set target', () {
-      test('successfully sets with SHA hex', () {
+      test('successfully sets direct reference with provided Oid target', () {
         final ref = repo.lookupReference('refs/heads/master');
-        ref.setTarget(target: newCommit);
+        ref.setTarget(target: repo[newCommit]);
         expect(ref.target.sha, newCommit);
 
         ref.free();
       });
 
-      test('successfully sets target with short SHA hex', () {
-        final ref = repo.lookupReference('refs/heads/master');
-        ref.setTarget(target: newCommit.substring(0, 5));
-        expect(ref.target.sha, newCommit);
-
-        ref.free();
-      });
-
-      test('successfully sets symbolic target', () {
+      test('successfully sets symbolic target with provided reference name',
+          () {
         final ref = repo.lookupReference('HEAD');
         expect(ref.target.sha, lastCommit);
 
@@ -474,7 +467,7 @@ void main() {
       final commit = repo.lookupCommit(ref.target);
       final peeled = ref.peel() as Commit;
 
-      expect(peeled.id, commit.id);
+      expect(peeled.oid, commit.oid);
 
       peeled.free();
       commit.free();
@@ -488,8 +481,8 @@ void main() {
       final peeledCommit = ref.peel(GitObject.commit) as Commit;
       final peeledTree = ref.peel(GitObject.tree) as Tree;
 
-      expect(peeledCommit.id, commit.id);
-      expect(peeledTree.id, tree.id);
+      expect(peeledCommit.oid, commit.oid);
+      expect(peeledTree.oid, tree.oid);
 
       peeledCommit.free();
       commit.free();

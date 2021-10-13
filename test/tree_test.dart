@@ -30,13 +30,13 @@ void main() {
 
     test('returns correct values', () {
       expect(tree.length, 4);
-      expect(tree.entries.first.id.sha, fileSHA);
+      expect(tree.entries.first.oid.sha, fileSHA);
       expect(tree.entries[0].name, '.gitignore');
       expect(tree.entries[0].filemode, GitFilemode.blob);
     });
 
     test('returns tree entry with provided index position', () {
-      expect(tree[0].id.sha, fileSHA);
+      expect(tree[0].oid.sha, fileSHA);
     });
 
     test('throws when provided index position is outside of valid range', () {
@@ -45,7 +45,7 @@ void main() {
     });
 
     test('returns tree entry with provided filename', () {
-      expect(tree['.gitignore'].id.sha, fileSHA);
+      expect(tree['.gitignore'].oid.sha, fileSHA);
     });
 
     test('throws when nothing found for provided filename', () {
@@ -54,7 +54,7 @@ void main() {
 
     test('returns tree entry with provided path to file', () {
       final entry = tree['dir/dir_file.txt'];
-      expect(entry.id.sha, 'e69de29bb2d1d6434b8b29ae775ad8c2e48c5391');
+      expect(entry.oid.sha, 'e69de29bb2d1d6434b8b29ae775ad8c2e48c5391');
       entry.free();
     });
 
@@ -77,7 +77,7 @@ void main() {
       expect(newTree.length, 1);
       expect(entry.name, 'filename');
       expect(entry.filemode, GitFilemode.blob);
-      expect(entry.id, fileOid);
+      expect(entry.oid, fileOid);
 
       builder.free();
       entry.free();

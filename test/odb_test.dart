@@ -48,7 +48,7 @@ void main() {
       final odb = repo.odb;
       final object = odb.read(oid);
 
-      expect(object.id, oid);
+      expect(object.oid, oid);
       expect(object.type, GitObject.blob);
       expect(object.data, blobContent);
       expect(object.size, 13);

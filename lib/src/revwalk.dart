@@ -37,14 +37,14 @@ class RevWalk {
     );
   }
 
-  /// Adds a new root for the traversal.
+  /// Adds a new root commit [oid] for the traversal.
   ///
   /// The pushed commit will be marked as one of the roots from which to start the walk.
   /// This commit may not be walked if it or a child is hidden.
   ///
   /// At least one commit must be pushed onto the walker before a walk can be started.
   ///
-  /// The given id must belong to a committish on the walked repository.
+  /// The given [oid] must belong to a committish on the walked repository.
   ///
   /// Throws a [LibGit2Error] if error occured.
   void push(Oid oid) {
@@ -54,7 +54,7 @@ class RevWalk {
     );
   }
 
-  /// Marks a commit (and its ancestors) uninteresting for the output.
+  /// Marks a commit [oid] (and its ancestors) uninteresting for the output.
   ///
   /// The given id must belong to a committish on the walked repository.
   ///

@@ -11,13 +11,13 @@ class Commit {
   /// Should be freed to release allocated memory.
   Commit(this._commitPointer);
 
-  /// Lookups commit object for provided [id] in a [repo]sitory.
+  /// Lookups commit object for provided [oid] in a [repo]sitory.
   ///
   /// Should be freed to release allocated memory.
-  Commit.lookup({required Repository repo, required Oid id}) {
+  Commit.lookup({required Repository repo, required Oid oid}) {
     _commitPointer = bindings.lookup(
       repoPointer: repo.pointer,
-      oidPointer: id.pointer,
+      oidPointer: oid.pointer,
     );
   }
 
@@ -67,8 +67,8 @@ class Commit {
   /// The returned message will be slightly prettified by removing any potential leading newlines.
   String get message => bindings.message(_commitPointer);
 
-  /// Returns the id of a commit.
-  Oid get id => Oid(bindings.id(_commitPointer));
+  /// Returns the [Oid] of a commit.
+  Oid get oid => Oid(bindings.id(_commitPointer));
 
   /// Returns the commit time (i.e. committer time) of a commit.
   int get time => bindings.time(_commitPointer);
@@ -79,7 +79,7 @@ class Commit {
   /// Returns the author of a commit.
   Signature get author => Signature(bindings.author(_commitPointer));
 
-  /// Returns list of parent commits.
+  /// Returns list of parent commits [Oid]s.
   ///
   /// Throws a [LibGit2Error] if error occured.
   List<Oid> get parents {
@@ -109,5 +109,5 @@ class Commit {
   void free() => bindings.free(_commitPointer);
 
   @override
-  String toString() => 'Commit{id: $id}';
+  String toString() => 'Commit{oid: $oid}';
 }
