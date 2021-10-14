@@ -75,6 +75,27 @@ Pointer<git_worktree> lookup({
   }
 }
 
+/// Check if the worktree prunable.
+///
+/// A worktree is not prunable in the following scenarios:
+/// - the worktree is linking to a valid on-disk worktree.
+/// - the worktree is locked.
+///
+/// Throws a [LibGit2Error] if error occured.
+bool isPrunable(Pointer<git_worktree> wt) {
+  final opts = calloc<git_worktree_prune_options>();
+  final optsError = libgit2.git_worktree_prune_options_init(
+    opts,
+    GIT_WORKTREE_PRUNE_OPTIONS_VERSION,
+  );
+
+  if (optsError < 0) {
+    throw LibGit2Error(libgit2.git_error_last());
+  }
+
+  return libgit2.git_worktree_is_prunable(wt, opts) > 0 ? true : false;
+}
+
 /// Prune working tree.
 ///
 /// Prune the working tree, that is remove the git data structures on disk.
@@ -116,6 +137,38 @@ String name(Pointer<git_worktree> wt) {
 /// Retrieve the filesystem path for the worktree.
 String path(Pointer<git_worktree> wt) {
   return libgit2.git_worktree_path(wt).cast<Utf8>().toDartString();
+}
+
+/// Check if worktree is locked.
+///
+/// A worktree may be locked if the linked working tree is stored on a portable
+/// device which is not available.
+///
+/// Throws a [LibGit2Error] if error occured.
+bool isLocked(Pointer<git_worktree> wt) {
+  final result = libgit2.git_worktree_is_locked(nullptr, wt);
+
+  if (result < 0) {
+    throw LibGit2Error(libgit2.git_error_last());
+  } else if (result == 0) {
+    return false;
+  } else {
+    return true;
+  }
+}
+
+/// Lock worktree if not already locked.
+void lock(Pointer<git_worktree> wt) => libgit2.git_worktree_lock(wt, nullptr);
+
+/// Unlock a locked worktree.
+void unlock(Pointer<git_worktree> wt) => libgit2.git_worktree_unlock(wt);
+
+/// Check if worktree is valid.
+///
+/// A valid worktree requires both the git data structures inside the linked parent
+/// repository and the linked working copy to be present.
+bool isValid(Pointer<git_worktree> wt) {
+  return libgit2.git_worktree_validate(wt) == 0 ? true : false;
 }
 
 /// Free a previously allocated worktree.

@@ -33,21 +33,18 @@ void main() {
         name: worktreeName,
         path: worktreeDir.path,
       );
-      final lookedupWorktree = repo.lookupWorktree(worktreeName);
       final branches = repo.branches;
 
       expect(repo.worktrees, [worktreeName]);
       expect(branches.any((branch) => branch.name == worktreeName), true);
       expect(worktree.name, worktreeName);
-      expect(lookedupWorktree.name, worktreeName);
       expect(worktree.path, worktreeDir.path);
-      expect(lookedupWorktree.path, worktreeDir.path);
+      expect(worktree.isLocked, false);
       expect(File('${worktreeDir.path}/.git').existsSync(), true);
 
       for (final branch in branches) {
         branch.free();
       }
-      lookedupWorktree.free();
       worktree.free();
     });
 
@@ -87,6 +84,37 @@ void main() {
       worktree.free();
     });
 
+    test('successfully lookups worktree', () {
+      final worktree = repo.createWorktree(
+        name: worktreeName,
+        path: worktreeDir.path,
+      );
+      final lookedupWorktree = repo.lookupWorktree(worktreeName);
+
+      expect(lookedupWorktree.name, worktreeName);
+      expect(lookedupWorktree.path, worktreeDir.path);
+      expect(lookedupWorktree.isLocked, false);
+
+      lookedupWorktree.free();
+      worktree.free();
+    });
+
+    test('successfully locks and unlocks worktree', () {
+      final worktree = repo.createWorktree(
+        name: worktreeName,
+        path: worktreeDir.path,
+      );
+      expect(worktree.isLocked, false);
+
+      worktree.lock();
+      expect(worktree.isLocked, true);
+
+      worktree.unlock();
+      expect(worktree.isLocked, false);
+
+      worktree.free();
+    });
+
     test('successfully prunes worktree', () {
       expect(repo.worktrees, []);
 
@@ -95,8 +123,13 @@ void main() {
         path: worktreeDir.path,
       );
       expect(repo.worktrees, [worktreeName]);
+      expect(worktree.isPrunable, false);
+      expect(worktree.isValid, true);
 
       worktreeDir.deleteSync(recursive: true);
+      expect(worktree.isPrunable, true);
+      expect(worktree.isValid, false);
+
       worktree.prune();
       expect(repo.worktrees, []);
 

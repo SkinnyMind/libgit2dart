@@ -52,12 +52,41 @@ class Worktree {
   /// Returns the filesystem path for the worktree.
   String get path => bindings.path(_worktreePointer);
 
+  /// Checks if worktree is locked.
+  ///
+  /// A worktree may be locked if the linked working tree is stored on a portable
+  /// device which is not available.
+  ///
+  /// Throws a [LibGit2Error] if error occured.
+  bool get isLocked => bindings.isLocked(_worktreePointer);
+
+  /// Locks worktree if not already locked.
+  void lock() => bindings.lock(_worktreePointer);
+
+  /// Unlocks a locked worktree.
+  void unlock() => bindings.unlock(_worktreePointer);
+
+  /// Checks if the worktree prunable.
+  ///
+  /// A worktree is not prunable in the following scenarios:
+  /// - the worktree is linking to a valid on-disk worktree.
+  /// - the worktree is locked.
+  ///
+  /// Throws a [LibGit2Error] if error occured.
+  bool get isPrunable => bindings.isPrunable(_worktreePointer);
+
   /// Prunes working tree.
   ///
   /// Prune the working tree, that is remove the git data structures on disk.
   ///
   /// Throws a [LibGit2Error] if error occured.
   void prune() => bindings.prune(_worktreePointer);
+
+  /// Checks if worktree is valid.
+  ///
+  /// A valid worktree requires both the git data structures inside the linked parent
+  /// repository and the linked working copy to be present.
+  bool get isValid => bindings.isValid(_worktreePointer);
 
   /// Releases memory allocated for worktree object.
   void free() => bindings.free(_worktreePointer);
