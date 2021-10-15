@@ -35,6 +35,19 @@ void main() {
         expect(oid, isA<Oid>());
         expect(oid.sha, sha);
       });
+
+      test('throws when sha hex string is too short', () {
+        expect(
+          () => Oid.fromSHA(repo: repo, sha: 'sha'),
+          throwsA(
+            isA<ArgumentError>().having(
+              (e) => e.invalidValue,
+              'value',
+              'sha is not a valid sha hex string',
+            ),
+          ),
+        );
+      });
     });
 
     group('fromRaw()', () {
@@ -71,6 +84,10 @@ void main() {
         expect(oid1 > oid2, true);
         expect(oid1 >= oid2, true);
       });
+    });
+
+    test('returns string representation of Oid object', () {
+      expect(repo[sha].toString(), contains('Oid{'));
     });
   });
 }

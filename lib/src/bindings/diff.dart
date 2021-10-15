@@ -21,7 +21,16 @@ Pointer<git_diff> indexToWorkdir({
     interhunkLines: interhunkLines,
   );
 
-  libgit2.git_diff_index_to_workdir(out, repoPointer, indexPointer, opts);
+  final error = libgit2.git_diff_index_to_workdir(
+    out,
+    repoPointer,
+    indexPointer,
+    opts,
+  );
+
+  if (error < 0) {
+    throw LibGit2Error(libgit2.git_error_last());
+  }
 
   calloc.free(opts);
 
@@ -46,13 +55,17 @@ Pointer<git_diff> treeToIndex({
     interhunkLines: interhunkLines,
   );
 
-  libgit2.git_diff_tree_to_index(
+  final error = libgit2.git_diff_tree_to_index(
     out,
     repoPointer,
     treePointer,
     indexPointer,
     opts,
   );
+
+  if (error < 0) {
+    throw LibGit2Error(libgit2.git_error_last());
+  }
 
   calloc.free(opts);
 
@@ -76,7 +89,16 @@ Pointer<git_diff> treeToWorkdir({
     interhunkLines: interhunkLines,
   );
 
-  libgit2.git_diff_tree_to_workdir(out, repoPointer, treePointer, opts);
+  final error = libgit2.git_diff_tree_to_workdir(
+    out,
+    repoPointer,
+    treePointer,
+    opts,
+  );
+
+  if (error < 0) {
+    throw LibGit2Error(libgit2.git_error_last());
+  }
 
   calloc.free(opts);
 
@@ -101,13 +123,17 @@ Pointer<git_diff> treeToTree({
     interhunkLines: interhunkLines,
   );
 
-  libgit2.git_diff_tree_to_tree(
+  final error = libgit2.git_diff_tree_to_tree(
     out,
     repoPointer,
     oldTreePointer,
     newTreePointer,
     opts,
   );
+
+  if (error < 0) {
+    throw LibGit2Error(libgit2.git_error_last());
+  }
 
   calloc.free(opts);
 
@@ -351,15 +377,18 @@ Pointer<git_diff_options> _diffOptionsInit({
   required int interhunkLines,
 }) {
   final opts = calloc<git_diff_options>();
-  final optsError =
-      libgit2.git_diff_options_init(opts, GIT_DIFF_OPTIONS_VERSION);
-  opts.ref.flags = flags;
-  opts.ref.context_lines = contextLines;
-  opts.ref.interhunk_lines = interhunkLines;
+  final optsError = libgit2.git_diff_options_init(
+    opts,
+    GIT_DIFF_OPTIONS_VERSION,
+  );
 
   if (optsError < 0) {
+    calloc.free(opts);
     throw LibGit2Error(libgit2.git_error_last());
   } else {
+    opts.ref.flags = flags;
+    opts.ref.context_lines = contextLines;
+    opts.ref.interhunk_lines = interhunkLines;
     return opts;
   }
 }

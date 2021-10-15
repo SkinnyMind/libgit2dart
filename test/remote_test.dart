@@ -1,4 +1,5 @@
 import 'dart:io';
+import 'package:libgit2dart/src/git_types.dart';
 import 'package:test/test.dart';
 import 'package:libgit2dart/libgit2dart.dart';
 import 'helpers/util.dart';
@@ -30,6 +31,7 @@ void main() {
       expect(remote.name, remoteName);
       expect(remote.url, remoteUrl);
       expect(remote.pushUrl, '');
+      expect(remote.toString(), contains('Remote{'));
 
       remote.free();
     });
@@ -143,7 +145,9 @@ void main() {
       expect(refspec.source, 'refs/heads/*');
       expect(refspec.destination, 'refs/remotes/origin/*');
       expect(refspec.force, true);
+      expect(refspec.direction, GitDirection.fetch);
       expect(refspec.string, '+refs/heads/*:refs/remotes/origin/*');
+      expect(refspec.toString(), contains('Refspec{'));
       expect(remote.fetchRefspecs, ['+refs/heads/*:refs/remotes/origin/*']);
 
       expect(refspec.matchesSource('refs/heads/master'), true);
@@ -231,6 +235,7 @@ void main() {
       expect(stats.totalDeltas, 3);
       expect(stats.indexedDeltas, 3);
       expect(stats.receivedBytes, 0);
+      expect(stats.toString(), contains('TransferProgress{'));
 
       remote.free();
     });

@@ -17,10 +17,8 @@ class TreeBuilder {
     );
   }
 
-  late final Pointer<git_treebuilder> _treeBuilderPointer;
-
   /// Pointer to memory address for allocated tree builder object.
-  Pointer<git_treebuilder> get pointer => _treeBuilderPointer;
+  late final Pointer<git_treebuilder> _treeBuilderPointer;
 
   /// Returns the number of entries listed in a tree builder.
   int get length => bindings.entryCount(_treeBuilderPointer);

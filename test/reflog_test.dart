@@ -41,5 +41,9 @@ void main() {
       expect(reflog[0].committer.email, 'skinny.mind@gmail.com');
       expect(reflog[0].committer.time, 1630568461);
     });
+
+    test('returns string representation of RefLogEntry object', () {
+      expect(reflog[0].toString(), contains('RefLogEntry{'));
+    });
   });
 }

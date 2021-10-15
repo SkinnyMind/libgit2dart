@@ -5,10 +5,6 @@ import 'bindings/mailmap.dart' as bindings;
 import 'util.dart';
 
 class Mailmap {
-  /// Initializes a new instance of [Mailmap] class from provided
-  /// pointer to mailmap object in memory.
-  Mailmap(this._mailmapPointer);
-
   /// Initializes a new instance of [Mailmap] class.
   ///
   /// This object is empty, so you'll have to add a mailmap file before you can
@@ -49,10 +45,8 @@ class Mailmap {
     _mailmapPointer = bindings.fromRepository(repo.pointer);
   }
 
-  late final Pointer<git_mailmap> _mailmapPointer;
-
   /// Pointer to memory address for allocated mailmap object.
-  Pointer<git_mailmap> get pointer => _mailmapPointer;
+  late final Pointer<git_mailmap> _mailmapPointer;
 
   /// Returns list containing resolved [name] and [email] to the corresponding real name
   /// and real email respectively.

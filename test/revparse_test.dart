@@ -41,6 +41,7 @@ void main() {
 
       expect(headParse.object.oid.sha, headSHA);
       expect(headParse.reference, masterRef);
+      expect(headParse.toString(), contains('RevParse{'));
 
       masterRef.free();
       headParse.object.free();
@@ -77,6 +78,7 @@ void main() {
       expect(revspec.from.oid.sha, headSHA);
       expect(revspec.to, isNull);
       expect(revspec.flags, {GitRevSpec.single});
+      expect(revspec.toString(), contains('RevSpec{'));
 
       revspec.from.free();
 

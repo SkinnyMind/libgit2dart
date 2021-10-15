@@ -147,5 +147,11 @@ void main() {
       parent2.free();
       commit.free();
     });
+
+    test('returns string representation of Commit object', () {
+      final commit = repo.lookupCommit(mergeCommit);
+      expect(commit.toString(), contains('Commit{'));
+      commit.free();
+    });
   });
 }

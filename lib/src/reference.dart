@@ -5,7 +5,6 @@ import 'bindings/reference.dart' as bindings;
 import 'bindings/object.dart' as object_bindings;
 import 'bindings/refdb.dart' as refdb_bindings;
 import 'bindings/repository.dart' as repository_bindings;
-import 'util.dart';
 
 class Reference {
   /// Initializes a new instance of the [Reference] class.
@@ -30,6 +29,9 @@ class Reference {
   ///
   /// The [logMessage] message for the reflog will be ignored if the reference does not belong in the
   /// standard set (HEAD, branches and remote-tracking branches) and it does not have a reflog.
+  ///
+  /// Throws a [LibGit2Error] if error occured or [ArgumentError] if provided [target]
+  /// is not Oid or String reference name.
   Reference.create({
     required Repository repo,
     required String name,
@@ -37,35 +39,25 @@ class Reference {
     bool force = false,
     String? logMessage,
   }) {
-    late final Oid oid;
-    late final bool isDirect;
-
     if (target is Oid) {
-      oid = target;
-      isDirect = true;
-    } else if (isValidShaHex(target as String)) {
-      oid = Oid.fromSHA(repo: repo, sha: target);
-      isDirect = true;
-    } else {
-      isDirect = false;
-    }
-
-    if (isDirect) {
       _refPointer = bindings.createDirect(
         repoPointer: repo.pointer,
         name: name,
-        oidPointer: oid.pointer,
+        oidPointer: target.pointer,
+        force: force,
+        logMessage: logMessage,
+      );
+    } else if (target is String) {
+      _refPointer = bindings.createSymbolic(
+        repoPointer: repo.pointer,
+        name: name,
+        target: target,
         force: force,
         logMessage: logMessage,
       );
     } else {
-      _refPointer = bindings.createSymbolic(
-        repoPointer: repo.pointer,
-        name: name,
-        target: target as String,
-        force: force,
-        logMessage: logMessage,
-      );
+      throw ArgumentError.value(
+          '$target must be either Oid or String reference name');
     }
   }
 
@@ -275,8 +267,8 @@ class Reference {
   /// Releases memory allocated for reference object.
   void free() => bindings.free(_refPointer);
 
-  @override
-  int get hashCode => _refPointer.address.hashCode;
+  @override // coverage:ignore-line
+  int get hashCode => _refPointer.address.hashCode; // coverage:ignore-line
 
   @override
   String toString() {

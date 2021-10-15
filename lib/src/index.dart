@@ -67,9 +67,7 @@ class Index with IterableMixin<IndexEntry> {
           ? their = null
           : their = IndexEntry(entry['their']!);
 
-      if (ancestor != null) {
-        path = ancestor.path;
-      } else if (our != null) {
+      if (our != null) {
         path = our.path;
       } else {
         path = their!.path;

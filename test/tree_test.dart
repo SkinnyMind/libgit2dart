@@ -26,6 +26,7 @@ void main() {
   group('Tree', () {
     test('successfully initializes tree from provided Oid', () {
       expect(tree, isA<Tree>());
+      expect(tree.toString(), contains('Tree{'));
     });
 
     test('returns correct values', () {
@@ -55,11 +56,16 @@ void main() {
     test('returns tree entry with provided path to file', () {
       final entry = tree['dir/dir_file.txt'];
       expect(entry.oid.sha, 'e69de29bb2d1d6434b8b29ae775ad8c2e48c5391');
+      expect(entry.toString(), contains('TreeEntry{'));
       entry.free();
     });
 
     test('throws when nothing found for provided path', () {
       expect(() => tree['invalid/path'], throwsA(isA<LibGit2Error>()));
+    });
+
+    test('throws when looking up with invalid argument type', () {
+      expect(() => tree[true], throwsA(isA<ArgumentError>()));
     });
 
     test('successfully creates tree', () {

@@ -78,8 +78,9 @@ class Signature {
   /// Releases memory allocated for signature object.
   void free() => bindings.free(_signaturePointer);
 
-  @override
-  int get hashCode => _signaturePointer.address.hashCode;
+  @override // coverage:ignore-line
+  int get hashCode =>
+      _signaturePointer.address.hashCode; // coverage:ignore-line
 
   @override
   String toString() {

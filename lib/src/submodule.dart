@@ -4,10 +4,6 @@ import 'bindings/libgit2_bindings.dart';
 import 'bindings/submodule.dart' as bindings;
 
 class Submodule {
-  /// Initializes a new instance of [Submodule] class from provided
-  /// pointer to submodule object in memory.
-  Submodule(this._submodulePointer);
-
   /// Initializes a new instance of [Submodule] class by looking up
   /// submodule information by name or path.
   ///
@@ -53,10 +49,8 @@ class Submodule {
     bindings.addFinalize(_submodulePointer);
   }
 
-  late final Pointer<git_submodule> _submodulePointer;
-
   /// Pointer to memory address for allocated submodule object.
-  Pointer<git_submodule> get pointer => _submodulePointer;
+  late final Pointer<git_submodule> _submodulePointer;
 
   /// Copies submodule info into ".git/config" file.
   ///

@@ -30,6 +30,15 @@ void main() {
       config.free();
     });
 
+    test('returns snapshot of repository config', () {
+      final snapshot = repo.configSnapshot;
+      expect(
+        snapshot['remote.origin.url'].value,
+        'git://github.com/SkinnyMind/libgit2dart.git',
+      );
+      snapshot.free();
+    });
+
     test('returns list of commits by walking from provided starting oid', () {
       const log = [
         '821ed6e80627b8769d170a293862f9fc60825226',
@@ -110,6 +119,10 @@ void main() {
         expect(repo.isBranchUnborn, false);
         repo.setHead('refs/heads/not.there');
         expect(repo.isBranchUnborn, true);
+      });
+
+      test('throws when target is invalid', () {
+        expect(() => repo.setHead(0), throwsA(isA<ArgumentError>()));
       });
     });
 
@@ -194,6 +207,18 @@ void main() {
       );
 
       index.free();
+    });
+
+    test('cleans up state', () {
+      expect(repo.state, GitRepositoryState.none);
+      final commit = repo.lookupCommit(repo['5aecfa0']);
+      repo.cherryPick(commit);
+
+      expect(repo.state, GitRepositoryState.cherrypick);
+      repo.stateCleanup();
+      expect(repo.state, GitRepositoryState.none);
+
+      commit.free();
     });
 
     test('returns status of a single file for provided path', () {
@@ -283,6 +308,10 @@ void main() {
 
       commit1.free();
       commit2.free();
+    });
+
+    test('returns string representation of Repository object', () {
+      expect(repo.toString(), contains('Repository{'));
     });
   });
 }

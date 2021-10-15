@@ -174,5 +174,18 @@ index e69de29..0000000
 
       commit.free();
     });
+
+    test('returns string representation of Patch object', () {
+      final patch = Patch.create(
+        a: oldBlob,
+        b: newBlob,
+        aPath: path,
+        bPath: path,
+      );
+
+      expect(patch.toString(), contains('Patch{'));
+
+      patch.free();
+    });
   });
 }

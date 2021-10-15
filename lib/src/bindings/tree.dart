@@ -73,7 +73,7 @@ Pointer<git_tree_entry> getByName({
 /// Retrieve a tree entry contained in a tree or in any of its subtrees, given its relative path.
 ///
 /// Unlike the other lookup functions, the returned tree entry is owned by the user and must be
-/// freed explicitly with `entryFree()`.
+/// freed explicitly with [entryFree].
 ///
 /// Throws a [LibGit2Error] if error occured.
 Pointer<git_tree_entry> getByPath({
@@ -122,7 +122,7 @@ int compare({
 /// Free a user-owned tree entry.
 ///
 /// IMPORTANT: This function is only needed for tree entries owned by the user,
-/// such as `getByPath()`.
+/// such as [getByPath].
 void entryFree(Pointer<git_tree_entry> entry) =>
     libgit2.git_tree_entry_free(entry);
 

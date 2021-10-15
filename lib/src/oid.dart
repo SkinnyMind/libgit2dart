@@ -79,8 +79,8 @@ class Oid {
             1);
   }
 
-  @override
-  int get hashCode => _oidPointer.address.hashCode;
+  @override // coverage:ignore-line
+  int get hashCode => _oidPointer.address.hashCode; // coverage:ignore-line
 
   @override
   String toString() => 'Oid{sha: $sha}';

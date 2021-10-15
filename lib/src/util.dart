@@ -7,14 +7,14 @@ DynamicLibrary loadLibrary() {
     return DynamicLibrary.open(
         '${Directory.current.path}/libgit2/libgit2.so.1.3.0');
   }
-  if (Platform.isMacOS) {
-    return DynamicLibrary.open(
-        '${Directory.current.path}/libgit2/libgit2-1.2.0.dylib');
-  }
-  if (Platform.isWindows) {
-    return DynamicLibrary.open(
-        '${Directory.current.path}/libgit2/libgit2-1.2.0.dll');
-  }
+  // if (Platform.isMacOS) {
+  //   return DynamicLibrary.open(
+  //       '${Directory.current.path}/libgit2/libgit2-1.2.0.dylib');
+  // }
+  // if (Platform.isWindows) {
+  //   return DynamicLibrary.open(
+  //       '${Directory.current.path}/libgit2/libgit2-1.2.0.dll');
+  // }
   throw Exception('Platform not implemented');
 }
 

@@ -34,17 +34,16 @@ void main() {
     });
 
     test('successfully adds disk alternate', () {
-      final oid = Oid.fromSHA(repo: repo, sha: blobSha);
       final odb = Odb.create();
       odb.addDiskAlternate('${repo.workdir}.git/objects/');
 
-      expect(odb.contains(oid), true);
+      expect(odb.contains(repo[blobSha]), true);
 
       odb.free();
     });
 
     test('successfully reads object', () {
-      final oid = Oid.fromSHA(repo: repo, sha: blobSha);
+      final oid = repo[blobSha];
       final odb = repo.odb;
       final object = odb.read(oid);
 
@@ -58,21 +57,12 @@ void main() {
     });
 
     test('returns list of all objects oid\'s in database', () {
-      final oid = Oid.fromSHA(repo: repo, sha: commitSha);
       final odb = repo.odb;
 
       expect(odb.objects, isNot(isEmpty));
-      expect(odb.objects.contains(oid), true);
+      expect(odb.objects.contains(repo[commitSha]), true);
 
       odb.free();
-    });
-
-    test('finds object by short oid', () {
-      final oid = Oid.fromSHA(
-        repo: repo,
-        sha: commitSha.substring(0, 5),
-      );
-      expect(oid.sha, commitSha);
     });
 
     test('successfully writes data', () {
@@ -94,6 +84,13 @@ void main() {
         throwsA(isA<ArgumentError>()),
       );
 
+      odb.free();
+    });
+
+    test('returns string representation of OdbObject object', () {
+      final odb = repo.odb;
+      final object = odb.read(repo[blobSha]);
+      expect(object.toString(), contains('OdbObject{'));
       odb.free();
     });
   });

@@ -1,5 +1,4 @@
 import 'dart:ffi';
-import 'package:ffi/ffi.dart';
 import 'package:libgit2dart/libgit2dart.dart';
 import 'bindings/libgit2_bindings.dart';
 import 'bindings/rebase.dart' as bindings;
@@ -80,7 +79,7 @@ class Rebase {
   }
 
   /// Commits the current patch. You must have resolved any conflicts that were
-  /// introduced during the patch application from the `next()` invocation.
+  /// introduced during the patch application from the [next] invocation.
   ///
   /// Throws a [LibGit2Error] if error occured.
   void commit({
@@ -126,17 +125,8 @@ class RebaseOperation {
     );
   }
 
-  /// Returns the commit [Oid] being cherry-picked. This will be populated for
-  /// all operations except those of type [GitRebaseOperation.exec].
+  /// Returns the commit [Oid] being cherry-picked.
   Oid get oid => Oid.fromRaw(_rebaseOperationPointer.ref.id);
-
-  /// The executable the user has requested be run. This will only
-  /// be populated for operations of type [GitRebaseOperation.exec].
-  String get exec {
-    return _rebaseOperationPointer.ref.exec == nullptr
-        ? ''
-        : _rebaseOperationPointer.ref.exec.cast<Utf8>().toDartString();
-  }
 
   @override
   String toString() => 'RebaseOperation{type: $type, oid: $oid}';

@@ -235,6 +235,8 @@ bool isTag(Pointer<git_reference> ref) {
 ///
 /// The message for the reflog will be ignored if the reference does not belong in the
 /// standard set (HEAD, branches and remote-tracking branches) and it does not have a reflog.
+///
+/// Throws a [LibGit2Error] if error occured.
 Pointer<git_reference> createDirect({
   required Pointer<git_repository> repoPointer,
   required String name,
@@ -288,6 +290,8 @@ Pointer<git_reference> createDirect({
 ///
 /// The message for the reflog will be ignored if the reference does not belong in the standard
 /// set (HEAD, branches and remote-tracking branches) and it does not have a reflog.
+///
+/// Throws a [LibGit2Error] if error occured.
 Pointer<git_reference> createSymbolic({
   required Pointer<git_repository> repoPointer,
   required String name,

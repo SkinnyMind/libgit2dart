@@ -375,6 +375,9 @@ class Repository {
   ///
   /// The [logMessage] message for the reflog will be ignored if the reference does not belong in the
   /// standard set (HEAD, branches and remote-tracking branches) and it does not have a reflog.
+  ///
+  /// Throws a [LibGit2Error] if error occured or [ArgumentError] if provided [target]
+  /// is not Oid or String reference name.
   Reference createReference({
     required String name,
     required Object target,
@@ -838,14 +841,14 @@ class Repository {
   /// Throws a [LibGit2Error] if error occured.
   String mergeFileFromIndex({
     required IndexEntry? ancestor,
-    required IndexEntry? ours,
-    required IndexEntry? theirs,
+    required IndexEntry ours,
+    required IndexEntry theirs,
   }) {
     return merge_bindings.mergeFileFromIndex(
       repoPointer: _repoPointer,
       ancestorPointer: ancestor?.pointer,
-      oursPointer: ours?.pointer,
-      theirsPointer: theirs?.pointer,
+      oursPointer: ours.pointer,
+      theirsPointer: theirs.pointer,
     );
   }
 
@@ -1435,7 +1438,7 @@ class Repository {
     bool? alwaysUseLongFormat,
     String? dirtySuffix,
   }) {
-    late final Pointer<git_describe_result> describeResult;
+    Pointer<git_describe_result> describeResult = nullptr;
 
     if (commit != null) {
       describeResult = describe_bindings.commit(

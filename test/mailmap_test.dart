@@ -206,5 +206,25 @@ Santa Claus <santa.claus@northpole.xx> <me@company.xx>
 
       mailmap.free();
     });
+
+    test('successfully resolves signature', () {
+      final signature = Signature.create(
+        name: 'nick1',
+        email: 'bugs@company.xx',
+      );
+      final realSignature = Signature.create(
+        name: 'Some Dude',
+        email: 'some@dude.xx',
+      );
+      final mailmap = Mailmap.empty();
+      mailmap.addEntry(
+        realName: 'Some Dude',
+        realEmail: 'some@dude.xx',
+        replaceName: 'nick1',
+        replaceEmail: 'bugs@company.xx',
+      );
+
+      expect(mailmap.resolveSignature(signature), realSignature);
+    });
   });
 }

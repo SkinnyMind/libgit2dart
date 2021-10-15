@@ -24,6 +24,7 @@ void main() {
     test('successfully initializes tree builder when no tree is provided', () {
       final builder = TreeBuilder(repo: repo);
       expect(builder, isA<TreeBuilder>());
+      expect(builder.toString(), contains('TreeBuilder{'));
       builder.free();
     });
 

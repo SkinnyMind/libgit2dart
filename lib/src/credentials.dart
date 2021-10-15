@@ -78,6 +78,9 @@ class KeypairFromAgent implements Credentials {
 
   @override
   GitCredential get credentialType => GitCredential.sshKey;
+
+  @override
+  String toString() => 'KeypairFromAgent{username: $username}';
 }
 
 /// Ssh key credential used for reading the keys from memory.
@@ -106,7 +109,7 @@ class KeypairFromMemory implements Credentials {
 
   @override
   String toString() {
-    return 'KeypairFromAgent{username: $username, pubKey: $pubKey, privateKey: $privateKey, '
+    return 'KeypairFromMemory{username: $username, pubKey: $pubKey, privateKey: $privateKey, '
         'passPhrase: $passPhrase}';
   }
 }

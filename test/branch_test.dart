@@ -186,5 +186,11 @@ void main() {
         );
       });
     });
+
+    test('returns string representation of Branch object', () {
+      final branch = repo.lookupBranch('master');
+      expect(branch.toString(), contains('Branch{'));
+      branch.free();
+    });
   });
 }

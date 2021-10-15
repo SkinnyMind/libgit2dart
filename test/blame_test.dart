@@ -142,5 +142,11 @@ void main() {
 
       blame.free();
     });
+
+    test('returns string representation of BlameHunk object', () {
+      final blame = repo.blame(path: 'feature_file');
+      expect(blame.toString(), contains('BlameHunk{'));
+      blame.free();
+    });
   });
 }

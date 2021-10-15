@@ -44,9 +44,13 @@ void main() {
         final operation = rebase.next();
         expect(operation.type, GitRebaseOperation.pick);
         expect(operation.oid.sha, shas[i]);
-        expect(operation.exec, '');
+        expect(operation.toString(), contains('RebaseOperation{'));
 
-        rebase.commit(committer: signature);
+        rebase.commit(
+          committer: signature,
+          author: signature,
+          message: 'rebase message',
+        );
       }
 
       rebase.finish();

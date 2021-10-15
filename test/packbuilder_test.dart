@@ -69,12 +69,15 @@ void main() {
       odb.free();
     });
 
-    test('successfully packs into provided path', () {
+    test('successfully packs into provided path with threads set', () {
       final odb = repo.odb;
       final objectsCount = odb.objects.length;
       Directory('${repo.workdir}test-pack').createSync();
 
-      final writtenCount = repo.pack(path: '${repo.workdir}test-pack');
+      final writtenCount = repo.pack(
+        path: '${repo.workdir}test-pack',
+        threads: 1,
+      );
       expect(writtenCount, objectsCount);
       expect(
         Directory('${repo.workdir}test-pack').listSync().isNotEmpty,
@@ -100,6 +103,12 @@ void main() {
 
       final writtenCount = repo.pack(packDelegate: packDelegate);
       expect(writtenCount, 18);
+    });
+
+    test('returns string representation of PackBuilder object', () {
+      final packbuilder = PackBuilder(repo);
+      expect(packbuilder.toString(), contains('PackBuilder{'));
+      packbuilder.free();
     });
   });
 }

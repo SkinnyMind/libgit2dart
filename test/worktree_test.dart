@@ -40,6 +40,7 @@ void main() {
       expect(worktree.name, worktreeName);
       expect(worktree.path, worktreeDir.path);
       expect(worktree.isLocked, false);
+      expect(worktree.toString(), contains('Worktree{'));
       expect(File('${worktreeDir.path}/.git').existsSync(), true);
 
       for (final branch in branches) {

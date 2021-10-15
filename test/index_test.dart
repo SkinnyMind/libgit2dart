@@ -29,7 +29,9 @@ void main() {
     });
 
     test('returns mode of index entry', () {
-      expect(index['file'].mode, GitFilemode.blob);
+      for (final entry in index) {
+        expect(entry.mode, GitFilemode.blob);
+      }
     });
 
     test('returns index entry at provided position', () {
@@ -173,6 +175,105 @@ void main() {
     test('successfully writes tree', () {
       final oid = index.writeTree();
       expect(oid.sha, 'a8ae3dd59e6e1802c6f78e05e301bfd57c9f334f');
+    });
+
+    test('returns conflicts with ancestor, our and their present', () {
+      final repoDir = setupRepo(Directory('test/assets/mergerepo/'));
+      final conflictRepo = Repository.open(repoDir.path);
+
+      final conflictBranch = conflictRepo.lookupBranch('ancestor-conflict');
+
+      conflictRepo.checkout(refName: 'refs/heads/feature');
+
+      conflictRepo.merge(conflictBranch.target);
+
+      final index = conflictRepo.index;
+      final conflictedFile = index.conflicts['feature_file']!;
+      expect(conflictedFile.ancestor?.path, 'feature_file');
+      expect(conflictedFile.our?.path, 'feature_file');
+      expect(conflictedFile.their?.path, 'feature_file');
+      expect(conflictedFile.toString(), contains('ConflictEntry{'));
+
+      index.free();
+      conflictBranch.free();
+      conflictRepo.free();
+      repoDir.deleteSync(recursive: true);
+    });
+
+    test('returns conflicts with our and their present and null ancestor', () {
+      final repoDir = setupRepo(Directory('test/assets/mergerepo/'));
+      final conflictRepo = Repository.open(repoDir.path);
+
+      final conflictBranch = conflictRepo.lookupBranch('conflict-branch');
+
+      conflictRepo.merge(conflictBranch.target);
+
+      final index = conflictRepo.index;
+      final conflictedFile = index.conflicts['conflict_file']!;
+      expect(conflictedFile.ancestor?.path, null);
+      expect(conflictedFile.our?.path, 'conflict_file');
+      expect(conflictedFile.their?.path, 'conflict_file');
+      expect(conflictedFile.toString(), contains('ConflictEntry{'));
+
+      index.free();
+      conflictBranch.free();
+      conflictRepo.free();
+      repoDir.deleteSync(recursive: true);
+    });
+
+    test('returns conflicts with ancestor and their present and null our', () {
+      final repoDir = setupRepo(Directory('test/assets/mergerepo/'));
+      final conflictRepo = Repository.open(repoDir.path);
+
+      final conflictBranch = conflictRepo.lookupBranch('ancestor-conflict');
+
+      conflictRepo.checkout(refName: 'refs/heads/our-conflict');
+
+      conflictRepo.merge(conflictBranch.target);
+
+      final index = conflictRepo.index;
+      final conflictedFile = index.conflicts['feature_file']!;
+      expect(conflictedFile.ancestor?.path, 'feature_file');
+      expect(conflictedFile.our?.path, null);
+      expect(conflictedFile.their?.path, 'feature_file');
+      expect(conflictedFile.toString(), contains('ConflictEntry{'));
+
+      index.free();
+      conflictBranch.free();
+      conflictRepo.free();
+      repoDir.deleteSync(recursive: true);
+    });
+
+    test('returns conflicts with ancestor and our present and null their', () {
+      final repoDir = setupRepo(Directory('test/assets/mergerepo/'));
+      final conflictRepo = Repository.open(repoDir.path);
+
+      final conflictBranch = conflictRepo.lookupBranch('their-conflict');
+
+      conflictRepo.checkout(refName: 'refs/heads/feature');
+
+      conflictRepo.merge(conflictBranch.target);
+
+      final index = conflictRepo.index;
+      final conflictedFile = index.conflicts['feature_file']!;
+      expect(conflictedFile.ancestor?.path, 'feature_file');
+      expect(conflictedFile.our?.path, 'feature_file');
+      expect(conflictedFile.their?.path, null);
+      expect(conflictedFile.toString(), contains('ConflictEntry{'));
+
+      index.free();
+      conflictBranch.free();
+      conflictRepo.free();
+      repoDir.deleteSync(recursive: true);
+    });
+
+    test('returns string representation of Index and IndexEntry objects', () {
+      final index = repo.index;
+
+      expect(index.toString(), contains('Index{'));
+      expect(index['file'].toString(), contains('IndexEntry{'));
+
+      index.free();
     });
   });
 }

@@ -93,5 +93,11 @@ void main() {
       head.free();
       signature.free();
     });
+
+    test('returns string representation of Note object', () {
+      final note = repo.lookupNote(annotatedOid: repo['821ed6e']);
+      expect(note.toString(), contains('Note{'));
+      note.free();
+    });
   });
 }

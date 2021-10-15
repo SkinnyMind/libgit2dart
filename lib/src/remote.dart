@@ -4,10 +4,6 @@ import 'bindings/libgit2_bindings.dart';
 import 'bindings/remote.dart' as bindings;
 
 class Remote {
-  /// Initializes a new instance of [Remote] class from provided pointer
-  /// to remote object in memory.
-  Remote(this._remotePointer);
-
   /// Initializes a new instance of [Remote] class by looking up remote with
   /// provided [name] in a [repo]sitory.
   ///

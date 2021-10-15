@@ -6,10 +6,6 @@ import 'bindings/libgit2_bindings.dart';
 import 'bindings/blame.dart' as bindings;
 
 class Blame with IterableMixin<BlameHunk> {
-  /// Initializes a new instance of the [Blame] class from
-  /// provided pointer to blame object in memory.
-  Blame(this._blamePointer);
-
   /// Initializes a new instance of the [Blame] class by getting
   /// the blame for a single file.
   ///

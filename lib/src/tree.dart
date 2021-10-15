@@ -40,7 +40,7 @@ class Tree {
     return result;
   }
 
-  /// Looksup a tree entry in the tree.
+  /// Lookups a tree entry in the tree.
   ///
   /// If integer [value] is provided, lookup is done by entry position in the tree.
   ///
@@ -158,52 +158,8 @@ class TreeEntry {
     return GitFilemode.values.singleWhere((mode) => modeInt == mode.value);
   }
 
-  @override
-  bool operator ==(other) {
-    return (other is TreeEntry) &&
-        (bindings.compare(
-                aPointer: _treeEntryPointer,
-                bPointer: other._treeEntryPointer) ==
-            0);
-  }
-
-  bool operator <(other) {
-    return (other is TreeEntry) &&
-        (bindings.compare(
-                aPointer: _treeEntryPointer,
-                bPointer: other._treeEntryPointer) ==
-            -1);
-  }
-
-  bool operator <=(other) {
-    return (other is TreeEntry) &&
-        (bindings.compare(
-                aPointer: _treeEntryPointer,
-                bPointer: other._treeEntryPointer) ==
-            -1);
-  }
-
-  bool operator >(other) {
-    return (other is TreeEntry) &&
-        (bindings.compare(
-                aPointer: _treeEntryPointer,
-                bPointer: other._treeEntryPointer) ==
-            1);
-  }
-
-  bool operator >=(other) {
-    return (other is TreeEntry) &&
-        (bindings.compare(
-                aPointer: _treeEntryPointer,
-                bPointer: other._treeEntryPointer) ==
-            1);
-  }
-
   /// Releases memory allocated for tree entry object.
   void free() => bindings.entryFree(_treeEntryPointer);
-
-  @override
-  int get hashCode => _treeEntryPointer.address.hashCode;
 
   @override
   String toString() => 'TreeEntry{oid: $oid, name: $name, filemode: $filemode}';

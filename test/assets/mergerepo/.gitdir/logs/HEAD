@@ -13,3 +13,14 @@ fc38877b2552ab554752d9a77e1f48f738cca79b 5aecfa0fb97eadaac050ccb99f03c3fb65460ad
 821ed6e80627b8769d170a293862f9fc60825226 47af50e6a799d7d0dde6630d2644f9484fb670f7 Aleksey Kulikov <skinny.mind@gmail.com> 1631172155 +0300	commit: conflict branch commit
 47af50e6a799d7d0dde6630d2644f9484fb670f7 821ed6e80627b8769d170a293862f9fc60825226 Aleksey Kulikov <skinny.mind@gmail.com> 1631172159 +0300	checkout: moving from conflict-branch to master
 821ed6e80627b8769d170a293862f9fc60825226 14905459d775f3f56a39ebc2ff081163f7da3529 Aleksey Kulikov <skinny.mind@gmail.com> 1631172175 +0300	commit: master conflict commit
+14905459d775f3f56a39ebc2ff081163f7da3529 5aecfa0fb97eadaac050ccb99f03c3fb65460ad4 Aleksey Kulikov <skinny.mind@gmail.com> 1634223805 +0300	checkout: moving from master to ancestor-conflict
+5aecfa0fb97eadaac050ccb99f03c3fb65460ad4 7606a0d606a74ee5f0761c6e358c2f90405c94ad Aleksey Kulikov <skinny.mind@gmail.com> 1634223835 +0300	commit: conflict with ancestor
+7606a0d606a74ee5f0761c6e358c2f90405c94ad 5aecfa0fb97eadaac050ccb99f03c3fb65460ad4 Aleksey Kulikov <skinny.mind@gmail.com> 1634223845 +0300	checkout: moving from ancestor-conflict to feature
+5aecfa0fb97eadaac050ccb99f03c3fb65460ad4 2ee89b2f7124b8e4632bc6a20774a90b795245e4 Aleksey Kulikov <skinny.mind@gmail.com> 1634223881 +0300	commit: conflict with ancestor
+2ee89b2f7124b8e4632bc6a20774a90b795245e4 14905459d775f3f56a39ebc2ff081163f7da3529 Aleksey Kulikov <skinny.mind@gmail.com> 1634225232 +0300	checkout: moving from feature to master
+14905459d775f3f56a39ebc2ff081163f7da3529 2ee89b2f7124b8e4632bc6a20774a90b795245e4 Aleksey Kulikov <skinny.mind@gmail.com> 1634303915 +0300	checkout: moving from master to our-conflict
+2ee89b2f7124b8e4632bc6a20774a90b795245e4 0db17b23a1acd67d5e44650d61aac7d4d83ec193 Aleksey Kulikov <skinny.mind@gmail.com> 1634303926 +0300	commit: delete our for conflict
+0db17b23a1acd67d5e44650d61aac7d4d83ec193 14905459d775f3f56a39ebc2ff081163f7da3529 Aleksey Kulikov <skinny.mind@gmail.com> 1634303933 +0300	checkout: moving from our-conflict to master
+14905459d775f3f56a39ebc2ff081163f7da3529 7606a0d606a74ee5f0761c6e358c2f90405c94ad Aleksey Kulikov <skinny.mind@gmail.com> 1634304003 +0300	checkout: moving from master to their-conflict
+7606a0d606a74ee5f0761c6e358c2f90405c94ad 0e409d66f701eea5038fe508ead4c098da699d2c Aleksey Kulikov <skinny.mind@gmail.com> 1634304018 +0300	commit: delete their for conflict
+0e409d66f701eea5038fe508ead4c098da699d2c 14905459d775f3f56a39ebc2ff081163f7da3529 Aleksey Kulikov <skinny.mind@gmail.com> 1634304023 +0300	checkout: moving from their-conflict to master

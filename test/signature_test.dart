@@ -56,5 +56,9 @@ void main() {
 
       otherSignature.free();
     });
+
+    test('returns string representation of Signature object', () {
+      expect(signature.toString(), contains('Signature{'));
+    });
   });
 }

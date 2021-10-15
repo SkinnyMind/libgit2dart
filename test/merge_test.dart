@@ -148,7 +148,7 @@ void main() {
     });
 
     group('merge file from index', () {
-      test('successfully merges', () {
+      test('successfully merges without ancestor', () {
         const diffExpected = """
 \<<<<<<< conflict_file
 master conflict edit
@@ -160,10 +160,40 @@ conflict branch edit
         final index = repo.index;
         repo.merge(conflictBranch.target);
 
+        final conflictedFile = index.conflicts['conflict_file']!;
         final diff = repo.mergeFileFromIndex(
-          ancestor: index.conflicts['conflict_file']!.ancestor,
-          ours: index.conflicts['conflict_file']!.our,
-          theirs: index.conflicts['conflict_file']!.their,
+          ancestor: null,
+          ours: conflictedFile.our!,
+          theirs: conflictedFile.their!,
+        );
+
+        expect(
+          diff,
+          diffExpected,
+        );
+
+        index.free();
+        conflictBranch.free();
+      });
+
+      test('successfully merges with ancestor', () {
+        const diffExpected = """
+\<<<<<<< feature_file
+Feature edit on feature branch
+=======
+Another feature edit
+>>>>>>> feature_file
+""";
+        final conflictBranch = repo.lookupBranch('ancestor-conflict');
+        repo.checkout(refName: 'refs/heads/feature');
+        final index = repo.index;
+        repo.merge(conflictBranch.target);
+
+        final conflictedFile = index.conflicts['feature_file']!;
+        final diff = repo.mergeFileFromIndex(
+          ancestor: conflictedFile.ancestor,
+          ours: conflictedFile.our!,
+          theirs: conflictedFile.their!,
         );
 
         expect(

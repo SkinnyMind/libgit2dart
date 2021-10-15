@@ -21,10 +21,8 @@ class Tag {
     );
   }
 
-  late final Pointer<git_tag> _tagPointer;
-
   /// Pointer to memory address for allocated tag object.
-  Pointer<git_tag> get pointer => _tagPointer;
+  late final Pointer<git_tag> _tagPointer;
 
   /// Creates a new tag in the repository for provided [target] object.
   ///

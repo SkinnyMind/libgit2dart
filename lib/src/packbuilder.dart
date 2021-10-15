@@ -13,10 +13,8 @@ class PackBuilder {
     _packbuilderPointer = bindings.init(repo.pointer);
   }
 
-  late final Pointer<git_packbuilder> _packbuilderPointer;
-
   /// Pointer to memory address for allocated packbuilder object.
-  Pointer<git_packbuilder> get pointer => _packbuilderPointer;
+  late final Pointer<git_packbuilder> _packbuilderPointer;
 
   /// Adds a single object.
   ///

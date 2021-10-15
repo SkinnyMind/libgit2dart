@@ -131,5 +131,14 @@ void main() {
 
       index.free();
     });
+
+    test('successfully describes with max candidates tags flag set', () {
+      final index = repo.index;
+      index.clear();
+
+      expect(repo.describe(maxCandidatesTags: 0), 'v0.2');
+
+      index.free();
+    });
   });
 }

@@ -38,6 +38,7 @@ void main() {
       expect(submodule.workdirOid?.sha, null);
       expect(submodule.ignore, GitSubmoduleIgnore.none);
       expect(submodule.updateRule, GitSubmoduleUpdate.checkout);
+      expect(submodule.toString(), contains('Submodule{'));
 
       submodule.free();
     });
@@ -70,6 +71,10 @@ void main() {
       final subHead = submoduleRepo.head;
       expect(submoduleRepo, isA<Repository>());
       expect(subHead.target.sha, submoduleHeadSha);
+      expect(
+        submodule.workdirOid?.sha,
+        '49322bb17d3acc9146f98c97d078513228bbf3c0',
+      );
 
       subHead.free();
       submoduleRepo.free();

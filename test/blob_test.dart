@@ -63,7 +63,13 @@ void main() {
     test('throws when creating new blob from invalid path', () {
       expect(
         () => repo.createBlobFromWorkdir('invalid/path.txt'),
-        throwsA(isA<LibGit2Error>()),
+        throwsA(
+          isA<LibGit2Error>().having(
+            (e) => e.toString(),
+            'message',
+            "could not find '${repo.workdir}invalid/path.txt' to stat: No such file or directory",
+          ),
+        ),
       );
     });
 
@@ -128,10 +134,10 @@ index e69de29..0000000
       });
 
       test('successfully creates from one blob (delete)', () {
-        final a = repo.lookupBlob(
+        final _blob = repo.lookupBlob(
           repo['e69de29bb2d1d6434b8b29ae775ad8c2e48c5391'],
         );
-        final patch = a.diff(
+        final patch = _blob.diff(
           newBlob: null,
           oldAsPath: path,
           newAsPath: path,
@@ -143,16 +149,14 @@ index e69de29..0000000
       });
 
       test('successfully creates from blob and buffer', () {
-        final a = repo.lookupBlob(
+        final _blob = repo.lookupBlob(
           repo['e69de29bb2d1d6434b8b29ae775ad8c2e48c5391'],
         );
-        final patch = Patch.create(
-          a: a,
-          b: 'Feature edit\n',
-          aPath: path,
-          bPath: path,
-        );
 
+        final patch = _blob.diffToBuffer(
+          buffer: 'Feature edit\n',
+          oldAsPath: path,
+        );
         expect(patch.text, blobPatch);
 
         patch.free();
@@ -173,6 +177,10 @@ index e69de29..0000000
 
         patch.free();
       });
+    });
+
+    test('returns string representation of Blob object', () {
+      expect(blob.toString(), contains('Blob{'));
     });
   });
 }

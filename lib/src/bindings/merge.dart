@@ -120,16 +120,16 @@ void merge({
 String mergeFileFromIndex({
   required Pointer<git_repository> repoPointer,
   required Pointer<git_index_entry>? ancestorPointer,
-  required Pointer<git_index_entry>? oursPointer,
-  required Pointer<git_index_entry>? theirsPointer,
+  required Pointer<git_index_entry> oursPointer,
+  required Pointer<git_index_entry> theirsPointer,
 }) {
   final out = calloc<git_merge_file_result>();
   final error = libgit2.git_merge_file_from_index(
     out,
     repoPointer,
     ancestorPointer ?? nullptr,
-    oursPointer ?? nullptr,
-    theirsPointer ?? nullptr,
+    oursPointer,
+    theirsPointer,
     nullptr,
   );
 

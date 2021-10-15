@@ -23,6 +23,7 @@ void main() {
       expect(credentials, isA<Credentials>());
       expect(credentials.username, 'user');
       expect(credentials.credentialType, GitCredential.username);
+      expect(credentials.toString(), contains('Username{'));
     });
 
     test('successfully initializes username/password credentials', () {
@@ -35,6 +36,7 @@ void main() {
       expect(credentials.username, 'user');
       expect(credentials.password, 'password');
       expect(credentials.credentialType, GitCredential.userPassPlainText);
+      expect(credentials.toString(), contains('UserPass{'));
     });
 
     test('successfully initializes keypair credentials', () {
@@ -51,6 +53,7 @@ void main() {
       expect(credentials.privateKey, 'id_rsa');
       expect(credentials.passPhrase, 'passphrase');
       expect(credentials.credentialType, GitCredential.sshKey);
+      expect(credentials.toString(), contains('Keypair{'));
     });
 
     test('successfully initializes keypair from memory credentials', () {
@@ -67,6 +70,7 @@ void main() {
       expect(credentials.privateKey, 'private key data');
       expect(credentials.passPhrase, 'passphrase');
       expect(credentials.credentialType, GitCredential.sshMemory);
+      expect(credentials.toString(), contains('KeypairFromMemory{'));
     });
 
     test('successfully initializes keypair from agent credentials', () {
@@ -75,6 +79,7 @@ void main() {
       expect(credentials, isA<Credentials>());
       expect(credentials.username, 'user');
       expect(credentials.credentialType, GitCredential.sshKey);
+      expect(credentials.toString(), contains('KeypairFromAgent{'));
     });
 
     test('sucessfully clones repository with provided keypair', () {

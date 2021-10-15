@@ -50,7 +50,7 @@ class RefLogEntry {
   Signature get committer => Signature(bindings.entryCommiter(_entryPointer));
 
   @override
-  String toString() => 'ReflogEntry{message: $message, committer: $committer}';
+  String toString() => 'RefLogEntry{message: $message, committer: $committer}';
 }
 
 class _RefLogIterator implements Iterator<RefLogEntry> {

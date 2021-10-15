@@ -103,17 +103,24 @@ index e69de29..c217c63 100644
       final head = repo.head;
       final commit = repo.lookupCommit(head.target);
       final tree = commit.tree;
-      final diff = index.diffToTree(tree: tree);
+      final diff1 = index.diffToTree(tree: tree);
+      final diff2 = tree.diffToIndex(index: index);
 
-      expect(diff.length, 8);
-      for (var i = 0; i < diff.deltas.length; i++) {
-        expect(diff.deltas[i].newFile.path, indexToTree[i]);
+      expect(diff1.length, 8);
+      for (var i = 0; i < diff1.deltas.length; i++) {
+        expect(diff1.deltas[i].newFile.path, indexToTree[i]);
+      }
+
+      expect(diff2.length, 8);
+      for (var i = 0; i < diff2.deltas.length; i++) {
+        expect(diff2.deltas[i].newFile.path, indexToTree[i]);
       }
 
       commit.free();
       head.free();
       tree.free();
-      diff.free();
+      diff1.free();
+      diff2.free();
       index.free();
     });
 
@@ -157,9 +164,7 @@ index e69de29..c217c63 100644
       final head = repo.head;
       final commit = repo.lookupCommit(head.target);
       final tree1 = commit.tree;
-      final tree2 = repo.lookupTree(
-        repo['b85d53c9236e89aff2b62558adaa885fd1d6ff1c'],
-      );
+      final tree2 = repo.lookupTree(repo['b85d53c']);
       final diff = repo.diff(a: tree1, b: tree2);
 
       expect(diff.length, 10);
@@ -172,6 +177,12 @@ index e69de29..c217c63 100644
       tree1.free();
       tree2.free();
       diff.free();
+    });
+
+    test('throws when trying to diff between null and tree', () {
+      final tree = repo.lookupTree(repo['b85d53c']);
+      expect(() => repo.diff(a: null, b: tree), throwsA(isA<ArgumentError>()));
+      tree.free();
     });
 
     test('successfully merges diffs', () {
@@ -374,6 +385,25 @@ index e69de29..c217c63 100644
       expect(line.contentOffset, 155);
       expect(line.content, 'Modified content\n');
 
+      patch.free();
+      diff.free();
+    });
+
+    test(
+        'returns string representation of Diff, DiffDelta, DiffFile, '
+        'DiffHunk, DiffLine and DiffStats objects', () {
+      final diff = Diff.parse(patchText);
+      final patch = Patch.fromDiff(diff: diff, index: 0);
+      final stats = diff.stats;
+
+      expect(diff.toString(), contains('Diff{'));
+      expect(patch.delta.toString(), contains('DiffDelta{'));
+      expect(patch.delta.oldFile.toString(), contains('DiffFile{'));
+      expect(patch.hunks[0].toString(), contains('DiffHunk{'));
+      expect(patch.hunks[0].lines[0].toString(), contains('DiffLine{'));
+      expect(stats.toString(), contains('DiffStats{'));
+
+      stats.free();
       patch.free();
       diff.free();
     });

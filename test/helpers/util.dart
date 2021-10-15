@@ -1,9 +1,8 @@
 import 'dart:io';
 import 'package:path/path.dart' as p;
 
-final tmpDir = Directory.systemTemp.createTempSync('testrepo');
-
 Directory setupRepo(Directory repoDir) {
+  final tmpDir = Directory.systemTemp.createTempSync('testrepo');
   if (tmpDir.existsSync()) {
     tmpDir.deleteSync(recursive: true);
   }
