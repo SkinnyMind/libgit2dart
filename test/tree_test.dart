@@ -29,6 +29,19 @@ void main() {
       expect(tree.toString(), contains('Tree{'));
     });
 
+    test('throws when looking up tree for invalid oid', () {
+      expect(
+        () => repo.lookupTree(repo['0' * 40]),
+        throwsA(
+          isA<LibGit2Error>().having(
+            (e) => e.toString(),
+            'error',
+            "odb: cannot read object: null OID cannot exist",
+          ),
+        ),
+      );
+    });
+
     test('returns correct values', () {
       expect(tree.length, 4);
       expect(tree.entries.first.oid.sha, fileSHA);

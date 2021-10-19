@@ -131,8 +131,6 @@ class Index with IterableMixin<IndexEntry> {
   /// if it has changed since the last time it was loaded. Purely in-memory index data
   /// will be untouched. Be aware: if there are changes on disk, unwritten in-memory changes
   /// are discarded.
-  ///
-  /// Throws a [LibGit2Error] if error occured.
   void read({bool force = true}) =>
       bindings.read(indexPointer: _indexPointer, force: force);
 
@@ -143,8 +141,6 @@ class Index with IterableMixin<IndexEntry> {
   }
 
   /// Writes an existing index object from memory back to disk using an atomic file lock.
-  ///
-  /// Throws a [LibGit2Error] if error occured.
   void write() => bindings.write(_indexPointer);
 
   /// Writes the index as a tree.
@@ -180,8 +176,6 @@ class Index with IterableMixin<IndexEntry> {
       bindings.removeAll(indexPointer: _indexPointer, pathspec: path);
 
   /// Creates a diff between the repository index and the workdir directory.
-  ///
-  /// Throws a [LibGit2Error] if error occured.
   Diff diffToWorkdir({
     Set<GitDiff> flags = const {GitDiff.normal},
     int contextLines = 3,
@@ -197,8 +191,6 @@ class Index with IterableMixin<IndexEntry> {
   }
 
   /// Creates a diff between a tree and repository index.
-  ///
-  /// Throws a [LibGit2Error] if error occured.
   Diff diffToTree({
     required Tree tree,
     Set<GitDiff> flags = const {GitDiff.normal},

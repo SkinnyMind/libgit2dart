@@ -23,19 +23,59 @@ void main() {
       File('${tmpDir.path}/feature_file').writeAsStringSync('edit');
       expect(repo.status, contains('feature_file'));
 
-      repo.checkout(refName: 'HEAD', strategy: {GitCheckout.force});
+      repo.checkout(
+        refName: 'HEAD',
+        strategy: {GitCheckout.force},
+        paths: ['feature_file'],
+      );
       expect(repo.status, isEmpty);
+    });
+
+    test(
+        'throws when trying to checkout head with invalid alternative directory',
+        () {
+      expect(
+        () => repo.checkout(
+          refName: 'HEAD',
+          directory: 'not/there',
+        ),
+        throwsA(
+          isA<LibGit2Error>().having(
+            (e) => e.toString(),
+            'error',
+            "failed to make directory 'not/there': No such file or directory",
+          ),
+        ),
+      );
     });
 
     test('successfully checkouts index', () {
       File('${repo.workdir}feature_file').writeAsStringSync('edit');
       expect(repo.status, contains('feature_file'));
 
-      repo.checkout(strategy: {
-        GitCheckout.force,
-        GitCheckout.conflictStyleMerge,
-      });
+      repo.checkout(
+        strategy: {
+          GitCheckout.force,
+          GitCheckout.conflictStyleMerge,
+        },
+        paths: ['feature_file'],
+      );
       expect(repo.status, isEmpty);
+    });
+
+    test(
+        'throws when trying to checkout index with invalid alternative directory',
+        () {
+      expect(
+        () => repo.checkout(directory: 'not/there'),
+        throwsA(
+          isA<LibGit2Error>().having(
+            (e) => e.toString(),
+            'error',
+            "failed to make directory 'not/there': No such file or directory",
+          ),
+        ),
+      );
     });
 
     test('successfully checkouts tree', () {
@@ -66,6 +106,24 @@ void main() {
       featureHead.free();
       masterTree.free();
       masterHead.free();
+    });
+
+    test(
+        'throws when trying to checkout tree with invalid alternative directory',
+        () {
+      expect(
+        () => repo.checkout(
+          refName: 'refs/heads/feature',
+          directory: 'not/there',
+        ),
+        throwsA(
+          isA<LibGit2Error>().having(
+            (e) => e.toString(),
+            'error',
+            "failed to make directory 'not/there': No such file or directory",
+          ),
+        ),
+      );
     });
 
     test('successfully checkouts with alrenative directory', () {

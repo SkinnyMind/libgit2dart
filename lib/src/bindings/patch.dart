@@ -7,9 +7,7 @@ import '../util.dart';
 /// Directly generate a patch from the difference between two buffers.
 ///
 /// You can use the standard patch accessor functions to read the patch data, and
-/// you must call `free()` on the patch when done.
-///
-/// Throws a [LibGit2Error] if error occured.
+/// you must free the patch when done.
 Map<String, Pointer?> fromBuffers({
   String? oldBuffer,
   String? oldAsPath,
@@ -32,7 +30,7 @@ Map<String, Pointer?> fromBuffers({
     interhunkLines: interhunkLines,
   );
 
-  final error = libgit2.git_patch_from_buffers(
+  libgit2.git_patch_from_buffers(
     out,
     oldBufferC.cast(),
     oldLen,
@@ -47,29 +45,20 @@ Map<String, Pointer?> fromBuffers({
   calloc.free(newAsPathC);
   calloc.free(opts);
 
-  if (error < 0) {
-    calloc.free(out);
-    calloc.free(oldBufferC);
-    calloc.free(newBufferC);
-    throw LibGit2Error(libgit2.git_error_last());
-  } else {
-    // Returning map with pointers to patch and buffers because patch object does not
-    // have refenrece to underlying buffers or blobs. So if the buffer or blob is freed/removed
-    // the patch text becomes corrupted.
-    return {'patch': out.value, 'a': oldBufferC, 'b': newBufferC};
-  }
+  // Returning map with pointers to patch and buffers because patch object does not
+  // have refenrece to underlying buffers or blobs. So if the buffer or blob is freed/removed
+  // the patch text becomes corrupted.
+  return {'patch': out.value, 'a': oldBufferC, 'b': newBufferC};
 }
 
 /// Directly generate a patch from the difference between two blobs.
 ///
 /// You can use the standard patch accessor functions to read the patch data, and you
-/// must call `free()` on the patch when done.
-///
-/// Throws a [LibGit2Error] if error occured.
+/// must free the patch when done.
 Map<String, Pointer?> fromBlobs({
-  Pointer<git_blob>? oldBlobPointer,
+  required Pointer<git_blob> oldBlobPointer,
   String? oldAsPath,
-  Pointer<git_blob>? newBlobPointer,
+  required Pointer<git_blob> newBlobPointer,
   String? newAsPath,
   required int flags,
   required int contextLines,
@@ -84,11 +73,11 @@ Map<String, Pointer?> fromBlobs({
     interhunkLines: interhunkLines,
   );
 
-  final error = libgit2.git_patch_from_blobs(
+  libgit2.git_patch_from_blobs(
     out,
-    oldBlobPointer ?? nullptr,
+    oldBlobPointer,
     oldAsPathC,
-    newBlobPointer ?? nullptr,
+    newBlobPointer,
     newAsPathC,
     opts,
   );
@@ -97,23 +86,16 @@ Map<String, Pointer?> fromBlobs({
   calloc.free(newAsPathC);
   calloc.free(opts);
 
-  if (error < 0) {
-    calloc.free(out);
-    throw LibGit2Error(libgit2.git_error_last());
-  } else {
-    // Returning map with pointers to patch and blobs because patch object does not
-    // have reference to underlying blobs. So if the blob is freed/removed the patch
-    // text becomes corrupted.
-    return {'patch': out.value, 'a': oldBlobPointer, 'b': newBlobPointer};
-  }
+  // Returning map with pointers to patch and blobs because patch object does not
+  // have reference to underlying blobs. So if the blob is freed/removed the patch
+  // text becomes corrupted.
+  return {'patch': out.value, 'a': oldBlobPointer, 'b': newBlobPointer};
 }
 
 /// Directly generate a patch from the difference between a blob and a buffer.
 ///
 /// You can use the standard patch accessor functions to read the patch data, and you must
-/// call `free()` on the patch when done.
-///
-/// Throws a [LibGit2Error] if error occured.
+/// free the patch when done.
 Map<String, Pointer?> fromBlobAndBuffer({
   Pointer<git_blob>? oldBlobPointer,
   String? oldAsPath,
@@ -134,7 +116,7 @@ Map<String, Pointer?> fromBlobAndBuffer({
     interhunkLines: interhunkLines,
   );
 
-  final error = libgit2.git_patch_from_blob_and_buffer(
+  libgit2.git_patch_from_blob_and_buffer(
     out,
     oldBlobPointer ?? nullptr,
     oldAsPathC,
@@ -148,16 +130,10 @@ Map<String, Pointer?> fromBlobAndBuffer({
   calloc.free(bufferAsPathC);
   calloc.free(opts);
 
-  if (error < 0) {
-    calloc.free(out);
-    calloc.free(bufferC);
-    throw LibGit2Error(libgit2.git_error_last());
-  } else {
-    // Returning map with pointers to patch and buffers because patch object does not
-    // have reference to underlying buffers or blobs. So if the buffer or blob is freed/removed
-    // the patch text becomes corrupted.
-    return {'patch': out.value, 'a': oldBlobPointer, 'b': bufferC};
-  }
+  // Returning map with pointers to patch and buffers because patch object does not
+  // have reference to underlying buffers or blobs. So if the buffer or blob is freed/removed
+  // the patch text becomes corrupted.
+  return {'patch': out.value, 'a': oldBlobPointer, 'b': bufferC};
 }
 
 /// Return a patch for an entry in the diff list.
@@ -191,55 +167,31 @@ int numHunks(Pointer<git_patch> patch) => libgit2.git_patch_num_hunks(patch);
 
 /// Get the information about a hunk in a patch.
 ///
-/// Given a patch and a hunk index into the patch, this returns detailed information about that hunk.
-///
-/// Throws a [LibGit2Error] if error occured.
+/// Given a patch and a hunk index into the patch, this returns detailed information
+/// about that hunk.
 Map<String, Object> hunk({
   required Pointer<git_patch> patchPointer,
   required int hunkIndex,
 }) {
   final out = calloc<Pointer<git_diff_hunk>>();
   final linesInHunk = calloc<Int64>();
-  final error = libgit2.git_patch_get_hunk(
-    out,
-    linesInHunk.cast(),
-    patchPointer,
-    hunkIndex,
-  );
+  libgit2.git_patch_get_hunk(out, linesInHunk.cast(), patchPointer, hunkIndex);
 
-  if (error < 0) {
-    calloc.free(out);
-    calloc.free(linesInHunk);
-    throw LibGit2Error(libgit2.git_error_last());
-  } else {
-    final linesN = linesInHunk.value;
-    calloc.free(linesInHunk);
-    return {'hunk': out.value, 'linesN': linesN};
-  }
+  final linesN = linesInHunk.value;
+  calloc.free(linesInHunk);
+  return {'hunk': out.value, 'linesN': linesN};
 }
 
 /// Get data about a line in a hunk of a patch.
-///
-/// Throws a [LibGit2Error] if error occured.
 Pointer<git_diff_line> lines({
   required Pointer<git_patch> patchPointer,
   required int hunkIndex,
   required int lineOfHunk,
 }) {
   final out = calloc<Pointer<git_diff_line>>();
-  final error = libgit2.git_patch_get_line_in_hunk(
-    out,
-    patchPointer,
-    hunkIndex,
-    lineOfHunk,
-  );
+  libgit2.git_patch_get_line_in_hunk(out, patchPointer, hunkIndex, lineOfHunk);
 
-  if (error < 0) {
-    calloc.free(out);
-    throw LibGit2Error(libgit2.git_error_last());
-  } else {
-    return out.value;
-  }
+  return out.value;
 }
 
 /// Get the content of a patch as a single diff text.
@@ -294,15 +246,7 @@ Pointer<git_diff_options> _diffOptionsInit({
   required int interhunkLines,
 }) {
   final opts = calloc<git_diff_options>();
-  final optsError = libgit2.git_diff_options_init(
-    opts,
-    GIT_DIFF_OPTIONS_VERSION,
-  );
-
-  if (optsError < 0) {
-    calloc.free(opts);
-    throw LibGit2Error(libgit2.git_error_last());
-  }
+  libgit2.git_diff_options_init(opts, GIT_DIFF_OPTIONS_VERSION);
 
   opts.ref.flags = flags;
   opts.ref.context_lines = contextLines;

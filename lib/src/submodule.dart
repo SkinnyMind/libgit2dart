@@ -108,16 +108,13 @@ class Submodule {
   }
 
   /// Returns a list with all tracked submodules paths of a repository.
-  ///
-  /// Throws a [LibGit2Error] if error occured.
   static List<String> list(Repository repo) => bindings.list(repo.pointer);
 
   /// Opens the repository for a submodule.
   ///
-  /// This is a newly opened repository object. The caller is responsible for calling
-  /// `free()` on it when done. Multiple calls to this function will return distinct
-  /// git repository objects. This will only work if the submodule is checked out into
-  /// the working directory.
+  /// This is a newly opened repository object. The caller is responsible for freeing it
+  /// when done. Multiple calls to this function will return distinct git repository objects.
+  /// This will only work if the submodule is checked out into the working directory.
   ///
   /// Throws a [LibGit2Error] if error occured.
   Repository open() {
@@ -129,8 +126,6 @@ class Submodule {
   /// This looks at a submodule and tries to determine the status. How deeply it examines
   /// the working directory to do this will depend on the combination of [GitSubmoduleIgnore]
   /// values provided to [ignore] .
-  ///
-  /// Throws a [LibGit2Error] if error occured.
   Set<GitSubmoduleStatus> status({
     GitSubmoduleIgnore ignore = GitSubmoduleIgnore.unspecified,
   }) {
@@ -151,8 +146,6 @@ class Submodule {
   /// config, acting like `git submodule sync`. This is useful if you have altered the URL
   /// for the submodule (or it has been altered by a fetch of upstream changes) and you
   /// need to update your local repo.
-  ///
-  /// Throws a [LibGit2Error] if error occured.
   void sync() => bindings.sync(_submodulePointer);
 
   /// Rereads submodule info from config, index, and HEAD.
@@ -181,8 +174,6 @@ class Submodule {
   ///
   /// After calling this, you may wish to call [sync] to write the changes to
   /// the checked out submodule repository.
-  ///
-  /// Throws a [LibGit2Error] if error occured.
   set url(String url) {
     bindings.setUrl(
       repoPointer: bindings.owner(_submodulePointer),
@@ -198,8 +189,6 @@ class Submodule {
   ///
   /// After calling this, you may wish to call [sync] to write the changes to
   /// the checked out submodule repository.
-  ///
-  /// Throws a [LibGit2Error] if error occured.
   set branch(String branch) {
     bindings.setBranch(
       repoPointer: bindings.owner(_submodulePointer),
@@ -243,8 +232,6 @@ class Submodule {
   /// Sets the ignore rule for the submodule in the configuration.
   ///
   /// This does not affect any currently-loaded instances.
-  ///
-  /// Throws a [LibGit2Error] if error occured.
   set ignore(GitSubmoduleIgnore ignore) {
     final repo = bindings.owner(_submodulePointer);
     bindings.setIgnore(repoPointer: repo, name: name, ignore: ignore.value);
@@ -261,8 +248,6 @@ class Submodule {
   /// Sets the update rule for the submodule in the configuration.
   ///
   /// This setting won't affect any existing instances.
-  ///
-  /// Throws a [LibGit2Error] if error occured.
   set updateRule(GitSubmoduleUpdate rule) {
     bindings.setUpdateRule(
       repoPointer: bindings.owner(_submodulePointer),

@@ -1,3 +1,4 @@
+import 'dart:ffi';
 import 'dart:io';
 import 'package:test/test.dart';
 import 'package:libgit2dart/libgit2dart.dart';
@@ -172,6 +173,19 @@ Santa Claus <santa.claus@northpole.xx> <me@company.xx>
       mailmap.free();
     });
 
+    test('throws when initializing from repository and error occurs', () {
+      expect(
+        () => Mailmap.fromRepository(Repository(nullptr)),
+        throwsA(
+          isA<LibGit2Error>().having(
+            (e) => e.toString(),
+            'error',
+            "invalid argument: 'repo'",
+          ),
+        ),
+      );
+    });
+
     test('successfully resolves names and emails when mailmap is empty', () {
       final mailmap = Mailmap.empty();
 
@@ -207,6 +221,25 @@ Santa Claus <santa.claus@northpole.xx> <me@company.xx>
       mailmap.free();
     });
 
+    test('throws when trying to add entry with empty replace email', () {
+      final mailmap = Mailmap.empty();
+
+      expect(
+        () => mailmap.addEntry(
+          replaceEmail: ' ',
+        ),
+        throwsA(
+          isA<ArgumentError>().having(
+            (e) => e.toString(),
+            'error',
+            'Invalid argument: "replaceEmail can\'t be empty"',
+          ),
+        ),
+      );
+
+      mailmap.free();
+    });
+
     test('successfully resolves signature', () {
       final signature = Signature.create(
         name: 'nick1',
@@ -225,6 +258,8 @@ Santa Claus <santa.claus@northpole.xx> <me@company.xx>
       );
 
       expect(mailmap.resolveSignature(signature), realSignature);
+
+      mailmap.free();
     });
   });
 }

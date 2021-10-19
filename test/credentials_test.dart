@@ -82,6 +82,20 @@ void main() {
       expect(credentials.toString(), contains('KeypairFromAgent{'));
     });
 
+    test('sucessfully clones repository with provided username', () {
+      final callbacks = const Callbacks(credentials: Username('git'));
+
+      final repo = Repository.clone(
+        url: 'https://git@github.com/libgit2/TestGitRepository',
+        localPath: cloneDir.path,
+        callbacks: callbacks,
+      );
+
+      expect(repo.isEmpty, false);
+
+      repo.free();
+    });
+
     test('sucessfully clones repository with provided keypair', () {
       final keypair = const Keypair(
         username: 'git',

@@ -1,3 +1,4 @@
+import 'dart:ffi';
 import 'dart:io';
 import 'package:test/test.dart';
 import 'package:libgit2dart/libgit2dart.dart';
@@ -141,6 +142,22 @@ index e69de29..c217c63 100644
       diff.free();
     });
 
+    test('throws when trying to diff between tree and workdir and error occurs',
+        () {
+      final nullRepo = Repository(nullptr);
+      final nullTree = Tree(nullptr);
+      expect(
+        () => nullRepo.diff(a: nullTree),
+        throwsA(
+          isA<LibGit2Error>().having(
+            (e) => e.toString(),
+            'error',
+            "invalid argument: 'repo'",
+          ),
+        ),
+      );
+    });
+
     test('successfully returns diff between tree and index', () {
       final index = repo.index;
       final head = repo.head;
@@ -179,9 +196,34 @@ index e69de29..c217c63 100644
       diff.free();
     });
 
+    test('throws when trying to diff between tree and tree and error occurs',
+        () {
+      final nullRepo = Repository(nullptr);
+      final nullTree = Tree(nullptr);
+      expect(
+        () => nullRepo.diff(a: nullTree, b: nullTree),
+        throwsA(
+          isA<LibGit2Error>().having(
+            (e) => e.toString(),
+            'error',
+            "invalid argument: 'repo'",
+          ),
+        ),
+      );
+    });
+
     test('throws when trying to diff between null and tree', () {
       final tree = repo.lookupTree(repo['b85d53c']);
-      expect(() => repo.diff(a: null, b: tree), throwsA(isA<ArgumentError>()));
+      expect(
+        () => repo.diff(a: null, b: tree),
+        throwsA(
+          isA<ArgumentError>().having(
+            (e) => e.message,
+            'error',
+            "Must not be null",
+          ),
+        ),
+      );
       tree.free();
     });
 
@@ -216,29 +258,49 @@ index e69de29..c217c63 100644
       expect(diff.length, 1);
       expect(stats.filesChanged, 1);
       expect(stats.insertions, 1);
-      expect(diff.patchId.sha, '699556913185bc38632ae20a49d5c18b9233335e');
+      expect(diff.patchOid.sha, '699556913185bc38632ae20a49d5c18b9233335e');
 
       stats.free();
       diff.free();
     });
 
-    test(
-        'checks if diff can be applied to repository and successfully applies it',
-        () {
+    test('checks if diff can be applied to repository', () {
+      final diff1 = repo.diff();
+      expect(repo.applies(diff: diff1, location: GitApplyLocation.both), false);
+
+      final diff2 = Diff.parse(patchText);
+      repo.checkout(refName: 'HEAD', strategy: {GitCheckout.force});
+      expect(repo.applies(diff: diff2, location: GitApplyLocation.both), true);
+
+      diff1.free();
+      diff2.free();
+    });
+
+    test('successfully applies diff to repository', () {
       final diff = Diff.parse(patchText);
       final file = File('${tmpDir.path}/subdir/modified_file');
 
-      repo.reset(
-        oid: repo['a763aa560953e7cfb87ccbc2f536d665aa4dff22'],
-        resetType: GitReset.hard,
-      );
+      repo.checkout(refName: 'HEAD', strategy: {GitCheckout.force});
       expect(file.readAsStringSync(), '');
 
-      expect(repo.applies(diff), true);
-      repo.apply(diff);
+      repo.apply(diff: diff);
       expect(file.readAsStringSync(), 'Modified content\n');
 
       diff.free();
+    });
+
+    test('throws when trying to apply diff and error occurs', () {
+      final nullDiff = Diff(nullptr);
+      expect(
+        () => repo.apply(diff: nullDiff),
+        throwsA(
+          isA<LibGit2Error>().having(
+            (e) => e.toString(),
+            'error',
+            "invalid argument: 'diff'",
+          ),
+        ),
+      );
     });
 
     test('successfully creates patch from entry index in diff', () {
@@ -279,6 +341,34 @@ index e69de29..c217c63 100644
       newTree.free();
     });
 
+    test('throws when trying to find similar entries and error occurs', () {
+      final nullDiff = Diff(nullptr);
+      expect(
+        () => nullDiff.findSimilar(),
+        throwsA(
+          isA<LibGit2Error>().having(
+            (e) => e.toString(),
+            'error',
+            "invalid argument: 'diff'",
+          ),
+        ),
+      );
+    });
+
+    test('throws when trying to get patch Oid and error occurs', () {
+      final nullDiff = Diff(nullptr);
+      expect(
+        () => nullDiff.patchOid,
+        throwsA(
+          isA<LibGit2Error>().having(
+            (e) => e.toString(),
+            'error',
+            "invalid argument: 'diff'",
+          ),
+        ),
+      );
+    });
+
     test('returns deltas', () {
       final index = repo.index;
       final diff = index.diffToWorkdir();
@@ -294,10 +384,7 @@ index e69de29..c217c63 100644
         diff.deltas[0].oldFile.oid.sha,
         'e69de29bb2d1d6434b8b29ae775ad8c2e48c5391',
       );
-      expect(
-        diff.deltas[0].newFile.oid.sha,
-        '0000000000000000000000000000000000000000',
-      );
+      expect(diff.deltas[0].newFile.oid.sha, '0' * 40);
 
       expect(diff.deltas[2].oldFile.size, 17);
 
@@ -316,7 +403,26 @@ index e69de29..c217c63 100644
       index.free();
     });
 
-    test('returns deltas', () {
+    test('throws when trying to get delta with invalid index', () {
+      final index = repo.index;
+      final diff = index.diffToWorkdir();
+
+      expect(
+        () => diff.deltas[-1],
+        throwsA(
+          isA<RangeError>().having(
+            (e) => e.message,
+            'error',
+            "Invalid value",
+          ),
+        ),
+      );
+
+      diff.free();
+      index.free();
+    });
+
+    test('returns patches', () {
       final index = repo.index;
       final diff = index.diffToWorkdir();
       final patches = diff.patches;
@@ -344,6 +450,34 @@ index e69de29..c217c63 100644
       stats.free();
       diff.free();
       index.free();
+    });
+
+    test('throws when trying to get stats and error occurs', () {
+      final nullDiff = Diff(nullptr);
+      expect(
+        () => nullDiff.stats,
+        throwsA(
+          isA<LibGit2Error>().having(
+            (e) => e.toString(),
+            'error',
+            "invalid argument: 'diff'",
+          ),
+        ),
+      );
+    });
+
+    test('throws when trying to print stats and error occurs', () {
+      final nullStats = DiffStats(nullptr);
+      expect(
+        () => nullStats.print(format: {GitDiffStats.full}, width: 80),
+        throwsA(
+          isA<LibGit2Error>().having(
+            (e) => e.toString(),
+            'error',
+            "invalid argument: 'stats'",
+          ),
+        ),
+      );
     });
 
     test('returns patch diff string', () {

@@ -93,8 +93,6 @@ class Tree {
   }
 
   /// Creates a diff between a tree and repository index.
-  ///
-  /// Throws a [LibGit2Error] if error occured.
   Diff diffToIndex({
     required Index index,
     Set<GitDiff> flags = const {GitDiff.normal},

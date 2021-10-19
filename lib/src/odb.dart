@@ -14,8 +14,6 @@ class Odb {
   ///
   /// Before the ODB can be used for read/writing, a custom database backend must be
   /// manually added.
-  ///
-  /// Throws a [LibGit2Error] if error occured.
   Odb.create() {
     libgit2.git_libgit2_init();
 
@@ -36,8 +34,6 @@ class Odb {
   /// have been exhausted.
   ///
   /// Writing is disabled on alternate backends.
-  ///
-  /// Throws a [LibGit2Error] if error occured.
   void addDiskAlternate(String path) {
     bindings.addDiskAlternate(
       odbPointer: _odbPointer,

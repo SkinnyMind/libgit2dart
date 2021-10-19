@@ -9,7 +9,7 @@ class Patch {
   /// Initializes a new instance of [Patch] class from provided
   /// pointer to patch object in memory and pointers to old and new blobs/buffers.
   ///
-  /// Should be freed with `free()` to release allocated memory.
+  /// Should be freed to release allocated memory.
   Patch(this._patchPointer, this._aPointer, this._bPointer);
 
   /// Directly generates a patch from the difference between two blobs, buffers or
@@ -17,9 +17,7 @@ class Patch {
   ///
   /// [a] and [b] can be [Blob], [String] or null.
   ///
-  /// Should be freed with `free()` to release allocated memory.
-  ///
-  /// Throws a [LibGit2Error] if error occured.
+  /// Should be freed to release allocated memory.
   Patch.create({
     required Object? a,
     required Object? b,
@@ -35,11 +33,11 @@ class Patch {
     var result = <String, Pointer?>{};
 
     if (a is Blob?) {
-      if (b is Blob) {
+      if (b is Blob?) {
         result = bindings.fromBlobs(
           oldBlobPointer: a?.pointer ?? nullptr,
           oldAsPath: aPath,
-          newBlobPointer: b.pointer,
+          newBlobPointer: b?.pointer ?? nullptr,
           newAsPath: bPath,
           flags: flagsInt,
           contextLines: contextLines,
@@ -49,7 +47,7 @@ class Patch {
         result = bindings.fromBlobAndBuffer(
           oldBlobPointer: a?.pointer,
           oldAsPath: aPath,
-          buffer: b,
+          buffer: b as String?,
           bufferAsPath: bPath,
           flags: flagsInt,
           contextLines: contextLines,
@@ -126,8 +124,6 @@ class Patch {
   DiffDelta get delta => DiffDelta(bindings.delta(_patchPointer));
 
   /// Returns the list of hunks in a patch.
-  ///
-  /// Throws a [LibGit2Error] if error occured.
   List<DiffHunk> get hunks {
     final length = bindings.numHunks(_patchPointer);
     final hunks = <DiffHunk>[];
@@ -157,5 +153,5 @@ class Patch {
   }
 
   @override
-  String toString() => 'Patch{size: $size, delta: $delta}';
+  String toString() => 'Patch{size: ${size()}, delta: $delta}';
 }

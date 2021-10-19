@@ -1,3 +1,4 @@
+import 'dart:ffi';
 import 'dart:io';
 import 'package:test/test.dart';
 import 'package:libgit2dart/libgit2dart.dart';
@@ -8,8 +9,8 @@ void main() {
   late Directory tmpDir;
   const oldBlob = '';
   const newBlob = 'Feature edit\n';
-  late Oid oldBlobID;
-  late Oid newBlobID;
+  late Oid oldBlobOid;
+  late Oid newBlobOid;
   const path = 'feature_file';
   const blobPatch = """
 diff --git a/feature_file b/feature_file
@@ -41,8 +42,8 @@ index e69de29..0000000
   setUp(() {
     tmpDir = setupRepo(Directory('test/assets/testrepo/'));
     repo = Repository.open(tmpDir.path);
-    oldBlobID = repo['e69de29bb2d1d6434b8b29ae775ad8c2e48c5391'];
-    newBlobID = repo['9c78c21d6680a7ffebc76f7ac68cacc11d8f48bc'];
+    oldBlobOid = repo['e69de29bb2d1d6434b8b29ae775ad8c2e48c5391'];
+    newBlobOid = repo['9c78c21d6680a7ffebc76f7ac68cacc11d8f48bc'];
   });
 
   tearDown(() {
@@ -92,8 +93,8 @@ index e69de29..0000000
     });
 
     test('successfully creates from blobs', () {
-      final a = repo.lookupBlob(oldBlobID);
-      final b = repo.lookupBlob(newBlobID);
+      final a = repo.lookupBlob(oldBlobOid);
+      final b = repo.lookupBlob(newBlobOid);
       final patch = Patch.create(
         a: a,
         b: b,
@@ -107,7 +108,7 @@ index e69de29..0000000
     });
 
     test('successfully creates from one blob (add)', () {
-      final b = repo.lookupBlob(newBlobID);
+      final b = repo.lookupBlob(newBlobOid);
       final patch = Patch.create(
         a: null,
         b: b,
@@ -121,7 +122,7 @@ index e69de29..0000000
     });
 
     test('successfully creates from one blob (delete)', () {
-      final a = repo.lookupBlob(oldBlobID);
+      final a = repo.lookupBlob(oldBlobOid);
       final patch = Patch.create(
         a: a,
         b: null,
@@ -135,7 +136,7 @@ index e69de29..0000000
     });
 
     test('successfully creates from blob and buffer', () {
-      final a = repo.lookupBlob(oldBlobID);
+      final a = repo.lookupBlob(oldBlobOid);
       final patch = Patch.create(
         a: a,
         b: newBlob,
@@ -159,7 +160,13 @@ index e69de29..0000000
           aPath: 'file',
           bPath: 'file',
         ),
-        throwsA(isA<ArgumentError>()),
+        throwsA(
+          isA<ArgumentError>().having(
+            (e) => e.toString(),
+            'error',
+            "Invalid argument(s): Provided argument(s) is not Blob or String",
+          ),
+        ),
       );
 
       expect(
@@ -169,10 +176,42 @@ index e69de29..0000000
           aPath: 'file',
           bPath: 'file',
         ),
-        throwsA(isA<ArgumentError>()),
+        throwsA(
+          isA<ArgumentError>().having(
+            (e) => e.toString(),
+            'error',
+            "Invalid argument(s): Provided argument(s) is not Blob or String",
+          ),
+        ),
       );
 
       commit.free();
+    });
+
+    test('throws when trying to create from diff and error occurs', () {
+      expect(
+        () => Patch.fromDiff(diff: Diff(nullptr), index: 0),
+        throwsA(
+          isA<LibGit2Error>().having(
+            (e) => e.toString(),
+            'error',
+            "invalid argument: 'diff'",
+          ),
+        ),
+      );
+    });
+
+    test('throws when trying to text of patch and error occurs', () {
+      expect(
+        () => Patch(nullptr, nullptr, nullptr).text,
+        throwsA(
+          isA<LibGit2Error>().having(
+            (e) => e.toString(),
+            'error',
+            "invalid argument: 'patch'",
+          ),
+        ),
+      );
     });
 
     test('returns string representation of Patch object', () {

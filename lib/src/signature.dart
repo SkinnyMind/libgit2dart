@@ -9,7 +9,7 @@ class Signature {
   /// Initializes a new instance of [Signature] class from provided pointer to
   /// signature object in memory.
   ///
-  /// Should be freed with `free()` to release allocated memory.
+  /// Should be freed to release allocated memory.
   Signature(this._signaturePointer);
 
   /// Initializes a new instance of [Signature] class from provided [name], [email],
@@ -17,7 +17,7 @@ class Signature {
   ///
   /// If [time] isn't provided [Signature] will be created with a timestamp of 'now'.
   ///
-  /// Should be freed with `free()` to release allocated memory.
+  /// Should be freed to release allocated memory.
   Signature.create({
     required String name,
     required String email,
@@ -47,8 +47,6 @@ class Signature {
   ///
   /// This looks up the user.name and user.email from the configuration and uses the
   /// current time as the timestamp, and creates a new signature based on that information.
-  ///
-  /// Throws a [LibGit2Error] if error occured.
   static Signature defaultSignature(Repository repo) =>
       Signature(bindings.defaultSignature(repo.pointer));
 

@@ -14,31 +14,19 @@ import '../util.dart';
 /// if it has changed since the last time it was loaded. Purely in-memory index data
 /// will be untouched. Be aware: if there are changes on disk, unwritten in-memory changes
 /// are discarded.
-///
-/// Throws a [LibGit2Error] if error occured.
 void read({required Pointer<git_index> indexPointer, required bool force}) {
   final forceC = force == true ? 1 : 0;
-  final error = libgit2.git_index_read(indexPointer, forceC);
-
-  if (error < 0) {
-    throw LibGit2Error(libgit2.git_error_last());
-  }
+  libgit2.git_index_read(indexPointer, forceC);
 }
 
 /// Read a tree into the index file with stats.
 ///
 /// The current index contents will be replaced by the specified tree.
-///
-/// Throws a [LibGit2Error] if error occured.
 void readTree({
   required Pointer<git_index> indexPointer,
   required Pointer<git_tree> treePointer,
 }) {
-  final error = libgit2.git_index_read_tree(indexPointer, treePointer);
-
-  if (error < 0) {
-    throw LibGit2Error(libgit2.git_error_last());
-  }
+  libgit2.git_index_read_tree(indexPointer, treePointer);
 }
 
 /// Write the index as a tree.
@@ -243,15 +231,7 @@ void addAll({
 }
 
 /// Write an existing index object from memory back to disk using an atomic file lock.
-///
-/// Throws a [LibGit2Error] if error occured.
-void write(Pointer<git_index> index) {
-  final error = libgit2.git_index_write(index);
-
-  if (error < 0) {
-    throw LibGit2Error(libgit2.git_error_last());
-  }
-}
+void write(Pointer<git_index> index) => libgit2.git_index_write(index);
 
 /// Remove an entry from the index.
 ///
@@ -272,8 +252,6 @@ void remove({
 }
 
 /// Remove all matching index entries.
-///
-/// Throws a [LibGit2Error] if error occured.
 void removeAll({
   required Pointer<git_index> indexPointer,
   required List<String> pathspec,
@@ -290,22 +268,13 @@ void removeAll({
   pathspecC.ref.strings = strArray;
   pathspecC.ref.count = pathspec.length;
 
-  final error = libgit2.git_index_remove_all(
-    indexPointer,
-    pathspecC,
-    nullptr,
-    nullptr,
-  );
+  libgit2.git_index_remove_all(indexPointer, pathspecC, nullptr, nullptr);
 
   calloc.free(pathspecC);
   for (final p in pathPointers) {
     calloc.free(p);
   }
   calloc.free(strArray);
-
-  if (error < 0) {
-    throw LibGit2Error(libgit2.git_error_last());
-  }
 }
 
 /// Determine if the index contains entries representing file conflicts.
@@ -320,15 +289,7 @@ List<Map<String, Pointer<git_index_entry>>> conflictList(
   Pointer<git_index> index,
 ) {
   final iterator = calloc<Pointer<git_index_conflict_iterator>>();
-  final iteratorError = libgit2.git_index_conflict_iterator_new(
-    iterator,
-    index,
-  );
-
-  if (iteratorError < 0) {
-    calloc.free(iterator);
-    throw LibGit2Error(libgit2.git_error_last());
-  }
+  libgit2.git_index_conflict_iterator_new(iterator, index);
 
   var result = <Map<String, Pointer<git_index_entry>>>[];
   var error = 0;

@@ -80,8 +80,6 @@ class Commit {
   Signature get author => Signature(bindings.author(_commitPointer));
 
   /// Returns list of parent commits [Oid]s.
-  ///
-  /// Throws a [LibGit2Error] if error occured.
   List<Oid> get parents {
     var parents = <Oid>[];
     final parentCount = bindings.parentCount(_commitPointer);
@@ -113,4 +111,30 @@ class Commit {
     return 'Commit{oid: $oid, message: $message, messageEncoding: $messageEncoding, '
         'time: $time, committer: $committer, author: $author}';
   }
+}
+
+/// An annotated commit contains information about how it was looked up, which may be useful
+/// for functions like merge or rebase to provide context to the operation. For example, conflict
+/// files will include the name of the source or target branches being merged.
+///
+/// Note: for internal use.
+class AnnotatedCommit {
+  /// Lookups an annotated commit from the given commit [oid]. The resulting annotated commit
+  /// must be freed to release allocated memory.
+  ///
+  /// Throws a [LibGit2Error] if error occured.
+  AnnotatedCommit.lookup({required Repository repo, required Oid oid}) {
+    _annotatedCommitPointer = bindings.annotatedLookup(
+      repoPointer: repo.pointer,
+      oidPointer: oid.pointer,
+    );
+  }
+
+  late final Pointer<Pointer<git_annotated_commit>> _annotatedCommitPointer;
+
+  /// Pointer to pointer to memory address for allocated commit object.
+  Pointer<Pointer<git_annotated_commit>> get pointer => _annotatedCommitPointer;
+
+  /// Releases memory allocated for commit object.
+  void free() => bindings.annotatedFree(_annotatedCommitPointer.value);
 }

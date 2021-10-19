@@ -1,3 +1,4 @@
+import 'dart:ffi';
 import 'dart:io';
 import 'package:test/test.dart';
 import 'package:libgit2dart/libgit2dart.dart';
@@ -25,6 +26,32 @@ void main() {
   group('Tag', () {
     test('successfully initializes tag from provided sha', () {
       expect(tag, isA<Tag>());
+    });
+
+    test('throws when trying to lookup tag for invalid oid', () {
+      expect(
+        () => repo.lookupTag(repo['0' * 40]),
+        throwsA(
+          isA<LibGit2Error>().having(
+            (e) => e.toString(),
+            'error',
+            "odb: cannot read object: null OID cannot exist",
+          ),
+        ),
+      );
+    });
+
+    test('throws when trying to get target of a tag and error occurs', () {
+      expect(
+        () => Tag(nullptr).target,
+        throwsA(
+          isA<LibGit2Error>().having(
+            (e) => e.toString(),
+            'error',
+            "invalid argument: 't'",
+          ),
+        ),
+      );
     });
 
     test('returns correct values', () {
@@ -179,8 +206,59 @@ void main() {
       signature.free();
     });
 
+    test('throws when trying to create tag with invalid name', () {
+      expect(
+        () => repo.createTag(
+          tagName: '',
+          target: repo['9c78c21'],
+          targetType: GitObject.any,
+          tagger: Signature(nullptr),
+          message: '',
+        ),
+        throwsA(
+          isA<LibGit2Error>().having(
+            (e) => e.toString(),
+            'error',
+            "invalid argument: '!create_tag_annotation || (tagger && message)'",
+          ),
+        ),
+      );
+    });
+
+    test('throws when trying to create tag with invalid target', () {
+      expect(
+        () => repo.createTag(
+          tagName: '',
+          target: repo['0' * 40],
+          targetType: GitObject.any,
+          tagger: Signature(nullptr),
+          message: '',
+        ),
+        throwsA(
+          isA<LibGit2Error>().having(
+            (e) => e.toString(),
+            'error',
+            "odb: cannot read object: null OID cannot exist",
+          ),
+        ),
+      );
+    });
+
     test('returns list of tags in repository', () {
       expect(Tag.list(repo), ['v0.1', 'v0.2']);
+    });
+
+    test('throws when trying to get list of tags and error occurs', () {
+      expect(
+        () => Repository(nullptr).tags,
+        throwsA(
+          isA<LibGit2Error>().having(
+            (e) => e.toString(),
+            'error',
+            "invalid argument: 'repo'",
+          ),
+        ),
+      );
     });
 
     test('successfully deletes tag', () {
@@ -188,6 +266,19 @@ void main() {
 
       repo.deleteTag('v0.2');
       expect(repo.tags, ['v0.1']);
+    });
+
+    test('throws when trying to delete non existing tag', () {
+      expect(
+        () => repo.deleteTag('not.there'),
+        throwsA(
+          isA<LibGit2Error>().having(
+            (e) => e.toString(),
+            'error',
+            "reference 'refs/tags/not.there' not found",
+          ),
+        ),
+      );
     });
   });
 }

@@ -13,17 +13,8 @@ int referenceType(Pointer<git_reference> ref) =>
 /// Get the OID pointed to by a direct reference.
 ///
 /// Only available if the reference is direct (i.e. an object id reference, not a symbolic one).
-///
-/// Throws an exception if error occured.
-Pointer<git_oid> target(Pointer<git_reference> ref) {
-  final result = libgit2.git_reference_target(ref);
-
-  if (result == nullptr) {
-    throw Exception('Oid for reference isn\'t available');
-  } else {
-    return result;
-  }
-}
+Pointer<git_oid> target(Pointer<git_reference> ref) =>
+    libgit2.git_reference_target(ref);
 
 /// Resolve a symbolic reference to a direct reference.
 ///
@@ -62,30 +53,6 @@ Pointer<git_reference> lookup({
   final out = calloc<Pointer<git_reference>>();
   final nameC = name.toNativeUtf8().cast<Int8>();
   final error = libgit2.git_reference_lookup(out, repoPointer, nameC);
-
-  calloc.free(nameC);
-
-  if (error < 0) {
-    calloc.free(out);
-    throw LibGit2Error(libgit2.git_error_last());
-  } else {
-    return out.value;
-  }
-}
-
-/// Lookup a reference by DWIMing its short name.
-///
-/// Apply the git precendence rules to the given shorthand to determine which reference
-/// the user is referring to.
-///
-/// Throws a [LibGit2Error] if error occured.
-Pointer<git_reference> lookupDWIM({
-  required Pointer<git_repository> repoPointer,
-  required String name,
-}) {
-  final out = calloc<Pointer<git_reference>>();
-  final nameC = name.toNativeUtf8().cast<Int8>();
-  final error = libgit2.git_reference_dwim(out, repoPointer, nameC);
 
   calloc.free(nameC);
 
@@ -175,22 +142,16 @@ List<String> list(Pointer<git_repository> repo) {
 }
 
 /// Check if a reflog exists for the specified reference.
-///
-/// Throws a [LibGit2Error] if error occured.
 bool hasLog({
   required Pointer<git_repository> repoPointer,
   required String name,
 }) {
   final refname = name.toNativeUtf8().cast<Int8>();
-  final error = libgit2.git_reference_has_log(repoPointer, refname);
+  final result = libgit2.git_reference_has_log(repoPointer, refname);
 
   calloc.free(refname);
 
-  if (error < 0) {
-    throw LibGit2Error(libgit2.git_error_last());
-  } else {
-    return error == 1 ? true : false;
-  }
+  return result == 1 ? true : false;
 }
 
 /// Check if a reference is a local branch.
@@ -329,15 +290,7 @@ Pointer<git_reference> createSymbolic({
 ///
 /// This method works for both direct and symbolic references.
 /// The reference will be immediately removed on disk but the memory will not be freed.
-///
-/// Throws a [LibGit2Error] if the reference has changed from the time it was looked up.
-void delete(Pointer<git_reference> ref) {
-  final error = libgit2.git_reference_delete(ref);
-
-  if (error < 0) {
-    throw LibGit2Error(libgit2.git_error_last());
-  }
-}
+void delete(Pointer<git_reference> ref) => libgit2.git_reference_delete(ref);
 
 /// Get the repository where a reference resides.
 Pointer<git_repository> owner(Pointer<git_reference> ref) {
@@ -442,24 +395,6 @@ Pointer<git_object> peel({
   } else {
     return out.value;
   }
-}
-
-/// Ensure the reference name is well-formed.
-///
-/// Valid reference names must follow one of two patterns:
-///
-/// Top-level names must contain only capital letters and underscores,
-/// and must begin and end with a letter. (e.g. "HEAD", "ORIG_HEAD").
-/// Names prefixed with "refs/" can be almost anything. You must avoid
-/// the characters '~', '^', ':', '\', '?', '[', and '*', and the sequences ".."
-/// and "@{" which have special meaning to revparse.
-bool isValidName(String name) {
-  final refname = name.toNativeUtf8().cast<Int8>();
-  final result = libgit2.git_reference_is_valid_name(refname);
-
-  calloc.free(refname);
-
-  return result == 1 ? true : false;
 }
 
 /// Free the given reference.

@@ -27,6 +27,20 @@ void main() {
       odb.free();
     });
 
+    test('throws when trying to get odb and error occurs', () {
+      Directory('${repo.workdir}.git/objects/').deleteSync(recursive: true);
+      expect(
+        () => repo.odb,
+        throwsA(
+          isA<LibGit2Error>().having(
+            (e) => e.toString(),
+            'error',
+            contains("failed to load object database"),
+          ),
+        ),
+      );
+    });
+
     test('successfully creates new odb with no backends', () {
       final odb = Odb.create();
       expect(odb, isA<Odb>());
@@ -56,11 +70,46 @@ void main() {
       odb.free();
     });
 
+    test('throws when trying to read object and error occurs', () {
+      final odb = repo.odb;
+
+      expect(
+        () => odb.read(repo['0' * 40]),
+        throwsA(
+          isA<LibGit2Error>().having(
+            (e) => e.toString(),
+            'error',
+            "odb: cannot read object: null OID cannot exist",
+          ),
+        ),
+      );
+
+      odb.free();
+    });
+
     test('returns list of all objects oid\'s in database', () {
       final odb = repo.odb;
 
       expect(odb.objects, isNot(isEmpty));
       expect(odb.objects.contains(repo[commitSha]), true);
+
+      odb.free();
+    });
+
+    test('throws when trying to get list of all objects and error occurs', () {
+      final odb = repo.odb;
+      Directory('${repo.workdir}.git/objects').deleteSync(recursive: true);
+
+      expect(
+        () => odb.objects,
+        throwsA(
+          isA<LibGit2Error>().having(
+            (e) => e.toString(),
+            'error',
+            "object not found - failed to refresh packfiles",
+          ),
+        ),
+      );
 
       odb.free();
     });
@@ -81,7 +130,31 @@ void main() {
       final odb = repo.odb;
       expect(
         () => odb.write(type: GitObject.any, data: 'testing'),
-        throwsA(isA<ArgumentError>()),
+        throwsA(
+          isA<ArgumentError>().having(
+            (e) => e.toString(),
+            'error',
+            'Invalid argument: "GitObject.any is invalid type"',
+          ),
+        ),
+      );
+
+      odb.free();
+    });
+
+    test('throws when trying to write to disk alternate odb', () {
+      final odb = Odb.create();
+      odb.addDiskAlternate('${repo.workdir}.git/objects/');
+
+      expect(
+        () => odb.write(type: GitObject.blob, data: ''),
+        throwsA(
+          isA<LibGit2Error>().having(
+            (e) => e.toString(),
+            'error',
+            "cannot write object - unsupported in the loaded odb backends",
+          ),
+        ),
       );
 
       odb.free();

@@ -1,3 +1,4 @@
+import 'dart:ffi';
 import 'dart:io';
 import 'package:test/test.dart';
 import 'package:libgit2dart/libgit2dart.dart';
@@ -39,6 +40,19 @@ void main() {
       builder.free();
     });
 
+    test('throws when trying to initialize and error occurs', () {
+      expect(
+        () => TreeBuilder(repo: Repository(nullptr)),
+        throwsA(
+          isA<LibGit2Error>().having(
+            (e) => e.toString(),
+            'error',
+            "invalid argument: 'repo'",
+          ),
+        ),
+      );
+    });
+
     test('clears all the entries in the builder', () {
       final builder = TreeBuilder(repo: repo, tree: tree);
 
@@ -65,6 +79,42 @@ void main() {
       builder.free();
     });
 
+    test('throws when trying to add entry with invalid name or invalid oid',
+        () {
+      final builder = TreeBuilder(repo: repo);
+
+      expect(
+        () => builder.add(
+          filename: '',
+          oid: repo['0' * 40],
+          filemode: GitFilemode.blob,
+        ),
+        throwsA(
+          isA<LibGit2Error>().having(
+            (e) => e.toString(),
+            'error',
+            "failed to insert entry: invalid name for a tree entry - ",
+          ),
+        ),
+      );
+      expect(
+        () => builder.add(
+          filename: 'some.file',
+          oid: repo['0' * 40],
+          filemode: GitFilemode.blob,
+        ),
+        throwsA(
+          isA<LibGit2Error>().having(
+            (e) => e.toString(),
+            'error',
+            "failed to insert entry: invalid null OID - some.file",
+          ),
+        ),
+      );
+
+      builder.free();
+    });
+
     test('successfully removes an entry', () {
       final builder = TreeBuilder(repo: repo, tree: tree);
 
@@ -73,6 +123,23 @@ void main() {
       builder.remove('.gitignore');
       expect(() => builder['.gitignore'], throwsA(isA<ArgumentError>()));
       expect(builder.length, tree.length - 1);
+
+      builder.free();
+    });
+
+    test('throws when trying to remove entry that is not in the tree', () {
+      final builder = TreeBuilder(repo: repo);
+
+      expect(
+        () => builder.remove('not.there'),
+        throwsA(
+          isA<LibGit2Error>().having(
+            (e) => e.toString(),
+            'error',
+            "failed to remove entry: file isn't in the tree - not.there",
+          ),
+        ),
+      );
 
       builder.free();
     });

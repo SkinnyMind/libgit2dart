@@ -109,16 +109,6 @@ String entryName(Pointer<git_tree_entry> entry) =>
 int entryFilemode(Pointer<git_tree_entry> entry) =>
     libgit2.git_tree_entry_filemode(entry);
 
-/// Compare two tree entries.
-///
-/// Returns <0 if e1 is before e2, 0 if e1 == e2, >0 if e1 is after e2.
-int compare({
-  required Pointer<git_tree_entry> aPointer,
-  required Pointer<git_tree_entry> bPointer,
-}) {
-  return libgit2.git_tree_entry_cmp(aPointer, bPointer);
-}
-
 /// Free a user-owned tree entry.
 ///
 /// IMPORTANT: This function is only needed for tree entries owned by the user,

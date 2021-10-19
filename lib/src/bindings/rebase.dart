@@ -25,16 +25,7 @@ Pointer<git_rebase> init({
   final out = calloc<Pointer<git_rebase>>();
   final opts = calloc<git_rebase_options>();
 
-  final optsError = libgit2.git_rebase_options_init(
-    opts,
-    GIT_REBASE_OPTIONS_VERSION,
-  );
-
-  if (optsError < 0) {
-    calloc.free(out);
-    calloc.free(opts);
-    throw LibGit2Error(libgit2.git_error_last());
-  }
+  libgit2.git_rebase_options_init(opts, GIT_REBASE_OPTIONS_VERSION);
 
   final error = libgit2.git_rebase_init(
     out,
@@ -110,27 +101,12 @@ void commit({
 }
 
 /// Finishes a rebase that is currently in progress once all patches have been applied.
-///
-/// Throws a [LibGit2Error] if error occured.
-void finish(Pointer<git_rebase> rebase) {
-  final error = libgit2.git_rebase_finish(rebase, nullptr);
-
-  if (error < 0) {
-    throw LibGit2Error(libgit2.git_error_last());
-  }
-}
+void finish(Pointer<git_rebase> rebase) =>
+    libgit2.git_rebase_finish(rebase, nullptr);
 
 /// Aborts a rebase that is currently in progress, resetting the repository and working
 /// directory to their state before rebase began.
-///
-/// Throws a [LibGit2Error] if error occured.
-void abort(Pointer<git_rebase> rebase) {
-  final error = libgit2.git_rebase_abort(rebase);
-
-  if (error < 0) {
-    throw LibGit2Error(libgit2.git_error_last());
-  }
-}
+void abort(Pointer<git_rebase> rebase) => libgit2.git_rebase_abort(rebase);
 
 /// Free memory allocated for rebase object.
 void free(Pointer<git_rebase> rebase) => libgit2.git_rebase_free(rebase);

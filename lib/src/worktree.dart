@@ -11,7 +11,7 @@ class Worktree {
   /// If [ref] is provided, no new branch will be created but specified [ref] will
   /// be used instead.
   ///
-  /// Should be freed with `free()` to release allocated memory.
+  /// Should be freed to release allocated memory.
   ///
   /// Throws a [LibGit2Error] if error occured.
   Worktree.create({
@@ -31,7 +31,7 @@ class Worktree {
   /// Initializes a new instance of [Worktree] class by looking up existing worktree
   /// with provided [Repository] object and worktree [name].
   ///
-  /// Should be freed with `free()` to release allocated memory.
+  /// Should be freed to release allocated memory.
   ///
   /// Throws a [LibGit2Error] if error occured.
   Worktree.lookup({required Repository repo, required String name}) {
@@ -56,8 +56,6 @@ class Worktree {
   ///
   /// A worktree may be locked if the linked working tree is stored on a portable
   /// device which is not available.
-  ///
-  /// Throws a [LibGit2Error] if error occured.
   bool get isLocked => bindings.isLocked(_worktreePointer);
 
   /// Locks worktree if not already locked.
@@ -78,8 +76,6 @@ class Worktree {
   /// Prunes working tree.
   ///
   /// Prune the working tree, that is remove the git data structures on disk.
-  ///
-  /// Throws a [LibGit2Error] if error occured.
   void prune() => bindings.prune(_worktreePointer);
 
   /// Checks if worktree is valid.

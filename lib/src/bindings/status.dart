@@ -31,19 +31,11 @@ int listEntryCount(Pointer<git_status_list> statuslist) {
 /// Get a pointer to one of the entries in the status list.
 ///
 /// The entry is not modifiable and should not be freed.
-///
-/// Throws [RangeError] if position is out of bounds
 Pointer<git_status_entry> getByIndex({
   required Pointer<git_status_list> statuslistPointer,
   required int index,
 }) {
-  final result = libgit2.git_status_byindex(statuslistPointer, index);
-
-  if (result == nullptr) {
-    throw RangeError('Out of bounds');
-  } else {
-    return result;
-  }
+  return libgit2.git_status_byindex(statuslistPointer, index);
 }
 
 /// Get file status for a single file.

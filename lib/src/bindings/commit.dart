@@ -24,32 +24,8 @@ Pointer<git_commit> lookup({
   }
 }
 
-/// Lookup a commit object from a repository, given a prefix of its identifier (short id).
-///
-/// Throws a [LibGit2Error] if error occured.
-Pointer<git_commit> lookupPrefix({
-  required Pointer<git_repository> repoPointer,
-  required Pointer<git_oid> oidPointer,
-  required int len,
-}) {
-  final out = calloc<Pointer<git_commit>>();
-  final error = libgit2.git_commit_lookup_prefix(
-    out,
-    repoPointer,
-    oidPointer,
-    len,
-  );
-
-  if (error < 0) {
-    calloc.free(out);
-    throw LibGit2Error(libgit2.git_error_last());
-  } else {
-    return out.value;
-  }
-}
-
-/// Creates a git_annotated_commit from the given commit id. The resulting git_annotated_commit
-/// must be freed with git_annotated_commit_free.
+/// Creates an annotated commit from the given commit id. The resulting annotated commit
+/// must be freed with [annotatedFree].
 ///
 /// An annotated commit contains information about how it was looked up, which may be useful
 /// for functions like merge or rebase to provide context to the operation. For example, conflict
@@ -77,7 +53,7 @@ Pointer<Pointer<git_annotated_commit>> annotatedLookup({
   }
 }
 
-/// Frees a git_annotated_commit.
+/// Frees an annotated commit.
 void annotatedFree(Pointer<git_annotated_commit> commit) {
   libgit2.git_annotated_commit_free(commit);
 }
@@ -168,13 +144,7 @@ Pointer<git_oid> parentId({
   required Pointer<git_commit> commitPointer,
   required int position,
 }) {
-  final parentOid = libgit2.git_commit_parent_id(commitPointer, position);
-
-  if (parentOid == nullptr) {
-    throw LibGit2Error(libgit2.git_error_last());
-  } else {
-    return parentOid;
-  }
+  return libgit2.git_commit_parent_id(commitPointer, position);
 }
 
 /// Get the commit time (i.e. committer time) of a commit.
@@ -209,14 +179,7 @@ Pointer<git_index> revertCommit({
 }) {
   final out = calloc<Pointer<git_index>>();
   final opts = calloc<git_merge_options>();
-  final optsError =
-      libgit2.git_merge_options_init(opts, GIT_MERGE_OPTIONS_VERSION);
-
-  if (optsError < 0) {
-    calloc.free(out);
-    calloc.free(opts);
-    throw LibGit2Error(libgit2.git_error_last());
-  }
+  libgit2.git_merge_options_init(opts, GIT_MERGE_OPTIONS_VERSION);
 
   final error = libgit2.git_revert_commit(
     out,

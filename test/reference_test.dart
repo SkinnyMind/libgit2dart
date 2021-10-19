@@ -1,3 +1,4 @@
+import 'dart:ffi';
 import 'dart:io';
 import 'package:test/test.dart';
 import 'package:libgit2dart/libgit2dart.dart';
@@ -33,6 +34,19 @@ void main() {
       );
     });
 
+    test('throws when trying to get a list of references and error occurs', () {
+      expect(
+        () => Repository(nullptr).references,
+        throwsA(
+          isA<LibGit2Error>().having(
+            (e) => e.toString(),
+            'error',
+            "invalid argument: 'repo'",
+          ),
+        ),
+      );
+    });
+
     test('returns correct type of reference', () {
       final head = repo.head;
       expect(head.type, ReferenceType.direct);
@@ -53,6 +67,19 @@ void main() {
       final ref = repo.lookupReference('HEAD');
       expect(ref.target.sha, lastCommit);
       ref.free();
+    });
+
+    test('throws when trying to resolve invalid reference', () {
+      expect(
+        () => Reference(nullptr).target,
+        throwsA(
+          isA<LibGit2Error>().having(
+            (e) => e.toString(),
+            'error',
+            "invalid reference",
+          ),
+        ),
+      );
     });
 
     test('returns the full name', () {
@@ -154,7 +181,13 @@ void main() {
             name: 'refs/tags/invalid',
             target: '78b',
           ),
-          throwsA(isA<LibGit2Error>()),
+          throwsA(
+            isA<LibGit2Error>().having(
+              (e) => e.toString(),
+              'error',
+              "the given reference name '78b' is not valid",
+            ),
+          ),
         );
 
         expect(
@@ -162,7 +195,13 @@ void main() {
             name: 'refs/tags/invalid',
             target: 0,
           ),
-          throwsA(isA<ArgumentError>()),
+          throwsA(
+            isA<ArgumentError>().having(
+              (e) => e.toString(),
+              'error',
+              'Invalid argument: "0 must be either Oid or String reference name"',
+            ),
+          ),
         );
       });
 
@@ -172,7 +211,13 @@ void main() {
             name: 'refs/tags/invalid~',
             target: repo[lastCommit],
           ),
-          throwsA(isA<LibGit2Error>()),
+          throwsA(
+            isA<LibGit2Error>().having(
+              (e) => e.toString(),
+              'error',
+              "the given reference name 'refs/tags/invalid~' is not valid",
+            ),
+          ),
         );
       });
 
@@ -205,7 +250,14 @@ void main() {
             name: 'refs/tags/test',
             target: repo[lastCommit],
           ),
-          throwsA(isA<LibGit2Error>()),
+          throwsA(
+            isA<LibGit2Error>().having(
+              (e) => e.toString(),
+              'error',
+              "failed to write reference 'refs/tags/test': a reference with that "
+                  "name already exists.",
+            ),
+          ),
         );
 
         ref.free();
@@ -255,7 +307,14 @@ void main() {
             name: 'refs/tags/exists',
             target: 'refs/heads/master',
           ),
-          throwsA(isA<LibGit2Error>()),
+          throwsA(
+            isA<LibGit2Error>().having(
+              (e) => e.toString(),
+              'error',
+              "failed to write reference 'refs/tags/exists': a reference with that "
+                  "name already exists.",
+            ),
+          ),
         );
 
         ref.free();
@@ -267,7 +326,13 @@ void main() {
             name: 'refs/tags/invalid~',
             target: 'refs/heads/master',
           ),
-          throwsA(isA<LibGit2Error>()),
+          throwsA(
+            isA<LibGit2Error>().having(
+              (e) => e.toString(),
+              'error',
+              "the given reference name 'refs/tags/invalid~' is not valid",
+            ),
+          ),
         );
       });
 
@@ -293,15 +358,10 @@ void main() {
     });
 
     test('successfully deletes reference', () {
-      final ref = repo.createReference(
-        name: 'refs/tags/test',
-        target: repo[lastCommit],
-      );
-      expect(repo.references, contains('refs/tags/test'));
+      expect(repo.references, contains('refs/tags/v0.1'));
 
-      repo.deleteReference('refs/tags/test');
-      expect(repo.references, isNot(contains('refs/tags/test')));
-      ref.free();
+      repo.deleteReference('refs/tags/v0.1');
+      expect(repo.references, isNot(contains('refs/tags/v0.1')));
     });
 
     group('finds', () {
@@ -314,7 +374,13 @@ void main() {
       test('throws when error occured', () {
         expect(
           () => repo.lookupReference('refs/heads/not/there'),
-          throwsA(isA<LibGit2Error>()),
+          throwsA(
+            isA<LibGit2Error>().having(
+              (e) => e.toString(),
+              'error',
+              "reference 'refs/heads/not/there' not found",
+            ),
+          ),
         );
       });
     });
@@ -368,11 +434,35 @@ void main() {
         final ref = repo.lookupReference('HEAD');
         expect(
           () => ref.setTarget(target: 'refs/heads/invalid~'),
-          throwsA(isA<LibGit2Error>()),
+          throwsA(
+            isA<LibGit2Error>().having(
+              (e) => e.toString(),
+              'error',
+              "the given reference name 'refs/heads/invalid~' is not valid",
+            ),
+          ),
         );
+
+        expect(
+          () => ref.setTarget(target: Oid(nullptr)),
+          throwsA(
+            isA<LibGit2Error>().having(
+              (e) => e.toString(),
+              'error',
+              "invalid argument: 'id'",
+            ),
+          ),
+        );
+
         expect(
           () => ref.setTarget(target: 0),
-          throwsA(isA<ArgumentError>()),
+          throwsA(
+            isA<ArgumentError>().having(
+              (e) => e.toString(),
+              'error',
+              'Invalid argument: "0 must be either Oid or String reference name"',
+            ),
+          ),
         );
 
         ref.free();
@@ -497,6 +587,19 @@ void main() {
       ref.free();
     });
 
+    test('throws when trying to peel and error occurs', () {
+      expect(
+        () => Reference(nullptr).peel(),
+        throwsA(
+          isA<LibGit2Error>().having(
+            (e) => e.toString(),
+            'error',
+            "invalid argument: 'ref'",
+          ),
+        ),
+      );
+    });
+
     test('successfully compresses references', () {
       final packedRefsFile = File('${tmpDir.path}/.git/packed-refs');
       expect(packedRefsFile.existsSync(), false);
@@ -507,6 +610,19 @@ void main() {
       expect(packedRefsFile.existsSync(), true);
       final newRefs = repo.references;
       expect(newRefs, oldRefs);
+    });
+
+    test('throws when trying to compress and error occurs', () {
+      expect(
+        () => Reference.compress(Repository(nullptr)),
+        throwsA(
+          isA<LibGit2Error>().having(
+            (e) => e.toString(),
+            'error',
+            "invalid argument: 'repo'",
+          ),
+        ),
+      );
     });
 
     test('returns string representation of Reference object', () {

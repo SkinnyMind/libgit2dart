@@ -22,18 +22,7 @@ Pointer<git_worktree> create({
   final pathC = path.toNativeUtf8().cast<Int8>();
 
   final opts = calloc<git_worktree_add_options>();
-  final optsError = libgit2.git_worktree_add_options_init(
-    opts,
-    GIT_WORKTREE_ADD_OPTIONS_VERSION,
-  );
-
-  if (optsError < 0) {
-    calloc.free(out);
-    calloc.free(nameC);
-    calloc.free(pathC);
-    calloc.free(opts);
-    throw LibGit2Error(libgit2.git_error_last());
-  }
+  libgit2.git_worktree_add_options_init(opts, GIT_WORKTREE_ADD_OPTIONS_VERSION);
 
   opts.ref.ref = nullptr;
   if (refPointer != null) {
@@ -84,14 +73,10 @@ Pointer<git_worktree> lookup({
 /// Throws a [LibGit2Error] if error occured.
 bool isPrunable(Pointer<git_worktree> wt) {
   final opts = calloc<git_worktree_prune_options>();
-  final optsError = libgit2.git_worktree_prune_options_init(
+  libgit2.git_worktree_prune_options_init(
     opts,
     GIT_WORKTREE_PRUNE_OPTIONS_VERSION,
   );
-
-  if (optsError < 0) {
-    throw LibGit2Error(libgit2.git_error_last());
-  }
 
   return libgit2.git_worktree_is_prunable(wt, opts) > 0 ? true : false;
 }
@@ -99,14 +84,8 @@ bool isPrunable(Pointer<git_worktree> wt) {
 /// Prune working tree.
 ///
 /// Prune the working tree, that is remove the git data structures on disk.
-///
-/// Throws a [LibGit2Error] if error occured.
 void prune(Pointer<git_worktree> wt) {
-  final error = libgit2.git_worktree_prune(wt, nullptr);
-
-  if (error < 0) {
-    throw LibGit2Error(libgit2.git_error_last());
-  }
+  libgit2.git_worktree_prune(wt, nullptr);
 }
 
 /// List names of linked working trees.
@@ -143,18 +122,8 @@ String path(Pointer<git_worktree> wt) {
 ///
 /// A worktree may be locked if the linked working tree is stored on a portable
 /// device which is not available.
-///
-/// Throws a [LibGit2Error] if error occured.
 bool isLocked(Pointer<git_worktree> wt) {
-  final result = libgit2.git_worktree_is_locked(nullptr, wt);
-
-  if (result < 0) {
-    throw LibGit2Error(libgit2.git_error_last());
-  } else if (result == 0) {
-    return false;
-  } else {
-    return true;
-  }
+  return libgit2.git_worktree_is_locked(nullptr, wt) == 1 ? true : false;
 }
 
 /// Lock worktree if not already locked.

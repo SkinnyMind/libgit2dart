@@ -32,17 +32,11 @@ Pointer<git_revwalk> create(Pointer<git_repository> repo) {
 /// Change the sorting mode when iterating through the repository's contents.
 ///
 /// Changing the sorting mode resets the walker.
-///
-/// Throws a [LibGit2Error] if error occured.
 void sorting({
   required Pointer<git_revwalk> walkerPointer,
   required int sortMode,
 }) {
-  final error = libgit2.git_revwalk_sorting(walkerPointer, sortMode);
-
-  if (error < 0) {
-    throw LibGit2Error(libgit2.git_error_last());
-  }
+  libgit2.git_revwalk_sorting(walkerPointer, sortMode);
 }
 
 /// Add a new root for the traversal.
@@ -130,14 +124,8 @@ void reset(Pointer<git_revwalk> walker) => libgit2.git_revwalk_reset(walker);
 /// Simplify the history by first-parent.
 ///
 /// No parents other than the first for each commit will be enqueued.
-///
-/// Throws a [LibGit2Error] if error occured.
 void simplifyFirstParent(Pointer<git_revwalk> walker) {
-  final error = libgit2.git_revwalk_simplify_first_parent(walker);
-
-  if (error < 0) {
-    throw LibGit2Error(libgit2.git_error_last());
-  }
+  libgit2.git_revwalk_simplify_first_parent(walker);
 }
 
 /// Return the repository on which this walker is operating.

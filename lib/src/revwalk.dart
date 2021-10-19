@@ -28,8 +28,6 @@ class RevWalk {
   /// Changes the sorting mode when iterating through the repository's contents.
   ///
   /// Changing the sorting mode resets the walker.
-  ///
-  /// Throws a [LibGit2Error] if error occured.
   void sorting(Set<GitSort> sorting) {
     bindings.sorting(
       walkerPointer: _revWalkPointer,
@@ -79,8 +77,6 @@ class RevWalk {
   /// Simplify the history by first-parent.
   ///
   /// No parents other than the first for each commit will be enqueued.
-  ///
-  /// Throws a [LibGit2Error] if error occured.
   void simplifyFirstParent() => bindings.simplifyFirstParent(_revWalkPointer);
 
   /// Releases memory allocated for [RevWalk] object.

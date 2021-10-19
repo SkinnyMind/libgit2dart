@@ -21,17 +21,7 @@ Pointer<git_blame> file({
   final out = calloc<Pointer<git_blame>>();
   final pathC = path.toNativeUtf8().cast<Int8>();
   final options = calloc<git_blame_options>();
-  final optionsError = libgit2.git_blame_options_init(
-    options,
-    GIT_BLAME_OPTIONS_VERSION,
-  );
-
-  if (optionsError < 0) {
-    calloc.free(out);
-    calloc.free(pathC);
-    calloc.free(options);
-    throw LibGit2Error(libgit2.git_error_last());
-  }
+  libgit2.git_blame_options_init(options, GIT_BLAME_OPTIONS_VERSION);
 
   options.ref.flags = flags;
 

@@ -1,3 +1,4 @@
+import 'dart:ffi';
 import 'dart:io';
 import 'package:test/test.dart';
 import 'package:libgit2dart/libgit2dart.dart';
@@ -28,6 +29,19 @@ void main() {
       expect(blob, isA<Blob>());
     });
 
+    test('throws when trying to lookup with invalid oid', () {
+      expect(
+        () => repo.lookupBlob(repo['0' * 40]),
+        throwsA(
+          isA<LibGit2Error>().having(
+            (e) => e.toString(),
+            'error',
+            'odb: cannot read object: null OID cannot exist',
+          ),
+        ),
+      );
+    });
+
     test('returns correct values', () {
       expect(blob.oid.sha, blobSHA);
       expect(blob.isBinary, false);
@@ -45,6 +59,20 @@ void main() {
       expect(newBlob.content, newBlobContent);
 
       newBlob.free();
+    });
+
+    test('throws when trying to create new blob and error occurs', () {
+      final nullRepo = Repository(nullptr);
+      expect(
+        () => Blob.create(repo: nullRepo, content: ''),
+        throwsA(
+          isA<LibGit2Error>().having(
+            (e) => e.toString(),
+            'error',
+            "invalid argument: 'repo'",
+          ),
+        ),
+      );
     });
 
     test('successfully creates new blob from file at provided relative path',
@@ -66,21 +94,10 @@ void main() {
         throwsA(
           isA<LibGit2Error>().having(
             (e) => e.toString(),
-            'message',
+            'error',
             "could not find '${repo.workdir}invalid/path.txt' to stat: No such file or directory",
           ),
         ),
-      );
-    });
-
-    test(
-        'throws when creating new blob from path that is outside of working directory',
-        () {
-      final outsideFile =
-          File('${Directory.current.absolute.path}/test/blob_test.dart');
-      expect(
-        () => repo.createBlobFromWorkdir(outsideFile.path),
-        throwsA(isA<LibGit2Error>()),
       );
     });
 
@@ -94,6 +111,19 @@ void main() {
       expect(newBlob.isBinary, false);
 
       newBlob.free();
+    });
+
+    test('throws when trying to create from invalid path', () {
+      expect(
+        () => repo.createBlobFromDisk('invalid.file'),
+        throwsA(
+          isA<LibGit2Error>().having(
+            (e) => e.toString(),
+            'error',
+            "failed to resolve path 'invalid.file': No such file or directory",
+          ),
+        ),
+      );
     });
 
     group('diff', () {

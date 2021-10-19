@@ -120,8 +120,6 @@ class Repository {
   /// the first repository is found, or when reaching a directory referenced in [ceilingDirs].
   ///
   /// The method will automatically detect if the repository is bare (if there is a repository).
-  ///
-  /// Throws a [LibGit2Error] if error occured.
   static String discover({required String startPath, String? ceilingDirs}) {
     return bindings.discover(
       startPath: startPath,
@@ -164,8 +162,6 @@ class Repository {
   /// under refs/namespaces/foo/, use foo as the namespace.
   ///
   /// Pass null to unset.
-  ///
-  /// Throws a [LibGit2Error] if error occured.
   void setNamespace(String? namespace) {
     bindings.setNamespace(
       repoPointer: _repoPointer,
@@ -322,8 +318,6 @@ class Repository {
   /// will be returned, including global and system configurations (if they are available).
   ///
   /// The configuration file must be freed once it's no longer being used by the user.
-  ///
-  /// Throws a [LibGit2Error] if error occured.
   Config get config => Config(bindings.config(_repoPointer));
 
   /// Returns a snapshot of the repository's configuration.
@@ -332,8 +326,6 @@ class Repository {
   /// The contents of this snapshot will not change, even if the underlying config files are modified.
   ///
   /// The configuration file must be freed once it's no longer being used by the user.
-  ///
-  /// Throws a [LibGit2Error] if error occured.
   Config get configSnapshot => Config(bindings.configSnapshot(_repoPointer));
 
   /// Returns [Reference] object pointing to repository head.
@@ -451,8 +443,6 @@ class Repository {
   ///
   /// This looks up the user.name and user.email from the configuration and uses the
   /// current time as the timestamp, and creates a new signature based on that information.
-  ///
-  /// Throws a [LibGit2Error] if error occured.
   Signature get defaultSignature => Signature.defaultSignature(this);
 
   /// Returns the list of commits starting from provided commit [oid].
@@ -648,15 +638,21 @@ class Repository {
   List<Branch> get branchesRemote =>
       Branch.list(repo: this, type: GitBranch.remote);
 
-  /// Lookups a branch by its [name] in a repository.
+  /// Lookups a branch by its [name] and [type] in a repository.
   ///
-  /// The branch name will be checked for validity.
+  /// The branch [name] will be checked for validity.
+  ///
+  /// If branch [type] is [GitBranch.remote] you must include the remote name
+  /// in the [name] (e.g. "origin/master").
   ///
   /// Should be freed to release allocated memory when no longer needed.
   ///
   /// Throws a [LibGit2Error] if error occured.
-  Branch lookupBranch(String name) {
-    return Branch.lookup(repo: this, name: name);
+  Branch lookupBranch({
+    required String name,
+    GitBranch type = GitBranch.local,
+  }) {
+    return Branch.lookup(repo: this, name: name, type: type);
   }
 
   /// Creates a new branch pointing at a [target] commit.
@@ -706,6 +702,8 @@ class Repository {
   /// Checks status of the repository and returns map of file paths and their statuses.
   ///
   /// Returns empty map if there are no changes in statuses.
+  ///
+  /// Throws a [LibGit2Error] if error occured.
   Map<String, Set<GitStatus>> get status {
     var result = <String, Set<GitStatus>>{};
     var list = status_bindings.listNew(_repoPointer);
@@ -789,14 +787,14 @@ class Repository {
     String ourRef = 'HEAD',
   }) {
     final ref = lookupReference(ourRef);
-    final head = commit_bindings.annotatedLookup(
-      repoPointer: _repoPointer,
-      oidPointer: theirHead.pointer,
+    final head = AnnotatedCommit.lookup(
+      repo: this,
+      oid: theirHead,
     );
     final analysisInt = merge_bindings.analysis(
       repoPointer: _repoPointer,
       ourRefPointer: ref.pointer,
-      theirHeadPointer: head,
+      theirHeadPointer: head.pointer,
       theirHeadsLen: 1,
     );
 
@@ -807,7 +805,7 @@ class Repository {
       (e) => analysisInt[1] == e.value,
     );
 
-    commit_bindings.annotatedFree(head.value);
+    head.free();
     ref.free();
 
     return [analysisSet, mergePreference];
@@ -820,18 +818,18 @@ class Repository {
   ///
   /// Throws a [LibGit2Error] if error occured.
   void merge(Oid oid) {
-    final theirHead = commit_bindings.annotatedLookup(
-      repoPointer: _repoPointer,
-      oidPointer: oid.pointer,
+    final theirHead = AnnotatedCommit.lookup(
+      repo: this,
+      oid: oid,
     );
 
     merge_bindings.merge(
       repoPointer: _repoPointer,
-      theirHeadsPointer: theirHead,
+      theirHeadsPointer: theirHead.pointer,
       theirHeadsLen: 1,
     );
 
-    commit_bindings.annotatedFree(theirHead.value);
+    theirHead.free();
   }
 
   /// Merges two files as they exist in the index, using the given common ancestor
@@ -1092,23 +1090,30 @@ class Repository {
     return a.diff(newBlob: b, oldAsPath: aPath, newAsPath: bPath);
   }
 
-  /// Applies the [diff] to the given repository, making changes directly in the working directory.
+  /// Applies the [diff] to the given repository, making changes directly in the
+  /// working directory (default), the index, or both.
   ///
   /// Throws a [LibGit2Error] if error occured.
-  void apply(Diff diff) {
+  void apply({
+    required Diff diff,
+    GitApplyLocation location = GitApplyLocation.workdir,
+  }) {
     diff_bindings.apply(
       repoPointer: _repoPointer,
       diffPointer: diff.pointer,
-      location: GitApplyLocation.workdir.value,
+      location: location.value,
     );
   }
 
-  /// Checks if the [diff] will apply to HEAD.
-  bool applies(Diff diff) {
+  /// Checks if the [diff] will apply to the working directory (default), the index, or both.
+  bool applies({
+    required Diff diff,
+    GitApplyLocation location = GitApplyLocation.workdir,
+  }) {
     return diff_bindings.apply(
       repoPointer: _repoPointer,
       diffPointer: diff.pointer,
-      location: GitApplyLocation.index.value,
+      location: location.value,
       check: true,
     );
   }
@@ -1162,7 +1167,7 @@ class Repository {
   /// Removes a single stashed state from the stash list.
   ///
   /// Throws a [LibGit2Error] if error occured.
-  void dropStash([int index = 0]) {
+  void dropStash({int index = 0}) {
     Stash.drop(repo: this, index: index);
   }
 
@@ -1191,8 +1196,6 @@ class Repository {
   }
 
   /// Returns a list of the configured remotes for a repository.
-  ///
-  /// Throws a [LibGit2Error] if error occured.
   List<String> get remotes => Remote.list(this);
 
   /// Lookups remote with provided [name].
@@ -1246,8 +1249,6 @@ class Repository {
   ///
   /// Returned value can be either `true`, `false`, `null` (if the attribute was not set at all),
   /// or a [String] value, if the attribute was set to an actual string.
-  ///
-  /// Throws a [LibGit2Error] if error occured.
   Object? getAttribute({
     required String path,
     required String name,
@@ -1511,8 +1512,6 @@ class Repository {
   }
 
   /// Returns a list with all tracked submodules paths of a repository.
-  ///
-  /// Throws a [LibGit2Error] if error occured.
   List<String> get submodules => Submodule.list(this);
 
   /// Lookups submodule by name or path.

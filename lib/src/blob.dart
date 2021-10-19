@@ -90,7 +90,7 @@ class Blob {
     final result = patch_bindings.fromBlobs(
       oldBlobPointer: _blobPointer,
       oldAsPath: oldAsPath,
-      newBlobPointer: newBlob?.pointer,
+      newBlobPointer: newBlob?.pointer ?? nullptr,
       newAsPath: newAsPath,
       flags: flags.fold(0, (acc, e) => acc | e.value),
       contextLines: contextLines,

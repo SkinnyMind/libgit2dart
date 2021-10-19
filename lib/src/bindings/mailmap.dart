@@ -8,37 +8,23 @@ import '../util.dart';
 ///
 /// This object is empty, so you'll have to add a mailmap file before you can
 /// do anything with it. The mailmap must be freed with `free()`.
-///
-/// Throws a [LibGit2Error] if error occured.
 Pointer<git_mailmap> init() {
   final out = calloc<Pointer<git_mailmap>>();
-  final error = libgit2.git_mailmap_new(out);
+  libgit2.git_mailmap_new(out);
 
-  if (error < 0) {
-    calloc.free(out);
-    throw LibGit2Error(libgit2.git_error_last());
-  } else {
-    return out.value;
-  }
+  return out.value;
 }
 
 /// Create a new mailmap instance containing a single mailmap file.
-///
-/// Throws a [LibGit2Error] if error occured.
 Pointer<git_mailmap> fromBuffer(String buffer) {
   final out = calloc<Pointer<git_mailmap>>();
   final bufferC = buffer.toNativeUtf8().cast<Int8>();
 
-  final error = libgit2.git_mailmap_from_buffer(out, bufferC, buffer.length);
+  libgit2.git_mailmap_from_buffer(out, bufferC, buffer.length);
 
   calloc.free(bufferC);
 
-  if (error < 0) {
-    calloc.free(out);
-    throw LibGit2Error(libgit2.git_error_last());
-  } else {
-    return out.value;
-  }
+  return out.value;
 }
 
 /// Create a new mailmap instance from a repository, loading mailmap files based
@@ -65,8 +51,6 @@ Pointer<git_mailmap> fromRepository(Pointer<git_repository> repo) {
 }
 
 /// Resolve a name and email to the corresponding real name and email.
-///
-/// Throws a [LibGit2Error] if error occured.
 List<String> resolve({
   required Pointer<git_mailmap> mailmapPointer,
   required String name,
@@ -76,7 +60,7 @@ List<String> resolve({
   final outRealEmail = calloc<Pointer<Int8>>();
   final nameC = name.toNativeUtf8().cast<Int8>();
   final emailC = email.toNativeUtf8().cast<Int8>();
-  final error = libgit2.git_mailmap_resolve(
+  libgit2.git_mailmap_resolve(
     outRealName,
     outRealEmail,
     mailmapPointer,
@@ -84,44 +68,25 @@ List<String> resolve({
     emailC,
   );
 
-  if (error < 0) {
-    calloc.free(outRealName);
-    calloc.free(outRealEmail);
-    calloc.free(nameC);
-    calloc.free(emailC);
-    throw LibGit2Error(libgit2.git_error_last());
-  } else {
-    final realName = outRealName.value.cast<Utf8>().toDartString();
-    final realEmail = outRealEmail.value.cast<Utf8>().toDartString();
-    calloc.free(outRealName);
-    calloc.free(outRealEmail);
-    calloc.free(nameC);
-    calloc.free(emailC);
+  final realName = outRealName.value.cast<Utf8>().toDartString();
+  final realEmail = outRealEmail.value.cast<Utf8>().toDartString();
+  calloc.free(outRealName);
+  calloc.free(outRealEmail);
+  calloc.free(nameC);
+  calloc.free(emailC);
 
-    return [realName, realEmail];
-  }
+  return [realName, realEmail];
 }
 
 /// Resolve a signature to use real names and emails with a mailmap.
-///
-/// Throws a [LibGit2Error] if error occured.
 Pointer<git_signature> resolveSignature({
   required Pointer<git_mailmap> mailmapPointer,
   required Pointer<git_signature> signaturePointer,
 }) {
   final out = calloc<Pointer<git_signature>>();
-  final error = libgit2.git_mailmap_resolve_signature(
-    out,
-    mailmapPointer,
-    signaturePointer,
-  );
+  libgit2.git_mailmap_resolve_signature(out, mailmapPointer, signaturePointer);
 
-  if (error < 0) {
-    calloc.free(out);
-    throw LibGit2Error(libgit2.git_error_last());
-  } else {
-    return out.value;
-  }
+  return out.value;
 }
 
 /// Add a single entry to the given mailmap object. If the entry already exists,
@@ -140,7 +105,7 @@ void addEntry({
   final replaceNameC = replaceName?.toNativeUtf8().cast<Int8>() ?? nullptr;
   final replaceEmailC = replaceEmail.toNativeUtf8().cast<Int8>();
 
-  final error = libgit2.git_mailmap_add_entry(
+  libgit2.git_mailmap_add_entry(
     mailmapPointer,
     realNameC,
     realEmailC,
@@ -152,10 +117,6 @@ void addEntry({
   calloc.free(realEmailC);
   calloc.free(replaceNameC);
   calloc.free(replaceEmailC);
-
-  if (error < 0) {
-    throw LibGit2Error(libgit2.git_error_last());
-  }
 }
 
 /// Free the mailmap and its associated memory.

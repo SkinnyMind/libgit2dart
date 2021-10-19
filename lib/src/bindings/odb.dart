@@ -10,18 +10,10 @@ import '../util.dart';
 ///
 /// Before the ODB can be used for read/writing, a custom database backend must be
 /// manually added.
-///
-/// Throws a [LibGit2Error] if error occured.
 Pointer<git_odb> create() {
   final out = calloc<Pointer<git_odb>>();
-  final error = libgit2.git_odb_new(out);
-
-  if (error < 0) {
-    calloc.free(out);
-    throw LibGit2Error(libgit2.git_error_last());
-  } else {
-    return out.value;
-  }
+  libgit2.git_odb_new(out);
+  return out.value;
 }
 
 /// Add an on-disk alternate to an existing Object DB.
@@ -33,20 +25,13 @@ Pointer<git_odb> create() {
 /// have been exhausted.
 ///
 /// Writing is disabled on alternate backends.
-///
-/// Throws a [LibGit2Error] if error occured.
 void addDiskAlternate({
   required Pointer<git_odb> odbPointer,
   required String path,
 }) {
   final pathC = path.toNativeUtf8().cast<Int8>();
-  final error = libgit2.git_odb_add_disk_alternate(odbPointer, pathC);
-
+  libgit2.git_odb_add_disk_alternate(odbPointer, pathC);
   calloc.free(pathC);
-
-  if (error < 0) {
-    throw LibGit2Error(libgit2.git_error_last());
-  }
 }
 
 /// Determine if an object can be found in the object database by an abbreviated object ID.
@@ -174,7 +159,7 @@ void objectFree(Pointer<git_odb_object> object) {
   libgit2.git_odb_object_free(object);
 }
 
-/// Write raw data to into the object database.
+/// Write raw data into the object database.
 ///
 /// Throws a [LibGit2Error] if error occured.
 Pointer<git_oid> write({
@@ -196,54 +181,15 @@ Pointer<git_oid> write({
   }
 
   final buffer = data.toNativeUtf8().cast<Int8>();
-  final writeError = libgit2.git_odb_stream_write(
-    stream.value,
-    buffer,
-    data.length,
-  );
-
-  if (writeError < 0) {
-    calloc.free(buffer);
-    libgit2.git_odb_stream_free(stream.value);
-    throw LibGit2Error(libgit2.git_error_last());
-  }
+  libgit2.git_odb_stream_write(stream.value, buffer, data.length);
 
   final out = calloc<git_oid>();
-  final finalizeError = libgit2.git_odb_stream_finalize_write(
-    out,
-    stream.value,
-  );
+  libgit2.git_odb_stream_finalize_write(out, stream.value);
 
   calloc.free(buffer);
   libgit2.git_odb_stream_free(stream.value);
 
-  if (finalizeError < 0) {
-    calloc.free(out);
-    throw LibGit2Error(libgit2.git_error_last());
-  } else {
-    return out;
-  }
-}
-
-/// Get the number of ODB backend objects.
-int backendsCount(Pointer<git_odb> odb) => libgit2.git_odb_num_backends(odb);
-
-/// Lookup an ODB backend object by index.
-///
-/// Throws a [LibGit2Error] if error occured.
-Pointer<git_odb_backend> getBackend({
-  required Pointer<git_odb> odbPointer,
-  required int position,
-}) {
-  final out = calloc<Pointer<git_odb_backend>>();
-  final error = libgit2.git_odb_get_backend(out, odbPointer, position);
-
-  if (error < 0) {
-    calloc.free(out);
-    throw LibGit2Error(libgit2.git_error_last());
-  } else {
-    return out.value;
-  }
+  return out;
 }
 
 /// Close an open object database.

@@ -1,3 +1,4 @@
+import 'dart:ffi';
 import 'dart:io';
 import 'package:test/test.dart';
 import 'package:libgit2dart/libgit2dart.dart';
@@ -22,6 +23,20 @@ void main() {
       expect(repo.describe(), 'v0.2');
     });
 
+    test('throws when trying to describe and error occurs', () {
+      final nullRepo = Repository(nullptr);
+      expect(
+        () => nullRepo.describe(),
+        throwsA(
+          isA<LibGit2Error>().having(
+            (e) => e.toString(),
+            'error',
+            "invalid argument: 'repo'",
+          ),
+        ),
+      );
+    });
+
     test('successfully describes commit', () {
       repo.deleteTag('v0.2');
 
@@ -33,7 +48,16 @@ void main() {
 
     test('throws when trying to describe and no reference found', () {
       final commit = repo.lookupCommit(repo['f17d0d48']);
-      expect(() => repo.describe(commit: commit), throwsA(isA<LibGit2Error>()));
+      expect(
+        () => repo.describe(commit: commit),
+        throwsA(
+          isA<LibGit2Error>().having(
+            (e) => e.toString(),
+            'error',
+            "cannot describe - no tags can describe 'f17d0d48eae3aa08cecf29128a35e310c97b3521'.",
+          ),
+        ),
+      );
       commit.free();
     });
 

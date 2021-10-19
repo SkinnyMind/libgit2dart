@@ -80,8 +80,6 @@ class Remote {
   }
 
   /// Returns a list of the configured remotes for a [repo]sitory.
-  ///
-  /// Throws a [LibGit2Error] if error occured.
   static List<String> list(Repository repo) {
     return bindings.list(repo.pointer);
   }
@@ -184,10 +182,18 @@ class Remote {
   /// Get the remote's list of push refspecs.
   List<String> get pushRefspecs => bindings.pushRefspecs(_remotePointer);
 
-  /// Get the remote repository's reference advertisement list.
+  /// Returns the remote repository's reference list and their associated commit ids.
   ///
   /// [proxy] can be 'auto' to try to auto-detect the proxy from the git configuration or some
   /// specified url. By default connection isn't done through proxy.
+  ///
+  /// Returned map keys:
+  /// - `local` is true if remote head is available locally, false otherwise.
+  /// - `loid` is the oid of the object the local copy of the remote head is currently
+  /// pointing to. null if there is no local copy of the remote head.
+  /// - `name` is the name of the reference.
+  /// - `oid` is the oid of the object the remote head is currently pointing to.
+  /// - `symref` is the target of the symbolic reference or empty string.
   ///
   /// Throws a [LibGit2Error] if error occured.
   List<Map<String, Object?>> ls({

@@ -37,29 +37,26 @@ class Branch {
     );
   }
 
-  /// Lookups a branch by its [name] in a [repo]sitory.
+  /// Lookups a branch by its [name] and [type] in a [repo]sitory.
   ///
   /// The branch name will be checked for validity.
   ///
-  /// Should be freed with [free] to release allocated memory when no longer
-  /// needed.
+  /// If branch [type] is [GitBranch.remote] you must include the remote name
+  /// in the [name] (e.g. "origin/master").
+  ///
+  /// Should be freed to release allocated memory when no longer needed.
   ///
   /// Throws a [LibGit2Error] if error occured.
-  Branch.lookup({required Repository repo, required String name}) {
-    final ref = Reference(
-      reference_bindings.lookupDWIM(
-        repoPointer: repo.pointer,
-        name: name,
-      ),
-    );
-
+  Branch.lookup({
+    required Repository repo,
+    required String name,
+    GitBranch type = GitBranch.local,
+  }) {
     _branchPointer = bindings.lookup(
       repoPointer: repo.pointer,
       branchName: name,
-      branchType: ref.isBranch ? GitBranch.local.value : GitBranch.remote.value,
+      branchType: type.value,
     );
-
-    ref.free();
   }
 
   late final Pointer<git_reference> _branchPointer;

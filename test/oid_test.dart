@@ -23,13 +23,13 @@ void main() {
 
   group('Oid', () {
     group('fromSHA()', () {
-      test('initializes successfully', () {
+      test('successfully initializes', () {
         final oid = Oid.fromSHA(repo: repo, sha: sha);
         expect(oid, isA<Oid>());
         expect(oid.sha, sha);
       });
 
-      test('initializes successfully from short hex string', () {
+      test('successfully initializes from short hex string', () {
         final oid = Oid.fromSHA(repo: repo, sha: sha.substring(0, 5));
 
         expect(oid, isA<Oid>());
@@ -41,9 +41,22 @@ void main() {
           () => Oid.fromSHA(repo: repo, sha: 'sha'),
           throwsA(
             isA<ArgumentError>().having(
-              (e) => e.invalidValue,
+              (e) => e.toString(),
               'value',
-              'sha is not a valid sha hex string',
+              'Invalid argument: "sha is not a valid sha hex string"',
+            ),
+          ),
+        );
+      });
+
+      test('throws when sha hex string is invalid', () {
+        expect(
+          () => Oid.fromSHA(repo: repo, sha: '0000000'),
+          throwsA(
+            isA<LibGit2Error>().having(
+              (e) => e.toString(),
+              'error',
+              "object not found - no match for id prefix (0000000)",
             ),
           ),
         );

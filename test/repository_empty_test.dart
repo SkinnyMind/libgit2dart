@@ -1,3 +1,4 @@
+import 'dart:ffi';
 import 'dart:io';
 import 'package:test/test.dart';
 import 'package:libgit2dart/libgit2dart.dart';
@@ -78,6 +79,19 @@ void main() {
 
       test('checks if it is empty', () {
         expect(repo.isEmpty, true);
+      });
+
+      test('throws when checking if it is empty and error occurs', () {
+        expect(
+          () => Repository(nullptr).isEmpty,
+          throwsA(
+            isA<LibGit2Error>().having(
+              (e) => e.toString(),
+              'error',
+              "invalid argument: 'repo'",
+            ),
+          ),
+        );
       });
 
       test('checks if head is detached', () {

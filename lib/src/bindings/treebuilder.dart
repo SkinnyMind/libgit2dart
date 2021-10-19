@@ -32,30 +32,14 @@ Pointer<git_treebuilder> create({
 }
 
 /// Write the contents of the tree builder as a tree object.
-///
-/// Throws a [LibGit2Error] if error occured.
 Pointer<git_oid> write(Pointer<git_treebuilder> bld) {
   final out = calloc<git_oid>();
-  final error = libgit2.git_treebuilder_write(out, bld);
-
-  if (error < 0) {
-    calloc.free(out);
-    throw LibGit2Error(libgit2.git_error_last());
-  } else {
-    return out;
-  }
+  libgit2.git_treebuilder_write(out, bld);
+  return out;
 }
 
 /// Clear all the entires in the builder.
-///
-/// Throws a [LibGit2Error] if error occured.
-void clear(Pointer<git_treebuilder> bld) {
-  final error = libgit2.git_treebuilder_clear(bld);
-
-  if (error < 0) {
-    throw LibGit2Error(libgit2.git_error_last());
-  }
-}
+void clear(Pointer<git_treebuilder> bld) => libgit2.git_treebuilder_clear(bld);
 
 /// Get the number of entries listed in a treebuilder.
 int entryCount(Pointer<git_treebuilder> bld) =>

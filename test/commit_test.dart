@@ -1,3 +1,4 @@
+import 'dart:ffi';
 import 'dart:io';
 import 'package:test/test.dart';
 import 'package:libgit2dart/libgit2dart.dart';
@@ -41,10 +42,42 @@ void main() {
   });
 
   group('Commit', () {
-    test('successfully returns when 40 char sha hex is provided', () {
+    test('successfully lookups for provided oid', () {
       final commit = repo.lookupCommit(mergeCommit);
       expect(commit, isA<Commit>());
       commit.free();
+    });
+
+    test('throws when trying to lookup with invalid oid', () {
+      expect(
+        () => repo.lookupCommit(repo['0' * 40]),
+        throwsA(
+          isA<LibGit2Error>().having(
+            (e) => e.toString(),
+            'error',
+            "odb: cannot read object: null OID cannot exist",
+          ),
+        ),
+      );
+    });
+
+    test('successfully lookups annotated commit for provided oid', () {
+      final annotated = AnnotatedCommit.lookup(repo: repo, oid: mergeCommit);
+      expect(annotated, isA<AnnotatedCommit>());
+      annotated.free();
+    });
+
+    test('throws when trying to lookup annotated commit with invalid oid', () {
+      expect(
+        () => AnnotatedCommit.lookup(repo: repo, oid: repo['0' * 40]),
+        throwsA(
+          isA<LibGit2Error>().having(
+            (e) => e.toString(),
+            'error',
+            "odb: cannot read object: null OID cannot exist",
+          ),
+        ),
+      );
     });
 
     test('successfully reverts commit', () {
@@ -64,6 +97,23 @@ void main() {
       index.free();
       to.free();
       from.free();
+    });
+
+    test('throws when trying to revert commit and error occurs', () {
+      final nullCommit = Commit(nullptr);
+      expect(
+        () => repo.revertCommit(
+          revertCommit: nullCommit,
+          ourCommit: nullCommit,
+        ),
+        throwsA(
+          isA<LibGit2Error>().having(
+            (e) => e.toString(),
+            'error',
+            "invalid argument: 'revert_commit'",
+          ),
+        ),
+      );
     });
 
     test('successfully creates commit', () {
@@ -146,6 +196,30 @@ void main() {
       parent1.free();
       parent2.free();
       commit.free();
+    });
+
+    test('throws when trying to create commit and error occurs', () {
+      final parent = repo.lookupCommit(mergeCommit);
+      final nullRepo = Repository(nullptr);
+
+      expect(
+        () => nullRepo.createCommit(
+          message: message,
+          author: author,
+          commiter: commiter,
+          tree: tree,
+          parents: [parent],
+        ),
+        throwsA(
+          isA<LibGit2Error>().having(
+            (e) => e.toString(),
+            'error',
+            "invalid argument: 'git_tree_owner(tree) == repo'",
+          ),
+        ),
+      );
+
+      parent.free();
     });
 
     test('returns string representation of Commit object', () {

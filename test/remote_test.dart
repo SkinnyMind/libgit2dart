@@ -68,6 +68,24 @@ void main() {
       remote.free();
     });
 
+    test('throws when trying to create with fetchspec with invalid remote name',
+        () {
+      expect(
+        () => repo.createRemote(
+          name: '',
+          url: '',
+          fetch: '',
+        ),
+        throwsA(
+          isA<LibGit2Error>().having(
+            (e) => e.toString(),
+            'error',
+            "'' is not a valid remote name.",
+          ),
+        ),
+      );
+    });
+
     test('successfully deletes', () {
       final remote = repo.createRemote(name: 'upstream', url: remoteUrl);
       expect(repo.remotes.length, 2);
@@ -76,6 +94,19 @@ void main() {
       expect(repo.remotes.length, 1);
 
       remote.free();
+    });
+
+    test('throws when trying to delete non existing remote', () {
+      expect(
+        () => repo.deleteRemote('not/there'),
+        throwsA(
+          isA<LibGit2Error>().having(
+            (e) => e.toString(),
+            'error',
+            "remote 'not/there' does not exist",
+          ),
+        ),
+      );
     });
 
     test('successfully renames', () {
@@ -92,10 +123,31 @@ void main() {
       remote.free();
     });
 
+    test('returns list of non-default refspecs that cannot be renamed', () {
+      final remote = repo.createRemote(
+        name: 'upstream',
+        url: remoteUrl,
+        fetch: '+refs/*:refs/*',
+      );
+
+      expect(
+        repo.renameRemote(oldName: remote.name, newName: 'renamed'),
+        ['+refs/*:refs/*'],
+      );
+
+      remote.free();
+    });
+
     test('throws when renaming with invalid names', () {
       expect(
         () => repo.renameRemote(oldName: '', newName: ''),
-        throwsA(isA<LibGit2Error>()),
+        throwsA(
+          isA<LibGit2Error>().having(
+            (e) => e.toString(),
+            'error',
+            "'' is not a valid remote name.",
+          ),
+        ),
       );
     });
 
@@ -165,6 +217,36 @@ void main() {
       remote.free();
     });
 
+    test('throws when trying to transform refspec with invalid reference name',
+        () {
+      final remote = repo.lookupRemote('origin');
+      final refspec = remote.getRefspec(0);
+
+      expect(
+        () => refspec.transform('invalid/name'),
+        throwsA(
+          isA<LibGit2Error>().having(
+            (e) => e.toString(),
+            'error',
+            "ref 'invalid/name' doesn't match the source",
+          ),
+        ),
+      );
+
+      expect(
+        () => refspec.rTransform('invalid/name'),
+        throwsA(
+          isA<LibGit2Error>().having(
+            (e) => e.toString(),
+            'error',
+            "ref 'invalid/name' doesn't match the destination",
+          ),
+        ),
+      );
+
+      remote.free();
+    });
+
     test('successfully adds fetch refspec', () {
       Remote.addFetch(
         repo: repo,
@@ -184,6 +266,23 @@ void main() {
       remote.free();
     });
 
+    test('throws when trying to add fetch refspec for invalid remote name', () {
+      expect(
+        () => Remote.addFetch(
+          repo: repo,
+          remote: '',
+          refspec: '',
+        ),
+        throwsA(
+          isA<LibGit2Error>().having(
+            (e) => e.toString(),
+            'error',
+            "'' is not a valid remote name.",
+          ),
+        ),
+      );
+    });
+
     test('successfully adds push refspec', () {
       Remote.addPush(
         repo: repo,
@@ -195,6 +294,23 @@ void main() {
       expect(remote.pushRefspecs, ['+refs/test/*:refs/test/remotes/*']);
 
       remote.free();
+    });
+
+    test('throws when trying to add push refspec for invalid remote name', () {
+      expect(
+        () => Remote.addPush(
+          repo: repo,
+          remote: '',
+          refspec: '',
+        ),
+        throwsA(
+          isA<LibGit2Error>().having(
+            (e) => e.toString(),
+            'error',
+            "'' is not a valid remote name.",
+          ),
+        ),
+      );
     });
 
     test('successfully returns remote repo\'s reference list', () {
@@ -218,15 +334,42 @@ void main() {
       remote.free();
     });
 
+    test(
+        'throws when trying to get remote repo\'s reference list with invalid url',
+        () {
+      Remote.setUrl(repo: repo, remote: 'libgit2', url: 'invalid');
+      final remote = repo.lookupRemote('libgit2');
+
+      expect(
+        () => remote.ls(),
+        throwsA(
+          isA<LibGit2Error>().having(
+            (e) => e.toString(),
+            'error',
+            "unsupported URL protocol",
+          ),
+        ),
+      );
+
+      remote.free();
+    });
+
     test('successfully fetches data', () {
       Remote.setUrl(
         repo: repo,
         remote: 'libgit2',
         url: 'https://github.com/libgit2/TestGitRepository',
       );
+      Remote.addFetch(
+        repo: repo,
+        remote: 'libgit2',
+        refspec: '+refs/heads/*:refs/remotes/origin/*',
+      );
       final remote = repo.lookupRemote('libgit2');
 
-      final stats = remote.fetch();
+      final stats = remote.fetch(
+        refspecs: ['+refs/heads/*:refs/remotes/origin/*'],
+      );
 
       expect(stats.totalObjects, 69);
       expect(stats.indexedObjects, 69);
@@ -236,6 +379,84 @@ void main() {
       expect(stats.indexedDeltas, 3);
       expect(stats.receivedBytes, 0);
       expect(stats.toString(), contains('TransferProgress{'));
+
+      remote.free();
+    });
+
+    test('successfully fetches data with proxy set to auto', () {
+      Remote.setUrl(
+        repo: repo,
+        remote: 'libgit2',
+        url: 'https://github.com/libgit2/TestGitRepository',
+      );
+      Remote.addFetch(
+        repo: repo,
+        remote: 'libgit2',
+        refspec: '+refs/heads/*:refs/remotes/origin/*',
+      );
+      final remote = repo.lookupRemote('libgit2');
+
+      final stats = remote.fetch(
+        refspecs: ['+refs/heads/*:refs/remotes/origin/*'],
+        proxy: 'auto',
+      );
+
+      expect(stats.totalObjects, 69);
+      expect(stats.indexedObjects, 69);
+      expect(stats.receivedObjects, 69);
+      expect(stats.localObjects, 0);
+      expect(stats.totalDeltas, 3);
+      expect(stats.indexedDeltas, 3);
+      expect(stats.receivedBytes, 0);
+      expect(stats.toString(), contains('TransferProgress{'));
+
+      remote.free();
+    });
+
+    test('uses specified proxy for fetch', () {
+      Remote.setUrl(
+        repo: repo,
+        remote: 'libgit2',
+        url: 'https://github.com/libgit2/TestGitRepository',
+      );
+      Remote.addFetch(
+        repo: repo,
+        remote: 'libgit2',
+        refspec: '+refs/heads/*:refs/remotes/origin/*',
+      );
+      final remote = repo.lookupRemote('libgit2');
+
+      expect(
+        () => remote.fetch(
+          refspecs: ['+refs/heads/*:refs/remotes/origin/*'],
+          proxy: 'https://1.1.1.1',
+        ),
+        throwsA(
+          isA<LibGit2Error>().having(
+            (e) => e.toString(),
+            'error',
+            "proxy returned unexpected status: 400",
+          ),
+        ),
+      );
+
+      remote.free();
+    });
+
+    test('throws when trying to fetch data with invalid url', () {
+      Remote.setUrl(repo: repo, remote: 'libgit2', url: 'https://wrong.url');
+      final remote = repo.lookupRemote('libgit2');
+
+      expect(
+        () => remote.fetch(),
+        throwsA(
+          isA<LibGit2Error>().having(
+            (e) => e.toString(),
+            'error',
+            "failed to resolve address for wrong.url: Name or service not known",
+          ),
+        ),
+      );
 
       remote.free();
     });
@@ -300,20 +521,20 @@ Total 69 (delta 0), reused 1 (delta 0), pack-reused 68
         url: 'https://github.com/libgit2/TestGitRepository',
       );
       final remote = repo.lookupRemote('libgit2');
-      const tipsExpected = [
+      final tipsExpected = [
         {
           'refname': 'refs/tags/annotated_tag',
-          'oldSha': '0000000000000000000000000000000000000000',
+          'oldSha': '0' * 40,
           'newSha': 'd96c4e80345534eccee5ac7b07fc7603b56124cb',
         },
         {
           'refname': 'refs/tags/blob',
-          'oldSha': '0000000000000000000000000000000000000000',
+          'oldSha': '0' * 40,
           'newSha': '55a1a760df4b86a02094a904dfa511deb5655905'
         },
         {
           'refname': 'refs/tags/commit_tree',
-          'oldSha': '0000000000000000000000000000000000000000',
+          'oldSha': '0' * 40,
           'newSha': '8f50ba15d49353813cc6e20298002c0d17b0a9ee',
         },
       ];
@@ -369,6 +590,24 @@ Total 69 (delta 0), reused 1 (delta 0), pack-reused 68
       remote.free();
       originRepo.free();
       originDir.delete(recursive: true);
+    });
+
+    test('throws when trying to push to invalid url', () {
+      Remote.setUrl(repo: repo, remote: 'libgit2', url: 'https://wrong.url');
+      final remote = repo.lookupRemote('libgit2');
+
+      expect(
+        () => remote.push(refspecs: ['refs/heads/master']),
+        throwsA(
+          isA<LibGit2Error>().having(
+            (e) => e.toString(),
+            'error',
+            "failed to resolve address for wrong.url: Name or service not known",
+          ),
+        ),
+      );
+
+      remote.free();
     });
   });
 }

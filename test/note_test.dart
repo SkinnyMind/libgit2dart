@@ -1,3 +1,4 @@
+import 'dart:ffi';
 import 'dart:io';
 import 'package:test/test.dart';
 import 'package:libgit2dart/libgit2dart.dart';
@@ -43,6 +44,20 @@ void main() {
       }
     });
 
+    test('throws when trying to get list of notes and error occurs', () {
+      Directory('${repo.workdir}.git/refs/notes').deleteSync(recursive: true);
+      expect(
+        () => repo.notes,
+        throwsA(
+          isA<LibGit2Error>().having(
+            (e) => e.toString(),
+            'error',
+            "reference 'refs/notes/commits' not found",
+          ),
+        ),
+      );
+    });
+
     test('successfully lookups note', () {
       final head = repo.head;
       final note = repo.lookupNote(annotatedOid: head.target);
@@ -75,7 +90,25 @@ void main() {
       signature.free();
     });
 
-    test('successfully removes note', () {
+    test('throws when trying to create note and error occurs', () {
+      expect(
+        () => Repository(nullptr).createNote(
+          author: Signature(nullptr),
+          committer: Signature(nullptr),
+          annotatedOid: repo['0' * 40],
+          note: '',
+        ),
+        throwsA(
+          isA<LibGit2Error>().having(
+            (e) => e.toString(),
+            'error',
+            "invalid argument: 'repo'",
+          ),
+        ),
+      );
+    });
+
+    test('successfully deletes note', () {
       final signature = repo.defaultSignature;
       final head = repo.head;
 
@@ -87,11 +120,34 @@ void main() {
 
       expect(
         () => repo.lookupNote(annotatedOid: head.target),
-        throwsA(isA<LibGit2Error>()),
+        throwsA(
+          isA<LibGit2Error>().having(
+            (e) => e.toString(),
+            'error',
+            "note could not be found",
+          ),
+        ),
       );
 
       head.free();
       signature.free();
+    });
+
+    test('throws when trying to delete note and error occurs', () {
+      expect(
+        () => Repository(nullptr).deleteNote(
+          author: Signature(nullptr),
+          committer: Signature(nullptr),
+          annotatedOid: repo['0' * 40],
+        ),
+        throwsA(
+          isA<LibGit2Error>().having(
+            (e) => e.toString(),
+            'error',
+            "invalid argument: 'repo'",
+          ),
+        ),
+      );
     });
 
     test('returns string representation of Note object', () {

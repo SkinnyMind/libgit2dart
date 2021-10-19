@@ -9,8 +9,6 @@ class Mailmap {
   ///
   /// This object is empty, so you'll have to add a mailmap file before you can
   /// do anything with it. Must be freed with `free()`.
-  ///
-  /// Throws a [LibGit2Error] if error occured.
   Mailmap.empty() {
     libgit2.git_libgit2_init();
 
@@ -20,8 +18,6 @@ class Mailmap {
   /// Initializes a new instance of [Mailmap] class from provided buffer.
   ///
   /// Must be freed with `free()`.
-  ///
-  /// Throws a [LibGit2Error] if error occured.
   Mailmap.fromBuffer(String buffer) {
     libgit2.git_libgit2_init();
 
@@ -50,8 +46,6 @@ class Mailmap {
 
   /// Returns list containing resolved [name] and [email] to the corresponding real name
   /// and real email respectively.
-  ///
-  /// Throws a [LibGit2Error] if error occured.
   List<String> resolve({
     required String name,
     required String email,
@@ -64,8 +58,6 @@ class Mailmap {
   }
 
   /// Resolves a signature to use real names and emails with a mailmap.
-  ///
-  /// Throws a [LibGit2Error] if error occured.
   Signature resolveSignature(Signature signature) {
     return Signature(bindings.resolveSignature(
       mailmapPointer: _mailmapPointer,
@@ -76,20 +68,24 @@ class Mailmap {
   /// Adds a single entry to the given mailmap object. If the entry already exists,
   /// it will be replaced with the new entry.
   ///
-  /// Throws a [LibGit2Error] if error occured.
+  /// Throws a [ArgumentError] if [replaceEmail] is empty string.
   void addEntry({
     String? realName,
     String? realEmail,
     String? replaceName,
     required String replaceEmail,
   }) {
-    bindings.addEntry(
-      mailmapPointer: _mailmapPointer,
-      realName: realName,
-      realEmail: realEmail,
-      replaceName: replaceName,
-      replaceEmail: replaceEmail,
-    );
+    if (replaceEmail.trim().isEmpty) {
+      throw ArgumentError.value('replaceEmail can\'t be empty');
+    } else {
+      bindings.addEntry(
+        mailmapPointer: _mailmapPointer,
+        realName: realName,
+        realEmail: realEmail,
+        replaceName: replaceName,
+        replaceEmail: replaceEmail,
+      );
+    }
   }
 
   /// Releases memory allocated for mailmap object.

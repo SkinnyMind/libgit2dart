@@ -1,3 +1,4 @@
+import 'dart:ffi';
 import 'dart:io';
 import 'package:test/test.dart';
 import 'package:libgit2dart/libgit2dart.dart';
@@ -27,6 +28,19 @@ void main() {
       packbuilder.free();
     });
 
+    test('throws when trying to initialize and error occurs', () {
+      expect(
+        () => PackBuilder(Repository(nullptr)),
+        throwsA(
+          isA<LibGit2Error>().having(
+            (e) => e.toString(),
+            'error',
+            "invalid argument: 'repo'",
+          ),
+        ),
+      );
+    });
+
     test('successfully adds objects', () {
       final packbuilder = PackBuilder(repo);
       final odb = repo.odb;
@@ -41,12 +55,46 @@ void main() {
       packbuilder.free();
     });
 
-    test('successfully adds objects recursively', () {
+    test('throws when trying to add object and error occurs', () {
+      final packbuilder = PackBuilder(repo);
+
+      expect(
+        () => packbuilder.add(Oid(nullptr)),
+        throwsA(
+          isA<LibGit2Error>().having(
+            (e) => e.toString(),
+            'error',
+            "invalid argument: 'oid'",
+          ),
+        ),
+      );
+
+      packbuilder.free();
+    });
+
+    test('successfully adds object recursively', () {
       final packbuilder = PackBuilder(repo);
       final oid = Oid.fromSHA(repo: repo, sha: 'f17d0d48');
 
       packbuilder.addRecursively(oid);
       expect(packbuilder.length, 3);
+
+      packbuilder.free();
+    });
+
+    test('throws when trying to add object recursively and error occurs', () {
+      final packbuilder = PackBuilder(repo);
+
+      expect(
+        () => packbuilder.addRecursively(Oid(nullptr)),
+        throwsA(
+          isA<LibGit2Error>().having(
+            (e) => e.toString(),
+            'error',
+            "invalid argument: 'id'",
+          ),
+        ),
+      );
 
       packbuilder.free();
     });
@@ -103,6 +151,23 @@ void main() {
 
       final writtenCount = repo.pack(packDelegate: packDelegate);
       expect(writtenCount, 18);
+    });
+
+    test('throws when trying to write pack into invalid path', () {
+      final packbuilder = PackBuilder(repo);
+
+      expect(
+        () => packbuilder.write('invalid/path'),
+        throwsA(
+          isA<LibGit2Error>().having(
+            (e) => e.toString(),
+            'error',
+            contains('failed to create temporary file'),
+          ),
+        ),
+      );
+
+      packbuilder.free();
     });
 
     test('returns string representation of PackBuilder object', () {

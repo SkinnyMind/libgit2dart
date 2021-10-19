@@ -1,3 +1,4 @@
+import 'dart:ffi';
 import 'dart:io';
 import 'package:test/test.dart';
 import 'package:libgit2dart/libgit2dart.dart';
@@ -43,6 +44,19 @@ void main() {
       submodule.free();
     });
 
+    test('throws when trying to lookup and submodule not found', () {
+      expect(
+        () => repo.lookupSubmodule('not/there'),
+        throwsA(
+          isA<LibGit2Error>().having(
+            (e) => e.toString(),
+            'error',
+            "no submodule named 'not/there'",
+          ),
+        ),
+      );
+    });
+
     test('successfully inits and updates', () {
       final submoduleFilePath = '${repo.workdir}$testSubmodule/master.txt';
       expect(File(submoduleFilePath).existsSync(), false);
@@ -60,6 +74,19 @@ void main() {
       repo.updateSubmodule(submodule: testSubmodule, init: true);
 
       expect(File(submoduleFilePath).existsSync(), true);
+    });
+
+    test('throws when trying to update not initialized submodule', () {
+      expect(
+        () => repo.updateSubmodule(submodule: testSubmodule),
+        throwsA(
+          isA<LibGit2Error>().having(
+            (e) => e.toString(),
+            'error',
+            "submodule is not initialized",
+          ),
+        ),
+      );
     });
 
     test('successfully opens repository for a submodule', () {
@@ -81,6 +108,24 @@ void main() {
       submodule.free();
     });
 
+    test('throws when trying to open repository for not initialized submodule',
+        () {
+      final submodule = repo.lookupSubmodule(testSubmodule);
+
+      expect(
+        () => submodule.open(),
+        throwsA(
+          isA<LibGit2Error>().having(
+            (e) => e.toString(),
+            'error',
+            contains("failed to resolve path"),
+          ),
+        ),
+      );
+
+      submodule.free();
+    });
+
     test('successfully adds submodule', () {
       final submodule = repo.addSubmodule(
         url: submoduleUrl,
@@ -94,6 +139,38 @@ void main() {
 
       submoduleRepo.free();
       submodule.free();
+    });
+
+    test('throws when trying to add submodule with wrong url', () {
+      expect(
+        () => repo.addSubmodule(
+          url: 'https://wrong.url/',
+          path: 'test',
+        ),
+        throwsA(
+          isA<LibGit2Error>().having(
+            (e) => e.toString(),
+            'error',
+            'failed to resolve address for wrong.url: Name or service not known',
+          ),
+        ),
+      );
+    });
+
+    test('throws when trying to add submodule and error occurs', () {
+      expect(
+        () => Repository(nullptr).addSubmodule(
+          url: 'https://wrong.url/',
+          path: 'test',
+        ),
+        throwsA(
+          isA<LibGit2Error>().having(
+            (e) => e.toString(),
+            'error',
+            "invalid argument: 'repo'",
+          ),
+        ),
+      );
     });
 
     test('successfully sets configuration values', () {

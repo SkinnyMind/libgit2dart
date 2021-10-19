@@ -1,3 +1,4 @@
+import 'dart:ffi';
 import 'dart:io';
 import 'package:test/test.dart';
 import 'package:libgit2dart/libgit2dart.dart';
@@ -74,6 +75,19 @@ void main() {
       expect(index.length, 0);
     });
 
+    test('throws when trying to clear the contents and error occurs', () {
+      expect(
+        () => Index(nullptr).clear(),
+        throwsA(
+          isA<LibGit2Error>().having(
+            (e) => e.toString(),
+            'error',
+            "invalid argument: 'index'",
+          ),
+        ),
+      );
+    });
+
     group('add()', () {
       test('successfully adds with provided IndexEntry', () {
         final entry = index['file'];
@@ -90,14 +104,45 @@ void main() {
       });
 
       test('throws if file not found at provided path', () {
-        expect(() => index.add('not_there'), throwsA(isA<LibGit2Error>()));
+        expect(
+          () => index.add('not_there'),
+          throwsA(
+            isA<LibGit2Error>().having(
+              (e) => e.toString(),
+              'error',
+              "could not find '${repo.workdir}not_there' to stat: No such file or directory",
+            ),
+          ),
+        );
+      });
+
+      test('throws if provided IndexEntry is invalid', () {
+        expect(
+          () => index.add(IndexEntry(nullptr)),
+          throwsA(
+            isA<LibGit2Error>().having(
+              (e) => e.toString(),
+              'error',
+              "invalid argument: 'source_entry && source_entry->path'",
+            ),
+          ),
+        );
       });
 
       test('throws if index of bare repository', () {
         final bare = Repository.open('test/assets/empty_bare.git');
         final bareIndex = bare.index;
 
-        expect(() => bareIndex.add('config'), throwsA(isA<LibGit2Error>()));
+        expect(
+          () => bareIndex.add('config'),
+          throwsA(
+            isA<LibGit2Error>().having(
+              (e) => e.toString(),
+              'error',
+              "cannot create blob from file. This operation is not allowed against bare repositories.",
+            ),
+          ),
+        );
 
         bareIndex.free();
         bare.free();
@@ -126,6 +171,25 @@ void main() {
         expect(index.length, 1);
         expect(index['feature_file'].sha, featureFileSha);
       });
+
+      test('throws when trying to addAll in bare repository', () {
+        final bare = Repository.open('test/assets/empty_bare.git');
+        final bareIndex = bare.index;
+
+        expect(
+          () => bareIndex.addAll([]),
+          throwsA(
+            isA<LibGit2Error>().having(
+              (e) => e.toString(),
+              'error',
+              "cannot index add all. This operation is not allowed against bare repositories.",
+            ),
+          ),
+        );
+
+        bareIndex.free();
+        bare.free();
+      });
     });
 
     test('writes to disk', () {
@@ -146,6 +210,19 @@ void main() {
       expect(index.find('feature_file'), true);
       index.remove('feature_file');
       expect(index.find('feature_file'), false);
+    });
+
+    test('throws when trying to remove entry with invalid path', () {
+      expect(
+        () => index.remove('invalid'),
+        throwsA(
+          isA<LibGit2Error>().having(
+            (e) => e.toString(),
+            'error',
+            "index does not contain invalid at stage 0",
+          ),
+        ),
+      );
     });
 
     test('removes all entries with matching pathspec', () {
@@ -177,11 +254,51 @@ void main() {
       expect(oid.sha, 'a8ae3dd59e6e1802c6f78e05e301bfd57c9f334f');
     });
 
+    test('throws when trying to write tree to invalid repository', () {
+      expect(
+        () => index.writeTree(Repository(nullptr)),
+        throwsA(
+          isA<LibGit2Error>().having(
+            (e) => e.toString(),
+            'error',
+            "invalid argument: 'repo'",
+          ),
+        ),
+      );
+    });
+
+    test('throws when trying to write tree while index have conflicts', () {
+      final tmpDir = setupRepo(Directory('test/assets/mergerepo/'));
+      final repo = Repository.open(tmpDir.path);
+
+      final conflictBranch = repo.lookupBranch(name: 'conflict-branch');
+      final index = repo.index;
+      repo.merge(conflictBranch.target);
+
+      expect(
+        () => index.writeTree(),
+        throwsA(
+          isA<LibGit2Error>().having(
+            (e) => e.toString(),
+            'error',
+            "cannot create a tree from a not fully merged index.",
+          ),
+        ),
+      );
+
+      conflictBranch.free();
+      index.free();
+      repo.free();
+      tmpDir.deleteSync(recursive: true);
+    });
+
     test('returns conflicts with ancestor, our and their present', () {
       final repoDir = setupRepo(Directory('test/assets/mergerepo/'));
       final conflictRepo = Repository.open(repoDir.path);
 
-      final conflictBranch = conflictRepo.lookupBranch('ancestor-conflict');
+      final conflictBranch = conflictRepo.lookupBranch(
+        name: 'ancestor-conflict',
+      );
 
       conflictRepo.checkout(refName: 'refs/heads/feature');
 
@@ -204,7 +321,7 @@ void main() {
       final repoDir = setupRepo(Directory('test/assets/mergerepo/'));
       final conflictRepo = Repository.open(repoDir.path);
 
-      final conflictBranch = conflictRepo.lookupBranch('conflict-branch');
+      final conflictBranch = conflictRepo.lookupBranch(name: 'conflict-branch');
 
       conflictRepo.merge(conflictBranch.target);
 
@@ -225,7 +342,9 @@ void main() {
       final repoDir = setupRepo(Directory('test/assets/mergerepo/'));
       final conflictRepo = Repository.open(repoDir.path);
 
-      final conflictBranch = conflictRepo.lookupBranch('ancestor-conflict');
+      final conflictBranch = conflictRepo.lookupBranch(
+        name: 'ancestor-conflict',
+      );
 
       conflictRepo.checkout(refName: 'refs/heads/our-conflict');
 
@@ -248,7 +367,7 @@ void main() {
       final repoDir = setupRepo(Directory('test/assets/mergerepo/'));
       final conflictRepo = Repository.open(repoDir.path);
 
-      final conflictBranch = conflictRepo.lookupBranch('their-conflict');
+      final conflictBranch = conflictRepo.lookupBranch(name: 'their-conflict');
 
       conflictRepo.checkout(refName: 'refs/heads/feature');
 
@@ -265,6 +384,43 @@ void main() {
       conflictBranch.free();
       conflictRepo.free();
       repoDir.deleteSync(recursive: true);
+    });
+
+    test('successfully removes conflicts', () {
+      final repoDir = setupRepo(Directory('test/assets/mergerepo/'));
+      final conflictRepo = Repository.open(repoDir.path);
+
+      final conflictBranch = conflictRepo.lookupBranch(name: 'conflict-branch');
+      final index = conflictRepo.index;
+
+      conflictRepo.merge(conflictBranch.target);
+      expect(index.hasConflicts, true);
+      expect(index.conflicts.length, 1);
+
+      final conflictedFile = index.conflicts['conflict_file']!;
+      conflictedFile.remove();
+      expect(index.hasConflicts, false);
+      expect(index.conflicts, isEmpty);
+      expect(index.conflicts['conflict_file'], null);
+
+      index.free();
+      conflictBranch.free();
+      conflictRepo.free();
+      repoDir.deleteSync(recursive: true);
+    });
+
+    test('throws when trying to remove conflict and error occurs', () {
+      expect(
+        () => ConflictEntry(index.pointer, 'invalid.path', null, null, null)
+            .remove(),
+        throwsA(
+          isA<LibGit2Error>().having(
+            (e) => e.toString(),
+            'error',
+            "index does not contain invalid.path",
+          ),
+        ),
+      );
     });
 
     test('returns string representation of Index and IndexEntry objects', () {

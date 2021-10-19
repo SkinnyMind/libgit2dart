@@ -1,3 +1,4 @@
+import 'dart:ffi';
 import 'dart:io';
 import 'package:test/test.dart';
 import 'package:libgit2dart/libgit2dart.dart';
@@ -85,6 +86,35 @@ void main() {
       worktree.free();
     });
 
+    test('throws when trying to create worktree with invalid name or path', () {
+      expect(
+        () => repo.createWorktree(
+          name: '',
+          path: worktreeDir.path,
+        ),
+        throwsA(
+          isA<LibGit2Error>().having(
+            (e) => e.toString(),
+            'error',
+            contains('failed to make directory'),
+          ),
+        ),
+      );
+      expect(
+        () => repo.createWorktree(
+          name: 'name',
+          path: '',
+        ),
+        throwsA(
+          isA<LibGit2Error>().having(
+            (e) => e.toString(),
+            'error',
+            'attempt to create empty path: Invalid argument',
+          ),
+        ),
+      );
+    });
+
     test('successfully lookups worktree', () {
       final worktree = repo.createWorktree(
         name: worktreeName,
@@ -98,6 +128,19 @@ void main() {
 
       lookedupWorktree.free();
       worktree.free();
+    });
+
+    test('throws when trying to lookup and error occurs', () {
+      expect(
+        () => Worktree.lookup(repo: Repository(nullptr), name: 'name'),
+        throwsA(
+          isA<LibGit2Error>().having(
+            (e) => e.toString(),
+            'error',
+            "invalid argument: 'repo'",
+          ),
+        ),
+      );
     });
 
     test('successfully locks and unlocks worktree', () {
@@ -135,6 +178,19 @@ void main() {
       expect(repo.worktrees, []);
 
       worktree.free();
+    });
+
+    test('throws when trying get list of worktrees and error occurs', () {
+      expect(
+        () => Worktree.list(Repository(nullptr)),
+        throwsA(
+          isA<LibGit2Error>().having(
+            (e) => e.toString(),
+            'error',
+            "invalid argument: 'repo'",
+          ),
+        ),
+      );
     });
   });
 }

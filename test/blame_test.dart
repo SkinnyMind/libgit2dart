@@ -57,7 +57,10 @@ void main() {
 
   group('Blame', () {
     test('successfully gets the blame for provided file', () {
-      final blame = repo.blame(path: 'feature_file');
+      final blame = repo.blame(
+        path: 'feature_file',
+        oldestCommit: repo['f17d0d4'],
+      );
 
       expect(blame.length, 2);
 
@@ -75,6 +78,33 @@ void main() {
         expect(blame[i].isBoundary, hunks[i]['isBoundary']);
         expect(blame[i].originPath, 'feature_file');
       }
+
+      blame.free();
+    });
+
+    test('throws when provided file path is invalid', () {
+      expect(
+        () => repo.blame(path: 'invalid'),
+        throwsA(
+          isA<LibGit2Error>().having(
+            (e) => e.toString(),
+            'error',
+            "the path 'invalid' does not exist in the given tree",
+          ),
+        ),
+      );
+    });
+
+    test(
+        'successfully gets the blame for provided file with minMatchCharacters set',
+        () {
+      final blame = repo.blame(
+        path: 'feature_file',
+        minMatchCharacters: 1,
+        flags: {GitBlameFlag.trackCopiesSameFile},
+      );
+
+      expect(blame.length, 2);
 
       blame.free();
     });
@@ -102,14 +132,32 @@ void main() {
 
     test('throws when provided index for hunk is invalid', () {
       final blame = repo.blame(path: 'feature_file');
-      expect(() => blame[10], throwsA(isA<RangeError>()));
+      expect(
+        () => blame[10],
+        throwsA(
+          isA<RangeError>().having(
+            (e) => e.message,
+            'error',
+            '10 is out of bounds',
+          ),
+        ),
+      );
 
       blame.free();
     });
 
     test('throws when provided line number for hunk is invalid', () {
       final blame = repo.blame(path: 'feature_file');
-      expect(() => blame.forLine(10), throwsA(isA<RangeError>()));
+      expect(
+        () => blame.forLine(10),
+        throwsA(
+          isA<RangeError>().having(
+            (e) => e.message,
+            'error',
+            '10 is out of bounds',
+          ),
+        ),
+      );
 
       blame.free();
     });
@@ -119,7 +167,7 @@ void main() {
         () {
       final blame = repo.blame(
         path: 'feature_file',
-        newestCommit: repo['fc38877b2552ab554752d9a77e1f48f738cca79b'],
+        newestCommit: repo['fc38877'],
         flags: {GitBlameFlag.ignoreWhitespace},
       );
 
@@ -139,6 +187,35 @@ void main() {
       expect(hunk.originCommitter, hunks[0]['originCommitter']);
       expect(hunk.isBoundary, hunks[0]['isBoundary']);
       expect(hunk.originPath, 'feature_file');
+
+      blame.free();
+    });
+
+    test(
+        'successfully gets the blame for provided file with minLine and maxLine set',
+        () {
+      final blame = repo.blame(
+        path: 'feature_file',
+        minLine: 1,
+        maxLine: 1,
+      );
+
+      expect(blame.length, 1);
+
+      for (var i = 0; i < blame.length; i++) {
+        expect(blame[i].linesCount, 1);
+        expect(blame[i].finalCommitOid.sha, hunks[i]['finalCommitOid']);
+        expect(blame[i].finalStartLineNumber, hunks[i]['finalStartLineNumber']);
+        expect(blame[i].finalCommitter, hunks[i]['finalCommitter']);
+        expect(blame[i].originCommitOid.sha, hunks[i]['originCommitOid']);
+        expect(
+          blame[i].originStartLineNumber,
+          hunks[i]['originStartLineNumber'],
+        );
+        expect(blame[i].originCommitter, hunks[i]['originCommitter']);
+        expect(blame[i].isBoundary, hunks[i]['isBoundary']);
+        expect(blame[i].originPath, 'feature_file');
+      }
 
       blame.free();
     });

@@ -48,15 +48,10 @@ void apply({
   List<String>? paths,
 }) {
   final options = calloc<git_stash_apply_options>();
-  final optionsError = libgit2.git_stash_apply_options_init(
+  libgit2.git_stash_apply_options_init(
     options,
     GIT_STASH_APPLY_OPTIONS_VERSION,
   );
-
-  if (optionsError < 0) {
-    calloc.free(options);
-    throw LibGit2Error(libgit2.git_error_last());
-  }
 
   final checkoutOptions = checkout_bindings.initOptions(
     strategy: strategy,
@@ -88,7 +83,11 @@ void apply({
 ///
 /// Throws a [LibGit2Error] if error occured.
 void drop({required Pointer<git_repository> repoPointer, required int index}) {
-  libgit2.git_stash_drop(repoPointer, index);
+  final error = libgit2.git_stash_drop(repoPointer, index);
+
+  if (error < 0) {
+    throw LibGit2Error(libgit2.git_error_last());
+  }
 }
 
 /// Apply a single stashed state from the stash list and remove it from the list if successful.
@@ -103,15 +102,10 @@ void pop({
   List<String>? paths,
 }) {
   final options = calloc<git_stash_apply_options>();
-  final optionsError = libgit2.git_stash_apply_options_init(
+  libgit2.git_stash_apply_options_init(
     options,
     GIT_STASH_APPLY_OPTIONS_VERSION,
   );
-
-  if (optionsError < 0) {
-    calloc.free(options);
-    throw LibGit2Error(libgit2.git_error_last());
-  }
 
   final checkoutOptions = checkout_bindings.initOptions(
     strategy: strategy,

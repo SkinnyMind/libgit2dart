@@ -24,13 +24,9 @@ class TreeBuilder {
   int get length => bindings.entryCount(_treeBuilderPointer);
 
   /// Writes the contents of the tree builder as a tree object.
-  ///
-  /// Throws a [LibGit2Error] if error occured.
   Oid write() => Oid(bindings.write(_treeBuilderPointer));
 
   /// Clears all the entires in the tree builder.
-  ///
-  /// Throws a [LibGit2Error] if error occured.
   void clear() => bindings.clear(_treeBuilderPointer);
 
   /// Returns an entry from the tree builder from its filename.

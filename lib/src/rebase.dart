@@ -2,7 +2,6 @@ import 'dart:ffi';
 import 'package:libgit2dart/libgit2dart.dart';
 import 'bindings/libgit2_bindings.dart';
 import 'bindings/rebase.dart' as bindings;
-import 'bindings/commit.dart' as commit_bindings;
 
 class Rebase {
   /// Initializes a new instance of the [Rebase] class by initializing a
@@ -25,38 +24,33 @@ class Rebase {
     Oid? upstream,
     Oid? onto,
   }) {
-    Pointer<git_annotated_commit>? _branch, _upstream, _onto;
+    AnnotatedCommit? _branch, _upstream, _onto;
     if (branch != null) {
-      _branch = commit_bindings
-          .annotatedLookup(
-            repoPointer: repo.pointer,
-            oidPointer: branch.pointer,
-          )
-          .value;
+      _branch = AnnotatedCommit.lookup(repo: repo, oid: branch);
     }
     if (upstream != null) {
-      _upstream = commit_bindings
-          .annotatedLookup(
-            repoPointer: repo.pointer,
-            oidPointer: upstream.pointer,
-          )
-          .value;
+      _upstream = AnnotatedCommit.lookup(repo: repo, oid: upstream);
     }
     if (onto != null) {
-      _onto = commit_bindings
-          .annotatedLookup(
-            repoPointer: repo.pointer,
-            oidPointer: onto.pointer,
-          )
-          .value;
+      _onto = AnnotatedCommit.lookup(repo: repo, oid: onto);
     }
 
     _rebasePointer = bindings.init(
       repoPointer: repo.pointer,
-      branchPointer: _branch,
-      upstreamPointer: _upstream,
-      ontoPointer: _onto,
+      branchPointer: _branch?.pointer.value,
+      upstreamPointer: _upstream?.pointer.value,
+      ontoPointer: _onto?.pointer.value,
     );
+
+    if (branch != null) {
+      _branch!.free();
+    }
+    if (upstream != null) {
+      _upstream!.free();
+    }
+    if (onto != null) {
+      _onto!.free();
+    }
   }
 
   /// Pointer to memory address for allocated rebase object.
@@ -96,14 +90,10 @@ class Rebase {
   }
 
   /// Finishes a rebase that is currently in progress once all patches have been applied.
-  ///
-  /// Throws a [LibGit2Error] if error occured.
   void finish() => bindings.finish(_rebasePointer);
 
   /// Aborts a rebase that is currently in progress, resetting the repository and working
   /// directory to their state before rebase began.
-  ///
-  /// Throws a [LibGit2Error] if error occured.
   void abort() => bindings.abort(_rebasePointer);
 
   /// Releases memory allocated for rebase object.

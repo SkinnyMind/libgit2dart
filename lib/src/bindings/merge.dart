@@ -25,8 +25,6 @@ Pointer<git_oid> mergeBase({
 
 /// Analyzes the given branch(es) and determines the opportunities for merging them
 /// into a reference.
-///
-/// Throws a [LibGit2Error] if error occured.
 List<int> analysis({
   required Pointer<git_repository> repoPointer,
   required Pointer<git_reference> ourRefPointer,
@@ -35,7 +33,7 @@ List<int> analysis({
 }) {
   final analysisOut = calloc<Int32>();
   final preferenceOut = calloc<Int32>();
-  final error = libgit2.git_merge_analysis_for_ref(
+  libgit2.git_merge_analysis_for_ref(
     analysisOut,
     preferenceOut,
     repoPointer,
@@ -43,60 +41,35 @@ List<int> analysis({
     theirHeadPointer,
     theirHeadsLen,
   );
-  var result = <int>[];
 
-  if (error < 0) {
-    calloc.free(analysisOut);
-    calloc.free(preferenceOut);
-    throw LibGit2Error(libgit2.git_error_last());
-  } else {
-    result.add(analysisOut.value);
-    result.add(preferenceOut.value);
-    calloc.free(analysisOut);
-    calloc.free(preferenceOut);
-    return result;
-  }
+  final result = [analysisOut.value, preferenceOut.value];
+
+  calloc.free(analysisOut);
+  calloc.free(preferenceOut);
+
+  return result;
 }
 
 /// Merges the given commit(s) into HEAD, writing the results into the working directory.
 /// Any changes are staged for commit and any conflicts are written to the index. Callers
 /// should inspect the repository's index after this completes, resolve any conflicts and
 /// prepare a commit.
-///
-/// Throws a [LibGit2Error] if error occured.
 void merge({
   required Pointer<git_repository> repoPointer,
   required Pointer<Pointer<git_annotated_commit>> theirHeadsPointer,
   required int theirHeadsLen,
 }) {
   final mergeOpts = calloc<git_merge_options>();
-  final mergeError = libgit2.git_merge_options_init(
-    mergeOpts,
-    GIT_MERGE_OPTIONS_VERSION,
-  );
-
-  if (mergeError < 0) {
-    calloc.free(mergeOpts);
-    throw LibGit2Error(libgit2.git_error_last());
-  }
+  libgit2.git_merge_options_init(mergeOpts, GIT_MERGE_OPTIONS_VERSION);
 
   final checkoutOpts = calloc<git_checkout_options>();
-  final checkoutError = libgit2.git_checkout_options_init(
-    checkoutOpts,
-    GIT_CHECKOUT_OPTIONS_VERSION,
-  );
-
-  if (checkoutError < 0) {
-    calloc.free(mergeOpts);
-    calloc.free(checkoutOpts);
-    throw LibGit2Error(libgit2.git_error_last());
-  }
+  libgit2.git_checkout_options_init(checkoutOpts, GIT_CHECKOUT_OPTIONS_VERSION);
 
   checkoutOpts.ref.checkout_strategy =
       git_checkout_strategy_t.GIT_CHECKOUT_SAFE |
           git_checkout_strategy_t.GIT_CHECKOUT_RECREATE_MISSING;
 
-  final error = libgit2.git_merge(
+  libgit2.git_merge(
     repoPointer,
     theirHeadsPointer,
     theirHeadsLen,
@@ -106,10 +79,6 @@ void merge({
 
   calloc.free(mergeOpts);
   calloc.free(checkoutOpts);
-
-  if (error < 0) {
-    throw LibGit2Error(libgit2.git_error_last());
-  }
 }
 
 /// Merge two files as they exist in the index, using the given common ancestor
@@ -235,15 +204,7 @@ void cherryPick({
   required Pointer<git_commit> commitPointer,
 }) {
   final opts = calloc<git_cherrypick_options>();
-  final optsError = libgit2.git_cherrypick_options_init(
-    opts,
-    GIT_CHERRYPICK_OPTIONS_VERSION,
-  );
-
-  if (optsError < 0) {
-    calloc.free(opts);
-    throw LibGit2Error(libgit2.git_error_last());
-  }
+  libgit2.git_cherrypick_options_init(opts, GIT_CHERRYPICK_OPTIONS_VERSION);
 
   opts.ref.checkout_opts.checkout_strategy =
       git_checkout_strategy_t.GIT_CHECKOUT_SAFE;
@@ -263,15 +224,7 @@ Pointer<git_merge_options> _initMergeOptions({
   required int fileFlags,
 }) {
   final opts = calloc<git_merge_options>();
-  final error = libgit2.git_merge_options_init(
-    opts,
-    GIT_MERGE_OPTIONS_VERSION,
-  );
-
-  if (error < 0) {
-    calloc.free(opts);
-    throw LibGit2Error(libgit2.git_error_last());
-  }
+  libgit2.git_merge_options_init(opts, GIT_MERGE_OPTIONS_VERSION);
 
   opts.ref.file_favor = favor;
   opts.ref.flags = mergeFlags;

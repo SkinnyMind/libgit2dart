@@ -5,8 +5,6 @@ import 'libgit2_bindings.dart';
 import '../util.dart';
 
 /// Create a diff between the repository index and the workdir directory.
-///
-/// Throws a [LibGit2Error] if error occured.
 Pointer<git_diff> indexToWorkdir({
   required Pointer<git_repository> repoPointer,
   required Pointer<git_index> indexPointer,
@@ -21,16 +19,7 @@ Pointer<git_diff> indexToWorkdir({
     interhunkLines: interhunkLines,
   );
 
-  final error = libgit2.git_diff_index_to_workdir(
-    out,
-    repoPointer,
-    indexPointer,
-    opts,
-  );
-
-  if (error < 0) {
-    throw LibGit2Error(libgit2.git_error_last());
-  }
+  libgit2.git_diff_index_to_workdir(out, repoPointer, indexPointer, opts);
 
   calloc.free(opts);
 
@@ -38,8 +27,6 @@ Pointer<git_diff> indexToWorkdir({
 }
 
 /// Create a diff between a tree and repository index.
-///
-/// Throws a [LibGit2Error] if error occured.
 Pointer<git_diff> treeToIndex({
   required Pointer<git_repository> repoPointer,
   required Pointer<git_tree> treePointer,
@@ -55,17 +42,13 @@ Pointer<git_diff> treeToIndex({
     interhunkLines: interhunkLines,
   );
 
-  final error = libgit2.git_diff_tree_to_index(
+  libgit2.git_diff_tree_to_index(
     out,
     repoPointer,
     treePointer,
     indexPointer,
     opts,
   );
-
-  if (error < 0) {
-    throw LibGit2Error(libgit2.git_error_last());
-  }
 
   calloc.free(opts);
 
@@ -166,21 +149,14 @@ void merge({
 ///
 /// This function will only read patch files created by a git implementation, it will not
 /// read unified diffs produced by the `diff` program, nor any other types of patch files.
-///
-/// Throws a [LibGit2Error] if error occured.
 Pointer<git_diff> parse(String content) {
   final out = calloc<Pointer<git_diff>>();
   final contentC = content.toNativeUtf8().cast<Int8>();
-  final error = libgit2.git_diff_from_buffer(out, contentC, content.length);
+  libgit2.git_diff_from_buffer(out, contentC, content.length);
 
   calloc.free(contentC);
 
-  if (error < 0) {
-    calloc.free(out);
-    throw LibGit2Error(libgit2.git_error_last());
-  } else {
-    return out.value;
-  }
+  return out.value;
 }
 
 /// Transform a diff marking file renames, copies, etc.
@@ -200,15 +176,7 @@ void findSimilar({
   required int renameLimit,
 }) {
   final opts = calloc<git_diff_find_options>();
-  final optsError = libgit2.git_diff_find_options_init(
-    opts,
-    GIT_DIFF_FIND_OPTIONS_VERSION,
-  );
-
-  if (optsError < 0) {
-    calloc.free(opts);
-    throw LibGit2Error(libgit2.git_error_last());
-  }
+  libgit2.git_diff_find_options_init(opts, GIT_DIFF_FIND_OPTIONS_VERSION);
 
   opts.ref.flags = flags;
   opts.ref.rename_threshold = renameThreshold;
@@ -236,7 +204,7 @@ void findSimilar({
 /// and should in fact generate the same IDs as the upstream git project does.
 ///
 /// Throws a [LibGit2Error] if error occured.
-Pointer<git_oid> patchId(Pointer<git_diff> diff) {
+Pointer<git_oid> patchOid(Pointer<git_diff> diff) {
   final out = calloc<git_oid>();
   final error = libgit2.git_diff_patchid(out, diff, nullptr);
 
@@ -249,19 +217,11 @@ Pointer<git_oid> patchId(Pointer<git_diff> diff) {
 }
 
 /// Return the diff delta for an entry in the diff list.
-///
-/// Throws [RangeError] if index out of range.
 Pointer<git_diff_delta> getDeltaByIndex({
   required Pointer<git_diff> diffPointer,
   required int index,
 }) {
-  final result = libgit2.git_diff_get_delta(diffPointer, index);
-
-  if (result == nullptr) {
-    throw RangeError('$index is out of bounds');
-  } else {
-    return result;
-  }
+  return libgit2.git_diff_get_delta(diffPointer, index);
 }
 
 /// Look up the single character abbreviation for a delta status code.
@@ -323,19 +283,13 @@ String statsPrint({
 }
 
 /// Add patch to buffer.
-///
-/// Throws a [LibGit2Error] if error occured.
 Pointer<git_buf> addToBuf({
   required Pointer<git_patch> patchPointer,
   required Pointer<git_buf> bufferPointer,
 }) {
-  final error = libgit2.git_patch_to_buf(bufferPointer, patchPointer);
+  libgit2.git_patch_to_buf(bufferPointer, patchPointer);
 
-  if (error < 0) {
-    throw LibGit2Error(libgit2.git_error_last());
-  } else {
-    return bufferPointer;
-  }
+  return bufferPointer;
 }
 
 /// Apply a diff to the given repository, making changes directly in the working directory,
@@ -351,7 +305,7 @@ bool apply({
   final opts = calloc<git_apply_options>();
   libgit2.git_apply_options_init(opts, GIT_APPLY_OPTIONS_VERSION);
   if (check) {
-    opts.ref.flags = git_apply_flags_t.GIT_APPLY_CHECK;
+    opts.ref.flags |= git_apply_flags_t.GIT_APPLY_CHECK;
   }
   final error = libgit2.git_apply(repoPointer, diffPointer, location, opts);
 
@@ -377,18 +331,10 @@ Pointer<git_diff_options> _diffOptionsInit({
   required int interhunkLines,
 }) {
   final opts = calloc<git_diff_options>();
-  final optsError = libgit2.git_diff_options_init(
-    opts,
-    GIT_DIFF_OPTIONS_VERSION,
-  );
+  libgit2.git_diff_options_init(opts, GIT_DIFF_OPTIONS_VERSION);
 
-  if (optsError < 0) {
-    calloc.free(opts);
-    throw LibGit2Error(libgit2.git_error_last());
-  } else {
-    opts.ref.flags = flags;
-    opts.ref.context_lines = contextLines;
-    opts.ref.interhunk_lines = interhunkLines;
-    return opts;
-  }
+  opts.ref.flags = flags;
+  opts.ref.context_lines = contextLines;
+  opts.ref.interhunk_lines = interhunkLines;
+  return opts;
 }

@@ -29,7 +29,16 @@ void main() {
       final feature = repo.lookupReference('refs/heads/feature');
 
       repo.checkout(refName: feature.name);
-      expect(() => repo.index['.gitignore'], throwsA(isA<ArgumentError>()));
+      expect(
+        () => repo.index['.gitignore'],
+        throwsA(
+          isA<ArgumentError>().having(
+            (e) => e.toString(),
+            'error',
+            'Invalid argument: ".gitignore was not found"',
+          ),
+        ),
+      );
 
       final rebase = Rebase.init(
         repo: repo,
@@ -62,6 +71,38 @@ void main() {
       signature.free();
     });
 
+    test('successfully performs rebase without branch provided', () {
+      final signature = repo.defaultSignature;
+      final feature = repo.lookupReference('refs/heads/feature');
+
+      final rebase = Rebase.init(
+        repo: repo,
+        onto: feature.target,
+      );
+
+      final operationsCount = rebase.operationsCount;
+      expect(operationsCount, 3);
+
+      for (var i = 0; i < operationsCount; i++) {
+        final operation = rebase.next();
+        expect(operation.type, GitRebaseOperation.pick);
+        expect(operation.oid.sha, shas[i]);
+        expect(operation.toString(), contains('RebaseOperation{'));
+
+        rebase.commit(
+          committer: signature,
+          author: signature,
+          message: 'rebase message',
+        );
+      }
+
+      rebase.finish();
+
+      rebase.free();
+      feature.free();
+      signature.free();
+    });
+
     test('successfully performs rebase with provided upstream', () {
       final signature = repo.defaultSignature;
       final master = repo.lookupReference('refs/heads/master');
@@ -71,13 +112,18 @@ void main() {
       repo.checkout(refName: feature.name);
       expect(
         () => repo.index['conflict_file'],
-        throwsA(isA<ArgumentError>()),
+        throwsA(
+          isA<ArgumentError>().having(
+            (e) => e.toString(),
+            'error',
+            'Invalid argument: "conflict_file was not found"',
+          ),
+        ),
       );
 
       final rebase = Rebase.init(
         repo: repo,
         branch: master.target,
-        onto: feature.target,
         upstream: startCommit.oid,
       );
 
@@ -99,6 +145,21 @@ void main() {
       signature.free();
     });
 
+    test(
+        'throws when trying to initialize rebase without upstream and onto provided',
+        () {
+      expect(
+        () => Rebase.init(repo: repo),
+        throwsA(
+          isA<LibGit2Error>().having(
+            (e) => e.toString(),
+            'error',
+            "invalid argument: 'upstream || onto'",
+          ),
+        ),
+      );
+    });
+
     test('stops when there is conflicts', () {
       final signature = repo.defaultSignature;
       final master = repo.lookupReference('refs/heads/master');
@@ -118,7 +179,46 @@ void main() {
       expect(repo.state, GitRepositoryState.rebaseMerge);
       expect(
         () => rebase.commit(committer: signature),
-        throwsA(isA<LibGit2Error>()),
+        throwsA(
+          isA<LibGit2Error>().having(
+            (e) => e.toString(),
+            'error',
+            'unstaged changes exist in workdir',
+          ),
+        ),
+      );
+
+      rebase.free();
+      conflict.free();
+      master.free();
+      signature.free();
+    });
+
+    test('throws when trying to perfrom next rebase operation and error occurs',
+        () {
+      final signature = repo.defaultSignature;
+      final master = repo.lookupReference('refs/heads/master');
+      final conflict = repo.lookupReference('refs/heads/conflict-branch');
+
+      repo.checkout(refName: conflict.name);
+
+      final rebase = Rebase.init(
+        repo: repo,
+        branch: master.target,
+        onto: conflict.target,
+      );
+      expect(rebase.operationsCount, 1);
+
+      rebase.next(); // repo now have conflicts
+      expect(
+        () => rebase.next(),
+        throwsA(
+          isA<LibGit2Error>().having(
+            (e) => e.toString(),
+            'error',
+            "object not found - failed to find pack entry (790b86f5fb50db485586370f27c5f90bada97d83)",
+          ),
+        ),
       );
 
       rebase.free();

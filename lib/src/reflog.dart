@@ -6,8 +6,6 @@ import 'bindings/reflog.dart' as bindings;
 
 class RefLog with IterableMixin<RefLogEntry> {
   /// Initializes a new instance of [RefLog] class from provided [Reference].
-  ///
-  /// Throws a [LibGit2Error] if error occured.
   RefLog(Reference ref) {
     _reflogPointer = bindings.read(
       repoPointer: ref.owner.pointer,

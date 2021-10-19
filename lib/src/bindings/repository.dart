@@ -28,33 +28,11 @@ Pointer<git_repository> open(String path) {
   }
 }
 
-/// Attempt to open an already-existing bare repository at [bare_path].
-///
-/// The [bare_path] can point to only a bare repository.
-///
-/// Throws a [LibGit2Error] if error occured.
-Pointer<git_repository> openBare(String barePath) {
-  final out = calloc<Pointer<git_repository>>();
-  final barePathC = barePath.toNativeUtf8().cast<Int8>();
-  final error = libgit2.git_repository_open_bare(out, barePathC);
-
-  calloc.free(barePathC);
-
-  if (error < 0) {
-    calloc.free(out);
-    throw LibGit2Error(libgit2.git_error_last());
-  } else {
-    return out.value;
-  }
-}
-
 /// Look for a git repository and return its path. The lookup start from [startPath]
 /// and walk across parent directories if nothing has been found. The lookup ends when
 /// the first repository is found, or when reaching a directory referenced in [ceilingDirs].
 ///
 /// The method will automatically detect if the repository is bare (if there is a repository).
-///
-/// Throws a [LibGit2Error] if error occured.
 String discover({
   required String startPath,
   String? ceilingDirs,
@@ -63,27 +41,14 @@ String discover({
   final startPathC = startPath.toNativeUtf8().cast<Int8>();
   final ceilingDirsC = ceilingDirs?.toNativeUtf8().cast<Int8>() ?? nullptr;
 
-  final error = libgit2.git_repository_discover(
-    out,
-    startPathC,
-    0,
-    ceilingDirsC,
-  );
+  libgit2.git_repository_discover(out, startPathC, 0, ceilingDirsC);
 
   calloc.free(startPathC);
   calloc.free(ceilingDirsC);
 
-  if (error == git_error_code.GIT_ENOTFOUND) {
-    calloc.free(out);
-    return '';
-  } else if (error < 0) {
-    calloc.free(out);
-    throw LibGit2Error(libgit2.git_error_last());
-  } else {
-    final result = out.ref.ptr.cast<Utf8>().toDartString();
-    calloc.free(out);
-    return result;
-  }
+  final result = out.ref.ptr.cast<Utf8>().toDartString();
+  calloc.free(out);
+  return result;
 }
 
 /// Creates a new Git repository in the given folder.
@@ -107,22 +72,10 @@ Pointer<git_repository> init({
   final initialHeadC = initialHead?.toNativeUtf8().cast<Int8>() ?? nullptr;
   final originUrlC = originUrl?.toNativeUtf8().cast<Int8>() ?? nullptr;
   final opts = calloc<git_repository_init_options>();
-  final optsError = libgit2.git_repository_init_options_init(
+  libgit2.git_repository_init_options_init(
     opts,
     GIT_REPOSITORY_INIT_OPTIONS_VERSION,
   );
-
-  if (optsError < 0) {
-    calloc.free(out);
-    calloc.free(pathC);
-    calloc.free(workdirPathC);
-    calloc.free(descriptionC);
-    calloc.free(templatePathC);
-    calloc.free(initialHeadC);
-    calloc.free(originUrlC);
-    calloc.free(opts);
-    throw LibGit2Error(libgit2.git_error_last());
-  }
 
   opts.ref.flags = flags;
   opts.ref.mode = mode;
@@ -169,31 +122,10 @@ Pointer<git_repository> clone({
       checkoutBranch?.toNativeUtf8().cast<Int8>() ?? nullptr;
 
   final cloneOptions = calloc<git_clone_options>();
-  final cloneOptionsError =
-      libgit2.git_clone_options_init(cloneOptions, GIT_CLONE_OPTIONS_VERSION);
-
-  if (cloneOptionsError < 0) {
-    calloc.free(out);
-    calloc.free(urlC);
-    calloc.free(localPathC);
-    calloc.free(checkoutBranchC);
-    calloc.free(cloneOptions);
-    throw LibGit2Error(libgit2.git_error_last());
-  }
+  libgit2.git_clone_options_init(cloneOptions, GIT_CLONE_OPTIONS_VERSION);
 
   final fetchOptions = calloc<git_fetch_options>();
-  final fetchOptionsError =
-      libgit2.git_fetch_options_init(fetchOptions, GIT_FETCH_OPTIONS_VERSION);
-
-  if (fetchOptionsError < 0) {
-    calloc.free(out);
-    calloc.free(urlC);
-    calloc.free(localPathC);
-    calloc.free(checkoutBranchC);
-    calloc.free(cloneOptions);
-    calloc.free(fetchOptions);
-    throw LibGit2Error(libgit2.git_error_last());
-  }
+  libgit2.git_fetch_options_init(fetchOptions, GIT_FETCH_OPTIONS_VERSION);
 
   RemoteCallbacks.plug(
     callbacksOptions: fetchOptions.ref.callbacks,
@@ -271,20 +203,13 @@ String getNamespace(Pointer<git_repository> repo) {
 ///
 /// The [namespace] should not include the refs folder, e.g. to namespace all references
 /// under refs/namespaces/foo/, use foo as the namespace.
-///
-/// Throws a [LibGit2Error] if error occured.
 void setNamespace({
   required Pointer<git_repository> repoPointer,
   String? namespace,
 }) {
   final nmspace = namespace?.toNativeUtf8().cast<Int8>() ?? nullptr;
-  final error = libgit2.git_repository_set_namespace(repoPointer, nmspace);
-
+  libgit2.git_repository_set_namespace(repoPointer, nmspace);
   calloc.free(nmspace);
-
-  if (error < 0) {
-    throw LibGit2Error(libgit2.git_error_last());
-  }
 }
 
 /// Check if a repository is bare or not.
@@ -401,18 +326,10 @@ Map<String, String> identity(Pointer<git_repository> repo) {
 /// will be returned, including global and system configurations (if they are available).
 ///
 /// The configuration file must be freed once it's no longer being used by the user.
-///
-/// Throws a [LibGit2Error] if error occured.
 Pointer<git_config> config(Pointer<git_repository> repo) {
   final out = calloc<Pointer<git_config>>();
-  final error = libgit2.git_repository_config(out, repo);
-
-  if (error < 0) {
-    calloc.free(out);
-    throw LibGit2Error(libgit2.git_error_last());
-  } else {
-    return out.value;
-  }
+  libgit2.git_repository_config(out, repo);
+  return out.value;
 }
 
 /// Get a snapshot of the repository's configuration.
@@ -421,18 +338,10 @@ Pointer<git_config> config(Pointer<git_repository> repo) {
 /// The contents of this snapshot will not change, even if the underlying config files are modified.
 ///
 /// The configuration file must be freed once it's no longer being used by the user.
-///
-/// Throws a [LibGit2Error] if error occured.
 Pointer<git_config> configSnapshot(Pointer<git_repository> repo) {
   final out = calloc<Pointer<git_config>>();
-  final error = libgit2.git_repository_config_snapshot(out, repo);
-
-  if (error < 0) {
-    calloc.free(out);
-    throw LibGit2Error(libgit2.git_error_last());
-  } else {
-    return out.value;
-  }
+  libgit2.git_repository_config_snapshot(out, repo);
+  return out.value;
 }
 
 /// Get the Index file for this repository.
@@ -441,18 +350,10 @@ Pointer<git_config> configSnapshot(Pointer<git_repository> repo) {
 /// will be returned (the one located in `.git/index`).
 ///
 /// The index must be freed once it's no longer being used.
-///
-/// Throws a [LibGit2Error] if error occured.
 Pointer<git_index> index(Pointer<git_repository> repo) {
   final out = calloc<Pointer<git_index>>();
-  final error = libgit2.git_repository_index(out, repo);
-
-  if (error < 0) {
-    calloc.free(out);
-    throw LibGit2Error(libgit2.git_error_last());
-  } else {
-    return out.value;
-  }
+  libgit2.git_repository_index(out, repo);
+  return out.value;
 }
 
 /// Determine if the repository was a shallow clone.
@@ -585,27 +486,6 @@ void setHeadDetached({
   }
 }
 
-/// Make the repository HEAD directly point to the commit.
-///
-/// This behaves like [setHeadDetached] but takes an annotated commit,
-/// which lets you specify which extended sha syntax string was specified
-/// by a user, allowing for more exact reflog messages.
-///
-/// See the documentation for [setHeadDetached].
-void setHeadDetachedFromAnnotated({
-  required Pointer<git_repository> repoPointer,
-  required Pointer<git_annotated_commit> commitishPointer,
-}) {
-  final error = libgit2.git_repository_set_head_detached_from_annotated(
-    repoPointer,
-    commitishPointer,
-  );
-
-  if (error < 0) {
-    throw LibGit2Error(libgit2.git_error_last());
-  }
-}
-
 /// Set the path to the working directory for this repository.
 ///
 /// The working directory doesn't need to be the same one that contains the
@@ -662,25 +542,6 @@ String workdir(Pointer<git_repository> repo) {
     return '';
   } else {
     return result.cast<Utf8>().toDartString();
-  }
-}
-
-/// Create a "fake" repository to wrap an object database
-///
-/// Create a repository object to wrap an object database to be used with the API
-/// when all you have is an object database. This doesn't have any paths associated
-/// with it, so use with care.
-///
-/// Throws a [LibGit2Error] if error occured.
-Pointer<git_repository> wrapODB(Pointer<git_odb> odb) {
-  final out = calloc<Pointer<git_repository>>();
-  final error = libgit2.git_repository_wrap_odb(out, odb);
-
-  if (error < 0) {
-    calloc.free(out);
-    throw LibGit2Error(libgit2.git_error_last());
-  } else {
-    return out.value;
   }
 }
 

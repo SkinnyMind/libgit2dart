@@ -1,6 +1,5 @@
 import 'dart:ffi';
 import 'package:ffi/ffi.dart';
-import '../error.dart';
 import 'libgit2_bindings.dart';
 import '../util.dart';
 
@@ -10,24 +9,17 @@ import '../util.dart';
 /// object will be returned.
 ///
 /// The reflog must be freed manually.
-///
-/// Throws a [LibGit2Error] if error occured.
 Pointer<git_reflog> read({
   required Pointer<git_repository> repoPointer,
   required String name,
 }) {
   final out = calloc<Pointer<git_reflog>>();
   final nameC = name.toNativeUtf8().cast<Int8>();
-  final error = libgit2.git_reflog_read(out, repoPointer, nameC);
+  libgit2.git_reflog_read(out, repoPointer, nameC);
 
   calloc.free(nameC);
 
-  if (error < 0) {
-    calloc.free(out);
-    throw LibGit2Error(libgit2.git_error_last());
-  } else {
-    return out.value;
-  }
+  return out.value;
 }
 
 /// Get the number of log entries in a reflog.

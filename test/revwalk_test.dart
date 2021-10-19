@@ -1,3 +1,4 @@
+import 'dart:ffi';
 import 'dart:io';
 import 'package:test/test.dart';
 import 'package:libgit2dart/libgit2dart.dart';
@@ -25,6 +26,25 @@ void main() {
   });
 
   group('RevWalk', () {
+    test('successfully initializes', () {
+      final walker = RevWalk(repo);
+      expect(walker, isA<RevWalk>());
+      walker.free();
+    });
+
+    test('throws when trying to initialize and error occurs', () {
+      expect(
+        () => RevWalk(Repository(nullptr)),
+        throwsA(
+          isA<LibGit2Error>().having(
+            (e) => e.toString(),
+            'error',
+            "invalid argument: 'repo'",
+          ),
+        ),
+      );
+    });
+
     test('returns list of commits with default sorting', () {
       final walker = RevWalk(repo);
       final start = Oid.fromSHA(repo: repo, sha: log.first);
@@ -88,11 +108,9 @@ void main() {
 
     test('successfully hides commit and its ancestors', () {
       final walker = RevWalk(repo);
-      final start = Oid.fromSHA(repo: repo, sha: log.first);
-      final oidToHide = Oid.fromSHA(repo: repo, sha: log[2]);
 
-      walker.push(start);
-      walker.hide(oidToHide);
+      walker.push(repo[log.first]);
+      walker.hide(repo[log[2]]);
       final commits = walker.walk();
 
       expect(commits.length, 2);
@@ -100,6 +118,23 @@ void main() {
       for (final c in commits) {
         c.free();
       }
+      walker.free();
+    });
+
+    test('throws when trying to hide commit oid and error occurs', () {
+      final walker = RevWalk(repo);
+
+      expect(
+        () => walker.hide(repo['0' * 40]),
+        throwsA(
+          isA<LibGit2Error>().having(
+            (e) => e.toString(),
+            'error',
+            "odb: cannot read object: null OID cannot exist",
+          ),
+        ),
+      );
+
       walker.free();
     });
 
@@ -132,6 +167,24 @@ void main() {
       for (final c in commits) {
         c.free();
       }
+      walker.free();
+    });
+
+    test('throws when trying to add new root for traversal and error occurs',
+        () {
+      final walker = RevWalk(repo);
+
+      expect(
+        () => walker.push(repo['0' * 40]),
+        throwsA(
+          isA<LibGit2Error>().having(
+            (e) => e.toString(),
+            'error',
+            "odb: cannot read object: null OID cannot exist",
+          ),
+        ),
+      );
+
       walker.free();
     });
   });

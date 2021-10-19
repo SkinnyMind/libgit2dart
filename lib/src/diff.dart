@@ -13,6 +13,15 @@ class Diff {
   /// Should be freed with `free()` to release allocated memory.
   Diff(this._diffPointer);
 
+  /// Reads the contents of a git patch file into a git diff object.
+  ///
+  /// The diff object produced is similar to the one that would be produced if you actually
+  /// produced it computationally by comparing two trees, however there may be subtle differences.
+  /// For example, a patch file likely contains abbreviated object IDs, so the object IDs in a
+  /// diff delta produced by this function will also be abbreviated.
+  ///
+  /// This function will only read patch files created by a git implementation, it will not
+  /// read unified diffs produced by the `diff` program, nor any other types of patch files.
   Diff.parse(String content) {
     libgit2.git_libgit2_init();
     _diffPointer = bindings.parse(content);
@@ -63,7 +72,9 @@ class Diff {
       patch.free();
     }
 
-    final result = buffer.ref.ptr.cast<Utf8>().toDartString();
+    final result = buffer.ref.ptr == nullptr
+        ? ''
+        : buffer.ref.ptr.cast<Utf8>().toDartString();
     calloc.free(buffer);
     return result;
   }
@@ -115,7 +126,7 @@ class Diff {
   /// and should in fact generate the same IDs as the upstream git project does.
   ///
   /// Throws a [LibGit2Error] if error occured.
-  Oid get patchId => Oid(bindings.patchId(_diffPointer));
+  Oid get patchOid => Oid(bindings.patchOid(_diffPointer));
 
   /// Releases memory allocated for diff object.
   void free() => bindings.free(_diffPointer);
@@ -301,8 +312,6 @@ class DiffHunk {
   }
 
   /// Returns list of lines in a hunk of a patch.
-  ///
-  /// Throws a [LibGit2Error] if error occured.
   List<DiffLine> get lines {
     var lines = <DiffLine>[];
     for (var i = 0; i < linesCount; i++) {

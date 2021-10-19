@@ -1,5 +1,6 @@
 // ignore_for_file: unnecessary_string_escapes
 
+import 'dart:ffi';
 import 'dart:io';
 import 'package:test/test.dart';
 import 'package:libgit2dart/libgit2dart.dart';
@@ -22,49 +23,32 @@ void main() {
   group('Merge', () {
     group('analysis', () {
       test('is up to date when no reference is provided', () {
-        final commit = repo.lookupCommit(
-          repo['c68ff54aabf660fcdd9a2838d401583fe31249e3'],
-        );
-
-        final result = repo.mergeAnalysis(theirHead: commit.oid);
+        final result = repo.mergeAnalysis(theirHead: repo['c68ff54']);
         expect(result, [
           {GitMergeAnalysis.upToDate},
           GitMergePreference.none,
         ]);
         expect(repo.status, isEmpty);
-
-        commit.free();
       });
 
       test('is up to date for provided ref', () {
-        final commit = repo.lookupCommit(
-          repo['c68ff54aabf660fcdd9a2838d401583fe31249e3'],
-        );
-
         final result = repo.mergeAnalysis(
-          theirHead: commit.oid,
+          theirHead: repo['c68ff54'],
           ourRef: 'refs/tags/v0.1',
         );
         expect(result[0], {GitMergeAnalysis.upToDate});
         expect(repo.status, isEmpty);
-
-        commit.free();
       });
 
       test('is fast forward', () {
-        final theirHead = repo.lookupCommit(
-          repo['6cbc22e509d72758ab4c8d9f287ea846b90c448b'],
-        );
-        final ffCommit = repo.lookupCommit(
-          repo['f17d0d48eae3aa08cecf29128a35e310c97b3521'],
-        );
+        final ffCommit = repo.lookupCommit(repo['f17d0d4']);
         final ffBranch = repo.createBranch(
           name: 'ff-branch',
           target: ffCommit,
         );
 
         final result = repo.mergeAnalysis(
-          theirHead: theirHead.oid,
+          theirHead: repo['6cbc22e'],
           ourRef: 'refs/heads/${ffBranch.name}',
         );
         expect(
@@ -75,24 +59,17 @@ void main() {
 
         ffBranch.free();
         ffCommit.free();
-        theirHead.free();
       });
 
       test('is not fast forward and there is no conflicts', () {
-        final commit = repo.lookupCommit(
-          repo['5aecfa0fb97eadaac050ccb99f03c3fb65460ad4'],
-        );
-
-        final result = repo.mergeAnalysis(theirHead: commit.oid);
+        final result = repo.mergeAnalysis(theirHead: repo['5aecfa0']);
         expect(result[0], {GitMergeAnalysis.normal});
         expect(repo.status, isEmpty);
-
-        commit.free();
       });
     });
 
     test('writes conflicts to index', () {
-      final conflictBranch = repo.lookupBranch('conflict-branch');
+      final conflictBranch = repo.lookupBranch(name: 'conflict-branch');
       final index = repo.index;
 
       final result = repo.mergeAnalysis(theirHead: conflictBranch.target);
@@ -129,24 +106,6 @@ void main() {
       conflictBranch.free();
     });
 
-    test('successfully removes conflicts', () {
-      final conflictBranch = repo.lookupBranch('conflict-branch');
-      final index = repo.index;
-
-      repo.merge(conflictBranch.target);
-      expect(index.hasConflicts, true);
-      expect(index.conflicts.length, 1);
-
-      final conflictedFile = index.conflicts['conflict_file']!;
-      conflictedFile.remove();
-      expect(index.hasConflicts, false);
-      expect(index.conflicts, isEmpty);
-      expect(index.conflicts['conflict_file'], null);
-
-      index.free();
-      conflictBranch.free();
-    });
-
     group('merge file from index', () {
       test('successfully merges without ancestor', () {
         const diffExpected = """
@@ -156,7 +115,7 @@ master conflict edit
 conflict branch edit
 >>>>>>> conflict_file
 """;
-        final conflictBranch = repo.lookupBranch('conflict-branch');
+        final conflictBranch = repo.lookupBranch(name: 'conflict-branch');
         final index = repo.index;
         repo.merge(conflictBranch.target);
 
@@ -184,7 +143,7 @@ Feature edit on feature branch
 Another feature edit
 >>>>>>> feature_file
 """;
-        final conflictBranch = repo.lookupBranch('ancestor-conflict');
+        final conflictBranch = repo.lookupBranch(name: 'ancestor-conflict');
         repo.checkout(refName: 'refs/heads/feature');
         final index = repo.index;
         repo.merge(conflictBranch.target);
@@ -204,16 +163,29 @@ Another feature edit
         index.free();
         conflictBranch.free();
       });
+
+      test('throws when error occurs', () {
+        expect(
+          () => repo.mergeFileFromIndex(
+            ancestor: null,
+            ours: IndexEntry(nullptr),
+            theirs: IndexEntry(nullptr),
+          ),
+          throwsA(
+            isA<LibGit2Error>().having(
+              (e) => e.toString(),
+              'error',
+              "invalid argument: 'ours'",
+            ),
+          ),
+        );
+      });
     });
 
     group('merge commits', () {
       test('successfully merges with default values', () {
-        final theirCommit = repo.lookupCommit(
-          repo['5aecfa0fb97eadaac050ccb99f03c3fb65460ad4'],
-        );
-        final ourCommit = repo.lookupCommit(
-          repo['14905459d775f3f56a39ebc2ff081163f7da3529'],
-        );
+        final theirCommit = repo.lookupCommit(repo['5aecfa0']);
+        final ourCommit = repo.lookupCommit(repo['1490545']);
 
         final mergeIndex = repo.mergeCommits(
           ourCommit: ourCommit,
@@ -236,12 +208,8 @@ Another feature edit
       });
 
       test('successfully merges with provided favor', () {
-        final theirCommit = repo.lookupCommit(
-          repo['5aecfa0fb97eadaac050ccb99f03c3fb65460ad4'],
-        );
-        final ourCommit = repo.lookupCommit(
-          repo['14905459d775f3f56a39ebc2ff081163f7da3529'],
-        );
+        final theirCommit = repo.lookupCommit(repo['5aecfa0']);
+        final ourCommit = repo.lookupCommit(repo['1490545']);
 
         final mergeIndex = repo.mergeCommits(
           ourCommit: ourCommit,
@@ -256,12 +224,8 @@ Another feature edit
       });
 
       test('successfully merges with provided merge and file flags', () {
-        final theirCommit = repo.lookupCommit(
-          repo['5aecfa0fb97eadaac050ccb99f03c3fb65460ad4'],
-        );
-        final ourCommit = repo.lookupCommit(
-          repo['14905459d775f3f56a39ebc2ff081163f7da3529'],
-        );
+        final theirCommit = repo.lookupCommit(repo['5aecfa0']);
+        final ourCommit = repo.lookupCommit(repo['1490545']);
 
         final mergeIndex = repo.mergeCommits(
           ourCommit: ourCommit,
@@ -282,18 +246,54 @@ Another feature edit
         ourCommit.free();
         theirCommit.free();
       });
+
+      test('throws when error occurs', () {
+        expect(
+          () => repo.mergeCommits(
+            ourCommit: Commit(nullptr),
+            theirCommit: Commit(nullptr),
+          ),
+          throwsA(
+            isA<LibGit2Error>().having(
+              (e) => e.toString(),
+              'error',
+              "invalid argument: 'commit'",
+            ),
+          ),
+        );
+      });
+    });
+
+    test('successfully finds merge base', () {
+      var base = repo.mergeBase(a: repo['1490545'], b: repo['5aecfa0']);
+      expect(base.sha, 'fc38877b2552ab554752d9a77e1f48f738cca79b');
+
+      base = repo.mergeBase(a: repo['f17d0d4'], b: repo['5aecfa0']);
+      expect(base.sha, 'f17d0d48eae3aa08cecf29128a35e310c97b3521');
+    });
+
+    test('throws when trying to find merge base for invalid oid', () {
+      expect(
+        () => repo.mergeBase(a: repo['0' * 40], b: repo['5aecfa0']),
+        throwsA(
+          isA<LibGit2Error>().having(
+            (e) => e.toString(),
+            'error',
+            "odb: cannot read object: null OID cannot exist",
+          ),
+        ),
+      );
     });
 
     group('merge trees', () {
       test('successfully merges with default values', () {
-        final theirCommit = repo.lookupCommit(
-          repo['5aecfa0fb97eadaac050ccb99f03c3fb65460ad4'],
-        );
-        final ourCommit = repo.lookupCommit(
-          repo['14905459d775f3f56a39ebc2ff081163f7da3529'],
-        );
+        final theirCommit = repo.lookupCommit(repo['5aecfa0']);
+        final ourCommit = repo.lookupCommit(repo['1490545']);
         final baseCommit = repo.lookupCommit(
-          repo.mergeBase(a: ourCommit.oid, b: theirCommit.oid),
+          repo.mergeBase(
+            a: ourCommit.oid,
+            b: theirCommit.oid,
+          ),
         );
         final theirTree = theirCommit.tree;
         final ourTree = ourCommit.tree;
@@ -326,14 +326,13 @@ Another feature edit
       });
 
       test('successfully merges with provided favor', () {
-        final theirCommit = repo.lookupCommit(
-          repo['5aecfa0fb97eadaac050ccb99f03c3fb65460ad4'],
-        );
-        final ourCommit = repo.lookupCommit(
-          repo['14905459d775f3f56a39ebc2ff081163f7da3529'],
-        );
+        final theirCommit = repo.lookupCommit(repo['5aecfa0']);
+        final ourCommit = repo.lookupCommit(repo['1490545']);
         final baseCommit = repo.lookupCommit(
-          repo.mergeBase(a: ourCommit.oid, b: theirCommit.oid),
+          repo.mergeBase(
+            a: ourCommit.oid,
+            b: theirCommit.oid,
+          ),
         );
         final theirTree = theirCommit.tree;
         final ourTree = ourCommit.tree;
@@ -355,22 +354,60 @@ Another feature edit
         ourCommit.free();
         theirCommit.free();
       });
+
+      test('throws when error occurs', () {
+        expect(
+          () => Repository(nullptr).mergeTrees(
+            ancestorTree: Tree(nullptr),
+            ourTree: Tree(nullptr),
+            theirTree: Tree(nullptr),
+          ),
+          throwsA(
+            isA<LibGit2Error>().having(
+              (e) => e.toString(),
+              'error',
+              "invalid argument: 'repo'",
+            ),
+          ),
+        );
+      });
     });
 
     test('successfully cherry-picks commit', () {
-      final cherry = repo.lookupCommit(
-        repo['5aecfa0fb97eadaac050ccb99f03c3fb65460ad4'],
-      );
+      final cherry = repo.lookupCommit(repo['5aecfa0']);
       repo.cherryPick(cherry);
       expect(repo.state, GitRepositoryState.cherrypick);
       expect(repo.message, 'add another feature file\n');
       final index = repo.index;
       expect(index.conflicts, isEmpty);
+
       // pretend we've done commit
       repo.removeMessage();
-      expect(() => repo.message, throwsA(isA<LibGit2Error>()));
+      expect(
+        () => repo.message,
+        throwsA(
+          isA<LibGit2Error>().having(
+            (e) => e.toString(),
+            'error',
+            "could not access message file: No such file or directory",
+          ),
+        ),
+      );
 
       index.free();
+    });
+
+    test('throws when error occurs', () {
+      expect(
+        () => repo.cherryPick(Commit(nullptr)),
+        throwsA(
+          isA<LibGit2Error>().having(
+            (e) => e.toString(),
+            'error',
+            "invalid argument: 'commit'",
+          ),
+        ),
+      );
     });
   });
 }

@@ -77,8 +77,6 @@ Pointer<git_describe_result> workdir({
 }
 
 /// Print the describe result to a buffer.
-///
-/// Throws a [LibGit2Error] if error occured.
 String format({
   required Pointer<git_describe_result> describeResultPointer,
   int? abbreviatedSize,
@@ -87,16 +85,10 @@ String format({
 }) {
   final out = calloc<git_buf>(sizeOf<git_buf>());
   final opts = calloc<git_describe_format_options>();
-  final optsError = libgit2.git_describe_format_options_init(
+  libgit2.git_describe_format_options_init(
     opts,
     GIT_DESCRIBE_FORMAT_OPTIONS_VERSION,
   );
-
-  if (optsError < 0) {
-    calloc.free(out);
-    calloc.free(opts);
-    throw LibGit2Error(libgit2.git_error_last());
-  }
 
   if (abbreviatedSize != null) {
     opts.ref.abbreviated_size = abbreviatedSize;
@@ -108,18 +100,14 @@ String format({
     opts.ref.dirty_suffix = dirtySuffix.toNativeUtf8().cast<Int8>();
   }
 
-  final error = libgit2.git_describe_format(out, describeResultPointer, opts);
+  libgit2.git_describe_format(out, describeResultPointer, opts);
+
+  final result = out.ref.ptr.cast<Utf8>().toDartString();
 
   calloc.free(opts);
+  calloc.free(out);
 
-  if (error < 0) {
-    calloc.free(out);
-    throw LibGit2Error(libgit2.git_error_last());
-  } else {
-    final result = out.ref.ptr.cast<Utf8>().toDartString();
-    calloc.free(out);
-    return result;
-  }
+  return result;
 }
 
 /// Free the describe result.
@@ -136,14 +124,10 @@ Pointer<git_describe_options> _initOpts({
   bool? showCommitOidAsFallback,
 }) {
   final opts = calloc<git_describe_options>();
-  final error = libgit2.git_describe_options_init(
+  libgit2.git_describe_options_init(
     opts,
     GIT_DESCRIBE_OPTIONS_VERSION,
   );
-
-  if (error < 0) {
-    throw LibGit2Error(libgit2.git_error_last());
-  }
 
   if (maxCandidatesTags != null) {
     opts.ref.max_candidates_tags = maxCandidatesTags;

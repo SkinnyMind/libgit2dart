@@ -25,6 +25,34 @@ void main() {
       expect(signature, isA<Signature>());
     });
 
+    test('throws when trying to create with empty name and email', () {
+      expect(
+        () => Signature.create(name: '', email: '', time: 0),
+        throwsA(
+          isA<LibGit2Error>().having(
+            (e) => e.toString(),
+            'error',
+            "failed to parse signature - Signature cannot have an empty name or email",
+          ),
+        ),
+      );
+    });
+
+    test(
+        'throws when trying to create with empty name and email and default time',
+        () {
+      expect(
+        () => Signature.create(name: '', email: ''),
+        throwsA(
+          isA<LibGit2Error>().having(
+            (e) => e.toString(),
+            'error',
+            "failed to parse signature - Signature cannot have an empty name or email",
+          ),
+        ),
+      );
+    });
+
     test('successfully creates without provided time and offset', () {
       final sig = Signature.create(name: 'Name', email: 'email@example.com');
       expect(sig, isA<Signature>());

@@ -142,10 +142,5 @@ void delete({
   }
 }
 
-/// Get the repository that contains the tag.
-Pointer<git_repository> owner(Pointer<git_tag> tag) {
-  return libgit2.git_tag_owner(tag);
-}
-
 /// Close an open tag to release memory.
 void free(Pointer<git_tag> tag) => libgit2.git_tag_free(tag);

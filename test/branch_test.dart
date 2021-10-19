@@ -1,3 +1,4 @@
+import 'dart:ffi';
 import 'dart:io';
 import 'package:test/test.dart';
 import 'package:libgit2dart/libgit2dart.dart';
@@ -46,19 +47,53 @@ void main() {
       expect(repo.branchesRemote, []);
     });
 
+    test('throws when trying to return list and error occurs', () {
+      final nullRepo = Repository(nullptr);
+      expect(
+        () => Branch.list(repo: nullRepo),
+        throwsA(
+          isA<LibGit2Error>().having(
+            (e) => e.toString(),
+            'error',
+            "invalid argument: 'repo'",
+          ),
+        ),
+      );
+    });
+
     test('returns a branch with provided name', () {
-      final branch = repo.lookupBranch('master');
+      final branch = repo.lookupBranch(name: 'master');
       expect(branch.target.sha, lastCommit.sha);
       branch.free();
     });
 
     test('throws when provided name not found', () {
-      expect(() => repo.lookupBranch('invalid'), throwsA(isA<LibGit2Error>()));
+      expect(
+        () => repo.lookupBranch(name: 'invalid'),
+        throwsA(
+          isA<LibGit2Error>().having(
+            (e) => e.toString(),
+            'error',
+            "cannot locate local branch 'invalid'",
+          ),
+        ),
+      );
+
+      expect(
+        () => repo.lookupBranch(name: 'origin/invalid', type: GitBranch.remote),
+        throwsA(
+          isA<LibGit2Error>().having(
+            (e) => e.toString(),
+            'error',
+            "cannot locate remote-tracking branch 'origin/invalid'",
+          ),
+        ),
+      );
     });
 
     test('checks if branch is current head', () {
-      final masterBranch = repo.lookupBranch('master');
-      final featureBranch = repo.lookupBranch('feature');
+      final masterBranch = repo.lookupBranch(name: 'master');
+      final featureBranch = repo.lookupBranch(name: 'feature');
 
       expect(masterBranch.isHead, true);
       expect(featureBranch.isHead, false);
@@ -67,10 +102,63 @@ void main() {
       featureBranch.free();
     });
 
+    test('throws when checking if branch is current head and error occurs', () {
+      final nullBranch = Branch(nullptr);
+      expect(
+        () => nullBranch.isHead,
+        throwsA(
+          isA<LibGit2Error>().having(
+            (e) => e.toString(),
+            'error',
+            "invalid argument: 'branch'",
+          ),
+        ),
+      );
+    });
+
+    test('checks if branch is checked out', () {
+      final masterBranch = repo.lookupBranch(name: 'master');
+      final featureBranch = repo.lookupBranch(name: 'feature');
+
+      expect(masterBranch.isCheckedOut, true);
+      expect(featureBranch.isCheckedOut, false);
+
+      masterBranch.free();
+      featureBranch.free();
+    });
+
+    test('throws when checking if branch is checked out and error occurs', () {
+      final nullBranch = Branch(nullptr);
+      expect(
+        () => nullBranch.isCheckedOut,
+        throwsA(
+          isA<LibGit2Error>().having(
+            (e) => e.toString(),
+            'error',
+            "invalid argument: 'branch'",
+          ),
+        ),
+      );
+    });
+
     test('returns name', () {
-      final branch = repo.lookupBranch('master');
+      final branch = repo.lookupBranch(name: 'master');
       expect(branch.name, 'master');
       branch.free();
+    });
+
+    test('throws when getting name and error occurs', () {
+      final nullBranch = Branch(nullptr);
+      expect(
+        () => nullBranch.name,
+        throwsA(
+          isA<LibGit2Error>().having(
+            (e) => e.toString(),
+            'error',
+            "invalid argument: 'ref'",
+          ),
+        ),
+      );
     });
 
     group('create()', () {
@@ -95,7 +183,14 @@ void main() {
 
         expect(
           () => repo.createBranch(name: 'feature', target: commit),
-          throwsA(isA<LibGit2Error>()),
+          throwsA(
+            isA<LibGit2Error>().having(
+              (e) => e.toString(),
+              'error',
+              "failed to write reference 'refs/heads/feature': "
+                  "a reference with that name already exists.",
+            ),
+          ),
         );
 
         commit.free();
@@ -127,15 +222,27 @@ void main() {
         repo.deleteBranch('feature');
 
         expect(
-          () => repo.lookupBranch('feature'),
-          throwsA(isA<LibGit2Error>()),
+          () => repo.lookupBranch(name: 'feature'),
+          throwsA(
+            isA<LibGit2Error>().having(
+              (e) => e.toString(),
+              'error',
+              "cannot locate local branch 'feature'",
+            ),
+          ),
         );
       });
 
       test('throws when trying to delete current HEAD', () {
         expect(
           () => repo.deleteBranch('master'),
-          throwsA(isA<LibGit2Error>()),
+          throwsA(
+            isA<LibGit2Error>().having(
+              (e) => e.toString(),
+              'error',
+              "cannot delete branch 'refs/heads/master' as it is the current HEAD of the repository.",
+            ),
+          ),
         );
       });
     });
@@ -143,13 +250,19 @@ void main() {
     group('rename()', () {
       test('successfully renames', () {
         repo.renameBranch(oldName: 'feature', newName: 'renamed');
-        final branch = repo.lookupBranch('renamed');
+        final branch = repo.lookupBranch(name: 'renamed');
         final branches = repo.branches;
 
         expect(branches.length, 2);
         expect(
-          () => repo.lookupBranch('feature'),
-          throwsA(isA<LibGit2Error>()),
+          () => repo.lookupBranch(name: 'feature'),
+          throwsA(
+            isA<LibGit2Error>().having(
+              (e) => e.toString(),
+              'error',
+              "cannot locate local branch 'feature'",
+            ),
+          ),
         );
         expect(branch.target, featureCommit);
 
@@ -162,7 +275,14 @@ void main() {
       test('throws when name already exists', () {
         expect(
           () => repo.renameBranch(oldName: 'feature', newName: 'master'),
-          throwsA(isA<LibGit2Error>()),
+          throwsA(
+            isA<LibGit2Error>().having(
+              (e) => e.toString(),
+              'error',
+              "failed to write reference 'refs/heads/master': "
+                  "a reference with that name already exists.",
+            ),
+          ),
         );
       });
 
@@ -172,7 +292,7 @@ void main() {
           newName: 'feature',
           force: true,
         );
-        final branch = repo.lookupBranch('feature');
+        final branch = repo.lookupBranch(name: 'feature');
 
         expect(branch.target, lastCommit);
 
@@ -182,13 +302,19 @@ void main() {
       test('throws when name is invalid', () {
         expect(
           () => repo.renameBranch(oldName: 'feature', newName: 'inv@{id'),
-          throwsA(isA<LibGit2Error>()),
+          throwsA(
+            isA<LibGit2Error>().having(
+              (e) => e.toString(),
+              'error',
+              "the given reference name 'refs/heads/inv@{id' is not valid",
+            ),
+          ),
         );
       });
     });
 
     test('returns string representation of Branch object', () {
-      final branch = repo.lookupBranch('master');
+      final branch = repo.lookupBranch(name: 'master');
       expect(branch.toString(), contains('Branch{'));
       branch.free();
     });

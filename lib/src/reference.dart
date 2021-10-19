@@ -80,8 +80,6 @@ class Reference {
   /// Deletes an existing reference with provided [name].
   ///
   /// This method works for both direct and symbolic references.
-  ///
-  /// Throws a [LibGit2Error] if error occured.
   static void delete({required Repository repo, required String name}) {
     final ref = Reference.lookup(repo: repo, name: name);
     bindings.delete(ref.pointer);
@@ -226,8 +224,6 @@ class Reference {
   String get shorthand => bindings.shorthand(_refPointer);
 
   /// Checks if a reflog exists for the specified reference [name].
-  ///
-  /// Throws a [LibGit2Error] if error occured.
   bool get hasLog {
     return bindings.hasLog(
       repoPointer: bindings.owner(_refPointer),
