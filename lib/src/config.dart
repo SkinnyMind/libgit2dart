@@ -11,7 +11,7 @@ class Config with IterableMixin<ConfigEntry> {
   /// Initializes a new instance of [Config] class from provided
   /// pointer to config object in memory.
   ///
-  /// Should be freed with `free()` to release allocated memory.
+  /// Should be freed to release allocated memory.
   Config(this._configPointer);
 
   /// Initializes a new instance of [Config] class from provided [path].
@@ -21,7 +21,9 @@ class Config with IterableMixin<ConfigEntry> {
   /// [path] should point to single on-disk file; it's expected to be a native
   /// Git config file following the default Git config syntax (see man git-config).
   ///
-  /// Should be freed with `free()` to release allocated memory.
+  /// Should be freed to release allocated memory.
+  ///
+  /// Throws an [Exception] if file not found at provided path.
   Config.open([String? path]) {
     libgit2.git_libgit2_init();
 
@@ -40,42 +42,39 @@ class Config with IterableMixin<ConfigEntry> {
   ///
   /// Opens the system configuration file.
   ///
-  /// Should be freed with `free()` to release allocated memory.
+  /// Should be freed to release allocated memory.
   ///
   /// Throws a [LibGit2Error] if error occured.
   Config.system() {
     libgit2.git_libgit2_init();
 
-    final systemPath = bindings.findSystem();
-    _configPointer = bindings.open(systemPath);
+    _configPointer = bindings.open(bindings.findSystem());
   }
 
   /// Initializes a new instance of [Config] class.
   ///
   /// Opens the global configuration file.
   ///
-  /// Should be freed with `free()` to release allocated memory.
+  /// Should be freed to release allocated memory.
   ///
-  /// Throws an error if file has not been found.
+  /// Throws a [LibGit2Error] if error occured.
   Config.global() {
     libgit2.git_libgit2_init();
 
-    final globalPath = bindings.findGlobal();
-    _configPointer = bindings.open(globalPath);
+    _configPointer = bindings.open(bindings.findGlobal());
   }
 
   /// Initializes a new instance of [Config] class.
   ///
   /// Opens the global XDG configuration file.
   ///
-  /// Should be freed with `free()` to release allocated memory.
+  /// Should be freed to release allocated memory.
   ///
   /// Throws a [LibGit2Error] if error occured.
   Config.xdg() {
     libgit2.git_libgit2_init();
 
-    final xdgPath = bindings.findXdg();
-    _configPointer = bindings.open(xdgPath);
+    _configPointer = bindings.open(bindings.findXdg());
   }
 
   /// Pointer to memory address for allocated config object.
@@ -86,8 +85,6 @@ class Config with IterableMixin<ConfigEntry> {
   /// Create a snapshot of the current state of a configuration, which allows you to look
   /// into a consistent view of the configuration for looking up complex values
   /// (e.g. a remote, submodule).
-  ///
-  /// Throws a [LibGit2Error] if error occured.
   Config get snapshot => Config(bindings.snapshot(_configPointer));
 
   /// Returns the [ConfigEntry] of a [variable].
@@ -206,7 +203,7 @@ class ConfigEntry {
   }
 
   /// Releases memory allocated for config entry object.
-  void free() => bindings.entryFree(_configEntryPointer);
+  void free() => calloc.free(_configEntryPointer);
 
   @override
   String toString() {

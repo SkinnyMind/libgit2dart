@@ -15,6 +15,14 @@ void main() {
 \turl = someurl
 ''';
 
+  const expectedEntries = [
+    'core.repositoryformatversion',
+    'core.bare',
+    'core.gitproxy',
+    'core.gitproxy',
+    'remote.origin.url',
+  ];
+
   late Config config;
 
   setUp(() {
@@ -28,16 +36,80 @@ void main() {
   });
 
   group('Config', () {
-    test('opens file successfully with provided path', () {
+    test('successfully opens file with provided path', () {
       expect(config, isA<Config>());
     });
 
+    test(
+        'opens the global, XDG and system configuration files (if they are present) '
+        'if no path provided', () {
+      try {
+        final config = Config.open();
+        expect(config, isA<Config>());
+        config.free();
+      } catch (e) {
+        expect(() => Config.open(), throwsA(isA<LibGit2Error>()));
+      }
+    });
+
+    test('throws when trying to open non existing file', () {
+      expect(
+        () => Config.open('not.there'),
+        throwsA(
+          isA<Exception>().having(
+            (e) => e.toString(),
+            'error',
+            "Exception: File not found",
+          ),
+        ),
+      );
+    });
+
+    test('successfully opens system file or throws is there is none', () {
+      try {
+        final config = Config.system();
+        expect(config, isA<Config>());
+        config.free();
+      } catch (e) {
+        expect(() => Config.system(), throwsA(isA<LibGit2Error>()));
+      }
+    });
+
+    test('successfully opens global file or throws is there is none', () {
+      try {
+        final config = Config.global();
+        expect(config, isA<Config>());
+        config.free();
+      } catch (e) {
+        expect(() => Config.global(), throwsA(isA<LibGit2Error>()));
+      }
+    });
+
+    test('successfully opens xdg file or throws is there is none', () {
+      try {
+        final config = Config.xdg();
+        expect(config, isA<Config>());
+        config.free();
+      } catch (e) {
+        expect(() => Config.xdg(), throwsA(isA<LibGit2Error>()));
+      }
+    });
+
+    test('returns config snapshot', () {
+      final snapshot = config.snapshot;
+      expect(snapshot, isA<Config>());
+      snapshot.free();
+    });
+
     test('returns config entries and their values', () {
-      expect(config.length, 5);
-      expect(config.last.name, 'remote.origin.url');
-      expect(config.last.value, 'someurl');
-      expect(config.last.includeDepth, 0);
-      expect(config.last.level, GitConfigLevel.local);
+      var i = 0;
+      for (final entry in config) {
+        expect(entry.name, expectedEntries[i]);
+        expect(entry.includeDepth, 0);
+        expect(entry.level, GitConfigLevel.local);
+        entry.free();
+        i++;
+      }
     });
 
     group('get value', () {
@@ -48,7 +120,13 @@ void main() {
       test('throws when variable isn\'t found', () {
         expect(
           () => config['not.there'],
-          throwsA(isA<LibGit2Error>()),
+          throwsA(
+            isA<LibGit2Error>().having(
+              (e) => e.toString(),
+              'error',
+              "config value 'not.there' was not found",
+            ),
+          ),
         );
       });
     });
@@ -67,6 +145,19 @@ void main() {
       test('sets string value for provided variable', () {
         config['remote.origin.url'] = 'updated';
         expect(config['remote.origin.url'].value, 'updated');
+      });
+
+      test('throws when trying to set invalid value', () {
+        expect(
+          () => config['remote.origin.url'] = 0.1,
+          throwsA(
+            isA<ArgumentError>().having(
+              (e) => e.toString(),
+              'error',
+              'Invalid argument: "0.1 must be either bool, int or String"',
+            ),
+          ),
+        );
       });
     });
 
@@ -175,6 +266,12 @@ void main() {
 
         expect(config.multivar(variable: 'core.gitproxy'), []);
       });
+    });
+
+    test('returns string representation of ConfigEntry object', () {
+      final entry = config.first;
+      expect(entry.toString(), contains('ConfigEntry{'));
+      entry.free();
     });
   });
 }

@@ -1,43 +1,20 @@
+// coverage:ignore-file
+
 import 'dart:ffi';
 import 'package:ffi/ffi.dart';
 import '../error.dart';
 import 'libgit2_bindings.dart';
 import '../util.dart';
 
-/// Allocate a new configuration object
-///
-/// This object is empty, so you have to add a file to it before you can do
-/// anything with it.
-///
-/// Throws a [LibGit2Error] if error occured.
-Pointer<git_config> newConfig() {
-  final out = calloc<Pointer<git_config>>();
-  final error = libgit2.git_config_new(out);
-
-  if (error < 0) {
-    calloc.free(out);
-    throw LibGit2Error(libgit2.git_error_last());
-  } else {
-    return out.value;
-  }
-}
-
 /// Create a new config instance containing a single on-disk file
-///
-/// Throws a [LibGit2Error] if error occured.
 Pointer<git_config> open(String path) {
   final out = calloc<Pointer<git_config>>();
   final pathC = path.toNativeUtf8().cast<Int8>();
-  final error = libgit2.git_config_open_ondisk(out, pathC);
+  libgit2.git_config_open_ondisk(out, pathC);
 
   calloc.free(pathC);
 
-  if (error < 0) {
-    calloc.free(out);
-    throw LibGit2Error(libgit2.git_error_last());
-  } else {
-    return out.value;
-  }
+  return out.value;
 }
 
 /// Open the global, XDG and system configuration files
@@ -71,14 +48,14 @@ Pointer<git_config> openDefault() {
 /// This method will not guess the path to the xdg compatible config file
 /// (`.config/git/config`).
 ///
-/// Throws an error if file has not been found.
+/// Throws a [LibGit2Error] if error occured.
 String findGlobal() {
   final out = calloc<git_buf>(sizeOf<git_buf>());
   final error = libgit2.git_config_find_global(out);
 
-  if (error != 0) {
+  if (error < 0) {
     calloc.free(out);
-    throw Error();
+    throw LibGit2Error(libgit2.git_error_last());
   } else {
     final result = out.ref.ptr.cast<Utf8>().toDartString();
     calloc.free(out);
@@ -130,18 +107,10 @@ String findXdg() {
 /// Create a snapshot of the current state of a configuration, which allows you to look
 /// into a consistent view of the configuration for looking up complex values
 /// (e.g. a remote, submodule).
-///
-/// Throws a [LibGit2Error] if error occured.
 Pointer<git_config> snapshot(Pointer<git_config> config) {
   final out = calloc<Pointer<git_config>>();
-  final error = libgit2.git_config_snapshot(out, config);
-
-  if (error < 0) {
-    calloc.free(out);
-    throw LibGit2Error(libgit2.git_error_last());
-  } else {
-    return out.value;
-  }
+  libgit2.git_config_snapshot(out, config);
+  return out.value;
 }
 
 /// Get the config entry of a config variable.
@@ -167,8 +136,6 @@ Pointer<git_config_entry> getEntry({
 
 /// Set the value of a boolean config variable in the config file with the
 /// highest level (usually the local one).
-///
-/// Throws a [LibGit2Error] if error occured.
 void setBool({
   required Pointer<git_config> configPointer,
   required String variable,
@@ -176,38 +143,24 @@ void setBool({
 }) {
   final name = variable.toNativeUtf8().cast<Int8>();
   final valueC = value ? 1 : 0;
-  final error = libgit2.git_config_set_bool(configPointer, name, valueC);
-
+  libgit2.git_config_set_bool(configPointer, name, valueC);
   calloc.free(name);
-
-  if (error < 0) {
-    throw LibGit2Error(libgit2.git_error_last());
-  }
 }
 
 /// Set the value of an integer config variable in the config file with the
 /// highest level (usually the local one).
-///
-/// Throws a [LibGit2Error] if error occured.
 void setInt({
   required Pointer<git_config> configPointer,
   required String variable,
   required int value,
 }) {
   final name = variable.toNativeUtf8().cast<Int8>();
-  final error = libgit2.git_config_set_int64(configPointer, name, value);
-
+  libgit2.git_config_set_int64(configPointer, name, value);
   calloc.free(name);
-
-  if (error < 0) {
-    throw LibGit2Error(libgit2.git_error_last());
-  }
 }
 
 /// Set the value of a string config variable in the config file with the
 /// highest level (usually the local one).
-///
-/// Throws a [LibGit2Error] if error occured.
 void setString({
   required Pointer<git_config> configPointer,
   required String variable,
@@ -215,14 +168,9 @@ void setString({
 }) {
   final name = variable.toNativeUtf8().cast<Int8>();
   final valueC = value.toNativeUtf8().cast<Int8>();
-  final error = libgit2.git_config_set_string(configPointer, name, valueC);
-
+  libgit2.git_config_set_string(configPointer, name, valueC);
   calloc.free(name);
   calloc.free(valueC);
-
-  if (error < 0) {
-    throw LibGit2Error(libgit2.git_error_last());
-  }
 }
 
 /// Iterate over all the config variables.
@@ -329,14 +277,6 @@ void deleteMultivar({
   calloc.free(name);
   calloc.free(regexpC);
 }
-
-/// Free a config iterator.
-void iteratorFree(Pointer<git_config_iterator> iter) =>
-    libgit2.git_config_iterator_free(iter);
-
-/// Free a config entry.
-void entryFree(Pointer<git_config_entry> entry) =>
-    libgit2.git_config_entry_free(entry);
 
 /// Free the configuration and its associated memory and files.
 void free(Pointer<git_config> cfg) => libgit2.git_config_free(cfg);
