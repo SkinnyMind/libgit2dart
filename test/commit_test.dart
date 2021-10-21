@@ -222,6 +222,104 @@ void main() {
       parent.free();
     });
 
+    test('successfully amends commit with default arguments', () {
+      final oldHead = repo.head;
+      final commit = repo.lookupCommit(repo['821ed6e']);
+      expect(commit.oid, oldHead.target);
+
+      final amendedOid = repo.amendCommit(
+        commit: commit,
+        message: 'amended commit\n',
+        updateRef: 'HEAD',
+      );
+      final amendedCommit = repo.lookupCommit(amendedOid);
+      final newHead = repo.head;
+
+      expect(amendedCommit.oid, newHead.target);
+      expect(amendedCommit.message, 'amended commit\n');
+      expect(amendedCommit.author, commit.author);
+      expect(amendedCommit.committer, commit.committer);
+      expect(amendedCommit.tree.oid, commit.tree.oid);
+      expect(amendedCommit.parents, commit.parents);
+
+      amendedCommit.free();
+      commit.free();
+      newHead.free();
+      oldHead.free();
+    });
+
+    test('successfully amends commit with provided arguments', () {
+      final oldHead = repo.head;
+      final commit = repo.lookupCommit(repo['821ed6e']);
+      expect(commit.oid, oldHead.target);
+
+      final amendedOid = repo.amendCommit(
+        commit: commit,
+        message: 'amended commit\n',
+        updateRef: 'HEAD',
+        author: author,
+        committer: commiter,
+        tree: tree,
+      );
+      final amendedCommit = repo.lookupCommit(amendedOid);
+      final newHead = repo.head;
+
+      expect(amendedCommit.oid, newHead.target);
+      expect(amendedCommit.message, 'amended commit\n');
+      expect(amendedCommit.author, author);
+      expect(amendedCommit.committer, commiter);
+      expect(amendedCommit.tree.oid, tree.oid);
+      expect(amendedCommit.parents, commit.parents);
+
+      amendedCommit.free();
+      commit.free();
+      newHead.free();
+      oldHead.free();
+    });
+
+    test('successfully amends commit that is not the tip of the branch', () {
+      final head = repo.head;
+      final commit = repo.lookupCommit(repo['78b8bf1']);
+      expect(commit.oid, isNot(head.target));
+
+      expect(
+        () => repo.amendCommit(
+          commit: commit,
+          message: 'amended commit\n',
+        ),
+        returnsNormally,
+      );
+
+      commit.free();
+      head.free();
+    });
+
+    test(
+        'throws when trying to amend commit that is not the tip of the branch '
+        'with HEAD provided as update reference', () {
+      final head = repo.head;
+      final commit = repo.lookupCommit(repo['78b8bf1']);
+      expect(commit.oid, isNot(head.target));
+
+      expect(
+        () => repo.amendCommit(
+          commit: commit,
+          message: 'amended commit\n',
+          updateRef: 'HEAD',
+        ),
+        throwsA(
+          isA<LibGit2Error>().having(
+            (e) => e.toString(),
+            'error',
+            "commit to amend is not the tip of the given branch",
+          ),
+        ),
+      );
+
+      commit.free();
+      head.free();
+    });
+
     test('returns string representation of Commit object', () {
       final commit = repo.lookupCommit(mergeCommit);
       expect(commit.toString(), contains('Commit{'));

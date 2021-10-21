@@ -113,6 +113,56 @@ Pointer<git_oid> create({
   }
 }
 
+/// Amend an existing commit by replacing only non-null values.
+///
+/// This creates a new commit that is exactly the same as the old commit, except that
+/// any non-null values will be updated. The new commit has the same parents as the old commit.
+///
+/// The [updateRef] value works as in the regular [create], updating the ref to point to
+/// the newly rewritten commit. If you want to amend a commit that is not currently
+/// the tip of the branch and then rewrite the following commits to reach a ref, pass
+/// this as null and update the rest of the commit chain and ref separately.
+///
+/// Throws a [LibGit2Error] if error occured.
+Pointer<git_oid> amend({
+  required Pointer<git_repository> repoPointer,
+  required Pointer<git_commit> commitPointer,
+  String? updateRef,
+  required Pointer<git_signature>? authorPointer,
+  required Pointer<git_signature>? committerPointer,
+  String? messageEncoding,
+  required String? message,
+  required Pointer<git_tree>? treePointer,
+}) {
+  final out = calloc<git_oid>();
+  final updateRefC = updateRef?.toNativeUtf8().cast<Int8>() ?? nullptr;
+  final messageEncodingC =
+      messageEncoding?.toNativeUtf8().cast<Int8>() ?? nullptr;
+  final messageC = message?.toNativeUtf8().cast<Int8>() ?? nullptr;
+
+  final error = libgit2.git_commit_amend(
+    out,
+    commitPointer,
+    updateRefC,
+    authorPointer ?? nullptr,
+    committerPointer ?? nullptr,
+    messageEncodingC,
+    messageC,
+    treePointer ?? nullptr,
+  );
+
+  calloc.free(updateRefC);
+  calloc.free(messageEncodingC);
+  calloc.free(messageC);
+
+  if (error < 0) {
+    calloc.free(out);
+    throw LibGit2Error(libgit2.git_error_last());
+  } else {
+    return out;
+  }
+}
+
 /// Get the encoding for the message of a commit, as a string representing a standard encoding name.
 ///
 /// The encoding may be NULL if the encoding header in the commit is missing;

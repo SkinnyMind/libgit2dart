@@ -58,6 +58,39 @@ class Commit {
     ));
   }
 
+  /// Amends an existing commit by replacing only non-null values.
+  ///
+  /// This creates a new commit that is exactly the same as the old commit, except that
+  /// any non-null values will be updated. The new commit has the same parents as the old commit.
+  ///
+  /// The [updateRef] value works as in the regular [create], updating the ref to point to
+  /// the newly rewritten commit. If you want to amend a commit that is not currently
+  /// the tip of the branch and then rewrite the following commits to reach a ref, pass
+  /// this as null and update the rest of the commit chain and ref separately.
+  ///
+  /// Throws a [LibGit2Error] if error occured.
+  static Oid amend({
+    required Repository repo,
+    required Commit commit,
+    Signature? author,
+    Signature? committer,
+    Tree? tree,
+    String? updateRef,
+    String? message,
+    String? messageEncoding,
+  }) {
+    return Oid(bindings.amend(
+      repoPointer: repo.pointer,
+      commitPointer: commit.pointer,
+      authorPointer: author?.pointer,
+      committerPointer: committer?.pointer,
+      treePointer: tree?.pointer,
+      updateRef: updateRef,
+      message: message,
+      messageEncoding: messageEncoding,
+    ));
+  }
+
   /// Returns the encoding for the message of a commit, as a string
   /// representing a standard encoding name.
   String get messageEncoding => bindings.messageEncoding(_commitPointer);

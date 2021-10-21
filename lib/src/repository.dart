@@ -509,6 +509,59 @@ class Repository {
     );
   }
 
+  /// Amends an existing commit by replacing only non-null values.
+  ///
+  /// This creates a new commit that is exactly the same as the old commit, except that
+  /// any non-null values will be updated. The new commit has the same parents as the old commit.
+  ///
+  /// The [updateRef] value works as in the regular [create], updating the ref to point to
+  /// the newly rewritten commit. If you want to amend a commit that is not currently
+  /// the tip of the branch and then rewrite the following commits to reach a ref, pass
+  /// this as null and update the rest of the commit chain and ref separately.
+  ///
+  /// Throws a [LibGit2Error] if error occured.
+  Oid amendCommit({
+    required Commit commit,
+    Signature? author,
+    Signature? committer,
+    Tree? tree,
+    String? updateRef,
+    String? message,
+    String? messageEncoding,
+  }) {
+    return Commit.amend(
+      repo: this,
+      commit: commit,
+      author: author,
+      committer: committer,
+      tree: tree,
+      updateRef: updateRef,
+      message: message,
+      messageEncoding: messageEncoding,
+    );
+  }
+
+  /// Reverts the given commit against the given "our" commit, producing an index that
+  /// reflects the result of the revert.
+  ///
+  /// [mainline] is parent of the [revertCommit] if it is a merge (i.e. 1, 2).
+  ///
+  /// The returned index must be freed explicitly with `free()`.
+  ///
+  /// Throws a [LibGit2Error] if error occured.
+  Index revertCommit({
+    required Commit revertCommit,
+    required Commit ourCommit,
+    mainline = 0,
+  }) {
+    return Index(commit_bindings.revertCommit(
+      repoPointer: _repoPointer,
+      revertCommitPointer: revertCommit.pointer,
+      ourCommitPointer: ourCommit.pointer,
+      mainline: mainline,
+    ));
+  }
+
   /// Finds a single object and intermediate reference (if there is one) by a [spec] revision string.
   ///
   /// See `man gitrevisions`, or https://git-scm.com/docs/git-rev-parse.html#_specifying_revisions
@@ -872,27 +925,6 @@ class Repository {
       favor: favor.value,
       mergeFlags: mergeFlags.fold(0, (acc, e) => acc | e.value),
       fileFlags: fileFlags.fold(0, (acc, e) => acc | e.value),
-    ));
-  }
-
-  /// Reverts the given commit against the given "our" commit, producing an index that
-  /// reflects the result of the revert.
-  ///
-  /// [mainline] is parent of the [revertCommit] if it is a merge (i.e. 1, 2).
-  ///
-  /// The returned index must be freed explicitly with `free()`.
-  ///
-  /// Throws a [LibGit2Error] if error occured.
-  Index revertCommit({
-    required Commit revertCommit,
-    required Commit ourCommit,
-    mainline = 0,
-  }) {
-    return Index(commit_bindings.revertCommit(
-      repoPointer: _repoPointer,
-      revertCommitPointer: revertCommit.pointer,
-      ourCommitPointer: ourCommit.pointer,
-      mainline: mainline,
     ));
   }
 
