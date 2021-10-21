@@ -1,6 +1,7 @@
 import 'dart:ffi';
 import 'package:ffi/ffi.dart';
 import 'package:libgit2dart/libgit2dart.dart';
+import 'package:libgit2dart/src/util.dart';
 import '../credentials.dart';
 import '../callbacks.dart';
 import '../repository.dart';
@@ -120,21 +121,34 @@ class RemoteCallbacks {
     int allowedTypes,
     Pointer<Void> payload,
   ) {
-    final credentialType = credentials!.credentialType;
-    if (allowedTypes & credentialType.value != credentialType.value) {
-      throw ArgumentError('Invalid credential type $credentialType');
+    if (payload.cast<Int8>().value == 2) {
+      libgit2.git_error_set_str(
+        git_error_t.GIT_ERROR_INVALID,
+        'Incorrect credentials.'.toNativeUtf8().cast<Int8>(),
+      );
+      throw LibGit2Error(libgit2.git_error_last());
     }
 
-    if (credentials is Username) {
-      final cred = credentials as Username;
-      credPointer[0] = credentials_bindings.username(cred.username);
-    } else if (credentials is UserPass) {
+    final credentialType = credentials!.credentialType;
+
+    if (allowedTypes & credentialType.value != credentialType.value) {
+      libgit2.git_error_set_str(
+        git_error_t.GIT_ERROR_INVALID,
+        'Invalid credential type $credentialType'.toNativeUtf8().cast<Int8>(),
+      );
+      throw LibGit2Error(libgit2.git_error_last());
+    }
+
+    if (credentials is UserPass) {
       final cred = credentials as UserPass;
       credPointer[0] = credentials_bindings.userPass(
         username: cred.username,
         password: cred.password,
       );
-    } else if (credentials is Keypair) {
+      payload.cast<Int8>().value++;
+    }
+
+    if (credentials is Keypair) {
       final cred = credentials as Keypair;
       credPointer[0] = credentials_bindings.sshKey(
         username: cred.username,
@@ -142,10 +156,16 @@ class RemoteCallbacks {
         privateKey: cred.privateKey,
         passPhrase: cred.passPhrase,
       );
-    } else if (credentials is KeypairFromAgent) {
+      payload.cast<Int8>().value++;
+    }
+
+    if (credentials is KeypairFromAgent) {
       final cred = credentials as KeypairFromAgent;
       credPointer[0] = credentials_bindings.sshKeyFromAgent(cred.username);
-    } else if (credentials is KeypairFromMemory) {
+      payload.cast<Int8>().value++;
+    }
+
+    if (credentials is KeypairFromMemory) {
       final cred = credentials as KeypairFromMemory;
       credPointer[0] = credentials_bindings.sshKeyFromMemory(
         username: cred.username,
@@ -153,6 +173,7 @@ class RemoteCallbacks {
         privateKey: cred.privateKey,
         passPhrase: cred.passPhrase,
       );
+      payload.cast<Int8>().value++;
     }
 
     return 0;
@@ -199,6 +220,8 @@ class RemoteCallbacks {
 
     if (callbacks.credentials != null) {
       credentials = callbacks.credentials;
+      final payload = calloc<Int8>()..value = 1;
+      callbacksOptions.payload = payload.cast();
       callbacksOptions.credentials = Pointer.fromFunction(
         credentialsCb,
         except,

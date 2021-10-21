@@ -17,15 +17,6 @@ void main() {
     }
   });
   group('Credentials', () {
-    test('successfully initializes username credentials', () {
-      final credentials = const Username('user');
-
-      expect(credentials, isA<Credentials>());
-      expect(credentials.username, 'user');
-      expect(credentials.credentialType, GitCredential.username);
-      expect(credentials.toString(), contains('Username{'));
-    });
-
     test('successfully initializes username/password credentials', () {
       final credentials = const UserPass(
         username: 'user',
@@ -82,18 +73,28 @@ void main() {
       expect(credentials.toString(), contains('KeypairFromAgent{'));
     });
 
-    test('sucessfully clones repository with provided username', () {
-      final callbacks = const Callbacks(credentials: Username('git'));
-
-      final repo = Repository.clone(
-        url: 'https://git@github.com/libgit2/TestGitRepository',
-        localPath: cloneDir.path,
-        callbacks: callbacks,
+    test('throws when provided username and password are incorrect', () {
+      final callbacks = const Callbacks(
+        credentials: UserPass(
+          username: 'libgit2',
+          password: 'libgit2',
+        ),
       );
 
-      expect(repo.isEmpty, false);
-
-      repo.free();
+      expect(
+        () => Repository.clone(
+          url: 'https://github.com/github/github',
+          localPath: cloneDir.path,
+          callbacks: callbacks,
+        ),
+        throwsA(
+          isA<LibGit2Error>().having(
+            (e) => e.toString(),
+            'error',
+            "Incorrect credentials.",
+          ),
+        ),
+      );
     });
 
     test('sucessfully clones repository with provided keypair', () {
@@ -122,7 +123,13 @@ void main() {
           url: 'ssh://git@github.com/libgit2/TestGitRepository',
           localPath: cloneDir.path,
         ),
-        throwsA(isA<LibGit2Error>()),
+        throwsA(
+          isA<LibGit2Error>().having(
+            (e) => e.toString(),
+            'error',
+            "authentication required but no callback set",
+          ),
+        ),
       );
     });
 
@@ -141,7 +148,62 @@ void main() {
           localPath: cloneDir.path,
           callbacks: callbacks,
         ),
-        throwsA(isA<LibGit2Error>()),
+        throwsA(
+          isA<LibGit2Error>().having(
+            (e) => e.toString(),
+            'error',
+            "Failed to authenticate SSH session: Unable to open public key file",
+          ),
+        ),
+      );
+    });
+
+    test('throws when provided keypair is incorrect', () {
+      final keypair = const Keypair(
+        username: 'git',
+        pubKey: 'test/assets/keys/id_rsa.pub',
+        privateKey: 'incorrect',
+        passPhrase: 'empty',
+      );
+      final callbacks = Callbacks(credentials: keypair);
+
+      expect(
+        () => Repository.clone(
+          url: 'ssh://git@github.com/libgit2/TestGitRepository',
+          localPath: cloneDir.path,
+          callbacks: callbacks,
+        ),
+        throwsA(
+          isA<LibGit2Error>().having(
+            (e) => e.toString(),
+            'error',
+            "Incorrect credentials.",
+          ),
+        ),
+      );
+    });
+
+    test('throws when provided credential type is invalid', () {
+      final callbacks = const Callbacks(
+        credentials: UserPass(
+          username: 'libgit2',
+          password: 'libgit2',
+        ),
+      );
+
+      expect(
+        () => Repository.clone(
+          url: 'ssh://git@github.com/libgit2/TestGitRepository',
+          localPath: cloneDir.path,
+          callbacks: callbacks,
+        ),
+        throwsA(
+          isA<LibGit2Error>().having(
+            (e) => e.toString(),
+            'error',
+            "Invalid credential type GitCredential.userPassPlainText",
+          ),
+        ),
       );
     });
 
@@ -167,23 +229,49 @@ void main() {
       repo.free();
     });
 
-    test('sucessfully clones repository with provided username and password',
-        () {
-      final userPass = const UserPass(
-        username: 'libgit2',
-        password: 'libgit2',
+    test('throws when provided keypair from memory is incorrect', () {
+      final pubKey = File('test/assets/keys/id_rsa.pub').readAsStringSync();
+      final keypair = KeypairFromMemory(
+        username: 'git',
+        pubKey: pubKey,
+        privateKey: 'incorrect',
+        passPhrase: 'empty',
       );
-      final callbacks = Callbacks(credentials: userPass);
+      final callbacks = Callbacks(credentials: keypair);
 
-      final repo = Repository.clone(
-        url: 'https://github.com/libgit2/TestGitRepository',
-        localPath: cloneDir.path,
-        callbacks: callbacks,
+      expect(
+        () => Repository.clone(
+          url: 'ssh://git@github.com/libgit2/TestGitRepository',
+          localPath: cloneDir.path,
+          callbacks: callbacks,
+        ),
+        throwsA(
+          isA<LibGit2Error>().having(
+            (e) => e.toString(),
+            'error',
+            "Incorrect credentials.",
+          ),
+        ),
       );
+    });
 
-      expect(repo.isEmpty, false);
+    test('throws when provided keypair from agent is incorrect', () {
+      final callbacks = const Callbacks(credentials: KeypairFromAgent('git'));
 
-      repo.free();
+      expect(
+        () => Repository.clone(
+          url: 'ssh://git@github.com/libgit2/TestGitRepository',
+          localPath: cloneDir.path,
+          callbacks: callbacks,
+        ),
+        throwsA(
+          isA<LibGit2Error>().having(
+            (e) => e.toString(),
+            'error',
+            "Incorrect credentials.",
+          ),
+        ),
+      );
     });
   });
 }

@@ -5,20 +5,6 @@ abstract class Credentials {
   GitCredential get credentialType;
 }
 
-/// Credential with specific username.
-class Username implements Credentials {
-  const Username(this.username);
-
-  /// The username to authenticate with.
-  final String username;
-
-  @override
-  GitCredential get credentialType => GitCredential.username;
-
-  @override
-  String toString() => 'Username{username: $username}';
-}
-
 /// Plain-text username and password credential.
 class UserPass implements Credentials {
   const UserPass({required this.username, required this.password});
