@@ -10,10 +10,10 @@ class Diff {
   /// Initializes a new instance of [Diff] class from provided
   /// pointer to diff object in memory.
   ///
-  /// Should be freed with `free()` to release allocated memory.
+  /// **IMPORTANT**: Should be freed to release allocated memory.
   Diff(this._diffPointer);
 
-  /// Reads the contents of a git patch file into a git diff object.
+  /// Reads the [content]s of a git patch file into a git diff object.
   ///
   /// The diff object produced is similar to the one that would be produced if you actually
   /// produced it computationally by comparing two trees, however there may be subtle differences.
@@ -32,7 +32,7 @@ class Diff {
   /// Pointer to memory address for allocated diff object.
   Pointer<git_diff> get pointer => _diffPointer;
 
-  /// Queries how many diff records are there in a diff.
+  /// How many diff records are there in a diff.
   int get length => bindings.length(_diffPointer);
 
   /// Returns a list of [DiffDelta]s containing file pairs with and old and new revisions.
@@ -48,7 +48,7 @@ class Diff {
     return deltas;
   }
 
-  /// Returns a list of [Patch]es.
+  /// A List of [Patch]es.
   List<Patch> get patches {
     final length = bindings.length(_diffPointer);
     var patches = <Patch>[];
@@ -58,7 +58,7 @@ class Diff {
     return patches;
   }
 
-  /// Returns a patch diff string.
+  /// The patch diff string.
   String get patch {
     final length = bindings.length(_diffPointer);
     var buffer = calloc<git_buf>(sizeOf<git_buf>());
@@ -97,6 +97,25 @@ class Diff {
   /// This modifies a diff in place, replacing old entries that look like renames or copies
   /// with new entries reflecting those changes. This also will, if requested, break modified
   /// files into add/remove pairs if the amount of change is above a threshold.
+  ///
+  /// [flags] is a combination of [GitDiffFind] flags. Defaults to [GitDiffFind.byConfig].
+  ///
+  /// [renameThreshold] is the threshold above which similar files will be considered renames.
+  /// This is equivalent to the -M option. Defaults to 50.
+  ///
+  /// [copyThreshold] is the threshold above which similar files will be considered copies.
+  /// This is equivalent to the -C option. Defaults to 50.
+  ///
+  /// [renameFromRewriteThreshold] is the threshold below which similar files will be
+  /// eligible to be a rename source. This is equivalent to the first part of the -B option.
+  /// Defaults to 50.
+  ///
+  /// [breakRewriteThreshold] is the treshold below which similar files will be split into
+  /// a delete/add pair. This is equivalent to the last part of the -B option. Defaults to 60.
+  ///
+  /// [renameLimit] is the maximum number of matches to consider for a particular file.
+  /// This is a little different from the -l option from Git because we will still process
+  /// up to this many matches before abandoning the search. Defaults to 200.
   ///
   /// Throws a [LibGit2Error] if error occured.
   void findSimilar({
@@ -145,14 +164,14 @@ class DiffDelta {
   /// Pointer to memory address for allocated diff delta object.
   final Pointer<git_diff_delta> _diffDeltaPointer;
 
-  /// Returns type of change.
+  /// Type of change.
   GitDelta get status {
     return GitDelta.values.singleWhere(
       (e) => _diffDeltaPointer.ref.status == e.value,
     );
   }
 
-  /// Looks up the single character abbreviation for a delta status code.
+  /// Single character abbreviation for a delta status code.
   ///
   /// When you run `git diff --name-status` it uses single letter codes in the output such as
   /// 'A' for added, 'D' for deleted, 'M' for modified, etc. This function converts a [GitDelta]
@@ -160,21 +179,18 @@ class DiffDelta {
   /// a space (i.e. ' ').
   String get statusChar => bindings.statusChar(_diffDeltaPointer.ref.status);
 
-  /// Returns flags for the delta object.
+  /// Flags for the delta object.
   Set<GitDiffFlag> get flags {
     return GitDiffFlag.values
         .where((e) => _diffDeltaPointer.ref.flags & e.value == e.value)
         .toSet();
   }
 
-  /// Returns a similarity score for renamed or copied files between 0 and 100
+  /// Similarity score for renamed or copied files between 0 and 100
   /// indicating how similar the old and new sides are.
-  ///
-  /// The similarity score is zero unless you call `find_similar()` which does
-  /// a similarity analysis of files in the diff.
   int get similarity => _diffDeltaPointer.ref.similarity;
 
-  /// Returns number of files in this delta.
+  /// Number of files in this delta.
   int get numberOfFiles => _diffDeltaPointer.ref.nfiles;
 
   /// Represents the "from" side of the diff.
@@ -201,24 +217,24 @@ class DiffFile {
 
   final git_diff_file _diffFile;
 
-  /// Returns [Oid] of the item. If the entry represents an absent side of a diff
+  /// [Oid] of the item. If the entry represents an absent side of a diff
   /// then the oid will be zeroes.
   Oid get oid => Oid.fromRaw(_diffFile.id);
 
-  /// Returns path to the entry relative to the working directory of the repository.
+  /// Path to the entry relative to the working directory of the repository.
   String get path => _diffFile.path.cast<Utf8>().toDartString();
 
-  /// Returns the size of the entry in bytes.
+  /// Size of the entry in bytes.
   int get size => _diffFile.size;
 
-  /// Returns flags for the diff file object.
+  /// Flags for the diff file object.
   Set<GitDiffFlag> get flags {
     return GitDiffFlag.values
         .where((e) => _diffFile.flags & e.value == e.value)
         .toSet();
   }
 
-  /// Returns one of the [GitFilemode] values.
+  /// One of the [GitFilemode] values.
   GitFilemode get mode {
     return GitFilemode.values.singleWhere((e) => _diffFile.mode == e.value);
   }
@@ -232,21 +248,23 @@ class DiffFile {
 class DiffStats {
   /// Initializes a new instance of [DiffStats] class from provided
   /// pointer to diff stats object in memory.
+  ///
+  /// **IMPORTANT**: Should be freed to release allocated memory.
   const DiffStats(this._diffStatsPointer);
 
   /// Pointer to memory address for allocated diff delta object.
   final Pointer<git_diff_stats> _diffStatsPointer;
 
-  /// Returns the total number of insertions.
+  /// Total number of insertions.
   int get insertions => bindings.statsInsertions(_diffStatsPointer);
 
-  /// Returns the total number of deletions.
+  /// Total number of deletions.
   int get deletions => bindings.statsDeletions(_diffStatsPointer);
 
-  /// Returns the total number of files changed.
+  /// Total number of files changed.
   int get filesChanged => bindings.statsFilesChanged(_diffStatsPointer);
 
-  /// Print diff statistics.
+  /// Prints diff statistics.
   ///
   /// Width for output only affects formatting of [GitDiffStats.full].
   ///
@@ -284,25 +302,25 @@ class DiffHunk {
   /// Pointer to memory address for allocated patch object.
   final Pointer<git_patch> _patchPointer;
 
-  /// Returns count of total lines in this hunk.
+  /// Number of total lines in this hunk.
   final int linesCount;
 
-  /// Returns index of this hunk in the patch.
+  /// Index of this hunk in the patch.
   final int index;
 
-  /// Returns starting line number in 'old file'.
+  /// Starting line number in 'old file'.
   int get oldStart => _diffHunkPointer.ref.old_start;
 
-  /// Returns number of lines in 'old file'.
+  /// Number of lines in 'old file'.
   int get oldLines => _diffHunkPointer.ref.old_lines;
 
-  /// Returns starting line number in 'new file'.
+  /// Starting line number in 'new file'.
   int get newStart => _diffHunkPointer.ref.new_start;
 
-  /// Returns number of lines in 'new file'.
+  /// Number of lines in 'new file'.
   int get newLines => _diffHunkPointer.ref.new_lines;
 
-  /// Returns header of a hunk.
+  /// Header of a hunk.
   String get header {
     var list = <int>[];
     for (var i = 0; i < _diffHunkPointer.ref.header_len; i++) {
@@ -311,7 +329,7 @@ class DiffHunk {
     return String.fromCharCodes(list);
   }
 
-  /// Returns list of lines in a hunk of a patch.
+  /// List of lines in a hunk of a patch.
   List<DiffLine> get lines {
     var lines = <DiffLine>[];
     for (var i = 0; i < linesCount; i++) {
@@ -339,26 +357,26 @@ class DiffLine {
   /// Pointer to memory address for allocated diff line object.
   final Pointer<git_diff_line> _diffLinePointer;
 
-  /// Returns type of the line.
+  /// Type of the line.
   GitDiffLine get origin {
     return GitDiffLine.values.singleWhere(
       (e) => _diffLinePointer.ref.origin == e.value,
     );
   }
 
-  /// Returns line number in old file or -1 for added line.
+  /// Line number in old file or -1 for added line.
   int get oldLineNumber => _diffLinePointer.ref.old_lineno;
 
-  /// Returns line number in new file or -1 for deleted line.
+  /// Line number in new file or -1 for deleted line.
   int get newLineNumber => _diffLinePointer.ref.new_lineno;
 
-  /// Returns number of newline characters in content.
+  /// Number of newline characters in content.
   int get numLines => _diffLinePointer.ref.num_lines;
 
-  /// Returns offset in the original file to the content.
+  /// Offset in the original file to the content.
   int get contentOffset => _diffLinePointer.ref.content_offset;
 
-  /// Returns content of the diff line.
+  /// Content of the diff line.
   String get content =>
       _diffLinePointer.ref.content.cast<Utf8>().toDartString();
 

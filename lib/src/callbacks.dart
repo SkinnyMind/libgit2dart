@@ -1,6 +1,20 @@
 import 'package:libgit2dart/libgit2dart.dart';
 
 class Callbacks {
+  /// Callback functions used in various methods of [Remote] and with [Repository.clone].
+  ///
+  /// [credentials] is the [Credentials] object used for authentication.
+  ///
+  /// [transferProgress] is the callback function that reports transfer progress.
+  ///
+  /// [sidebandProgress] is the callback function that reports textual progress from the remote.
+  ///
+  /// [updateTips] is the callback function matching the
+  /// `void Function(String refname, Oid old, Oid new)` that report reference updates.
+  ///
+  /// [pushUpdateReference] is the callback function matching the
+  /// `void Function(String refname, String message)` used to inform of the update status
+  /// from the remote.
   const Callbacks({
     this.credentials,
     this.transferProgress,

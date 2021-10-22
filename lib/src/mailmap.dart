@@ -8,7 +8,9 @@ class Mailmap {
   /// Initializes a new instance of [Mailmap] class.
   ///
   /// This object is empty, so you'll have to add a mailmap file before you can
-  /// do anything with it. Must be freed with `free()`.
+  /// do anything with it.
+  ///
+  /// **IMPORTANT**: Should be freed to release allocated memory.
   Mailmap.empty() {
     libgit2.git_libgit2_init();
 
@@ -17,14 +19,14 @@ class Mailmap {
 
   /// Initializes a new instance of [Mailmap] class from provided buffer.
   ///
-  /// Must be freed with `free()`.
+  /// **IMPORTANT**: Should be freed to release allocated memory.
   Mailmap.fromBuffer(String buffer) {
     libgit2.git_libgit2_init();
 
     _mailmapPointer = bindings.fromBuffer(buffer);
   }
 
-  /// Initializes a new instance of [Mailmap] class from a repository, loading
+  /// Initializes a new instance of [Mailmap] class from a [repo]sitory, loading
   /// mailmap files based on the repository's configuration.
   ///
   /// Mailmaps are loaded in the following order:
@@ -34,7 +36,7 @@ class Mailmap {
   ///   NOTE: `mailmap.blob` defaults to `HEAD:.mailmap` in bare repositories
   /// 3. The path in the `mailmap.file` config entry, if set.
   ///
-  /// Must be freed with `free()`.
+  /// **IMPORTANT**: Should be freed to release allocated memory.
   ///
   /// Throws a [LibGit2Error] if error occured.
   Mailmap.fromRepository(Repository repo) {
@@ -57,7 +59,7 @@ class Mailmap {
     );
   }
 
-  /// Resolves a signature to use real names and emails with a mailmap.
+  /// Resolves a [signature] to use real names and emails with a mailmap.
   Signature resolveSignature(Signature signature) {
     return Signature(bindings.resolveSignature(
       mailmapPointer: _mailmapPointer,

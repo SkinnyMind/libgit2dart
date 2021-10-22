@@ -35,7 +35,7 @@ class Oid {
     }
   }
 
-  /// Initializes a new instance of [Oid] class from provided raw git_oid.
+  /// Initializes a new instance of [Oid] class from provided raw git_oid structure.
   Oid.fromRaw(git_oid raw) {
     _oidPointer = bindings.fromRaw(raw.id);
   }
@@ -45,7 +45,7 @@ class Oid {
   /// Pointer to memory address for allocated oid object.
   Pointer<git_oid> get pointer => _oidPointer;
 
-  /// Returns hexadecimal SHA string.
+  /// Hexadecimal SHA string.
   String get sha => bindings.toSHA(_oidPointer);
 
   @override

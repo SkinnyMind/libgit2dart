@@ -4,14 +4,18 @@ import 'bindings/libgit2_bindings.dart';
 import 'bindings/worktree.dart' as bindings;
 
 class Worktree {
-  /// Initializes a new instance of [Worktree] class by creating new worktree
-  /// with provided [Repository] object worktree [name], [path] and optional [ref]
-  /// [Reference] object.
+  /// Creates new worktree.
   ///
   /// If [ref] is provided, no new branch will be created but specified [ref] will
   /// be used instead.
   ///
-  /// Should be freed to release allocated memory.
+  /// [repo] is the repository to create working tree for.
+  ///
+  /// [name] is the name of the working tree.
+  ///
+  /// [path] is the path to create working tree at.
+  ///
+  /// **IMPORTANT**: Should be freed to release allocated memory.
   ///
   /// Throws a [LibGit2Error] if error occured.
   Worktree.create({
@@ -28,10 +32,9 @@ class Worktree {
     );
   }
 
-  /// Initializes a new instance of [Worktree] class by looking up existing worktree
-  /// with provided [Repository] object and worktree [name].
+  /// Lookups existing worktree in [repo] with provided [name].
   ///
-  /// Should be freed to release allocated memory.
+  /// **IMPORTANT**: Should be freed to release allocated memory.
   ///
   /// Throws a [LibGit2Error] if error occured.
   Worktree.lookup({required Repository repo, required String name}) {
@@ -46,13 +49,13 @@ class Worktree {
   /// Throws a [LibGit2Error] if error occured.
   static List<String> list(Repository repo) => bindings.list(repo.pointer);
 
-  /// Returns the name of the worktree.
+  /// Name of the worktree.
   String get name => bindings.name(_worktreePointer);
 
-  /// Returns the filesystem path for the worktree.
+  /// Filesystem path for the worktree.
   String get path => bindings.path(_worktreePointer);
 
-  /// Checks if worktree is locked.
+  /// Whether worktree is locked.
   ///
   /// A worktree may be locked if the linked working tree is stored on a portable
   /// device which is not available.
@@ -64,7 +67,7 @@ class Worktree {
   /// Unlocks a locked worktree.
   void unlock() => bindings.unlock(_worktreePointer);
 
-  /// Checks if the worktree prunable.
+  /// Whether worktree is prunable.
   ///
   /// A worktree is not prunable in the following scenarios:
   /// - the worktree is linking to a valid on-disk worktree.
@@ -78,7 +81,7 @@ class Worktree {
   /// Prune the working tree, that is remove the git data structures on disk.
   void prune() => bindings.prune(_worktreePointer);
 
-  /// Checks if worktree is valid.
+  /// Whether worktree is valid.
   ///
   /// A valid worktree requires both the git data structures inside the linked parent
   /// repository and the linked working copy to be present.

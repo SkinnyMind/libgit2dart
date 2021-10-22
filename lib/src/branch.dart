@@ -8,19 +8,22 @@ class Branch {
   /// Initializes a new instance of [Branch] class from provided pointer to
   /// branch object in memory.
   ///
-  /// Should be freed with [free] to release allocated memory when no longer
-  /// needed.
+  /// **IMPORTANT**: Should be freed to release allocated memory.
   Branch(this._branchPointer);
 
   /// Creates a new branch pointing at a [target] commit.
   ///
   /// A new direct reference will be created pointing to this target commit.
-  /// If [force] is true and a reference already exists with the given name, it'll be replaced.
+  /// If [force] is true and a reference already exists with the given name,
+  /// it'll be replaced.
   ///
-  /// Should be freed with [free] to release allocated memory when no longer
-  /// needed.
+  /// [name] is the name for the branch, this name is validated for consistency.
+  /// It should also not conflict with an already existing branch name.
   ///
-  /// The branch name will be checked for validity.
+  /// [target] is the commit to which this branch should point. This object must
+  /// belong to the given [repo].
+  ///
+  /// **IMPORTANT**: Should be freed to release allocated memory.
   ///
   /// Throws a [LibGit2Error] if error occured.
   Branch.create({
@@ -44,7 +47,7 @@ class Branch {
   /// If branch [type] is [GitBranch.remote] you must include the remote name
   /// in the [name] (e.g. "origin/master").
   ///
-  /// Should be freed to release allocated memory when no longer needed.
+  /// **IMPORTANT**: Should be freed to release allocated memory.
   ///
   /// Throws a [LibGit2Error] if error occured.
   Branch.lookup({
@@ -67,7 +70,7 @@ class Branch {
   /// Returns a list of branches that can be found in a [repo]sitory for provided [type].
   /// Default is all branches (local and remote).
   ///
-  /// IMPORTANT: Branches must be freed manually when no longer needed to prevent
+  /// **IMPORTANT**: Branches must be freed manually when no longer needed to prevent
   /// memory leak.
   ///
   /// Throws a [LibGit2Error] if error occured.
@@ -83,7 +86,7 @@ class Branch {
     return pointers.map((e) => Branch(e)).toList();
   }
 
-  /// Deletes an existing branch reference.
+  /// Deletes an existing branch reference with provided [name].
   ///
   /// Throws a [LibGit2Error] if error occured.
   static void delete({required Repository repo, required String name}) {
@@ -92,9 +95,9 @@ class Branch {
     branch.free();
   }
 
-  /// Renames an existing local branch reference.
+  /// Renames an existing local branch reference with provided [oldName].
   ///
-  /// The new branch name will be checked for validity.
+  /// The new branch name [newName] will be checked for validity.
   ///
   /// If [force] is true, existing branch will be overwritten.
   ///
@@ -116,17 +119,17 @@ class Branch {
     branch.free();
   }
 
-  /// Returns the [Oid] pointed to by a branch.
+  /// [Oid] pointed to by a branch.
   ///
-  /// Throws an exception if error occured.
+  /// Throws an [Exception] if error occured.
   Oid get target => Oid(reference_bindings.target(_branchPointer));
 
-  /// Checks if HEAD points to the given branch.
+  /// Whether HEAD points to the given branch.
   ///
   /// Throws a [LibGit2Error] if error occured.
   bool get isHead => bindings.isHead(_branchPointer);
 
-  /// Checks if any HEAD points to the current branch.
+  /// Whether any HEAD points to the current branch.
   ///
   /// This will iterate over all known linked repositories (usually in the form of worktrees)
   /// and report whether any HEAD is pointing at the current branch.
@@ -134,10 +137,10 @@ class Branch {
   /// Throws a [LibGit2Error] if error occured.
   bool get isCheckedOut => bindings.isCheckedOut(_branchPointer);
 
-  /// Returns the branch name.
+  /// Branch name.
   ///
   /// Given a reference object, this will check that it really is a branch
-  /// (ie. it lives under "refs/heads/" or "refs/remotes/"), and return the branch part of it.
+  /// (i.e. it lives under "refs/heads/" or "refs/remotes/"), and return the branch part of it.
   ///
   /// Throws a [LibGit2Error] if error occured.
   String get name => bindings.name(_branchPointer);

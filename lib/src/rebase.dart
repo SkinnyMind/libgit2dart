@@ -4,10 +4,8 @@ import 'bindings/libgit2_bindings.dart';
 import 'bindings/rebase.dart' as bindings;
 
 class Rebase {
-  /// Initializes a new instance of the [Rebase] class by initializing a
-  /// rebase operation to rebase the changes in [branch] relative to [upstream]
-  /// [onto] another branch. To begin the rebase process, call `next()`.
-  /// When you have finished with this object, call `free()`.
+  /// Initializes a rebase operation to rebase the changes in [branch] relative to [upstream]
+  /// [onto] another branch. To begin the rebase process, call [next].
   ///
   /// [branch] is the terminal commit to rebase, default is to rebase the current branch.
   ///
@@ -16,6 +14,8 @@ class Rebase {
   ///
   /// [onto] is the branch to rebase onto, default is to rebase onto the given [upstream]
   /// (throws if [upstream] is not provided).
+  ///
+  /// **IMPORTANT**: Should be freed to release allocated memory.
   ///
   /// Throws a [LibGit2Error] if error occured.
   Rebase.init({
@@ -56,7 +56,7 @@ class Rebase {
   /// Pointer to memory address for allocated rebase object.
   late final Pointer<git_rebase> _rebasePointer;
 
-  /// The count of rebase operations that are to be applied.
+  /// Number of rebase operations that are to be applied.
   int get operationsCount {
     return bindings.operationsCount(_rebasePointer);
   }
@@ -74,6 +74,14 @@ class Rebase {
 
   /// Commits the current patch. You must have resolved any conflicts that were
   /// introduced during the patch application from the [next] invocation.
+  ///
+  /// [committer] is the committer of the rebase.
+  ///
+  /// [message] the message for this commit, can be null to use the message from the
+  /// original commit.
+  ///
+  /// [author] is the author of the updated commit, can be null to keep the author from
+  /// the original commit.
   ///
   /// Throws a [LibGit2Error] if error occured.
   void commit({
@@ -108,14 +116,14 @@ class RebaseOperation {
   /// Pointer to memory address for allocated rebase operation object.
   final Pointer<git_rebase_operation> _rebaseOperationPointer;
 
-  /// Returns the type of rebase operation.
+  /// Type of rebase operation.
   GitRebaseOperation get type {
     return GitRebaseOperation.values.singleWhere(
       (e) => _rebaseOperationPointer.ref.type == e.value,
     );
   }
 
-  /// Returns the commit [Oid] being cherry-picked.
+  /// [Oid] of commit being cherry-picked.
   Oid get oid => Oid.fromRaw(_rebaseOperationPointer.ref.id);
 
   @override

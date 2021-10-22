@@ -8,19 +8,21 @@ import 'bindings/repository.dart' as repository_bindings;
 
 class Reference {
   /// Initializes a new instance of the [Reference] class.
-  /// Should be freed to release allocated memory.
+  ///
+  /// **IMPORTANT**: Should be freed to release allocated memory.
   Reference(this._refPointer);
 
-  /// Creates a new reference.
+  /// Creates a new reference for provided [target].
   ///
   /// The reference will be created in the [repo]sitory and written to the disk.
-  /// The generated [Reference] object must be freed by the user.
+  ///
+  /// **IMPORTANT**: The generated [Reference] object should be freed to release
+  /// allocated memory.
   ///
   /// Valid reference [name]s must follow one of two patterns:
-  ///
-  /// Top-level names must contain only capital letters and underscores, and must begin and end
+  /// - Top-level names must contain only capital letters and underscores, and must begin and end
   /// with a letter. (e.g. "HEAD", "ORIG_HEAD").
-  /// Names prefixed with "refs/" can be almost anything. You must avoid the characters
+  /// - Names prefixed with "refs/" can be almost anything. You must avoid the characters
   /// '~', '^', ':', '\', '?', '[', and '*', and the sequences ".." and "@{" which have
   /// special meaning to revparse.
   ///
@@ -63,7 +65,7 @@ class Reference {
 
   /// Lookups reference [name] in a [repo]sitory.
   ///
-  /// Should be freed to release allocated memory.
+  /// **IMPORTANT**: Should be freed to release allocated memory.
   ///
   /// The [name] will be checked for validity.
   ///
@@ -86,7 +88,7 @@ class Reference {
     ref.free();
   }
 
-  /// Renames an existing reference.
+  /// Renames an existing reference with provided [oldName].
   ///
   /// This method works for both direct and symbolic references.
   ///
@@ -116,7 +118,7 @@ class Reference {
     ref.free();
   }
 
-  /// Returns a list of all the references that can be found in a [repo]sitory.
+  /// List of all the references that can be found in a [repo]sitory.
   ///
   /// Throws a [LibGit2Error] if error occured.
   static List<String> list(Repository repo) => bindings.list(repo.pointer);
@@ -132,14 +134,14 @@ class Reference {
     refdb_bindings.free(refdb);
   }
 
-  /// Returns the type of the reference.
+  /// Type of the reference.
   ReferenceType get type {
     return bindings.referenceType(_refPointer) == 1
         ? ReferenceType.direct
         : ReferenceType.symbolic;
   }
 
-  /// Returns the [Oid] pointed to by a reference.
+  /// [Oid] pointed to by a reference.
   ///
   /// Throws an [Exception] if error occured.
   Oid get target {
@@ -155,11 +157,11 @@ class Reference {
 
   /// Updates the [target] of this reference.
   ///
-  /// [target] being either Oid for direct reference or String reference name for symbolic
+  /// [target] being either Oid for direct reference or string reference name for symbolic
   /// reference.
   ///
   /// Throws a [LibGit2Error] if error occured or [ArgumentError] if [target] is not
-  /// [Oid] or String.
+  /// [Oid] or string.
   void setTarget({required Object target, String? logMessage}) {
     if (target is Oid) {
       final newPointer = bindings.setTarget(
@@ -214,16 +216,16 @@ class Reference {
     }
   }
 
-  /// Returns the full name of a reference.
+  /// Full name of a reference.
   String get name => bindings.name(_refPointer);
 
-  /// Returns the reference's short name.
+  /// Reference's short name.
   ///
   /// This will transform the reference name into a name "human-readable" version.
   /// If no shortname is appropriate, it will return the full name.
   String get shorthand => bindings.shorthand(_refPointer);
 
-  /// Checks if a reflog exists for the specified reference [name].
+  /// Whether reflog exists for the specified reference [name].
   bool get hasLog {
     return bindings.hasLog(
       repoPointer: bindings.owner(_refPointer),
@@ -231,24 +233,24 @@ class Reference {
     );
   }
 
-  /// Returns a [RefLog] object.
+  /// [RefLog] object.
   ///
-  /// Should be freed when no longer needed.
+  /// **IMPORTANT**: Should be freed to release allocated memory.
   RefLog get log => RefLog(this);
 
-  /// Checks if a reference is a local branch.
+  /// Whether reference is a local branch.
   bool get isBranch => bindings.isBranch(_refPointer);
 
-  /// Checks if a reference is a note.
+  /// Whether reference is a note.
   bool get isNote => bindings.isNote(_refPointer);
 
-  /// Check if a reference is a remote tracking branch.
+  /// Whether reference is a remote tracking branch.
   bool get isRemote => bindings.isRemote(_refPointer);
 
-  /// Check if a reference is a tag.
+  /// Whether reference is a tag.
   bool get isTag => bindings.isTag(_refPointer);
 
-  /// Returns the repository where a reference resides.
+  /// Repository where a reference resides.
   Repository get owner => Repository(bindings.owner(_refPointer));
 
   @override

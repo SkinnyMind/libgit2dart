@@ -5,7 +5,8 @@ import 'bindings/revwalk.dart' as bindings;
 
 class RevWalk {
   /// Initializes a new instance of the [RevWalk] class.
-  /// Should be freed with `free()` to release allocated memory.
+  ///
+  /// **IMPORTANT**: Should be freed to release allocated memory.
   RevWalk(Repository repo) {
     _revWalkPointer = bindings.create(repo.pointer);
   }
@@ -25,7 +26,8 @@ class RevWalk {
     return pointers.map((e) => Commit(e)).toList();
   }
 
-  /// Changes the sorting mode when iterating through the repository's contents.
+  /// Changes the sorting mode when iterating through the repository's contents
+  /// to provided [sorting] combination of [GitSort] modes.
   ///
   /// Changing the sorting mode resets the walker.
   void sorting(Set<GitSort> sorting) {

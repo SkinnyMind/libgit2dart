@@ -8,10 +8,15 @@ class Note {
   /// pointer to note and annotatedOid objects in memory.
   Note(this._notePointer, this._annotatedOidPointer);
 
-  /// Reads the note for an [annotatedOid].
+  /// Lookups the note for an [annotatedOid].
   ///
-  /// IMPORTANT: Notes must be freed manually when no longer needed to prevent
-  /// memory leak.
+  /// [repo] is the repository where to look up the note.
+  ///
+  /// [annotatedOid] is the [Oid] of the git object to read the note from.
+  ///
+  /// [notesRef] is the canonical name of the reference to use. Defaults to "refs/notes/commits".
+  ///
+  /// **IMPORTANT**: Notes must be freed to release allocated memory.
   ///
   /// Throws a [LibGit2Error] if error occured.
   Note.lookup({
@@ -33,7 +38,21 @@ class Note {
   /// Pointer to memory address for allocated annotetedOid object.
   late final Pointer<git_oid> _annotatedOidPointer;
 
-  /// Adds a note for an [annotatedOid].
+  /// Creates a note for an [annotatedOid].
+  ///
+  /// [repo] is the repository where to store the note.
+  ///
+  /// [author] is the signature of the note's commit author.
+  ///
+  /// [committer] is the signature of the note's commit committer.
+  ///
+  /// [annotatedOid] is the [Oid] of the git object to decorate.
+  ///
+  /// [note] is the content of the note to add.
+  ///
+  /// [notesRef] is the canonical name of the reference to use. Defaults to "refs/notes/commits".
+  ///
+  /// [force] determines whether existing note should be overwritten.
   ///
   /// Throws a [LibGit2Error] if error occured.
   static Oid create({
@@ -58,6 +77,16 @@ class Note {
 
   /// Deletes the note for an [annotatedOid].
   ///
+  /// [repo] is the repository where the note lives.
+  ///
+  /// [annotatedOid] is the [Oid] of the git object to remove the note from.
+  ///
+  /// [author] is the signature of the note's commit author.
+  ///
+  /// [committer] is the signature of the note's commit committer.
+  ///
+  /// [notesRef] is the canonical name of the reference to use. Defaults to "refs/notes/commits".
+  ///
   /// Throws a [LibGit2Error] if error occured.
   static void delete({
     required Repository repo,
@@ -74,10 +103,9 @@ class Note {
     );
   }
 
-  /// Returns list of notes for repository.
+  /// Returns list of notes for [repo]sitory.
   ///
-  /// IMPORTANT: Notes must be freed manually when no longer needed to prevent
-  /// memory leak.
+  /// **IMPORTANT**: Notes must be freed to release allocated memory.
   ///
   /// Throws a [LibGit2Error] if error occured.
   static List<Note> list(Repository repo) {
@@ -90,13 +118,13 @@ class Note {
         .toList();
   }
 
-  /// Returns the note object's [Oid].
+  /// Note object's [Oid].
   Oid get oid => Oid(bindings.id(_notePointer));
 
-  /// Returns the note message.
+  /// Note message.
   String get message => bindings.message(_notePointer);
 
-  /// Returns the [Oid] of the git object being annotated.
+  /// [Oid] of the git object being annotated.
   Oid get annotatedOid => Oid(_annotatedOidPointer);
 
   /// Releases memory allocated for note object.

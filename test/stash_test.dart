@@ -54,8 +54,7 @@ void main() {
 
       repo.createStash(
         stasher: stasher,
-        includeUntracked: true,
-        includeIgnored: true,
+        flags: {GitStash.includeUntracked, GitStash.includeIgnored},
       );
       expect(repo.status.isEmpty, true);
       expect(swpPath.existsSync(), false);
@@ -72,7 +71,7 @@ void main() {
       final index = repo.index;
       index.add('file');
 
-      repo.createStash(stasher: stasher, keepIndex: true);
+      repo.createStash(stasher: stasher, flags: {GitStash.keepIndex});
       expect(repo.status.isEmpty, false);
       expect(repo.stashes.length, 1);
 
@@ -111,7 +110,7 @@ void main() {
       index.add('stash.this');
       expect(index.find('stash.this'), true);
 
-      repo.createStash(stasher: stasher, includeUntracked: true);
+      repo.createStash(stasher: stasher, flags: {GitStash.includeUntracked});
       expect(repo.status.isEmpty, true);
       expect(index.find('stash.this'), false);
 
@@ -204,7 +203,7 @@ void main() {
       index.add('stash.this');
       expect(index.find('stash.this'), true);
 
-      repo.createStash(stasher: stasher, includeUntracked: true);
+      repo.createStash(stasher: stasher, flags: {GitStash.includeUntracked});
       expect(repo.status.isEmpty, true);
       expect(index.find('stash.this'), false);
 
@@ -252,7 +251,7 @@ void main() {
 
     test('returns string representation of Stash object', () {
       File('${tmpDir.path}/stash.this').writeAsStringSync('stash');
-      repo.createStash(stasher: stasher, includeUntracked: true);
+      repo.createStash(stasher: stasher, flags: {GitStash.includeUntracked});
       expect(repo.stashes[0].toString(), contains('Stash{'));
     });
   });

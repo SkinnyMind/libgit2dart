@@ -11,17 +11,17 @@ class Config with IterableMixin<ConfigEntry> {
   /// Initializes a new instance of [Config] class from provided
   /// pointer to config object in memory.
   ///
-  /// Should be freed to release allocated memory.
+  /// **IMPORTANT**: Should be freed to release allocated memory.
   Config(this._configPointer);
 
-  /// Initializes a new instance of [Config] class from provided [path].
+  /// Opens config file at provided [path].
   ///
   /// If [path] isn't provided, opens global, XDG and system config files.
   ///
   /// [path] should point to single on-disk file; it's expected to be a native
   /// Git config file following the default Git config syntax (see man git-config).
   ///
-  /// Should be freed to release allocated memory.
+  /// **IMPORTANT**: Should be freed to release allocated memory.
   ///
   /// Throws an [Exception] if file not found at provided path.
   Config.open([String? path]) {
@@ -38,11 +38,9 @@ class Config with IterableMixin<ConfigEntry> {
     }
   }
 
-  /// Initializes a new instance of [Config] class.
-  ///
   /// Opens the system configuration file.
   ///
-  /// Should be freed to release allocated memory.
+  /// **IMPORTANT**: Should be freed to release allocated memory.
   ///
   /// Throws a [LibGit2Error] if error occured.
   Config.system() {
@@ -51,11 +49,9 @@ class Config with IterableMixin<ConfigEntry> {
     _configPointer = bindings.open(bindings.findSystem());
   }
 
-  /// Initializes a new instance of [Config] class.
-  ///
   /// Opens the global configuration file.
   ///
-  /// Should be freed to release allocated memory.
+  /// **IMPORTANT**: Should be freed to release allocated memory.
   ///
   /// Throws a [LibGit2Error] if error occured.
   Config.global() {
@@ -64,11 +60,9 @@ class Config with IterableMixin<ConfigEntry> {
     _configPointer = bindings.open(bindings.findGlobal());
   }
 
-  /// Initializes a new instance of [Config] class.
-  ///
   /// Opens the global XDG configuration file.
   ///
-  /// Should be freed to release allocated memory.
+  /// **IMPORTANT**: Should be freed to release allocated memory.
   ///
   /// Throws a [LibGit2Error] if error occured.
   Config.xdg() {
@@ -80,9 +74,7 @@ class Config with IterableMixin<ConfigEntry> {
   /// Pointer to memory address for allocated config object.
   late final Pointer<git_config> _configPointer;
 
-  /// Create a snapshot of the configuration.
-  ///
-  /// Create a snapshot of the current state of a configuration, which allows you to look
+  /// The snapshot of the current state of a configuration, which allows you to look
   /// into a consistent view of the configuration for looking up complex values
   /// (e.g. a remote, submodule).
   Config get snapshot => Config(bindings.snapshot(_configPointer));
@@ -181,21 +173,25 @@ class Config with IterableMixin<ConfigEntry> {
 }
 
 class ConfigEntry {
+  /// Initializes a new instance of [ConfigEntry] class from provided
+  /// pointer to config entry object in memory.
+  ///
+  /// **IMPORTANT**: Should be freed to release allocated memory.
   const ConfigEntry(this._configEntryPointer);
 
   /// Pointer to memory address for allocated config entry object.
   final Pointer<git_config_entry> _configEntryPointer;
 
-  /// Returns name of the entry (normalised).
+  /// Name of the entry (normalised).
   String get name => _configEntryPointer.ref.name.cast<Utf8>().toDartString();
 
-  /// Returns value of the entry.
+  /// Value of the entry.
   String get value => _configEntryPointer.ref.value.cast<Utf8>().toDartString();
 
-  /// Returns depth of includes where this variable was found
+  /// Depth of includes where this variable was found
   int get includeDepth => _configEntryPointer.ref.include_depth;
 
-  /// Returns which config file this was found in.
+  /// Which config file this was found in.
   GitConfigLevel get level {
     return GitConfigLevel.values.singleWhere(
       (e) => _configEntryPointer.ref.level == e.value,

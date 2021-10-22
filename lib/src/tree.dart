@@ -8,12 +8,12 @@ class Tree {
   /// Initializes a new instance of [Tree] class from provided pointer to
   /// tree object in memory.
   ///
-  /// Should be freed to release allocated memory.
+  /// **IMPORTANT**: Should be freed to release allocated memory.
   Tree(this._treePointer);
 
   /// Lookups a tree object for provided [oid] in a [repo]sitory.
   ///
-  /// Should be freed to release allocated memory.
+  /// **IMPORTANT**: Should be freed to release allocated memory.
   Tree.lookup({required Repository repo, required Oid oid}) {
     _treePointer = bindings.lookup(
       repoPointer: repo.pointer,
@@ -26,7 +26,7 @@ class Tree {
   /// Pointer to memory address for allocated tree object.
   Pointer<git_tree> get pointer => _treePointer;
 
-  /// Returns a list with tree entries of a tree.
+  /// List with tree entries of a tree.
   List<TreeEntry> get entries {
     final entryCount = bindings.entryCount(_treePointer);
     var result = <TreeEntry>[];
@@ -47,6 +47,8 @@ class Tree {
   /// If string [value] is provided, lookup is done by entry filename.
   ///
   /// If provided string [value] is a path to file, lookup is done by path.
+  ///
+  /// Throws [ArgumentError] if provided [value] is not int or string.
   TreeEntry operator [](Object value) {
     if (value is int) {
       return TreeEntry(bindings.getByIndex(
@@ -69,13 +71,21 @@ class Tree {
     }
   }
 
-  /// Returns the [Oid] of a tree.
+  /// [Oid] of a tree.
   Oid get oid => Oid(bindings.id(_treePointer));
 
-  /// Get the number of entries listed in a tree.
+  /// Number of entries listed in a tree.
   int get length => bindings.entryCount(_treePointer);
 
   /// Creates a diff between a tree and the working directory.
+  ///
+  /// [flags] is a combination of [GitDiff] flags. Defaults to [GitDiff.normal].
+  ///
+  /// [contextLines] is the number of unchanged lines that define the boundary
+  /// of a hunk (and to display before and after). Defaults to 3.
+  ///
+  /// [interhunkLines] is the maximum number of unchanged lines between hunk
+  /// boundaries before the hunks will be merged into one. Defaults to 0.
   ///
   /// Throws a [LibGit2Error] if error occured.
   Diff diffToWorkdir({
@@ -93,6 +103,16 @@ class Tree {
   }
 
   /// Creates a diff between a tree and repository index.
+  ///
+  /// [index] is the [Index] object to diff to.
+  ///
+  /// [flags] is a combination of [GitDiff] flags. Defaults to [GitDiff.normal].
+  ///
+  /// [contextLines] is the number of unchanged lines that define the boundary
+  /// of a hunk (and to display before and after). Defaults to 3.
+  ///
+  /// [interhunkLines] is the maximum number of unchanged lines between hunk
+  /// boundaries before the hunks will be merged into one. Defaults to 0.
   Diff diffToIndex({
     required Index index,
     Set<GitDiff> flags = const {GitDiff.normal},
@@ -110,6 +130,16 @@ class Tree {
   }
 
   /// Creates a diff with the difference between two tree objects.
+  ///
+  /// [tree] is the [Tree] object to diff to.
+  ///
+  /// [flags] is a combination of [GitDiff] flags. Defaults to [GitDiff.normal].
+  ///
+  /// [contextLines] is the number of unchanged lines that define the boundary
+  /// of a hunk (and to display before and after). Defaults to 3.
+  ///
+  /// [interhunkLines] is the maximum number of unchanged lines between hunk
+  /// boundaries before the hunks will be merged into one. Defaults to 0.
   ///
   /// Throws a [LibGit2Error] if error occured.
   Diff diffToTree({
@@ -138,19 +168,20 @@ class Tree {
 }
 
 class TreeEntry {
-  /// Initializes a new instance of [TreeEntry] class.
+  /// Initializes a new instance of [TreeEntry] class from provided pointer to
+  /// tree entry object in memory.
   const TreeEntry(this._treeEntryPointer);
 
   /// Pointer to memory address for allocated tree entry object.
   final Pointer<git_tree_entry> _treeEntryPointer;
 
-  /// Returns the [Oid] of the object pointed by the entry.
+  /// [Oid] of the object pointed by the entry.
   Oid get oid => Oid(bindings.entryId(_treeEntryPointer));
 
-  /// Returns the filename of a tree entry.
+  /// Filename of a tree entry.
   String get name => bindings.entryName(_treeEntryPointer);
 
-  /// Returns the UNIX file attributes of a tree entry.
+  /// UNIX file attributes of a tree entry.
   GitFilemode get filemode {
     final modeInt = bindings.entryFilemode(_treeEntryPointer);
     return GitFilemode.values.singleWhere((mode) => modeInt == mode.value);

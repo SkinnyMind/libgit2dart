@@ -9,15 +9,15 @@ class Signature {
   /// Initializes a new instance of [Signature] class from provided pointer to
   /// signature object in memory.
   ///
-  /// Should be freed to release allocated memory.
+  /// **IMPORTANT**: Should be freed to release allocated memory.
   Signature(this._signaturePointer);
 
-  /// Initializes a new instance of [Signature] class from provided [name], [email],
-  /// and optional [time] in seconds from epoch and [offset] in minutes.
+  /// Creates new [Signature] from provided [name], [email], and optional [time]
+  /// in seconds from epoch and [offset] in minutes.
   ///
   /// If [time] isn't provided [Signature] will be created with a timestamp of 'now'.
   ///
-  /// Should be freed to release allocated memory.
+  /// **IMPORTANT**: Should be freed to release allocated memory.
   Signature.create({
     required String name,
     required String email,
@@ -50,16 +50,16 @@ class Signature {
   static Signature defaultSignature(Repository repo) =>
       Signature(bindings.defaultSignature(repo.pointer));
 
-  /// Returns full name of the author.
+  /// Full name of the author.
   String get name => _signaturePointer.ref.name.cast<Utf8>().toDartString();
 
-  /// Returns email of the author.
+  /// Email of the author.
   String get email => _signaturePointer.ref.email.cast<Utf8>().toDartString();
 
-  /// Returns time in seconds from epoch.
+  /// Time in seconds from epoch.
   int get time => _signaturePointer.ref.when.time;
 
-  /// Returns timezone offset in minutes.
+  /// Timezone offset in minutes.
   int get offset => _signaturePointer.ref.when.offset;
 
   @override

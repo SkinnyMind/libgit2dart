@@ -13,7 +13,7 @@ class RevParse {
   /// intermediate reference. When such expressions are being passed in, reference_out will be
   /// valued as well.
   ///
-  /// The returned object and reference should be released when no longer needed.
+  /// **IMPORTANT**: The returned object and reference should be freed to release allocated memory.
   ///
   /// Throws a [LibGit2Error] if error occured.
   RevParse.ext({required Repository repo, required String spec}) {
@@ -78,10 +78,14 @@ class RevSpec {
   /// Pointer to memory address for allocated revspec object.
   final Pointer<git_revspec> _revSpecPointer;
 
-  /// The left element of the revspec; must be freed by the user.
+  /// Left element of the revspec.
+  ///
+  /// **IMPORTANT**: Should be freed to release allocated memory.
   Commit get from => Commit(_revSpecPointer.ref.from.cast());
 
-  /// The right element of the revspec; must be freed by the user.
+  /// Right element of the revspec.
+  ///
+  /// **IMPORTANT**: Should be freed to release allocated memory.
   Commit? get to {
     return _revSpecPointer.ref.to == nullptr
         ? null

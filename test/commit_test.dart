@@ -175,7 +175,7 @@ void main() {
         repo: repo,
         message: message,
         author: author,
-        commiter: commiter,
+        committer: commiter,
         tree: tree,
         parents: [parent1, parent2],
       );

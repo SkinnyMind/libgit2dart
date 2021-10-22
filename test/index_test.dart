@@ -37,12 +37,12 @@ void main() {
 
     test('returns index entry at provided position', () {
       expect(index[3].path, 'file');
-      expect(index[3].sha, fileSha);
+      expect(index[3].oid.sha, fileSha);
     });
 
     test('returns index entry at provided path', () {
       expect(index['file'].path, 'file');
-      expect(index['file'].sha, fileSha);
+      expect(index['file'].oid.sha, fileSha);
     });
 
     test('throws if provided entry position is out of bounds', () {
@@ -93,13 +93,13 @@ void main() {
         final entry = index['file'];
 
         index.add(entry);
-        expect(index['file'].sha, fileSha);
+        expect(index['file'].oid.sha, fileSha);
         expect(index.length, 4);
       });
 
       test('successfully adds with provided path string', () {
         index.add('file');
-        expect(index['file'].sha, fileSha);
+        expect(index['file'].oid.sha, fileSha);
         expect(index.length, 4);
       });
 
@@ -155,21 +155,21 @@ void main() {
         index.addAll(['file', 'feature_file']);
 
         expect(index.length, 2);
-        expect(index['file'].sha, fileSha);
-        expect(index['feature_file'].sha, featureFileSha);
+        expect(index['file'].oid.sha, fileSha);
+        expect(index['feature_file'].oid.sha, featureFileSha);
 
         index.clear();
         index.addAll(['[f]*']);
 
         expect(index.length, 2);
-        expect(index['file'].sha, fileSha);
-        expect(index['feature_file'].sha, featureFileSha);
+        expect(index['file'].oid.sha, fileSha);
+        expect(index['feature_file'].oid.sha, featureFileSha);
 
         index.clear();
         index.addAll(['feature_f???']);
 
         expect(index.length, 1);
-        expect(index['feature_file'].sha, featureFileSha);
+        expect(index['feature_file'].oid.sha, featureFileSha);
       });
 
       test('throws when trying to addAll in bare repository', () {

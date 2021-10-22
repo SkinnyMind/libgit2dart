@@ -6,7 +6,7 @@ import 'bindings/packbuilder.dart' as bindings;
 class PackBuilder {
   /// Initializes a new instance of [PackBuilder] class.
   ///
-  /// Should be freed with `free()`.
+  /// **IMPORTANT**: Should be freed to release allocated memory.
   ///
   /// Throws a [LibGit2Error] if error occured.
   PackBuilder(Repository repo) {
@@ -49,15 +49,15 @@ class PackBuilder {
     bindings.write(packbuilderPointer: _packbuilderPointer, path: path);
   }
 
-  /// Returns the total number of objects the packbuilder will write out.
+  /// Total number of objects the packbuilder will write out.
   int get length => bindings.length(_packbuilderPointer);
 
-  /// Returns the number of objects the packbuilder has already written out.
+  /// Number of objects the packbuilder has already written out.
   int get writtenLength => bindings.writtenCount(_packbuilderPointer);
 
   /// Sets and returns the number of threads to spawn.
   ///
-  /// By default, libgit2 won't spawn any threads at all; when set to 0,
+  /// By default, libgit2 won't spawn any threads at all. When set to 0,
   /// libgit2 will autodetect the number of CPUs.
   int setThreads(int number) {
     return bindings.setThreads(

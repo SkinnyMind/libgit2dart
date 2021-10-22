@@ -11,26 +11,26 @@ class Refspec {
   /// Pointer to memory address for allocated refspec object.
   final Pointer<git_refspec> _refspecPointer;
 
-  /// Returns the source specifier.
+  /// Source specifier.
   String get source => bindings.source(_refspecPointer);
 
-  /// Returns the destination specifier.
+  /// Destination specifier.
   String get destination => bindings.destination(_refspecPointer);
 
-  /// Returns the force update setting.
+  /// Force update setting.
   bool get force => bindings.force(_refspecPointer);
 
-  /// Returns the refspec's string.
+  /// Refspec's string.
   String get string => bindings.string(_refspecPointer);
 
-  /// Returns the refspec's direction (fetch or push).
+  /// Refspec's direction (fetch or push).
   GitDirection get direction {
     return bindings.direction(_refspecPointer) == 0
         ? GitDirection.fetch
         : GitDirection.push;
   }
 
-  /// Checks if a refspec's source descriptor matches a reference.
+  /// Whether refspec's source descriptor matches a reference.
   bool matchesSource(String refname) {
     return bindings.matchesSource(
       refspecPointer: _refspecPointer,
@@ -38,7 +38,7 @@ class Refspec {
     );
   }
 
-  /// Checks if a refspec's destination descriptor matches a reference.
+  /// Whether refspec's destination descriptor matches a reference.
   bool matchesDestination(String refname) {
     return bindings.matchesDestination(
       refspecPointer: _refspecPointer,

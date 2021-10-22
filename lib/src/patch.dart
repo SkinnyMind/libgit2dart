@@ -9,7 +9,7 @@ class Patch {
   /// Initializes a new instance of [Patch] class from provided
   /// pointer to patch object in memory and pointers to old and new blobs/buffers.
   ///
-  /// Should be freed to release allocated memory.
+  /// **IMPORTANT**: Should be freed to release allocated memory.
   Patch(this._patchPointer, this._aPointer, this._bPointer);
 
   /// Directly generates a patch from the difference between two blobs, buffers or
@@ -17,7 +17,19 @@ class Patch {
   ///
   /// [a] and [b] can be [Blob], [String] or null.
   ///
-  /// Should be freed to release allocated memory.
+  /// [aPath] treat [a] as if it had this filename, can be null.
+  ///
+  /// [bPath] treat [b] as if it had this filename, can be null.
+  ///
+  /// [flags] is a combination of [GitDiff] flags. Defaults to [GitDiff.normal].
+  ///
+  /// [contextLines] is the number of unchanged lines that define the boundary
+  /// of a hunk (and to display before and after). Defaults to 3.
+  ///
+  /// [interhunkLines] is the maximum number of unchanged lines between hunk
+  /// boundaries before the hunks will be merged into one. Defaults to 0.
+  ///
+  /// **IMPORTANT**: Should be freed to release allocated memory.
   Patch.create({
     required Object? a,
     required Object? b,
@@ -75,9 +87,13 @@ class Patch {
     _bPointer = result['b'];
   }
 
-  /// Returns a patch for an entry in the diff list.
+  /// Creates a patch for an entry in the diff list.
   ///
-  /// Should be freed with `free()` to release allocated memory.
+  /// [diff] is the [Diff] list object.
+  ///
+  /// [index] is the position of an entry in diff list.
+  ///
+  /// **IMPORTANT**: Should be freed to release allocated memory.
   ///
   /// Throws a [LibGit2Error] if error occured.
   Patch.fromDiff({required Diff diff, required int index}) {
@@ -94,12 +110,12 @@ class Patch {
   /// Pointer to memory address for allocated patch object.
   Pointer<git_patch> get pointer => _patchPointer;
 
-  /// Returns the content of a patch as a single diff text.
+  /// Content of a patch as a single diff text.
   ///
   /// Throws a [LibGit2Error] if error occured.
   String get text => bindings.text(_patchPointer);
 
-  /// Looks up size of patch diff data in bytes.
+  /// Size of patch diff data in bytes.
   ///
   /// This returns the raw size of the patch data. This only includes the actual data from
   /// the lines of the diff, not the file or hunk headers.
@@ -107,6 +123,9 @@ class Patch {
   /// If you pass `includeContext` as true, this will be the size of all of the diff output;
   /// if you pass it as false, this will only include the actual changed lines (as if
   /// contextLines was 0).
+  ///
+  /// If [includeHunkHeaders] and [includeFileHeaders] are set to true, they will be included
+  /// in the total size.
   int size({
     bool includeContext = false,
     bool includeHunkHeaders = false,
@@ -120,10 +139,10 @@ class Patch {
     );
   }
 
-  /// Returns the delta associated with a patch.
+  /// Delta associated with a patch.
   DiffDelta get delta => DiffDelta(bindings.delta(_patchPointer));
 
-  /// Returns the list of hunks in a patch.
+  /// List of hunks in a patch.
   List<DiffHunk> get hunks {
     final length = bindings.numHunks(_patchPointer);
     final hunks = <DiffHunk>[];

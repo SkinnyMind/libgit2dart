@@ -7,13 +7,16 @@ import 'util.dart';
 class Odb {
   /// Initializes a new instance of [Odb] class from provided
   /// pointer to Odb object in memory.
+  ///
+  /// **IMPORTANT**: Should be freed to release allocated memory.
   Odb(this._odbPointer);
 
-  /// Initializes a new instance of [Odb] class by creating a new object database with
-  /// no backends.
+  /// Creates a new object database with no backends.
   ///
   /// Before the ODB can be used for read/writing, a custom database backend must be
   /// manually added.
+  ///
+  /// **IMPORTANT**: Should be freed to release allocated memory.
   Odb.create() {
     libgit2.git_libgit2_init();
 
@@ -41,12 +44,12 @@ class Odb {
     );
   }
 
-  /// Returns list of all objects [Oid]s available in the database.
+  /// List of all objects [Oid]s available in the database.
   ///
   /// Throws a [LibGit2Error] if error occured.
   List<Oid> get objects => bindings.objects(_odbPointer);
 
-  /// Checks if the given object can be found in the object database.
+  /// Whether given object [oid] can be found in the object database.
   bool contains(Oid oid) {
     return bindings.exists(odbPointer: _odbPointer, oidPointer: oid.pointer);
   }
@@ -55,7 +58,7 @@ class Odb {
   ///
   /// This method queries all available ODB backends trying to read the given [oid].
   ///
-  /// The returned object should be freed by the user once it's no longer in use.
+  /// **IMPORTANT**: Returned object should be freed to release allocated memory.
   ///
   /// Throws a [LibGit2Error] if error occured.
   OdbObject read(Oid oid) {
@@ -67,7 +70,7 @@ class Odb {
 
   /// Writes raw [data] to into the object database.
   ///
-  /// [type] should be one of [GitObject.blob], [GitObject.commit], [GitObject.tag],
+  /// [type] should be one of [GitObject.blob], [GitObject.commit], [GitObject.tag] or
   /// [GitObject.tree].
   ///
   /// Throws a [LibGit2Error] if error occured or [ArgumentError] if provided type is invalid.
@@ -98,25 +101,19 @@ class OdbObject {
   /// Pointer to memory address for allocated odbObject object.
   final Pointer<git_odb_object> _odbObjectPointer;
 
-  /// Returns the [Oid] of an ODB object.
-  ///
-  /// This is the [Oid] from which the object was read from.
+  /// [Oid] of an ODB object.
   Oid get oid => Oid(bindings.objectId(_odbObjectPointer));
 
-  /// Returns the type of an ODB object.
+  /// Type of an ODB object.
   GitObject get type {
     final typeInt = bindings.objectType(_odbObjectPointer);
     return GitObject.values.singleWhere((e) => typeInt == e.value);
   }
 
-  /// Returns the data of an ODB object.
-  ///
-  /// This is the uncompressed, raw data as read from the ODB, without the leading header.
+  /// Uncompressed, raw data as read from the ODB, without the leading header.
   String get data => bindings.objectData(_odbObjectPointer);
 
-  /// Returns the size of an ODB object.
-  ///
-  /// This is the real size of the `data` buffer, not the actual size of the object.
+  /// Real size of the `data` buffer, not the actual size of the object.
   int get size => bindings.objectSize(_odbObjectPointer);
 
   /// Releases memory allocated for odbObject object.

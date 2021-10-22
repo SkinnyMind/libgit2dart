@@ -7,7 +7,7 @@ class TreeBuilder {
   /// Initializes a new instance of [TreeBuilder] class from provided
   /// [repo]sitory and optional [tree] objects.
   ///
-  /// Should be freed to release allocated memory.
+  /// **IMPORTANT**: Should be freed to release allocated memory.
   ///
   /// Throws a [LibGit2Error] if error occured.
   TreeBuilder({required Repository repo, Tree? tree}) {
@@ -20,7 +20,7 @@ class TreeBuilder {
   /// Pointer to memory address for allocated tree builder object.
   late final Pointer<git_treebuilder> _treeBuilderPointer;
 
-  /// Returns the number of entries listed in a tree builder.
+  /// Number of entries listed in a tree builder.
   int get length => bindings.entryCount(_treeBuilderPointer);
 
   /// Writes the contents of the tree builder as a tree object.
@@ -29,11 +29,12 @@ class TreeBuilder {
   /// Clears all the entires in the tree builder.
   void clear() => bindings.clear(_treeBuilderPointer);
 
-  /// Returns an entry from the tree builder from its filename.
+  /// Returns an entry from the tree builder with provided [filename].
   ///
-  /// The returned entry is owned by the tree builder and should not be freed manually.
+  /// **IMPORTANT**: the returned entry is owned by the tree builder and
+  /// should not be freed manually.
   ///
-  /// Throws [ArgumentError] if nothing found for provided filename.
+  /// Throws [ArgumentError] if nothing found for provided [filename].
   TreeEntry operator [](String filename) {
     return TreeEntry(bindings.getByFilename(
       builderPointer: _treeBuilderPointer,
@@ -43,11 +44,17 @@ class TreeBuilder {
 
   /// Adds or updates an entry to the tree builder with the given attributes.
   ///
-  /// If an entry named filename already exists, its attributes will be updated with
+  /// If an entry with [filename] already exists, its attributes will be updated with
   /// the given ones.
   ///
   /// By default the entry that you are inserting will be checked for validity;
   /// that it exists in the object database and is of the correct type.
+  ///
+  /// [filename] is the filename of the entry.
+  ///
+  /// [oid] is [Oid] of the entry.
+  ///
+  /// [filemode] is one of the [GitFilemode] folder attributes of the entry.
   ///
   /// Throws a [LibGit2Error] if error occured.
   void add({
@@ -63,7 +70,7 @@ class TreeBuilder {
     );
   }
 
-  /// Removes an entry from the tree builder by its filename.
+  /// Removes an entry from the tree builder by its [filename].
   ///
   /// Throws a [LibGit2Error] if error occured.
   void remove(String filename) {

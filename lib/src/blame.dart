@@ -6,10 +6,13 @@ import 'bindings/libgit2_bindings.dart';
 import 'bindings/blame.dart' as bindings;
 
 class Blame with IterableMixin<BlameHunk> {
-  /// Initializes a new instance of the [Blame] class by getting
-  /// the blame for a single file.
+  /// Returns the blame for a single file.
   ///
-  /// [flags] is a combination of [GitBlameFlag]s.
+  /// [repo] is the repository whose history is to be walked.
+  ///
+  /// [path] is the path to file to consider.
+  ///
+  /// [flags] is a combination of [GitBlameFlag]s. Defaults to [GitBlameFlag.normal].
   ///
   /// [minMatchCharacters] is the lower bound on the number of alphanumeric
   /// characters that must be detected as moving/copying within a file for
@@ -27,6 +30,8 @@ class Blame with IterableMixin<BlameHunk> {
   ///
   /// [maxLine] is the last line in the file to blame. The default is the last
   /// line of the file.
+  ///
+  /// **IMPORTANT**: Should be freed to release allocated memory.
   ///
   /// Throws a [LibGit2Error] if error occured.
   Blame.file({
@@ -64,7 +69,7 @@ class Blame with IterableMixin<BlameHunk> {
     ));
   }
 
-  /// Gets the hunk that relates to the given line number (1-based) in the newest commit.
+  /// Returns the hunk that relates to the given line number (1-based) in the newest commit.
   ///
   /// Throws [RangeError] if [lineNumber] is out of range.
   BlameHunk forLine(int lineNumber) {
@@ -89,43 +94,42 @@ class BlameHunk {
   /// Pointer to memory address for allocated blame hunk object.
   final Pointer<git_blame_hunk> _blameHunkPointer;
 
-  /// Returns the number of lines in this hunk.
+  /// Number of lines in this hunk.
   int get linesCount => _blameHunkPointer.ref.lines_in_hunk;
 
-  /// Checks if the hunk has been tracked to a boundary commit
-  /// (the root, or the commit specified in [oldestCommit] argument)
+  /// Whether the hunk has been tracked to a boundary commit
+  /// (the root, or the commit specified in [oldestCommit] argument).
   bool get isBoundary {
     return _blameHunkPointer.ref.boundary == 1 ? true : false;
   }
 
-  /// Returns the 1-based line number where this hunk begins, in the final
-  /// version of the file.
+  /// 1-based line number where this hunk begins, in the final version of the file.
   int get finalStartLineNumber => _blameHunkPointer.ref.final_start_line_number;
 
-  /// Returns the author of [finalCommitOid]. If [GitBlameFlag.useMailmap] has been
+  /// Author of [finalCommitOid]. If [GitBlameFlag.useMailmap] has been
   /// specified, it will contain the canonical real name and email address.
   Signature get finalCommitter =>
       Signature(_blameHunkPointer.ref.final_signature);
 
-  /// Returns the [Oid] of the commit where this line was last changed.
+  /// [Oid] of the commit where this line was last changed.
   Oid get finalCommitOid => Oid.fromRaw(_blameHunkPointer.ref.final_commit_id);
 
-  /// Returns the 1-based line number where this hunk begins, in the file
-  /// named by [originPath] in the commit specified by [originCommitId].
+  /// 1-based line number where this hunk begins, in the file named by [originPath]
+  /// in the commit specified by [originCommitId].
   int get originStartLineNumber => _blameHunkPointer.ref.orig_start_line_number;
 
-  /// Returns the author of [originCommitOid]. If [GitBlameFlag.useMailmap] has been
+  /// Author of [originCommitOid]. If [GitBlameFlag.useMailmap] has been
   /// specified, it will contain the canonical real name and email address.
   Signature get originCommitter =>
       Signature(_blameHunkPointer.ref.orig_signature);
 
-  /// Returns the [Oid] of the commit where this hunk was found. This will usually be
-  /// the same as [finalCommitOid], except when [GitBlameFlag.trackCopiesAnyCommitCopies]
+  /// [Oid] of the commit where this hunk was found. This will usually be the same
+  /// as [finalCommitOid], except when [GitBlameFlag.trackCopiesAnyCommitCopies]
   /// been specified.
   Oid get originCommitOid => Oid.fromRaw(_blameHunkPointer.ref.orig_commit_id);
 
-  /// Returns the path to the file where this hunk originated, as of the commit
-  /// specified by [originCommitOid].
+  /// Path to the file where this hunk originated, as of the commit specified by
+  /// [originCommitOid].
   String get originPath =>
       _blameHunkPointer.ref.orig_path.cast<Utf8>().toDartString();
 

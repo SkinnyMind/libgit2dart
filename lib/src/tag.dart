@@ -8,12 +8,12 @@ class Tag {
   /// Initializes a new instance of [Tag] class from provided pointer to
   /// tag object in memory.
   ///
-  /// Should be freed to release allocated memory.
+  /// **IMPORTANT**: Should be freed to release allocated memory.
   Tag(this._tagPointer);
 
   /// Lookups tag object for provided [oid] in a [repo]sitory.
   ///
-  /// Should be freed to release allocated memory.
+  /// **IMPORTANT**: Should be freed to release allocated memory.
   Tag.lookup({required Repository repo, required Oid oid}) {
     _tagPointer = bindings.lookup(
       repoPointer: repo.pointer,
@@ -31,9 +31,24 @@ class Tag {
   ///
   /// The [message] will not be cleaned up.
   ///
-  /// The tag name will be checked for validity. You must avoid the characters
+  /// The [tagName] will be checked for validity. You must avoid the characters
   /// '~', '^', ':', '\', '?', '[', and '*', and the sequences ".." and "@{" which have
   /// special meaning to revparse.
+  ///
+  /// [repo] is the repository where to store the tag.
+  ///
+  /// [tagName] is the name for the tag. This name is validated for consistency. It should
+  /// also not conflict with an already existing tag name.
+  ///
+  /// [target] is the object to which this tag points. This object must belong to the given [repo].
+  ///
+  /// [targetType] is one of the [GitObject] basic types: commit, tree, blob or tag.
+  ///
+  /// [tagger] is the signature of the tagger for this tag, and of the tagging time.
+  ///
+  /// [message] is the full message for this tag.
+  ///
+  /// [force] determines whether existing reference with the same [tagName] should be replaced.
   ///
   /// Throws a [LibGit2Error] if error occured.
   static Oid create({
@@ -81,7 +96,7 @@ class Tag {
     return bindings.list(repo.pointer);
   }
 
-  /// Get the tagged object (commit, tree, blob, tag) of a tag.
+  /// Tagged object (commit, tree, blob, tag) of a tag.
   ///
   /// This method performs a repository lookup for the given object and returns it.
   ///
@@ -110,16 +125,16 @@ class Tag {
     }
   }
 
-  /// Returns the [Oid] of a tag.
+  /// [Oid] of a tag.
   Oid get oid => Oid(bindings.id(_tagPointer));
 
-  /// Returns the name of a tag.
+  /// Name of a tag.
   String get name => bindings.name(_tagPointer);
 
-  /// Returns the message of a tag.
+  /// Message of a tag.
   String get message => bindings.message(_tagPointer);
 
-  /// Returns the tagger (author) of a tag if there is one.
+  /// Tagger (author) of a tag if there is one.
   Signature? get tagger {
     final sigPointer = bindings.tagger(_tagPointer);
     if (sigPointer != nullptr) {

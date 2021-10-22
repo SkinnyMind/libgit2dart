@@ -4,19 +4,21 @@ import 'bindings/libgit2_bindings.dart';
 import 'bindings/remote.dart' as bindings;
 
 class Remote {
-  /// Initializes a new instance of [Remote] class by looking up remote with
-  /// provided [name] in a [repo]sitory.
+  /// Lookups remote with provided [name] in a [repo]sitory.
   ///
-  /// The name will be checked for validity.
+  /// The [name] will be checked for validity.
+  ///
+  /// **IMPORTANT**: Should be freed to release allocated memory.
   ///
   /// Throws a [LibGit2Error] if error occured.
   Remote.lookup({required Repository repo, required String name}) {
     _remotePointer = bindings.lookup(repoPointer: repo.pointer, name: name);
   }
 
-  /// Initializes a new instance of [Remote] class by adding a remote with
-  /// provided [name] and [url] to the [repo]sitory's configuration with the
-  /// default [fetch] refspec if none provided .
+  /// Adds remote with provided [name] and [url] to the [repo]sitory's
+  /// configuration with the default [fetch] refspec if none provided.
+  ///
+  /// **IMPORTANT**: Should be freed to release allocated memory.
   ///
   /// Throws a [LibGit2Error] if error occured.
   Remote.create({
@@ -46,7 +48,7 @@ class Remote {
   /// Pointer to memory address for allocated remote object.
   Pointer<git_remote> get pointer => _remotePointer;
 
-  /// Deletes an existing persisted remote.
+  /// Deletes an existing persisted remote with provided [name].
   ///
   /// All remote-tracking branches and configuration settings for the remote will be removed.
   ///
@@ -55,13 +57,13 @@ class Remote {
     bindings.delete(repoPointer: repo.pointer, name: name);
   }
 
-  /// Gives the remote a new name.
+  /// Renames remote with provided [oldName].
   ///
   /// Returns list of non-default refspecs that cannot be renamed.
   ///
   /// All remote-tracking branches and configuration settings for the remote are updated.
   ///
-  /// The new name will be checked for validity.
+  /// The [newName] will be checked for validity.
   ///
   /// No loaded instances of a the remote with the old name will change their name or
   /// their list of refspecs.
@@ -84,7 +86,7 @@ class Remote {
     return bindings.list(repo.pointer);
   }
 
-  /// Sets the remote's url in the configuration.
+  /// Sets the [remote]'s [url] in the configuration.
   ///
   /// Remote objects already in memory will not be affected. This assumes the common
   /// case of a single-url remote and will otherwise return an error.
@@ -102,7 +104,7 @@ class Remote {
     );
   }
 
-  /// Sets the remote's url for pushing in the configuration.
+  /// Sets the [remote]'s [url] for pushing in the configuration.
   ///
   /// Remote objects already in memory will not be affected. This assumes the common
   /// case of a single-url remote and will otherwise return an error.
@@ -120,7 +122,7 @@ class Remote {
     );
   }
 
-  /// Adds a fetch refspec to the remote's configuration.
+  /// Adds a fetch [refspec] to the [remote]'s configuration.
   ///
   /// No loaded remote instances will be affected.
   ///
@@ -137,7 +139,7 @@ class Remote {
     );
   }
 
-  /// Adds a push refspec to the remote's configuration.
+  /// Adds a push [refspec] to the [remote]'s configuration.
   ///
   /// No loaded remote instances will be affected.
   ///
@@ -154,21 +156,21 @@ class Remote {
     );
   }
 
-  /// Returns the remote's name.
+  /// Remote's name.
   String get name => bindings.name(_remotePointer);
 
-  /// Returns the remote's url.
+  /// Remote's url.
   String get url => bindings.url(_remotePointer);
 
-  /// Returns the remote's url for pushing.
+  /// Remote's url for pushing.
   ///
   /// Returns empty string if no special url for pushing is set.
   String get pushUrl => bindings.pushUrl(_remotePointer);
 
-  /// Returns the number of refspecs for a remote.
+  /// Number of refspecs for a remote.
   int get refspecCount => bindings.refspecCount(_remotePointer);
 
-  /// Returns a [Refspec] object from the remote at provided position.
+  /// [Refspec] object from the remote at provided position.
   Refspec getRefspec(int index) {
     return Refspec(bindings.getRefspec(
       remotePointer: _remotePointer,
@@ -176,16 +178,18 @@ class Remote {
     ));
   }
 
-  /// Returns the remote's list of fetch refspecs.
+  /// List of fetch refspecs.
   List<String> get fetchRefspecs => bindings.fetchRefspecs(_remotePointer);
 
-  /// Get the remote's list of push refspecs.
+  /// List of push refspecs.
   List<String> get pushRefspecs => bindings.pushRefspecs(_remotePointer);
 
   /// Returns the remote repository's reference list and their associated commit ids.
   ///
   /// [proxy] can be 'auto' to try to auto-detect the proxy from the git configuration or some
   /// specified url. By default connection isn't done through proxy.
+  ///
+  /// [callbacks] is the combination of callback functions from [Callbacks] object.
   ///
   /// Returned map keys:
   /// - `local` is true if remote head is available locally, false otherwise.
@@ -213,10 +217,16 @@ class Remote {
 
   /// Downloads new data and updates tips.
   ///
+  /// [refspecs] is the list of refspecs to use for this fetch. Defaults to the base refspecs.
+  ///
+  /// [reflogMessage] is the message to insert into the reflogs. Default is "fetch".
+  ///
+  /// [prune] determines whether to perform a prune after the fetch.
+  ///
   /// [proxy] can be 'auto' to try to auto-detect the proxy from the git configuration or some
   /// specified url. By default connection isn't done through proxy.
   ///
-  /// [reflogMessage] is the message to insert into the reflogs. Default is "fetch".
+  /// [callbacks] is the combination of callback functions from [Callbacks] object.
   ///
   /// Throws a [LibGit2Error] if error occured.
   TransferProgress fetch({
@@ -239,9 +249,16 @@ class Remote {
 
   /// Performs a push.
   ///
+  /// [refspecs] is the list of refspecs to use for pushing. Defaults to the configured refspecs.
+  ///
+  /// [proxy] can be 'auto' to try to auto-detect the proxy from the git configuration or some
+  /// specified url. By default connection isn't done through proxy.
+  ///
+  /// [callbacks] is the combination of callback functions from [Callbacks] object.
+  ///
   /// Throws a [LibGit2Error] if error occured.
   void push({
-    required List<String> refspecs,
+    List<String> refspecs = const [],
     String? proxy,
     Callbacks callbacks = const Callbacks(),
   }) {
@@ -254,6 +271,8 @@ class Remote {
   }
 
   /// Prunes tracking refs that are no longer present on remote.
+  ///
+  /// [callbacks] is the combination of callback functions from [Callbacks] object.
   ///
   /// Throws a [LibGit2Error] if error occured.
   void prune([Callbacks callbacks = const Callbacks()]) {
@@ -282,25 +301,25 @@ class TransferProgress {
   /// Pointer to memory address for allocated transfer progress object.
   final Pointer<git_indexer_progress> _transferProgressPointer;
 
-  /// Returns total number of objects to download.
+  /// Total number of objects to download.
   int get totalObjects => _transferProgressPointer.ref.total_objects;
 
-  /// Returns number of objects that have been indexed.
+  /// Number of objects that have been indexed.
   int get indexedObjects => _transferProgressPointer.ref.indexed_objects;
 
-  /// Returns number of objects that have been downloaded.
+  /// Number of objects that have been downloaded.
   int get receivedObjects => _transferProgressPointer.ref.received_objects;
 
-  /// Returns number of local objects that have been used to fix the thin pack.
+  /// Number of local objects that have been used to fix the thin pack.
   int get localObjects => _transferProgressPointer.ref.local_objects;
 
-  /// Returns total number of deltas in the pack.
+  /// Total number of deltas in the pack.
   int get totalDeltas => _transferProgressPointer.ref.total_deltas;
 
-  /// Returns number of deltas that have been indexed.
+  /// Number of deltas that have been indexed.
   int get indexedDeltas => _transferProgressPointer.ref.indexed_deltas;
 
-  /// Returns number of bytes received up to now.
+  /// Number of bytes received up to now.
   int get receivedBytes => _transferProgressPointer.ref.received_bytes;
 
   @override

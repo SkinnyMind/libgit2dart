@@ -6,6 +6,8 @@ import 'bindings/reflog.dart' as bindings;
 
 class RefLog with IterableMixin<RefLogEntry> {
   /// Initializes a new instance of [RefLog] class from provided [Reference].
+  ///
+  /// **IMPORTANT**: Should be freed to release allocated memory.
   RefLog(Reference ref) {
     _reflogPointer = bindings.read(
       repoPointer: ref.owner.pointer,
@@ -16,10 +18,10 @@ class RefLog with IterableMixin<RefLogEntry> {
   /// Pointer to memory address for allocated reflog object.
   late final Pointer<git_reflog> _reflogPointer;
 
-  /// Lookup an entry by its index.
+  /// Lookups an entry by its index.
   ///
-  /// Requesting the reflog entry with an index of 0 (zero) will return
-  /// the most recently created entry.
+  /// Requesting the reflog entry with an index of 0 will return the most
+  /// recently created entry.
   RefLogEntry operator [](int index) {
     return RefLogEntry(bindings.getByIndex(
       reflogPointer: _reflogPointer,
@@ -35,16 +37,17 @@ class RefLog with IterableMixin<RefLogEntry> {
 }
 
 class RefLogEntry {
-  /// Initializes a new instance of [RefLogEntry] class.
+  /// Initializes a new instance of [RefLogEntry] class from provided
+  /// pointer to RefLogEntry object in memory.
   const RefLogEntry(this._entryPointer);
 
   /// Pointer to memory address for allocated reflog entry object.
   final Pointer<git_reflog_entry> _entryPointer;
 
-  /// Returns the log message.
+  /// Log message.
   String get message => bindings.entryMessage(_entryPointer);
 
-  /// Returns the committer of this entry.
+  /// Committer of this entry.
   Signature get committer => Signature(bindings.entryCommiter(_entryPointer));
 
   @override

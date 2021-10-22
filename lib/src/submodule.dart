@@ -4,30 +4,30 @@ import 'bindings/libgit2_bindings.dart';
 import 'bindings/submodule.dart' as bindings;
 
 class Submodule {
-  /// Initializes a new instance of [Submodule] class by looking up
-  /// submodule information by name or path.
+  /// Lookups submodule information by [name] or path (they are usually the same).
   ///
-  /// Given either the submodule name or path (they are usually the same), this
-  /// returns a structure describing the submodule.
-  ///
-  /// You must call [free] when done with the submodule.
+  /// **IMPORTANT**: Should be freed to release allocated memory.
   ///
   /// Throws a [LibGit2Error] if error occured.
-  Submodule.lookup({required Repository repo, required String submodule}) {
+  Submodule.lookup({required Repository repo, required String name}) {
     _submodulePointer = bindings.lookup(
       repoPointer: repo.pointer,
-      name: submodule,
+      name: name,
     );
   }
 
   /// Adds a submodule to the index.
   ///
-  /// [url] is URL for the submodule's remote.
+  /// [url] is the URL for the submodule's remote.
   ///
-  /// [path] is path at which the submodule should be created.
+  /// [path] is the path at which the submodule should be created.
   ///
-  /// [link] determines if workdir should contain a gitlink to the repo in `.git/modules`
+  /// [useGitLink] determines if workdir should contain a gitlink to the repo in `.git/modules`
   /// vs. repo directly in workdir. Default is true.
+  ///
+  /// [callbacks] is the combination of callback functions from [Callbacks] object.
+  ///
+  /// **IMPORTANT**: Should be freed to release allocated memory.
   ///
   /// Throws a [LibGit2Error] if error occured.
   Submodule.add({
@@ -55,7 +55,7 @@ class Submodule {
   /// Copies submodule info into ".git/config" file.
   ///
   /// Just like `git submodule init`, this copies information about the
-  /// submodule into `.git/config`.
+  /// submodule into ".git/config".
   ///
   /// By default, existing entries will not be overwritten, but setting [overwrite]
   /// to true forces them to be updated.
@@ -112,9 +112,11 @@ class Submodule {
 
   /// Opens the repository for a submodule.
   ///
-  /// This is a newly opened repository object. The caller is responsible for freeing it
-  /// when done. Multiple calls to this function will return distinct git repository objects.
+  /// Multiple calls to this function will return distinct git repository objects.
+  ///
   /// This will only work if the submodule is checked out into the working directory.
+  ///
+  /// **IMPORTANT**: Returned [Repository] object should be freed to release allocated memory.
   ///
   /// Throws a [LibGit2Error] if error occured.
   Repository open() {
@@ -158,16 +160,16 @@ class Submodule {
     bindings.reload(submodulePointer: _submodulePointer, force: force);
   }
 
-  /// Returns the name of submodule.
+  /// Name of submodule.
   String get name => bindings.name(_submodulePointer);
 
-  /// Returns the path to the submodule.
+  /// Path to the submodule.
   ///
   /// The path is almost always the same as the submodule name, but the two
   /// are actually not required to match.
   String get path => bindings.path(_submodulePointer);
 
-  /// Returns the URL for the submodule.
+  /// URL for the submodule.
   String get url => bindings.url(_submodulePointer);
 
   /// Sets the URL for the submodule in the configuration.
@@ -182,7 +184,7 @@ class Submodule {
     );
   }
 
-  /// Returns the branch for the submodule.
+  /// Branch for the submodule.
   String get branch => bindings.branch(_submodulePointer);
 
   /// Sets the branch for the submodule in the configuration.
@@ -197,22 +199,21 @@ class Submodule {
     );
   }
 
-  /// Returns the [Oid] for the submodule in the current HEAD tree or
-  /// null if submodule is not in the HEAD.
+  /// [Oid] for the submodule in the current HEAD tree or null if submodule is not
+  /// in the HEAD.
   Oid? get headOid {
     final result = bindings.headId(_submodulePointer);
     return result == null ? null : Oid(result);
   }
 
-  /// Returns the [Oid] for the submodule in the index or null if submodule
-  /// is not in the index.
+  /// [Oid] for the submodule in the index or null if submodule is not in the index.
   Oid? get indexOid {
     final result = bindings.indexId(_submodulePointer);
     return result == null ? null : Oid(result);
   }
 
-  /// Returns the [Oid] for the submodule in the current working directory or null if
-  /// submodule is not checked out.
+  /// [Oid] for the submodule in the current working directory or null if submodule
+  /// is not checked out.
   ///
   /// This returns the [Oid] that corresponds to looking up `HEAD` in the checked out
   /// submodule. If there are pending changes in the index or anything else, this
@@ -223,7 +224,7 @@ class Submodule {
     return result == null ? null : Oid(result);
   }
 
-  /// Returns the ignore rule that will be used for the submodule.
+  /// Ignore rule that will be used for the submodule.
   GitSubmoduleIgnore get ignore {
     final ruleInt = bindings.ignore(_submodulePointer);
     return GitSubmoduleIgnore.values.singleWhere((e) => ruleInt == e.value);
@@ -237,7 +238,7 @@ class Submodule {
     bindings.setIgnore(repoPointer: repo, name: name, ignore: ignore.value);
   }
 
-  /// Returns the update rule that will be used for the submodule.
+  /// Update rule that will be used for the submodule.
   ///
   /// This value controls the behavior of the `git submodule update` command.
   GitSubmoduleUpdate get updateRule {

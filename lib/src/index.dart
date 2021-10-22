@@ -10,7 +10,7 @@ class Index with IterableMixin<IndexEntry> {
   /// Initializes a new instance of [Index] class from provided
   /// pointer to index object in memory.
   ///
-  /// Should be freed with `free()` to release allocated memory.
+  /// **IMPORTANT**: Should be freed to release allocated memory.
   const Index(this._indexPointer);
 
   final Pointer<git_index> _indexPointer;
@@ -20,7 +20,8 @@ class Index with IterableMixin<IndexEntry> {
 
   /// Returns index entry located at provided 0-based position or string path.
   ///
-  /// Throws error if position is out of bounds or entry isn't found at path.
+  /// Throws [RangeError] when provided [value] is outside of valid range or
+  /// [ArgumentError] if nothing found for provided path.
   IndexEntry operator [](Object value) {
     if (value is int) {
       return IndexEntry(bindings.getByIndex(
@@ -36,7 +37,7 @@ class Index with IterableMixin<IndexEntry> {
     }
   }
 
-  /// Checks whether entry at provided [path] is in the git index or not.
+  /// Whether entry at provided [path] is in the git index or not.
   bool find(String path) {
     return bindings.find(
       indexPointer: _indexPointer,
@@ -44,7 +45,7 @@ class Index with IterableMixin<IndexEntry> {
     );
   }
 
-  /// Checks if the index contains entries representing file conflicts.
+  /// Whether index contains entries representing file conflicts.
   bool get hasConflicts => bindings.hasConflicts(_indexPointer);
 
   /// Returns map of conflicts in the index with key as conflicted file path and
@@ -112,7 +113,7 @@ class Index with IterableMixin<IndexEntry> {
   ///
   /// This method will fail in bare index instances.
   ///
-  /// The `pathspec` is a list of file names or shell glob patterns that will be matched
+  /// The [pathspec] is a list of file names or shell glob patterns that will be matched
   /// against files in the repository's working directory. Each file that matches will be
   /// added to the index (either updating an existing entry or adding a new entry).
   ///
@@ -123,11 +124,11 @@ class Index with IterableMixin<IndexEntry> {
 
   /// Updates the contents of an existing index object in memory by reading from the hard disk.
   ///
-  /// If force is true (default), this performs a "hard" read that discards in-memory changes and
+  /// If [force] is true (default), this performs a "hard" read that discards in-memory changes and
   /// always reloads the on-disk index data. If there is no on-disk version,
   /// the index will be cleared.
   ///
-  /// If force is false, this does a "soft" read that reloads the index data from disk only
+  /// If [force] is false, this does a "soft" read that reloads the index data from disk only
   /// if it has changed since the last time it was loaded. Purely in-memory index data
   /// will be untouched. Be aware: if there are changes on disk, unwritten in-memory changes
   /// are discarded.
@@ -147,11 +148,12 @@ class Index with IterableMixin<IndexEntry> {
   ///
   /// This method will scan the index and write a representation of its current state back to disk;
   /// it recursively creates tree objects for each of the subtrees stored in the index, but only
-  /// returns the [Oid] of the root tree. This is the OID that can be used e.g. to create a commit.
+  /// returns the [Oid] of the root tree. This is the oid that can be used e.g. to create a commit.
   ///
   /// The index must not contain any file in conflict.
   ///
-  /// Throws a [LibGit2Error] if error occured or there is no associated repository and no [repo] passed.
+  /// Throws a [LibGit2Error] if error occured or there is no associated repository
+  /// and no [repo] passed.
   Oid writeTree([Repository? repo]) {
     if (repo == null) {
       return Oid(bindings.writeTree(_indexPointer));
@@ -163,19 +165,29 @@ class Index with IterableMixin<IndexEntry> {
     }
   }
 
-  /// Removes an entry from the index.
+  /// Removes an entry from the index at provided [path] relative to repository working
+  /// directory with optional [stage].
   ///
   /// Throws a [LibGit2Error] if error occured.
   void remove(String path, [int stage = 0]) =>
       bindings.remove(indexPointer: _indexPointer, path: path, stage: stage);
 
-  /// Removes all matching index entries.
+  /// Removes all matching index entries at provided list of [path]s relative to repository
+  /// working directory.
   ///
   /// Throws a [LibGit2Error] if error occured.
   void removeAll(List<String> path) =>
       bindings.removeAll(indexPointer: _indexPointer, pathspec: path);
 
   /// Creates a diff between the repository index and the workdir directory.
+  ///
+  /// [flags] is a combination of [GitDiff] flags. Defaults to [GitDiff.normal].
+  ///
+  /// [contextLines] is the number of unchanged lines that define the boundary
+  /// of a hunk (and to display before and after). Defaults to 3.
+  ///
+  /// [interhunkLines] is the maximum number of unchanged lines between hunk
+  /// boundaries before the hunks will be merged into one. Defaults to 0.
   Diff diffToWorkdir({
     Set<GitDiff> flags = const {GitDiff.normal},
     int contextLines = 3,
@@ -191,6 +203,16 @@ class Index with IterableMixin<IndexEntry> {
   }
 
   /// Creates a diff between a tree and repository index.
+  ///
+  /// [tree] is the [Tree] object to diff from.
+  ///
+  /// [flags] is a combination of [GitDiff] flags. Defaults to [GitDiff.normal].
+  ///
+  /// [contextLines] is the number of unchanged lines that define the boundary
+  /// of a hunk (and to display before and after). Defaults to 3.
+  ///
+  /// [interhunkLines] is the maximum number of unchanged lines between hunk
+  /// boundaries before the hunks will be merged into one. Defaults to 0.
   Diff diffToTree({
     required Tree tree,
     Set<GitDiff> flags = const {GitDiff.normal},
@@ -226,23 +248,18 @@ class IndexEntry {
   /// Pointer to memory address for allocated index entry object.
   Pointer<git_index_entry> get pointer => _indexEntryPointer;
 
-  /// Returns inique identity of the index entry.
+  /// [Oid] of the index entry.
   Oid get oid => Oid.fromRaw(_indexEntryPointer.ref.id);
 
-  /// Sets inique identity of the index entry.
   set oid(Oid oid) => _indexEntryPointer.ref.id = oid.pointer.ref;
 
-  /// Returns path of the index entry.
+  /// Path of the index entry.
   String get path => _indexEntryPointer.ref.path.cast<Utf8>().toDartString();
 
-  /// Sets path of the index entry.
   set path(String path) =>
       _indexEntryPointer.ref.path = path.toNativeUtf8().cast<Int8>();
 
-  /// Returns id of the index entry as sha hex.
-  String get sha => _oidToHex(_indexEntryPointer.ref.id);
-
-  /// Returns the UNIX file attributes of a index entry.
+  /// UNIX file attributes of a index entry.
   GitFilemode get mode {
     return GitFilemode.values.singleWhere(
       (mode) => _indexEntryPointer.ref.mode == mode.value,
@@ -255,14 +272,6 @@ class IndexEntry {
   @override
   String toString() {
     return 'IndexEntry{oid: $oid, path: $path, mode: $mode}';
-  }
-
-  String _oidToHex(git_oid oid) {
-    var hex = StringBuffer();
-    for (var i = 0; i < 20; i++) {
-      hex.write(oid.id[i].toRadixString(16));
-    }
-    return hex.toString();
   }
 }
 
