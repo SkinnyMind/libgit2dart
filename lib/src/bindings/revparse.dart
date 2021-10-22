@@ -91,7 +91,7 @@ List revParseExt({
     calloc.free(referenceOut);
     throw LibGit2Error(libgit2.git_error_last());
   } else {
-    var result = [];
+    var result = <Pointer>[];
     result.add(objectOut.value);
     if (referenceOut.value != nullptr) {
       result.add(referenceOut.value);

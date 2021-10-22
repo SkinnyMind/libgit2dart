@@ -30,7 +30,7 @@ void main() {
 
   group('Worktree', () {
     test('successfully creates worktree at provided path', () {
-      expect(repo.worktrees, []);
+      expect(repo.worktrees, <String>[]);
 
       final worktree = repo.createWorktree(
         name: worktreeName,
@@ -58,7 +58,7 @@ void main() {
       final head = repo.revParseSingle('HEAD');
       final worktreeBranch = repo.createBranch(name: 'v1', target: head);
       final ref = repo.lookupReference('refs/heads/v1');
-      expect(repo.worktrees, []);
+      expect(repo.worktrees, <String>[]);
 
       final worktree = repo.createWorktree(
         name: worktreeName,
@@ -75,7 +75,7 @@ void main() {
       worktreeDir.deleteSync(recursive: true);
       worktree.prune();
 
-      expect(repo.worktrees, []);
+      expect(repo.worktrees, <String>[]);
       expect(worktreeBranch.isCheckedOut, false);
       expect(branches.any((branch) => branch.name == 'v1'), true);
 
@@ -162,7 +162,7 @@ void main() {
     });
 
     test('successfully prunes worktree', () {
-      expect(repo.worktrees, []);
+      expect(repo.worktrees, <String>[]);
 
       final worktree = repo.createWorktree(
         name: worktreeName,
@@ -177,7 +177,7 @@ void main() {
       expect(worktree.isValid, false);
 
       worktree.prune();
-      expect(repo.worktrees, []);
+      expect(repo.worktrees, <String>[]);
 
       worktree.free();
     });

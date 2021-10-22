@@ -46,7 +46,7 @@ void main() {
     });
 
     test('returns a list of remote branches', () {
-      expect(repo.branchesRemote, []);
+      expect(repo.branchesRemote, <Branch>[]);
     });
 
     test('throws when trying to return list and error occurs', () {

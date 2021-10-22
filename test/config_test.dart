@@ -199,7 +199,7 @@ void main() {
       });
 
       test('returns empty list if multivar not found', () {
-        expect(config.multivar(variable: 'not.there'), []);
+        expect(config.multivar(variable: 'not.there'), <String>[]);
       });
     });
 
@@ -249,7 +249,7 @@ void main() {
             variable: 'core.gitproxy',
             regexp: 'for kernel.org\$',
           ),
-          [],
+          <String>[],
         );
       });
 
@@ -265,7 +265,7 @@ void main() {
 
         config.deleteMultivar(variable: 'core.gitproxy', regexp: '');
 
-        expect(config.multivar(variable: 'core.gitproxy'), []);
+        expect(config.multivar(variable: 'core.gitproxy'), <String>[]);
       });
     });
 

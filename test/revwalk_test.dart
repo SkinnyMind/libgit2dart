@@ -148,7 +148,7 @@ void main() {
       walker.reset();
       final commits = walker.walk();
 
-      expect(commits, []);
+      expect(commits, <Commit>[]);
 
       walker.free();
     });

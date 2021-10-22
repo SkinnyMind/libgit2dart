@@ -37,7 +37,7 @@ void head({
   );
 
   for (final p in pathPointers as List) {
-    calloc.free(p);
+    calloc.free(p as Pointer);
   }
   calloc.free(strArray as Pointer);
   calloc.free(optsC);
@@ -72,7 +72,7 @@ void index({
   );
 
   for (final p in pathPointers as List) {
-    calloc.free(p);
+    calloc.free(p as Pointer);
   }
   calloc.free(strArray as Pointer);
   calloc.free(optsC);
@@ -109,7 +109,7 @@ void tree({
   );
 
   for (final p in pathPointers as List) {
-    calloc.free(p);
+    calloc.free(p as Pointer);
   }
   calloc.free(strArray as Pointer);
   calloc.free(optsC);

@@ -6,5 +6,8 @@ linter:
     - directives_ordering
     - lines_longer_than_80_chars
 analyzer:
+  strong-mode:
+    implicit-casts: false
+    implicit-dynamic: false
   exclude:
     - lib/src/bindings/libgit2_bindings.dart

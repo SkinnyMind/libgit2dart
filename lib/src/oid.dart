@@ -58,28 +58,36 @@ class Oid {
             0);
   }
 
-  bool operator <(other) {
-    return (other is Oid) &&
-        (bindings.compare(aPointer: _oidPointer, bPointer: other._oidPointer) ==
-            -1);
+  bool operator <(Oid other) {
+    return bindings.compare(
+          aPointer: _oidPointer,
+          bPointer: other._oidPointer,
+        ) ==
+        -1;
   }
 
-  bool operator <=(other) {
-    return (other is Oid) &&
-        (bindings.compare(aPointer: _oidPointer, bPointer: other._oidPointer) ==
-            -1);
+  bool operator <=(Oid other) {
+    return bindings.compare(
+          aPointer: _oidPointer,
+          bPointer: other._oidPointer,
+        ) ==
+        -1;
   }
 
-  bool operator >(other) {
-    return (other is Oid) &&
-        (bindings.compare(aPointer: _oidPointer, bPointer: other._oidPointer) ==
-            1);
+  bool operator >(Oid other) {
+    return bindings.compare(
+          aPointer: _oidPointer,
+          bPointer: other._oidPointer,
+        ) ==
+        1;
   }
 
-  bool operator >=(other) {
-    return (other is Oid) &&
-        (bindings.compare(aPointer: _oidPointer, bPointer: other._oidPointer) ==
-            1);
+  bool operator >=(Oid other) {
+    return bindings.compare(
+          aPointer: _oidPointer,
+          bPointer: other._oidPointer,
+        ) ==
+        1;
   }
 
   @override // coverage:ignore-line

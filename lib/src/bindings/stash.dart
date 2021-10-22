@@ -70,7 +70,7 @@ void apply({
   final error = libgit2.git_stash_apply(repoPointer, index, options);
 
   for (final p in pathPointers as List) {
-    calloc.free(p);
+    calloc.free(p as Pointer);
   }
   calloc.free(strArray as Pointer);
   calloc.free(optsC);
@@ -125,7 +125,7 @@ void pop({
   final error = libgit2.git_stash_pop(repoPointer, index, options);
 
   for (final p in pathPointers as List) {
-    calloc.free(p);
+    calloc.free(p as Pointer);
   }
   calloc.free(strArray as Pointer);
   calloc.free(optsC);

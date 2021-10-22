@@ -648,7 +648,7 @@ class Repository {
   Index revertCommit({
     required Commit revertCommit,
     required Commit ourCommit,
-    mainline = 0,
+    int mainline = 0,
   }) {
     return Index(commit_bindings.revertCommit(
       repoPointer: _repoPointer,
@@ -986,7 +986,7 @@ class Repository {
     head.free();
     ref.free();
 
-    return [analysisSet, mergePreference];
+    return <Object>[analysisSet, mergePreference];
   }
 
   /// Merges the given commit [oid] into HEAD, writing the results into the
