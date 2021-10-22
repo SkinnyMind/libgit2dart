@@ -1,8 +1,10 @@
 import 'dart:ffi';
+
 import 'package:ffi/ffi.dart';
+
 import '../error.dart';
-import 'libgit2_bindings.dart';
 import '../util.dart';
+import 'libgit2_bindings.dart';
 
 /// Fill a list with all the tags in the repository.
 ///

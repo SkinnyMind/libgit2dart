@@ -1,11 +1,13 @@
 import 'dart:ffi';
+
 import 'package:ffi/ffi.dart';
+
 import '../callbacks.dart';
 import '../error.dart';
 import '../remote.dart';
 import '../repository.dart';
-import 'libgit2_bindings.dart';
 import '../util.dart';
+import 'libgit2_bindings.dart';
 import 'remote_callbacks.dart';
 
 /// Attempt to open an already-existing repository at [path].

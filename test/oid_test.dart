@@ -1,7 +1,9 @@
-import 'dart:io';
 import 'dart:ffi';
-import 'package:test/test.dart';
+import 'dart:io';
+
 import 'package:libgit2dart/libgit2dart.dart';
+import 'package:test/test.dart';
+
 import 'helpers/util.dart';
 
 void main() {

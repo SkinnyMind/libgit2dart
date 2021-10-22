@@ -1,7 +1,9 @@
 import 'dart:ffi';
+
 import 'package:libgit2dart/libgit2dart.dart';
-import 'bindings/libgit2_bindings.dart';
+
 import 'bindings/commit.dart' as bindings;
+import 'bindings/libgit2_bindings.dart';
 import 'bindings/tree.dart' as tree_bindings;
 
 class Commit {

@@ -1,8 +1,10 @@
 import 'dart:ffi';
+
 import 'package:libgit2dart/libgit2dart.dart';
+
+import 'bindings/diff.dart' as diff_bindings;
 import 'bindings/libgit2_bindings.dart';
 import 'bindings/tree.dart' as bindings;
-import 'bindings/diff.dart' as diff_bindings;
 
 class Tree {
   /// Initializes a new instance of [Tree] class from provided pointer to

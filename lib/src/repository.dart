@@ -1,18 +1,20 @@
 import 'dart:ffi';
+
 import 'package:ffi/ffi.dart';
 import 'package:libgit2dart/libgit2dart.dart';
+
+import 'bindings/attr.dart' as attr_bindings;
+import 'bindings/checkout.dart' as checkout_bindings;
+import 'bindings/commit.dart' as commit_bindings;
+import 'bindings/describe.dart' as describe_bindings;
+import 'bindings/diff.dart' as diff_bindings;
+import 'bindings/graph.dart' as graph_bindings;
 import 'bindings/libgit2_bindings.dart';
-import 'bindings/repository.dart' as bindings;
 import 'bindings/merge.dart' as merge_bindings;
 import 'bindings/object.dart' as object_bindings;
-import 'bindings/status.dart' as status_bindings;
-import 'bindings/commit.dart' as commit_bindings;
-import 'bindings/checkout.dart' as checkout_bindings;
+import 'bindings/repository.dart' as bindings;
 import 'bindings/reset.dart' as reset_bindings;
-import 'bindings/diff.dart' as diff_bindings;
-import 'bindings/attr.dart' as attr_bindings;
-import 'bindings/graph.dart' as graph_bindings;
-import 'bindings/describe.dart' as describe_bindings;
+import 'bindings/status.dart' as status_bindings;
 import 'util.dart';
 
 class Repository {

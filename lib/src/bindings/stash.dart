@@ -1,11 +1,13 @@
 import 'dart:ffi';
+
 import 'package:ffi/ffi.dart';
+
 import '../error.dart';
 import '../oid.dart';
 import '../stash.dart';
+import '../util.dart';
 import 'checkout.dart' as checkout_bindings;
 import 'libgit2_bindings.dart';
-import '../util.dart';
 
 /// Save the local modifications to a new stash.
 ///

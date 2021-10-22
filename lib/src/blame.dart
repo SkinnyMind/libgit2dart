@@ -1,9 +1,11 @@
 import 'dart:collection';
 import 'dart:ffi';
+
 import 'package:ffi/ffi.dart';
 import 'package:libgit2dart/libgit2dart.dart';
-import 'bindings/libgit2_bindings.dart';
+
 import 'bindings/blame.dart' as bindings;
+import 'bindings/libgit2_bindings.dart';
 
 class Blame with IterableMixin<BlameHunk> {
   /// Returns the blame for a single file.

@@ -1,8 +1,10 @@
 import 'dart:ffi';
+
 import 'package:ffi/ffi.dart';
+
 import '../error.dart';
-import 'libgit2_bindings.dart';
 import '../util.dart';
+import 'libgit2_bindings.dart';
 
 /// Updates files in the index and the working tree to match the content of the commit
 /// pointed at by HEAD.

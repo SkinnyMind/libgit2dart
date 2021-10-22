@@ -1,9 +1,11 @@
 import 'dart:ffi';
+
 import 'package:ffi/ffi.dart';
 import 'package:libgit2dart/libgit2dart.dart';
-import 'libgit2_bindings.dart';
+
 import '../error.dart';
 import '../util.dart';
+import 'libgit2_bindings.dart';
 
 /// Add a new working tree.
 ///

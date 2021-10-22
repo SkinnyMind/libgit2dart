@@ -1,6 +1,7 @@
 import 'dart:io';
-import 'package:test/test.dart';
+
 import 'package:libgit2dart/libgit2dart.dart';
+import 'package:test/test.dart';
 
 void main() {
   late Repository repo;

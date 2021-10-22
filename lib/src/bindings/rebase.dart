@@ -1,8 +1,10 @@
 import 'dart:ffi';
+
 import 'package:ffi/ffi.dart';
-import 'libgit2_bindings.dart';
+
 import '../error.dart';
 import '../util.dart';
+import 'libgit2_bindings.dart';
 
 /// Initializes a rebase operation to rebase the changes in [branchPointer] relative
 /// to [upstreamPointer] onto [ontoPointer] another branch. To begin the rebase process, call

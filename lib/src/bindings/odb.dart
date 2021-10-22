@@ -1,10 +1,12 @@
 import 'dart:ffi';
+
 import 'package:ffi/ffi.dart';
-import 'oid.dart' as oid_bindings;
+
 import '../error.dart';
 import '../oid.dart';
-import 'libgit2_bindings.dart';
 import '../util.dart';
+import 'libgit2_bindings.dart';
+import 'oid.dart' as oid_bindings;
 
 /// Create a new object database with no backends.
 ///

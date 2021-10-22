@@ -1,6 +1,7 @@
 import 'dart:ffi';
-import 'libgit2_bindings.dart';
+
 import '../util.dart';
+import 'libgit2_bindings.dart';
 
 /// Sets the current head to the specified commit oid and optionally resets the index
 /// and working tree to match.

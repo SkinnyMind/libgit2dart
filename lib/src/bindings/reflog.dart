@@ -1,7 +1,9 @@
 import 'dart:ffi';
+
 import 'package:ffi/ffi.dart';
-import 'libgit2_bindings.dart';
+
 import '../util.dart';
+import 'libgit2_bindings.dart';
 
 /// Read the reflog for the given reference.
 ///

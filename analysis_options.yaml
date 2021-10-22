@@ -3,6 +3,7 @@ linter:
   rules:
     - prefer_const_constructors
     - sort_constructors_first
+    - directives_ordering
 analyzer:
   exclude:
     - lib/src/bindings/libgit2_bindings.dart

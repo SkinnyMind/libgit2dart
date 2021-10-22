@@ -1,7 +1,8 @@
 // coverage:ignore-file
 
-import 'dart:io';
 import 'dart:ffi';
+import 'dart:io';
+
 import 'bindings/libgit2_bindings.dart';
 
 DynamicLibrary loadLibrary() {

@@ -1,7 +1,9 @@
 import 'dart:ffi';
+
 import 'package:ffi/ffi.dart';
-import 'libgit2_bindings.dart';
+
 import '../util.dart';
+import 'libgit2_bindings.dart';
 
 /// Parse N characters of a hex formatted object id into a git_oid.
 Pointer<git_oid> fromStrN(String hex) {

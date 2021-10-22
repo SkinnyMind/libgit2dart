@@ -1,9 +1,11 @@
 import 'dart:ffi';
+
 import 'package:ffi/ffi.dart';
+
 import '../callbacks.dart';
-import 'libgit2_bindings.dart';
 import '../error.dart';
 import '../util.dart';
+import 'libgit2_bindings.dart';
 import 'remote_callbacks.dart';
 
 /// List of submodule paths.

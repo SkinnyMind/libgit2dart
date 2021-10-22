@@ -1,7 +1,9 @@
 import 'dart:ffi';
+
 import 'package:libgit2dart/libgit2dart.dart';
-import 'bindings/libgit2_bindings.dart';
+
 import 'bindings/blob.dart' as bindings;
+import 'bindings/libgit2_bindings.dart';
 import 'bindings/patch.dart' as patch_bindings;
 
 class Blob {

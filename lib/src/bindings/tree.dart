@@ -1,8 +1,10 @@
 import 'dart:ffi';
+
 import 'package:ffi/ffi.dart';
+
 import '../error.dart';
-import 'libgit2_bindings.dart';
 import '../util.dart';
+import 'libgit2_bindings.dart';
 
 /// Get the id of a tree.
 Pointer<git_oid> id(Pointer<git_tree> tree) => libgit2.git_tree_id(tree);

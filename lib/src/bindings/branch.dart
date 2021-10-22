@@ -1,10 +1,12 @@
 import 'dart:ffi';
+
 import 'package:ffi/ffi.dart';
 import 'package:libgit2dart/libgit2dart.dart';
-import 'libgit2_bindings.dart';
-import 'reference.dart' as reference_bindings;
+
 import '../error.dart';
 import '../util.dart';
+import 'libgit2_bindings.dart';
+import 'reference.dart' as reference_bindings;
 
 /// Return a list of branches.
 ///

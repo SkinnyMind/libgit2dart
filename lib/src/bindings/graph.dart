@@ -1,8 +1,10 @@
 import 'dart:ffi';
+
 import 'package:ffi/ffi.dart';
-import 'libgit2_bindings.dart';
+
 import '../error.dart';
 import '../util.dart';
+import 'libgit2_bindings.dart';
 
 /// Determine if a commit is the descendant of another commit.
 ///

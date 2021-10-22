@@ -1,9 +1,11 @@
 import 'dart:ffi';
+
 import 'package:ffi/ffi.dart';
-import 'libgit2_bindings.dart';
-import 'commit.dart' as commit_bindings;
+
 import '../error.dart';
 import '../util.dart';
+import 'commit.dart' as commit_bindings;
+import 'libgit2_bindings.dart';
 
 /// Allocate a new revision walker to iterate through a repo.
 ///

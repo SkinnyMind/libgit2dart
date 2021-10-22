@@ -1,14 +1,16 @@
 import 'dart:ffi';
+
 import 'package:ffi/ffi.dart';
 import 'package:libgit2dart/libgit2dart.dart';
 import 'package:libgit2dart/src/util.dart';
-import '../credentials.dart';
+
 import '../callbacks.dart';
-import '../repository.dart';
+import '../credentials.dart';
 import '../oid.dart';
 import '../remote.dart';
-import 'libgit2_bindings.dart';
+import '../repository.dart';
 import 'credentials.dart' as credentials_bindings;
+import 'libgit2_bindings.dart';
 
 class RemoteCallbacks {
   /// Callback function that reports transfer progress.

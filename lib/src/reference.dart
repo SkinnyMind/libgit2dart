@@ -1,9 +1,11 @@
 import 'dart:ffi';
+
 import 'package:libgit2dart/libgit2dart.dart';
+
 import 'bindings/libgit2_bindings.dart';
-import 'bindings/reference.dart' as bindings;
 import 'bindings/object.dart' as object_bindings;
 import 'bindings/refdb.dart' as refdb_bindings;
+import 'bindings/reference.dart' as bindings;
 import 'bindings/repository.dart' as repository_bindings;
 
 class Reference {
