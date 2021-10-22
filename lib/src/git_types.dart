@@ -70,8 +70,8 @@ class GitSort {
   /// this sorting mode can be combined with topological sorting.
   static const time = GitSort._(2, 'time');
 
-  /// Iterate through the repository contents in reverse order; this sorting mode
-  /// can be combined with any of the above.
+  /// Iterate through the repository contents in reverse order; this sorting
+  /// mode can be combined with any of the above.
   static const reverse = GitSort._(4, 'reverse');
 
   static const List<GitSort> values = [none, topological, time, reverse];
@@ -1336,8 +1336,8 @@ class GitFeature {
   final int _value;
   final String _name;
 
-  /// If set, libgit2 was built thread-aware and can be safely used from multiple
-  /// threads.
+  /// If set, libgit2 was built thread-aware and can be safely used from
+  /// multiple threads.
   static const threads = GitFeature._(1, 'threads');
 
   /// If set, libgit2 was built with and linked against a TLS implementation.
@@ -1596,7 +1596,8 @@ class GitSubmoduleUpdate {
   /// out branch of the submodule.
   static const merge = GitSubmoduleUpdate._(3, 'merge');
 
-  /// Do not update this submodule even when the commit in the superproject is updated.
+  /// Do not update this submodule even when the commit in the superproject is
+  /// updated.
   static const none = GitSubmoduleUpdate._(4, 'none');
 
   static const List<GitSubmoduleUpdate> values = [

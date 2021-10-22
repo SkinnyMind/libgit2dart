@@ -12,9 +12,9 @@ class Oid {
   /// pointer to Oid object in memory.
   Oid(this._oidPointer);
 
-  /// Initializes a new instance of [Oid] class by determining if an object can be found
-  /// in the ODB of [repo]sitory with provided hexadecimal [sha] string that is 40 characters
-  /// long or shorter.
+  /// Initializes a new instance of [Oid] class by determining if an object can
+  /// be found in the ODB of [repo]sitory with provided hexadecimal [sha]
+  /// string that is 40 characters long or shorter.
   ///
   /// Throws [ArgumentError] if provided [sha] hex string is not valid.
   ///
@@ -37,7 +37,8 @@ class Oid {
     }
   }
 
-  /// Initializes a new instance of [Oid] class from provided raw git_oid structure.
+  /// Initializes a new instance of [Oid] class from provided raw git_oid
+  /// structure.
   Oid.fromRaw(git_oid raw) {
     _oidPointer = bindings.fromRaw(raw.id);
   }

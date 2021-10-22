@@ -10,7 +10,8 @@ import 'libgit2_bindings.dart';
 /// Add a new working tree.
 ///
 /// Add a new working tree for the repository, that is create the required
-/// data structures inside the repository and check out the current HEAD at path.
+/// data structures inside the repository and check out the current HEAD at
+/// path.
 ///
 /// Throws a [LibGit2Error] if error occured.
 Pointer<git_worktree> create({
@@ -136,8 +137,8 @@ void unlock(Pointer<git_worktree> wt) => libgit2.git_worktree_unlock(wt);
 
 /// Check if worktree is valid.
 ///
-/// A valid worktree requires both the git data structures inside the linked parent
-/// repository and the linked working copy to be present.
+/// A valid worktree requires both the git data structures inside the linked
+/// parent repository and the linked working copy to be present.
 bool isValid(Pointer<git_worktree> wt) {
   return libgit2.git_worktree_validate(wt) == 0 ? true : false;
 }

@@ -12,11 +12,12 @@ import 'libgit2_bindings.dart';
 /// This revision walker uses a custom memory pool and an internal commit cache,
 /// so it is relatively expensive to allocate.
 ///
-/// For maximum performance, this revision walker should be reused for different walks.
+/// For maximum performance, this revision walker should be reused for
+/// different walks.
 ///
-/// This revision walker is not thread safe: it may only be used to walk a repository
-/// on a single thread; however, it is possible to have several revision walkers in several
-/// different threads walking the same repository.
+/// This revision walker is not thread safe: it may only be used to walk a
+/// repository on a single thread; however, it is possible to have several
+/// revision walkers in several different threads walking the same repository.
 ///
 /// Throws a [LibGit2Error] if error occured.
 Pointer<git_revwalk> create(Pointer<git_repository> repo) {
@@ -43,10 +44,11 @@ void sorting({
 
 /// Add a new root for the traversal.
 ///
-/// The pushed commit will be marked as one of the roots from which to start the walk.
-/// This commit may not be walked if it or a child is hidden.
+/// The pushed commit will be marked as one of the roots from which to start
+/// the walk. This commit may not be walked if it or a child is hidden.
 ///
-/// At least one commit must be pushed onto the walker before a walk can be started.
+/// At least one commit must be pushed onto the walker before a walk can be
+/// started.
 ///
 /// The given id must belong to a committish on the walked repository.
 ///
@@ -64,12 +66,13 @@ void push({
 
 /// Get the list of commits from the revision walk.
 ///
-/// The initial call to this method is not blocking when iterating through a repo
-/// with a time-sorting mode.
+/// The initial call to this method is not blocking when iterating through a
+/// repo with a time-sorting mode.
 ///
-/// Iterating with Topological or inverted modes makes the initial call blocking to
-/// preprocess the commit list, but this block should be mostly unnoticeable on most
-/// repositories (topological preprocessing times at 0.3s on the git.git repo).
+/// Iterating with Topological or inverted modes makes the initial call
+/// blocking to preprocess the commit list, but this block should be mostly
+/// unnoticeable on most repositories (topological preprocessing times at 0.3s
+/// on the git.git repo).
 ///
 /// The revision walker is reset when the walk is over.
 List<Pointer<git_commit>> walk({
@@ -101,7 +104,8 @@ List<Pointer<git_commit>> walk({
 ///
 /// The given id must belong to a committish on the walked repository.
 ///
-/// The resolved commit and all its parents will be hidden from the output on the revision walk.
+/// The resolved commit and all its parents will be hidden from the output on
+/// the revision walk.
 ///
 /// Throws a [LibGit2Error] if error occured.
 void hide({
@@ -117,8 +121,9 @@ void hide({
 
 /// Reset the revision walker for reuse.
 ///
-/// This will clear all the pushed and hidden commits, and leave the walker in a blank state
-/// (just like at creation) ready to receive new commit pushes and start a new walk.
+/// This will clear all the pushed and hidden commits, and leave the walker in
+/// a blank state (just like at creation) ready to receive new commit pushes
+/// and start a new walk.
 ///
 /// The revision walk is automatically reset when a walk is over.
 void reset(Pointer<git_revwalk> walker) => libgit2.git_revwalk_reset(walker);

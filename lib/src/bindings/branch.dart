@@ -48,7 +48,8 @@ List<Pointer<git_reference>> list({
 
 /// Lookup a branch by its name in a repository.
 ///
-/// The generated reference must be freed by the user. The branch name will be checked for validity.
+/// The generated reference must be freed by the user. The branch name will be
+/// checked for validity.
 ///
 /// Throws a [LibGit2Error] if error occured.
 Pointer<git_reference> lookup({
@@ -78,7 +79,8 @@ Pointer<git_reference> lookup({
 /// Create a new branch pointing at a target commit.
 ///
 /// A new direct reference will be created pointing to this target commit.
-/// If force is true and a reference already exists with the given name, it'll be replaced.
+/// If force is true and a reference already exists with the given name, it'll
+/// be replaced.
 ///
 /// The returned reference must be freed by the user.
 ///
@@ -167,8 +169,8 @@ bool isHead(Pointer<git_reference> branch) {
 
 /// Determine if any HEAD points to the current branch.
 ///
-/// This will iterate over all known linked repositories (usually in the form of worktrees)
-/// and report whether any HEAD is pointing at the current branch.
+/// This will iterate over all known linked repositories (usually in the form
+/// of worktrees) and report whether any HEAD is pointing at the current branch.
 ///
 /// Throws a [LibGit2Error] if error occured.
 bool isCheckedOut(Pointer<git_reference> branch) {

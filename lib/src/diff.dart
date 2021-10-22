@@ -17,13 +17,15 @@ class Diff {
 
   /// Reads the [content]s of a git patch file into a git diff object.
   ///
-  /// The diff object produced is similar to the one that would be produced if you actually
-  /// produced it computationally by comparing two trees, however there may be subtle differences.
-  /// For example, a patch file likely contains abbreviated object IDs, so the object IDs in a
-  /// diff delta produced by this function will also be abbreviated.
+  /// The diff object produced is similar to the one that would be produced if
+  /// you actually produced it computationally by comparing two trees, however
+  /// there may be subtle differences. For example, a patch file likely
+  /// contains abbreviated object IDs, so the object IDs in a diff delta
+  /// produced by this function will also be abbreviated.
   ///
-  /// This function will only read patch files created by a git implementation, it will not
-  /// read unified diffs produced by the `diff` program, nor any other types of patch files.
+  /// This function will only read patch files created by a git implementation,
+  /// it will not read unified diffs produced by the `diff` program, nor any
+  /// other types of patch files.
   Diff.parse(String content) {
     libgit2.git_libgit2_init();
     _diffPointer = bindings.parse(content);
@@ -37,7 +39,8 @@ class Diff {
   /// How many diff records are there in a diff.
   int get length => bindings.length(_diffPointer);
 
-  /// Returns a list of [DiffDelta]s containing file pairs with and old and new revisions.
+  /// Returns a list of [DiffDelta]s containing file pairs with and old and new
+  /// revisions.
   List<DiffDelta> get deltas {
     final length = bindings.length(_diffPointer);
     var deltas = <DiffDelta>[];
@@ -96,28 +99,32 @@ class Diff {
 
   /// Transforms a diff marking file renames, copies, etc.
   ///
-  /// This modifies a diff in place, replacing old entries that look like renames or copies
-  /// with new entries reflecting those changes. This also will, if requested, break modified
-  /// files into add/remove pairs if the amount of change is above a threshold.
+  /// This modifies a diff in place, replacing old entries that look like
+  /// renames or copies with new entries reflecting those changes. This also
+  /// will, if requested, break modified files into add/remove pairs if the
+  /// amount of change is above a threshold.
   ///
-  /// [flags] is a combination of [GitDiffFind] flags. Defaults to [GitDiffFind.byConfig].
+  /// [flags] is a combination of [GitDiffFind] flags. Defaults to
+  /// [GitDiffFind.byConfig].
   ///
-  /// [renameThreshold] is the threshold above which similar files will be considered renames.
-  /// This is equivalent to the -M option. Defaults to 50.
+  /// [renameThreshold] is the threshold above which similar files will be
+  /// considered renames. This is equivalent to the -M option. Defaults to 50.
   ///
-  /// [copyThreshold] is the threshold above which similar files will be considered copies.
-  /// This is equivalent to the -C option. Defaults to 50.
+  /// [copyThreshold] is the threshold above which similar files will be
+  /// considered copies. This is equivalent to the -C option. Defaults to 50.
   ///
-  /// [renameFromRewriteThreshold] is the threshold below which similar files will be
-  /// eligible to be a rename source. This is equivalent to the first part of the -B option.
-  /// Defaults to 50.
+  /// [renameFromRewriteThreshold] is the threshold below which similar files
+  /// will be eligible to be a rename source. This is equivalent to the first
+  /// part of the -B option. Defaults to 50.
   ///
-  /// [breakRewriteThreshold] is the treshold below which similar files will be split into
-  /// a delete/add pair. This is equivalent to the last part of the -B option. Defaults to 60.
+  /// [breakRewriteThreshold] is the treshold below which similar files will be
+  /// split into a delete/add pair. This is equivalent to the last part of the -B
+  /// option. Defaults to 60.
   ///
-  /// [renameLimit] is the maximum number of matches to consider for a particular file.
-  /// This is a little different from the -l option from Git because we will still process
-  /// up to this many matches before abandoning the search. Defaults to 200.
+  /// [renameLimit] is the maximum number of matches to consider for a
+  /// particular file. This is a little different from the -l option from Git
+  /// because we will still process up to this many matches before abandoning
+  /// the search. Defaults to 200.
   ///
   /// Throws a [LibGit2Error] if error occured.
   void findSimilar({
@@ -139,12 +146,13 @@ class Diff {
     );
   }
 
-  /// Calculates a stable patch [Oid] for the given patch by summing the hash of the file diffs,
-  /// ignoring whitespace and line numbers. This can be used to derive whether two diffs are
-  /// the same with a high probability.
+  /// Calculates a stable patch [Oid] for the given patch by summing the hash
+  /// of the file diffs, ignoring whitespace and line numbers. This can be used
+  /// to derive whether two diffs are the same with a high probability.
   ///
-  /// Currently, this function only calculates stable patch IDs, as defined in `git-patch-id(1)`,
-  /// and should in fact generate the same IDs as the upstream git project does.
+  /// Currently, this function only calculates stable patch IDs, as defined in
+  /// `git-patch-id(1)`, and should in fact generate the same IDs as the
+  /// upstream git project does.
   ///
   /// Throws a [LibGit2Error] if error occured.
   Oid get patchOid => Oid(bindings.patchOid(_diffPointer));
@@ -175,10 +183,10 @@ class DiffDelta {
 
   /// Single character abbreviation for a delta status code.
   ///
-  /// When you run `git diff --name-status` it uses single letter codes in the output such as
-  /// 'A' for added, 'D' for deleted, 'M' for modified, etc. This function converts a [GitDelta]
-  /// value into these letters for your own purposes. [GitDelta.untracked] will return
-  /// a space (i.e. ' ').
+  /// When you run `git diff --name-status` it uses single letter codes in the
+  /// output such as 'A' for added, 'D' for deleted, 'M' for modified, etc.
+  /// This function converts a [GitDelta] value into these letters for your own
+  /// purposes. [GitDelta.untracked] will return a space (i.e. ' ').
   String get statusChar => bindings.statusChar(_diffDeltaPointer.ref.status);
 
   /// Flags for the delta object.
@@ -214,7 +222,8 @@ class DiffDelta {
 /// link, a submodule commit id, or even a tree (although that only if you
 /// are tracking type changes or ignored/untracked directories).
 class DiffFile {
-  /// Initializes a new instance of [DiffFile] class from provided diff file object.
+  /// Initializes a new instance of [DiffFile] class from provided diff file
+  /// object.
   const DiffFile(this._diffFile);
 
   final git_diff_file _diffFile;
@@ -243,7 +252,8 @@ class DiffFile {
 
   @override
   String toString() {
-    return 'DiffFile{oid: $oid, path: $path, size: $size, flags: $flags, mode: $mode}';
+    return 'DiffFile{oid: $oid, path: $path, size: $size, flags: $flags, '
+        'mode: $mode}';
   }
 }
 
@@ -284,13 +294,15 @@ class DiffStats {
 
   @override
   String toString() {
-    return 'DiffStats{insertions: $insertions, deletions: $deletions, filesChanged: $filesChanged}';
+    return 'DiffStats{insertions: $insertions, deletions: $deletions, '
+        'filesChanged: $filesChanged}';
   }
 }
 
 class DiffHunk {
   /// Initializes a new instance of [DiffHunk] class from provided
-  /// pointers to patch object and diff hunk object in memory and number of lines in hunk.
+  /// pointers to patch object and diff hunk object in memory and number of
+  /// lines in hunk.
   const DiffHunk(
     this._patchPointer,
     this._diffHunkPointer,
@@ -346,8 +358,9 @@ class DiffHunk {
 
   @override
   String toString() {
-    return 'DiffHunk{linesCount: $linesCount, index: $index, oldStart: $oldStart, '
-        'oldLines: $oldLines, newStart: $newStart, newLines: $newLines, header: $header}';
+    return 'DiffHunk{linesCount: $linesCount, index: $index, '
+        'oldStart: $oldStart, oldLines: $oldLines, newStart: $newStart, '
+        'newLines: $newLines, header: $header}';
   }
 }
 
@@ -384,7 +397,8 @@ class DiffLine {
 
   @override
   String toString() {
-    return 'DiffLine{oldLineNumber: $oldLineNumber, newLineNumber: $newLineNumber, '
-        'numLines: $numLines, contentOffset: $contentOffset, content: $content}';
+    return 'DiffLine{oldLineNumber: $oldLineNumber, '
+        'newLineNumber: $newLineNumber, numLines: $numLines, '
+        'contentOffset: $contentOffset, content: $content}';
   }
 }

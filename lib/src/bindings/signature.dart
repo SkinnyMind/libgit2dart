@@ -56,8 +56,9 @@ Pointer<git_signature> now({required String name, required String email}) {
 
 /// Create a new action signature with default user and now timestamp.
 ///
-/// This looks up the user.name and user.email from the configuration and uses the
-/// current time as the timestamp, and creates a new signature based on that information.
+/// This looks up the user.name and user.email from the configuration and uses
+/// the current time as the timestamp, and creates a new signature based on
+/// that information.
 Pointer<git_signature> defaultSignature(Pointer<git_repository> repo) {
   final out = calloc<Pointer<git_signature>>();
   libgit2.git_signature_default(out, repo);

@@ -69,8 +69,8 @@ Pointer<git_submodule> lookup({
 /// Just like `git submodule init`, this copies information about the
 /// submodule into `.git/config`.
 ///
-/// By default, existing entries will not be overwritten, but setting [overwrite]
-/// to true forces them to be updated.
+/// By default, existing entries will not be overwritten, but setting
+/// [overwrite] to true forces them to be updated.
 void init({
   required Pointer<git_submodule> submodulePointer,
   bool overwrite = false,
@@ -80,14 +80,14 @@ void init({
 }
 
 /// Update a submodule. This will clone a missing submodule and checkout the
-/// subrepository to the commit specified in the index of the containing repository.
-/// If the submodule repository doesn't contain the target commit (e.g. because
-/// fetchRecurseSubmodules isn't set), then the submodule is fetched using the fetch
-/// options supplied in [callbacks].
+/// subrepository to the commit specified in the index of the containing
+/// repository. If the submodule repository doesn't contain the target commit
+/// (e.g. because fetchRecurseSubmodules isn't set), then the submodule is
+/// fetched using the fetch options supplied in [callbacks].
 ///
-/// If the submodule is not initialized, setting [init] to true will initialize the
-/// submodule before updating. Otherwise, this will return an error if attempting
-/// to update an uninitialzed repository.
+/// If the submodule is not initialized, setting [init] to true will initialize
+/// the submodule before updating. Otherwise, this will return an error if
+/// attempting to update an uninitialzed repository.
 ///
 /// Throws a [LibGit2Error] if error occured.
 void update({
@@ -119,10 +119,10 @@ void update({
 
 /// Open the repository for a submodule.
 ///
-/// This is a newly opened repository object. The caller is responsible for calling
-/// `free()` on it when done. Multiple calls to this function will return distinct
-/// git repository objects. This will only work if the submodule is checked out into
-/// the working directory.
+/// This is a newly opened repository object. The caller is responsible for
+/// calling free on it when done. Multiple calls to this function will return
+/// distinct git repository objects. This will only work if the submodule is
+/// checked out into the working directory.
 ///
 /// Throws a [LibGit2Error] if error occured.
 Pointer<git_repository> open(Pointer<git_submodule> submodule) {
@@ -139,10 +139,11 @@ Pointer<git_repository> open(Pointer<git_submodule> submodule) {
 
 /// Set up a new git submodule for checkout.
 ///
-/// This does `git submodule add` up to the fetch and checkout of the submodule contents.
-/// It preps a new submodule, creates an entry in `.gitmodules` and creates an empty
-/// initialized repository either at the given path in the working directory or in
-/// `.git/modules` with a gitlink from the working directory to the new repo.
+/// This does `git submodule add` up to the fetch and checkout of the submodule
+/// contents. It preps a new submodule, creates an entry in `.gitmodules` and
+/// creates an empty initialized repository either at the given path in the
+/// working directory or in `.git/modules` with a gitlink from the working
+/// directory to the new repo.
 ///
 /// Throws a [LibGit2Error] if error occured.
 Pointer<git_submodule> addSetup({
@@ -208,16 +209,16 @@ void clone({
 ///
 /// This should be called on a submodule once you have called add setup and done
 /// the clone of the submodule. This adds the `.gitmodules` file and the newly
-/// cloned submodule to the index to be ready to be committed (but doesn't actually
-/// do the commit).
+/// cloned submodule to the index to be ready to be committed (but doesn't
+/// actually do the commit).
 void addFinalize(Pointer<git_submodule> submodule) {
   libgit2.git_submodule_add_finalize(submodule);
 }
 
 /// Get the status for a submodule.
 ///
-/// This looks at a submodule and tries to determine the status. How deeply it examines
-/// the working directory to do this will depend on the [ignore] value.
+/// This looks at a submodule and tries to determine the status. How deeply it
+/// examines the working directory to do this will depend on the [ignore] value.
 int status({
   required Pointer<git_repository> repoPointer,
   required String name,
@@ -236,17 +237,17 @@ int status({
 
 /// Copy submodule remote info into submodule repo.
 ///
-/// This copies the information about the submodules URL into the checked out submodule
-/// config, acting like `git submodule sync`. This is useful if you have altered the URL
-/// for the submodule (or it has been altered by a fetch of upstream changes) and you
-/// need to update your local repo.
+/// This copies the information about the submodules URL into the checked out
+/// submodule config, acting like `git submodule sync`. This is useful if you
+/// have altered the URL for the submodule (or it has been altered by a fetch
+/// of upstream changes) and you need to update your local repo.
 void sync(Pointer<git_submodule> submodule) =>
     libgit2.git_submodule_sync(submodule);
 
 /// Reread submodule info from config, index, and HEAD.
 ///
-/// Call this to reread cached submodule information for this submodule if you have
-/// reason to believe that it has changed.
+/// Call this to reread cached submodule information for this submodule if you
+/// have reason to believe that it has changed.
 ///
 /// Set [force] to true to reload even if the data doesn't seem out of date.
 void reload({
@@ -335,10 +336,10 @@ Pointer<git_oid>? indexId(Pointer<git_submodule> submodule) {
 
 /// Get the OID for the submodule in the current working directory.
 ///
-/// This returns the OID that corresponds to looking up `HEAD` in the checked out
-/// submodule. If there are pending changes in the index or anything else, this
-/// won't notice that. You should call [status] for a more complete picture about
-/// the state of the working directory.
+/// This returns the OID that corresponds to looking up `HEAD` in the checked
+/// out submodule. If there are pending changes in the index or anything else,
+/// this won't notice that. You should call [status] for a more complete
+/// picture about the state of the working directory.
 ///
 /// Returns null if submodule is not checked out.
 Pointer<git_oid>? workdirId(Pointer<git_submodule> submodule) {
@@ -388,8 +389,8 @@ void setUpdateRule({
 ///
 /// This returns a pointer to the repository that contains the submodule.
 /// This is a just a reference to the repository that was passed to the original
-/// [lookup] call, so if that repository has been freed, then this may be a dangling
-/// reference.
+/// [lookup] call, so if that repository has been freed, then this may be a
+/// dangling reference.
 Pointer<git_repository> owner(Pointer<git_submodule> submodule) {
   return libgit2.git_submodule_owner(submodule);
 }

@@ -32,9 +32,10 @@ bool descendantOf({
 
 /// Count the number of unique commits between two commit objects.
 ///
-/// There is no need for branches containing the commits to have any upstream relationship,
-/// but it helps to think of one as a branch and the other as its upstream, the ahead and
-/// behind values will be what git would report for the branches.
+/// There is no need for branches containing the commits to have any upstream
+/// relationship, but it helps to think of one as a branch and the other as its
+/// upstream, the ahead and behind values will be what git would report for the
+/// branches.
 List<int> aheadBehind({
   required Pointer<git_repository> repoPointer,
   required Pointer<git_oid> localPointer,

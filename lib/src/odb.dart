@@ -30,11 +30,11 @@ class Odb {
 
   /// Adds an on-disk alternate to an existing Object DB.
   ///
-  /// Note that the added [path] must point to an `objects`, not to a full repository,
-  /// to use it as an alternate store.
+  /// Note that the added [path] must point to an `objects`, not to a full
+  /// repository, to use it as an alternate store.
   ///
-  /// Alternate backends are always checked for objects after all the main backends
-  /// have been exhausted.
+  /// Alternate backends are always checked for objects after all the main
+  /// backends have been exhausted.
   ///
   /// Writing is disabled on alternate backends.
   void addDiskAlternate(String path) {
@@ -56,9 +56,11 @@ class Odb {
 
   /// Reads an object from the database.
   ///
-  /// This method queries all available ODB backends trying to read the given [oid].
+  /// This method queries all available ODB backends trying to read the given
+  /// [oid].
   ///
-  /// **IMPORTANT**: Returned object should be freed to release allocated memory.
+  /// **IMPORTANT**: Returned object should be freed to release allocated
+  /// memory.
   ///
   /// Throws a [LibGit2Error] if error occured.
   OdbObject read(Oid oid) {
@@ -70,10 +72,11 @@ class Odb {
 
   /// Writes raw [data] to into the object database.
   ///
-  /// [type] should be one of [GitObject.blob], [GitObject.commit], [GitObject.tag] or
-  /// [GitObject.tree].
+  /// [type] should be one of [GitObject.blob], [GitObject.commit],
+  /// [GitObject.tag] or [GitObject.tree].
   ///
-  /// Throws a [LibGit2Error] if error occured or [ArgumentError] if provided type is invalid.
+  /// Throws a [LibGit2Error] if error occured or [ArgumentError] if provided
+  /// type is invalid.
   Oid write({required GitObject type, required String data}) {
     if (type == GitObject.any ||
         type == GitObject.invalid ||

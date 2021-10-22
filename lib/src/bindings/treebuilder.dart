@@ -8,11 +8,11 @@ import 'libgit2_bindings.dart';
 
 /// Create a new tree builder.
 ///
-/// The tree builder can be used to create or modify trees in memory and write them
-/// as tree objects to the database.
+/// The tree builder can be used to create or modify trees in memory and write
+/// them as tree objects to the database.
 ///
-/// If the source parameter is not null, the tree builder will be initialized with
-/// the entries of the given tree.
+/// If the source parameter is not null, the tree builder will be initialized
+/// with the entries of the given tree.
 ///
 /// If the source parameter is null, the tree builder will start with no entries
 /// and will have to be filled manually.
@@ -72,8 +72,8 @@ Pointer<git_tree_entry> getByFilename({
 ///
 /// Insert a new entry for filename in the builder with the given attributes.
 ///
-/// If an entry named filename already exists, its attributes will be updated with
-/// the given ones.
+/// If an entry named filename already exists, its attributes will be updated
+/// with the given ones.
 ///
 /// By default the entry that you are inserting will be checked for validity;
 /// that it exists in the object database and is of the correct type.

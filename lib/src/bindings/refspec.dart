@@ -79,7 +79,8 @@ String transform({
   }
 }
 
-/// Transform a target reference to its source reference following the refspec's rules.
+/// Transform a target reference to its source reference following the
+/// refspec's rules.
 ///
 /// Throws a [LibGit2Error] if error occured.
 String rTransform({

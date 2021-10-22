@@ -44,8 +44,8 @@ class TreeBuilder {
 
   /// Adds or updates an entry to the tree builder with the given attributes.
   ///
-  /// If an entry with [filename] already exists, its attributes will be updated with
-  /// the given ones.
+  /// If an entry with [filename] already exists, its attributes will be
+  /// updated with the given ones.
   ///
   /// By default the entry that you are inserting will be checked for validity;
   /// that it exists in the object database and is of the correct type.

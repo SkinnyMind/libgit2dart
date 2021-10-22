@@ -21,7 +21,8 @@ class Config with IterableMixin<ConfigEntry> {
   /// If [path] isn't provided, opens global, XDG and system config files.
   ///
   /// [path] should point to single on-disk file; it's expected to be a native
-  /// Git config file following the default Git config syntax (see man git-config).
+  /// Git config file following the default Git config syntax (see
+  /// `man git-config`).
   ///
   /// **IMPORTANT**: Should be freed to release allocated memory.
   ///
@@ -76,9 +77,9 @@ class Config with IterableMixin<ConfigEntry> {
   /// Pointer to memory address for allocated config object.
   late final Pointer<git_config> _configPointer;
 
-  /// The snapshot of the current state of a configuration, which allows you to look
-  /// into a consistent view of the configuration for looking up complex values
-  /// (e.g. a remote, submodule).
+  /// The snapshot of the current state of a configuration, which allows you to
+  /// look into a consistent view of the configuration for looking up complex
+  /// values (e.g. a remote, submodule).
   Config get snapshot => Config(bindings.snapshot(_configPointer));
 
   /// Returns the [ConfigEntry] of a [variable].
@@ -153,8 +154,8 @@ class Config with IterableMixin<ConfigEntry> {
     );
   }
 
-  /// Deletes one or several values from a multivar [variable] in the config file
-  /// with the highest level (usually the local one).
+  /// Deletes one or several values from a multivar [variable] in the config
+  /// file with the highest level (usually the local one).
   ///
   /// The [regexp] is applied case-sensitively on the value.
   /// Empty [regexp] deletes all values of a multivar [variable].
@@ -205,7 +206,8 @@ class ConfigEntry {
 
   @override
   String toString() {
-    return 'ConfigEntry{name: $name, value: $value, includeDepth: $includeDepth, level: $level}';
+    return 'ConfigEntry{name: $name, value: $value, '
+        'includeDepth: $includeDepth, level: $level}';
   }
 }
 

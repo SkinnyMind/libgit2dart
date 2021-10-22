@@ -130,11 +130,12 @@ int length(Pointer<git_diff> diff) => libgit2.git_diff_num_deltas(diff);
 
 /// Merge one diff into another.
 ///
-/// This merges items from the "from" list into the "onto" list. The resulting diff
-/// will have all items that appear in either list. If an item appears in both lists,
-/// then it will be "merged" to appear as if the old version was from the "onto" list
-/// and the new version is from the "from" list (with the exception that if the item
-/// has a pending DELETE in the middle, then it will show as deleted).
+/// This merges items from the "from" list into the "onto" list. The resulting
+/// diff will have all items that appear in either list. If an item appears in
+/// both lists, then it will be "merged" to appear as if the old version was
+/// from the "onto" list and the new version is from the "from" list (with the
+/// exception that if the item has a pending DELETE in the middle, then it will
+/// show as deleted).
 void merge({
   required Pointer<git_diff> ontoPointer,
   required Pointer<git_diff> fromPointer,
@@ -144,13 +145,15 @@ void merge({
 
 /// Read the contents of a git patch file into a git diff object.
 ///
-/// The diff object produced is similar to the one that would be produced if you actually
-/// produced it computationally by comparing two trees, however there may be subtle differences.
-/// For example, a patch file likely contains abbreviated object IDs, so the object IDs in a
-/// diff delta produced by this function will also be abbreviated.
+/// The diff object produced is similar to the one that would be produced if
+/// you actually produced it computationally by comparing two trees, however
+/// there may be subtle differences. For example, a patch file likely contains
+/// abbreviated object IDs, so the object IDs in a diff delta produced by this
+/// function will also be abbreviated.
 ///
-/// This function will only read patch files created by a git implementation, it will not
-/// read unified diffs produced by the `diff` program, nor any other types of patch files.
+/// This function will only read patch files created by a git implementation,
+/// it will not read unified diffs produced by the `diff` program, nor any
+/// other types of patch files.
 Pointer<git_diff> parse(String content) {
   final out = calloc<Pointer<git_diff>>();
   final contentC = content.toNativeUtf8().cast<Int8>();
@@ -163,9 +166,10 @@ Pointer<git_diff> parse(String content) {
 
 /// Transform a diff marking file renames, copies, etc.
 ///
-/// This modifies a diff in place, replacing old entries that look like renames or copies
-/// with new entries reflecting those changes. This also will, if requested, break modified
-/// files into add/remove pairs if the amount of change is above a threshold.
+/// This modifies a diff in place, replacing old entries that look like renames
+/// or copies with new entries reflecting those changes. This also will, if
+/// requested, break modified files into add/remove pairs if the amount of
+/// change is above a threshold.
 ///
 /// Throws a [LibGit2Error] if error occured.
 void findSimilar({
@@ -198,12 +202,13 @@ void findSimilar({
 
 /// Calculate the patch ID for the given patch.
 ///
-/// Calculate a stable patch ID for the given patch by summing the hash of the file diffs,
-/// ignoring whitespace and line numbers. This can be used to derive whether two diffs are
-/// the same with a high probability.
+/// Calculate a stable patch ID for the given patch by summing the hash of the
+/// file diffs, ignoring whitespace and line numbers. This can be used to
+/// derive whether two diffs are the same with a high probability.
 ///
-/// Currently, this function only calculates stable patch IDs, as defined in `git-patch-id(1)`,
-/// and should in fact generate the same IDs as the upstream git project does.
+/// Currently, this function only calculates stable patch IDs, as defined in
+/// `git-patch-id(1)`, and should in fact generate the same IDs as the upstream
+/// git project does.
 ///
 /// Throws a [LibGit2Error] if error occured.
 Pointer<git_oid> patchOid(Pointer<git_diff> diff) {
@@ -228,10 +233,10 @@ Pointer<git_diff_delta> getDeltaByIndex({
 
 /// Look up the single character abbreviation for a delta status code.
 ///
-/// When you run `git diff --name-status` it uses single letter codes in the output such as
-/// 'A' for added, 'D' for deleted, 'M' for modified, etc. This function converts a [GitDelta]
-/// value into these letters for your own purposes. [GitDelta.untracked] will return
-/// a space (i.e. ' ').
+/// When you run `git diff --name-status` it uses single letter codes in the
+/// output such as 'A' for added, 'D' for deleted, 'M' for modified, etc. This
+/// function converts a [GitDelta] value into these letters for your own
+/// purposes. [GitDelta.untracked] will return a space (i.e. ' ').
 String statusChar(int status) {
   return String.fromCharCode(libgit2.git_diff_status_char(status));
 }
@@ -294,8 +299,8 @@ Pointer<git_buf> addToBuf({
   return bufferPointer;
 }
 
-/// Apply a diff to the given repository, making changes directly in the working directory,
-/// the index, or both.
+/// Apply a diff to the given repository, making changes directly in the
+/// working directory, the index, or both.
 ///
 /// Throws a [LibGit2Error] if error occured.
 bool apply({

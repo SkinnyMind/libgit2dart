@@ -44,7 +44,8 @@ class Tree {
 
   /// Lookups a tree entry in the tree.
   ///
-  /// If integer [value] is provided, lookup is done by entry position in the tree.
+  /// If integer [value] is provided, lookup is done by entry position in the
+  /// tree.
   ///
   /// If string [value] is provided, lookup is done by entry filename.
   ///

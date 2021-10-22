@@ -4,16 +4,18 @@ import 'bindings/libgit2_bindings.dart';
 import 'bindings/rebase.dart' as bindings;
 
 class Rebase {
-  /// Initializes a rebase operation to rebase the changes in [branch] relative to [upstream]
-  /// [onto] another branch. To begin the rebase process, call [next].
+  /// Initializes a rebase operation to rebase the changes in [branch] relative
+  /// to [upstream] [onto] another branch. To begin the rebase process,
+  /// call [next].
   ///
-  /// [branch] is the terminal commit to rebase, default is to rebase the current branch.
+  /// [branch] is the terminal commit to rebase, default is to rebase the
+  /// current branch.
   ///
   /// [upstream] is the commit to begin rebasing from, default is to rebase all
   /// reachable commits.
   ///
-  /// [onto] is the branch to rebase onto, default is to rebase onto the given [upstream]
-  /// (throws if [upstream] is not provided).
+  /// [onto] is the branch to rebase onto, default is to rebase onto the given
+  /// [upstream] (throws if [upstream] is not provided).
   ///
   /// **IMPORTANT**: Should be freed to release allocated memory.
   ///
@@ -62,10 +64,11 @@ class Rebase {
   }
 
   /// Performs the next rebase operation and returns the information about it.
-  /// If the operation is one that applies a patch (which is any operation except
-  /// [GitRebaseOperation.exec]) then the patch will be applied and the index and
-  /// working directory will be updated with the changes. If there are conflicts,
-  /// you will need to address those before committing the changes.
+  /// If the operation is one that applies a patch (which is any operation
+  /// except [GitRebaseOperation.exec]) then the patch will be applied and the
+  /// index and working directory will be updated with the changes. If there
+  /// are conflicts, you will need to address those before committing the
+  /// changes.
   ///
   /// Throws a [LibGit2Error] if error occured.
   RebaseOperation next() {
@@ -77,11 +80,11 @@ class Rebase {
   ///
   /// [committer] is the committer of the rebase.
   ///
-  /// [message] the message for this commit, can be null to use the message from the
-  /// original commit.
+  /// [message] the message for this commit, can be null to use the message
+  /// from the original commit.
   ///
-  /// [author] is the author of the updated commit, can be null to keep the author from
-  /// the original commit.
+  /// [author] is the author of the updated commit, can be null to keep the
+  /// author from the original commit.
   ///
   /// Throws a [LibGit2Error] if error occured.
   void commit({
@@ -97,11 +100,12 @@ class Rebase {
     );
   }
 
-  /// Finishes a rebase that is currently in progress once all patches have been applied.
+  /// Finishes a rebase that is currently in progress once all patches have
+  /// been applied.
   void finish() => bindings.finish(_rebasePointer);
 
-  /// Aborts a rebase that is currently in progress, resetting the repository and working
-  /// directory to their state before rebase began.
+  /// Aborts a rebase that is currently in progress, resetting the repository
+  /// and working directory to their state before rebase began.
   void abort() => bindings.abort(_rebasePointer);
 
   /// Releases memory allocated for rebase object.

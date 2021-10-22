@@ -25,8 +25,8 @@ Pointer<git_oid> mergeBase({
   }
 }
 
-/// Analyzes the given branch(es) and determines the opportunities for merging them
-/// into a reference.
+/// Analyzes the given branch(es) and determines the opportunities for merging
+/// them into a reference.
 List<int> analysis({
   required Pointer<git_repository> repoPointer,
   required Pointer<git_reference> ourRefPointer,
@@ -52,10 +52,10 @@ List<int> analysis({
   return result;
 }
 
-/// Merges the given commit(s) into HEAD, writing the results into the working directory.
-/// Any changes are staged for commit and any conflicts are written to the index. Callers
-/// should inspect the repository's index after this completes, resolve any conflicts and
-/// prepare a commit.
+/// Merges the given commit(s) into HEAD, writing the results into the working
+/// directory. Any changes are staged for commit and any conflicts are written
+/// to the index. Callers should inspect the repository's index after this
+/// completes, resolve any conflicts and prepare a commit.
 void merge({
   required Pointer<git_repository> repoPointer,
   required Pointer<Pointer<git_annotated_commit>> theirHeadsPointer,
@@ -84,8 +84,8 @@ void merge({
 }
 
 /// Merge two files as they exist in the index, using the given common ancestor
-/// as the baseline, producing a string that reflects the merge result containing
-/// possible conflicts.
+/// as the baseline, producing a string that reflects the merge result
+/// containing possible conflicts.
 ///
 /// Throws a [LibGit2Error] if error occured.
 String mergeFileFromIndex({
@@ -114,10 +114,10 @@ String mergeFileFromIndex({
   }
 }
 
-/// Merge two commits, producing a git_index that reflects the result of the merge.
-/// The index may be written as-is to the working directory or checked out. If the index
-/// is to be converted to a tree, the caller should resolve any conflicts that arose as
-/// part of the merge.
+/// Merge two commits, producing a git_index that reflects the result of the
+/// merge. The index may be written as-is to the working directory or checked
+/// out. If the index is to be converted to a tree, the caller should resolve
+/// any conflicts that arose as part of the merge.
 ///
 /// The returned index must be freed explicitly.
 ///
@@ -155,10 +155,10 @@ Pointer<git_index> mergeCommits({
   }
 }
 
-/// Merge two trees, producing a git_index that reflects the result of the merge.
-/// The index may be written as-is to the working directory or checked out. If the index
-/// is to be converted to a tree, the caller should resolve any conflicts that arose as part
-/// of the merge.
+/// Merge two trees, producing a git_index that reflects the result of the
+/// merge. The index may be written as-is to the working directory or checked
+/// out. If the index is to be converted to a tree, the caller should resolve
+/// any conflicts that arose as part of the merge.
 ///
 /// The returned index must be freed explicitly.
 ///
@@ -198,7 +198,8 @@ Pointer<git_index> mergeTrees({
   }
 }
 
-/// Cherry-pick the given commit, producing changes in the index and working directory.
+/// Cherry-pick the given commit, producing changes in the index and working
+/// directory.
 ///
 /// Throws a [LibGit2Error] if error occured.
 void cherryPick({

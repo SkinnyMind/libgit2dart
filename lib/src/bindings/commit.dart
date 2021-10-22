@@ -26,14 +26,15 @@ Pointer<git_commit> lookup({
   }
 }
 
-/// Creates an annotated commit from the given commit id. The resulting annotated commit
-/// must be freed with [annotatedFree].
+/// Creates an annotated commit from the given commit id. The resulting
+/// annotated commit must be freed with [annotatedFree].
 ///
-/// An annotated commit contains information about how it was looked up, which may be useful
-/// for functions like merge or rebase to provide context to the operation. For example, conflict
-/// files will include the name of the source or target branches being merged. It is therefore
-/// preferable to use the most specific function (eg git_annotated_commit_from_ref) instead of
-/// this one when that data is known.
+/// An annotated commit contains information about how it was looked up, which
+/// may be useful for functions like merge or rebase to provide context to the
+/// operation. For example, conflict files will include the name of the source
+/// or target branches being merged. It is therefore preferable to use the most
+/// specific function (eg git_annotated_commit_from_ref) instead of this one
+/// when that data is known.
 ///
 /// Throws a [LibGit2Error] if error occured.
 Pointer<Pointer<git_annotated_commit>> annotatedLookup({
@@ -117,13 +118,15 @@ Pointer<git_oid> create({
 
 /// Amend an existing commit by replacing only non-null values.
 ///
-/// This creates a new commit that is exactly the same as the old commit, except that
-/// any non-null values will be updated. The new commit has the same parents as the old commit.
+/// This creates a new commit that is exactly the same as the old commit,
+/// except that any non-null values will be updated. The new commit has the
+/// same parents as the old commit.
 ///
-/// The [updateRef] value works as in the regular [create], updating the ref to point to
-/// the newly rewritten commit. If you want to amend a commit that is not currently
-/// the tip of the branch and then rewrite the following commits to reach a ref, pass
-/// this as null and update the rest of the commit chain and ref separately.
+/// The [updateRef] value works as in the regular [create], updating the ref to
+/// point to the newly rewritten commit. If you want to amend a commit that is
+/// not currently the tip of the branch and then rewrite the following commits
+/// to reach a ref, pass this as null and update the rest of the commit chain
+/// and ref separately.
 ///
 /// Throws a [LibGit2Error] if error occured.
 Pointer<git_oid> amend({
@@ -165,7 +168,8 @@ Pointer<git_oid> amend({
   }
 }
 
-/// Get the encoding for the message of a commit, as a string representing a standard encoding name.
+/// Get the encoding for the message of a commit, as a string representing a
+/// standard encoding name.
 ///
 /// The encoding may be NULL if the encoding header in the commit is missing;
 /// in that case UTF-8 is assumed.
@@ -176,7 +180,8 @@ String messageEncoding(Pointer<git_commit> commit) {
 
 /// Get the full message of a commit.
 ///
-/// The returned message will be slightly prettified by removing any potential leading newlines.
+/// The returned message will be slightly prettified by removing any potential
+/// leading newlines.
 String message(Pointer<git_commit> commit) {
   return libgit2.git_commit_message(commit).cast<Utf8>().toDartString();
 }
@@ -217,10 +222,10 @@ Pointer<git_oid> tree(Pointer<git_commit> commit) {
   return libgit2.git_commit_tree_id(commit);
 }
 
-/// Reverts the given commit against the given "our" commit, producing an index that
-/// reflects the result of the revert.
+/// Reverts the given commit against the given "our" commit, producing an index
+/// that reflects the result of the revert.
 ///
-/// The returned index must be freed explicitly with `free()`.
+/// The returned index must be freed explicitly with [free].
 ///
 /// Throws a [LibGit2Error] if error occured.
 Pointer<git_index> revertCommit({

@@ -14,9 +14,9 @@ int type(Pointer<git_object> obj) => libgit2.git_object_type(obj);
 /// The generated reference is owned by the repository and should be closed with
 /// the `free()` method instead of free'd manually.
 ///
-/// The 'type' parameter must match the type of the object in the odb; the method will
-/// fail otherwise. The special value 'GIT_OBJECT_ANY' may be passed to let the method
-/// guess the object's type.
+/// The 'type' parameter must match the type of the object in the odb; the
+/// method will fail otherwise. The special value 'GIT_OBJECT_ANY' may be
+/// passed to let the method guess the object's type.
 ///
 /// Throws a [LibGit2Error] if error occured.
 Pointer<git_object> lookup({
@@ -37,8 +37,8 @@ Pointer<git_object> lookup({
 
 /// Close an open object to release memory.
 ///
-/// This method instructs the library to close an existing object; note that git_objects
-/// are owned and cached by the repository so the object may or may not be freed after
-/// this library call, depending on how aggressive is the caching mechanism used by
-/// the repository.
+/// This method instructs the library to close an existing object; note that
+/// git_objects are owned and cached by the repository so the object may or may
+/// not be freed after this library call, depending on how aggressive is the
+/// caching mechanism used by the repository.
 void free(Pointer<git_object> object) => libgit2.git_object_free(object);

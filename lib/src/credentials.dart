@@ -50,8 +50,8 @@ class Keypair implements Credentials {
 
   @override
   String toString() {
-    return 'Keypair{username: $username, pubKey: $pubKey, privateKey: $privateKey, '
-        'passPhrase: $passPhrase}';
+    return 'Keypair{username: $username, pubKey: $pubKey, '
+        'privateKey: $privateKey, passPhrase: $passPhrase}';
   }
 }
 
@@ -95,7 +95,7 @@ class KeypairFromMemory implements Credentials {
 
   @override
   String toString() {
-    return 'KeypairFromMemory{username: $username, pubKey: $pubKey, privateKey: $privateKey, '
-        'passPhrase: $passPhrase}';
+    return 'KeypairFromMemory{username: $username, pubKey: $pubKey, '
+        'privateKey: $privateKey, passPhrase: $passPhrase}';
   }
 }

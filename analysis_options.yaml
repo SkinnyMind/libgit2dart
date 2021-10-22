@@ -4,6 +4,7 @@ linter:
     - prefer_const_constructors
     - sort_constructors_first
     - directives_ordering
+    - lines_longer_than_80_chars
 analyzer:
   exclude:
     - lib/src/bindings/libgit2_bindings.dart

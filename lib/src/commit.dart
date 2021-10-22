@@ -32,28 +32,29 @@ class Commit {
   ///
   /// [repo] is the repository where to store the commit.
   ///
-  /// [updateRef] is the name of the reference that will be updated to point to this commit.
-  /// If the reference is not direct, it will be resolved to a direct reference. Use "HEAD"
-  /// to update the HEAD of the current branch and make it point to this commit. If the
-  /// reference doesn't exist yet, it will be created. If it does exist, the first parent
-  /// must be the tip of this branch.
+  /// [updateRef] is the name of the reference that will be updated to point to
+  /// this commit. If the reference is not direct, it will be resolved to a
+  /// direct reference. Use "HEAD" to update the HEAD of the current branch and
+  /// make it point to this commit. If the reference doesn't exist yet, it will
+  /// be created. If it does exist, the first parent must be the tip of this
+  /// branch.
   ///
   /// [author] is the signature with author and author time of commit.
   ///
   /// [committer] is the signature with committer and commit time of commit.
   ///
-  /// [messageEncoding] is the encoding for the message in the commit, represented with
-  /// a standard encoding name. E.g. "UTF-8". If null, no encoding header is written and
-  /// UTF-8 is assumed.
+  /// [messageEncoding] is the encoding for the message in the commit,
+  /// represented with a standard encoding name. E.g. "UTF-8". If null, no
+  /// encoding header is written and UTF-8 is assumed.
   ///
   /// [message] is the full message for this commit.
   ///
-  /// [tree] is an instance of a [Tree] object that will be used as the tree for the commit.
-  /// This tree object must also be owned by the given [repo].
+  /// [tree] is an instance of a [Tree] object that will be used as the tree
+  /// for the commit. This tree object must also be owned by the given [repo].
   ///
-  /// [parents] is a list of [Commit] objects that will be used as the parents for this commit.
-  /// This array may be empty if parent count is 0 (root commit). All the given commits must
-  /// be owned by the [repo].
+  /// [parents] is a list of [Commit] objects that will be used as the parents
+  /// for this commit. This array may be empty if parent count is 0
+  /// (root commit). All the given commits must be owned by the [repo].
   ///
   /// Throws a [LibGit2Error] if error occured.
   static Oid create({
@@ -81,17 +82,19 @@ class Commit {
 
   /// Amends an existing commit by replacing only non-null values.
   ///
-  /// This creates a new commit that is exactly the same as the old commit, except that
-  /// any non-null values will be updated. The new commit has the same parents as the old commit.
+  /// This creates a new commit that is exactly the same as the old commit,
+  /// except that any non-null values will be updated. The new commit has the
+  /// same parents as the old commit.
   ///
-  /// The [updateRef] value works as in the regular [create], updating the ref to point to
-  /// the newly rewritten commit. If you want to amend a commit that is not currently
-  /// the tip of the branch and then rewrite the following commits to reach a ref, pass
-  /// this as null and update the rest of the commit chain and ref separately.
+  /// The [updateRef] value works as in the regular [create], updating the ref
+  /// to point to the newly rewritten commit. If you want to amend a commit
+  /// that is not currently the tip of the branch and then rewrite the
+  /// following commits to reach a ref, pass this as null and update the rest
+  /// of the commit chain and ref separately.
   ///
-  /// Unlike [create], the [author], [committer], [message], [messageEncoding], and
-  /// [tree] arguments can be null in which case this will use the values from the original
-  /// [commit].
+  /// Unlike [create], the [author], [committer], [message], [messageEncoding],
+  /// and [tree] arguments can be null in which case this will use the values
+  /// from the original [commit].
   ///
   /// All arguments have the same meanings as in [create].
   ///
@@ -169,14 +172,16 @@ class Commit {
 
   @override
   String toString() {
-    return 'Commit{oid: $oid, message: $message, messageEncoding: $messageEncoding, '
-        'time: $time, committer: $committer, author: $author}';
+    return 'Commit{oid: $oid, message: $message, '
+        'messageEncoding: $messageEncoding, time: $time, committer: $committer,'
+        ' author: $author}';
   }
 }
 
-/// An annotated commit contains information about how it was looked up, which may be useful
-/// for functions like merge or rebase to provide context to the operation. For example, conflict
-/// files will include the name of the source or target branches being merged.
+/// An annotated commit contains information about how it was looked up, which
+/// may be useful for functions like merge or rebase to provide context to the
+/// operation. For example, conflict files will include the name of the source
+/// or target branches being merged.
 ///
 /// Note: for internal use.
 class AnnotatedCommit {

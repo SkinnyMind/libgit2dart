@@ -42,8 +42,8 @@ void main() {
     });
 
     test(
-        'opens the global, XDG and system configuration files (if they are present) '
-        'if no path provided', () {
+        'opens the global, XDG and system configuration files '
+        '(if they are present) if no path provided', () {
       try {
         final config = Config.open();
         expect(config, isA<Config>());

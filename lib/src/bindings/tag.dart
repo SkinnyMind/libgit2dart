@@ -47,7 +47,8 @@ Pointer<git_tag> lookup({
 
 /// Get the tagged object of a tag.
 ///
-/// This method performs a repository lookup for the given object and returns it.
+/// This method performs a repository lookup for the given object and returns
+/// it.
 ///
 /// Throws a [LibGit2Error] if error occured.
 Pointer<git_object> target(Pointer<git_tag> tag) {
@@ -82,8 +83,9 @@ Pointer<git_signature> tagger(Pointer<git_tag> tag) =>
 
 /// Create a new tag in the repository from an object.
 ///
-/// A new reference will also be created pointing to this tag object. If force is true
-/// and a reference already exists with the given name, it'll be replaced.
+/// A new reference will also be created pointing to this tag object. If force
+/// is true and a reference already exists with the given name, it'll be
+/// replaced.
 ///
 /// The message will not be cleaned up.
 ///

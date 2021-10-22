@@ -12,8 +12,8 @@ class Patch {
   /// **IMPORTANT**: Should be freed to release allocated memory.
   Patch(this._patchPointer, this._aPointer, this._bPointer);
 
-  /// Directly generates a patch from the difference between two blobs, buffers or
-  /// blob and a buffer.
+  /// Directly generates a patch from the difference between two blobs, buffers
+  /// or blob and a buffer.
   ///
   /// [a] and [b] can be [Blob], [String] or null.
   ///
@@ -117,15 +117,15 @@ class Patch {
 
   /// Size of patch diff data in bytes.
   ///
-  /// This returns the raw size of the patch data. This only includes the actual data from
-  /// the lines of the diff, not the file or hunk headers.
+  /// This returns the raw size of the patch data. This only includes the
+  /// actual data from the lines of the diff, not the file or hunk headers.
   ///
-  /// If you pass `includeContext` as true, this will be the size of all of the diff output;
-  /// if you pass it as false, this will only include the actual changed lines (as if
-  /// contextLines was 0).
+  /// If you pass `includeContext` as true, this will be the size of all of the
+  /// diff output; if you pass it as false, this will only include the actual
+  /// changed lines (as if contextLines was 0).
   ///
-  /// If [includeHunkHeaders] and [includeFileHeaders] are set to true, they will be included
-  /// in the total size.
+  /// If [includeHunkHeaders] and [includeFileHeaders] are set to true, they
+  /// will be included in the total size.
   int size({
     bool includeContext = false,
     bool includeHunkHeaders = false,

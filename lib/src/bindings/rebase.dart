@@ -6,16 +6,19 @@ import '../error.dart';
 import '../util.dart';
 import 'libgit2_bindings.dart';
 
-/// Initializes a rebase operation to rebase the changes in [branchPointer] relative
-/// to [upstreamPointer] onto [ontoPointer] another branch. To begin the rebase process, call
-/// `next()`. When you have finished with this object, call `free()`.
+/// Initializes a rebase operation to rebase the changes in [branchPointer]
+/// relative to [upstreamPointer] onto [ontoPointer] another branch. To begin
+/// the rebase process, call [next]. When you have finished with this object,
+/// call [free].
 ///
-/// [branchPointer] is the terminal commit to rebase, or null to rebase the current branch.
+/// [branchPointer] is the terminal commit to rebase, or null to rebase the
+/// current branch.
 ///
-/// [upstreamPointer] is the commit to begin rebasing from, or null to rebase all
-/// reachable commits.
+/// [upstreamPointer] is the commit to begin rebasing from, or null to rebase
+/// all reachable commits.
 ///
-/// [ontoPointer] is the branch to rebase onto, or null to rebase onto the given upstream.
+/// [ontoPointer] is the branch to rebase onto, or null to rebase onto the
+/// given upstream.
 ///
 /// Throws a [LibGit2Error] if error occured.
 Pointer<git_rebase> init({
@@ -102,12 +105,13 @@ void commit({
   }
 }
 
-/// Finishes a rebase that is currently in progress once all patches have been applied.
+/// Finishes a rebase that is currently in progress once all patches have been
+/// applied.
 void finish(Pointer<git_rebase> rebase) =>
     libgit2.git_rebase_finish(rebase, nullptr);
 
-/// Aborts a rebase that is currently in progress, resetting the repository and working
-/// directory to their state before rebase began.
+/// Aborts a rebase that is currently in progress, resetting the repository and
+/// working directory to their state before rebase began.
 void abort(Pointer<git_rebase> rebase) => libgit2.git_rebase_abort(rebase);
 
 /// Free memory allocated for rebase object.

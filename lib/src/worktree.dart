@@ -6,8 +6,8 @@ import 'bindings/worktree.dart' as bindings;
 class Worktree {
   /// Creates new worktree.
   ///
-  /// If [ref] is provided, no new branch will be created but specified [ref] will
-  /// be used instead.
+  /// If [ref] is provided, no new branch will be created but specified [ref]
+  /// will be used instead.
   ///
   /// [repo] is the repository to create working tree for.
   ///
@@ -57,8 +57,8 @@ class Worktree {
 
   /// Whether worktree is locked.
   ///
-  /// A worktree may be locked if the linked working tree is stored on a portable
-  /// device which is not available.
+  /// A worktree may be locked if the linked working tree is stored on a
+  /// portable device which is not available.
   bool get isLocked => bindings.isLocked(_worktreePointer);
 
   /// Locks worktree if not already locked.
@@ -83,8 +83,8 @@ class Worktree {
 
   /// Whether worktree is valid.
   ///
-  /// A valid worktree requires both the git data structures inside the linked parent
-  /// repository and the linked working copy to be present.
+  /// A valid worktree requires both the git data structures inside the linked
+  /// parent repository and the linked working copy to be present.
   bool get isValid => bindings.isValid(_worktreePointer);
 
   /// Releases memory allocated for worktree object.

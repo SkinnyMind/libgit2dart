@@ -337,8 +337,8 @@ void main() {
     });
 
     test(
-        'throws when trying to get remote repo\'s reference list with invalid url',
-        () {
+        'throws when trying to get remote repo\'s reference list with '
+        'invalid url', () {
       Remote.setUrl(repo: repo, remote: 'libgit2', url: 'invalid');
       final remote = repo.lookupRemote('libgit2');
 
@@ -455,7 +455,8 @@ void main() {
           isA<LibGit2Error>().having(
             (e) => e.toString(),
             'error',
-            "failed to resolve address for wrong.url: Name or service not known",
+            "failed to resolve address for wrong.url: Name or service "
+                "not known",
           ),
         ),
       );
@@ -604,7 +605,8 @@ Total 69 (delta 0), reused 1 (delta 0), pack-reused 68
           isA<LibGit2Error>().having(
             (e) => e.toString(),
             'error',
-            "failed to resolve address for wrong.url: Name or service not known",
+            "failed to resolve address for wrong.url: Name or service "
+                "not known",
           ),
         ),
       );

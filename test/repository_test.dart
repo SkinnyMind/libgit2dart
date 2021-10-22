@@ -183,7 +183,8 @@ void main() {
             isA<ArgumentError>().having(
               (e) => e.toString(),
               'error',
-              'Invalid argument: "0 must be either Oid or String reference name"',
+              'Invalid argument: "0 must be either Oid or String reference '
+                  'name"',
             ),
           ),
         );
@@ -305,7 +306,8 @@ void main() {
           isA<LibGit2Error>().having(
             (e) => e.toString(),
             'error',
-            "cannot status. This operation is not allowed against bare repositories.",
+            "cannot status. This operation is not allowed against bare "
+                "repositories.",
           ),
         ),
       );

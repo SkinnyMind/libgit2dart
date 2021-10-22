@@ -201,7 +201,8 @@ void main() {
             isA<ArgumentError>().having(
               (e) => e.toString(),
               'error',
-              'Invalid argument: "0 must be either Oid or String reference name"',
+              'Invalid argument: "0 must be either Oid or String reference '
+                  'name"',
             ),
           ),
         );
@@ -462,7 +463,8 @@ void main() {
             isA<ArgumentError>().having(
               (e) => e.toString(),
               'error',
-              'Invalid argument: "0 must be either Oid or String reference name"',
+              'Invalid argument: "0 must be either Oid or String reference '
+                  'name"',
             ),
           ),
         );

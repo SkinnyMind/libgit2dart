@@ -2,8 +2,8 @@ import 'package:libgit2dart/libgit2dart.dart';
 import 'bindings/stash.dart' as bindings;
 
 class Stash {
-  /// Initializes a new instance of [Stash] class from provided stash [index], [message]
-  /// and [oid].
+  /// Initializes a new instance of [Stash] class from provided stash [index],
+  /// [message] and [oid].
   const Stash({
     required this.index,
     required this.message,
@@ -30,7 +30,8 @@ class Stash {
   ///
   /// [message] is optional description along with the stashed state.
   ///
-  /// [flags] is a combination of [GitStash] flags. Defaults to [GitStash.defaults].
+  /// [flags] is a combination of [GitStash] flags. Defaults to
+  /// [GitStash.defaults].
   ///
   /// Throws a [LibGit2Error] if error occured.
   static Oid create({
@@ -51,19 +52,20 @@ class Stash {
 
   /// Applies a single stashed state from the stash list.
   ///
-  /// [index] is the position of the stashed state in the list. Defaults to last saved.
+  /// [index] is the position of the stashed state in the list. Defaults to
+  /// last saved.
   ///
-  /// [reinstateIndex] whether to try to reinstate not only the working tree's changes,
-  /// but also the index's changes.
+  /// [reinstateIndex] whether to try to reinstate not only the working tree's
+  /// changes, but also the index's changes.
   ///
-  /// [strategy] is a combination of [GitCheckout] flags. Defaults to [GitCheckout.safe]
-  /// with [GitCheckout.recreateMissing].
+  /// [strategy] is a combination of [GitCheckout] flags. Defaults to
+  /// [GitCheckout.safe] with [GitCheckout.recreateMissing].
   ///
   /// [directory] is the alternative checkout path to workdir, can be null.
   ///
-  /// [paths] is a list of wildmatch patterns or paths. By default, all paths are processed.
-  /// If you pass a list of wildmatch patterns, those will be used to filter which paths
-  /// should be taken into account.
+  /// [paths] is a list of wildmatch patterns or paths. By default, all paths
+  /// are processed. If you pass a list of wildmatch patterns, those will be
+  /// used to filter which paths should be taken into account.
   ///
   /// Throws a [LibGit2Error] if error occured.
   static void apply({
@@ -87,8 +89,8 @@ class Stash {
     );
   }
 
-  /// Removes a single stashed state from the stash list at provided [index]. Defaults to
-  /// the last saved stash.
+  /// Removes a single stashed state from the stash list at provided [index].
+  /// Defaults to the last saved stash.
   ///
   /// Throws a [LibGit2Error] if error occured.
   static void drop({required Repository repo, int index = 0}) {
@@ -101,19 +103,20 @@ class Stash {
   /// Applies a single stashed state from the stash list and remove it from
   /// the list if successful.
   ///
-  /// [index] is the position of the stashed state in the list. Defaults to last saved.
+  /// [index] is the position of the stashed state in the list. Defaults to
+  /// last saved.
   ///
-  /// [reinstateIndex] whether to try to reinstate not only the working tree's changes,
-  /// but also the index's changes.
+  /// [reinstateIndex] whether to try to reinstate not only the working tree's
+  /// changes, but also the index's changes.
   ///
-  /// [strategy] is a combination of [GitCheckout] flags. Defaults to [GitCheckout.safe]
-  /// with [GitCheckout.recreateMissing].
+  /// [strategy] is a combination of [GitCheckout] flags. Defaults to
+  /// [GitCheckout.safe] with [GitCheckout.recreateMissing].
   ///
   /// [directory] is the alternative checkout path to workdir, can be null.
   ///
-  /// [paths] is a list of wildmatch patterns or paths. By default, all paths are processed.
-  /// If you pass a list of wildmatch patterns, those will be used to filter which paths
-  /// should be taken into account.
+  /// [paths] is a list of wildmatch patterns or paths. By default, all paths
+  /// are processed. If you pass a list of wildmatch patterns, those will be
+  /// used to filter which paths should be taken into account.
   ///
   /// Throws a [LibGit2Error] if error occured.
   static void pop({

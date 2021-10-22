@@ -62,9 +62,9 @@ Pointer<git_object> revParseSingle({
 /// See `man gitrevisions`, or https://git-scm.com/docs/git-rev-parse.html#_specifying_revisions
 /// for information on the syntax accepted.
 ///
-/// In some cases (@{<-n>} or <branchname>@{upstream}), the expression may point to an
-/// intermediate reference. When such expressions are being passed in, reference_out will be
-/// valued as well.
+/// In some cases (@{<-n>} or <branchname>@{upstream}), the expression may
+/// point to an intermediate reference. When such expressions are being passed
+/// in, reference_out will be valued as well.
 ///
 /// The returned object and reference should be released when no longer needed.
 ///

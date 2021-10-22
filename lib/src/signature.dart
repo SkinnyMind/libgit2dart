@@ -15,7 +15,8 @@ class Signature {
   /// Creates new [Signature] from provided [name], [email], and optional [time]
   /// in seconds from epoch and [offset] in minutes.
   ///
-  /// If [time] isn't provided [Signature] will be created with a timestamp of 'now'.
+  /// If [time] isn't provided [Signature] will be created with a timestamp of
+  /// 'now'.
   ///
   /// **IMPORTANT**: Should be freed to release allocated memory.
   Signature.create({
@@ -45,8 +46,9 @@ class Signature {
 
   /// Creates a new action signature with default user and now timestamp.
   ///
-  /// This looks up the user.name and user.email from the configuration and uses the
-  /// current time as the timestamp, and creates a new signature based on that information.
+  /// This looks up the user.name and user.email from the configuration and
+  /// uses the current time as the timestamp, and creates a new signature based
+  /// on that information.
   static Signature defaultSignature(Repository repo) =>
       Signature(bindings.defaultSignature(repo.pointer));
 
@@ -82,6 +84,7 @@ class Signature {
 
   @override
   String toString() {
-    return 'Signature{name: $name, email: $email, time: $time, offset: $offset}';
+    return 'Signature{name: $name, email: $email, time: $time, '
+        'offset: $offset}';
   }
 }

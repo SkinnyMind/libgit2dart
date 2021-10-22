@@ -148,8 +148,8 @@ void main() {
     });
 
     test(
-        'throws when trying to initialize rebase without upstream and onto provided',
-        () {
+        'throws when trying to initialize rebase without upstream and onto '
+        'provided', () {
       expect(
         () => Rebase.init(repo: repo),
         throwsA(
@@ -218,7 +218,8 @@ void main() {
           isA<LibGit2Error>().having(
             (e) => e.toString(),
             'error',
-            "object not found - failed to find pack entry (790b86f5fb50db485586370f27c5f90bada97d83)",
+            "object not found - failed to find pack entry "
+                "(790b86f5fb50db485586370f27c5f90bada97d83)",
           ),
         ),
       );

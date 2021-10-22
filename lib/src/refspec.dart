@@ -56,7 +56,8 @@ class Refspec {
     );
   }
 
-  /// Transforms a target reference to its source reference following the refspec's rules.
+  /// Transforms a target reference to its source reference following the
+  /// refspec's rules.
   ///
   /// Throws a [LibGit2Error] if error occured.
   String rTransform(String name) {
@@ -68,6 +69,7 @@ class Refspec {
 
   @override
   String toString() {
-    return 'Refspec{source: $source, destination: $destination, force: $force, string: $string}';
+    return 'Refspec{source: $source, destination: $destination, force: $force, '
+        'string: $string}';
   }
 }

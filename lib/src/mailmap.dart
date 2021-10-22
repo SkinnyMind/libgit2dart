@@ -31,7 +31,8 @@ class Mailmap {
   ///
   /// Mailmaps are loaded in the following order:
   ///
-  /// 1. `.mailmap` in the root of the repository's working directory, if present.
+  /// 1. `.mailmap` in the root of the repository's working directory, if
+  /// present.
   /// 2. The blob object identified by the `mailmap.blob` config entry, if set.
   ///   NOTE: `mailmap.blob` defaults to `HEAD:.mailmap` in bare repositories
   /// 3. The path in the `mailmap.file` config entry, if set.
@@ -46,8 +47,8 @@ class Mailmap {
   /// Pointer to memory address for allocated mailmap object.
   late final Pointer<git_mailmap> _mailmapPointer;
 
-  /// Returns list containing resolved [name] and [email] to the corresponding real name
-  /// and real email respectively.
+  /// Returns list containing resolved [name] and [email] to the corresponding
+  /// real name and real email respectively.
   List<String> resolve({
     required String name,
     required String email,
@@ -67,8 +68,8 @@ class Mailmap {
     ));
   }
 
-  /// Adds a single entry to the given mailmap object. If the entry already exists,
-  /// it will be replaced with the new entry.
+  /// Adds a single entry to the given mailmap object. If the entry already
+  /// exists, it will be replaced with the new entry.
   ///
   /// Throws a [ArgumentError] if [replaceEmail] is empty string.
   void addEntry({

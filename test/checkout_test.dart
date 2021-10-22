@@ -34,8 +34,8 @@ void main() {
     });
 
     test(
-        'throws when trying to checkout head with invalid alternative directory',
-        () {
+        'throws when trying to checkout head with invalid alternative '
+        'directory', () {
       expect(
         () => repo.checkout(
           refName: 'HEAD',
@@ -66,8 +66,8 @@ void main() {
     });
 
     test(
-        'throws when trying to checkout index with invalid alternative directory',
-        () {
+        'throws when trying to checkout index with invalid alternative '
+        'directory', () {
       expect(
         () => repo.checkout(directory: 'not/there'),
         throwsA(
@@ -111,8 +111,8 @@ void main() {
     });
 
     test(
-        'throws when trying to checkout tree with invalid alternative directory',
-        () {
+        'throws when trying to checkout tree with invalid alternative '
+        'directory', () {
       expect(
         () => repo.checkout(
           refName: 'refs/heads/feature',

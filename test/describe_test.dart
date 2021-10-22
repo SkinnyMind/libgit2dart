@@ -56,7 +56,8 @@ void main() {
           isA<LibGit2Error>().having(
             (e) => e.toString(),
             'error',
-            "cannot describe - no tags can describe 'f17d0d48eae3aa08cecf29128a35e310c97b3521'.",
+            "cannot describe - no tags can describe "
+                "'f17d0d48eae3aa08cecf29128a35e310c97b3521'.",
           ),
         ),
       );

@@ -22,20 +22,21 @@ class Reference {
   /// allocated memory.
   ///
   /// Valid reference [name]s must follow one of two patterns:
-  /// - Top-level names must contain only capital letters and underscores, and must begin and end
-  /// with a letter. (e.g. "HEAD", "ORIG_HEAD").
+  /// - Top-level names must contain only capital letters and underscores, and
+  /// must begin and end with a letter. (e.g. "HEAD", "ORIG_HEAD").
   /// - Names prefixed with "refs/" can be almost anything. You must avoid the characters
   /// '~', '^', ':', '\', '?', '[', and '*', and the sequences ".." and "@{" which have
   /// special meaning to revparse.
   ///
-  /// Throws a [LibGit2Error] if a reference already exists with the given [name]
-  /// unless [force] is true, in which case it will be overwritten.
+  /// Throws a [LibGit2Error] if a reference already exists with the given
+  /// [name] unless [force] is true, in which case it will be overwritten.
   ///
-  /// The [logMessage] message for the reflog will be ignored if the reference does not belong in the
-  /// standard set (HEAD, branches and remote-tracking branches) and it does not have a reflog.
+  /// The [logMessage] message for the reflog will be ignored if the reference
+  /// does not belong in the standard set (HEAD, branches and remote-tracking
+  /// branches) and it does not have a reflog.
   ///
-  /// Throws a [LibGit2Error] if error occured or [ArgumentError] if provided [target]
-  /// is not Oid or String reference name.
+  /// Throws a [LibGit2Error] if error occured or [ArgumentError] if provided
+  /// [target] is not Oid or String reference name.
   Reference.create({
     required Repository repo,
     required String name,
@@ -96,11 +97,12 @@ class Reference {
   ///
   /// The [newName] will be checked for validity.
   ///
-  /// If the [force] flag is set to false, and there's already a reference with the given name,
-  /// the renaming will fail.
+  /// If the [force] flag is set to false, and there's already a reference with
+  /// the given name, the renaming will fail.
   ///
-  /// IMPORTANT: The user needs to write a proper reflog entry [logMessage] if the reflog is
-  /// enabled for the repository. We only rename the reflog if it exists.
+  /// IMPORTANT: The user needs to write a proper reflog entry [logMessage] if
+  /// the reflog is enabled for the repository. We only rename the reflog if it
+  /// exists.
   ///
   /// Throws a [LibGit2Error] if error occured.
   static void rename({
@@ -125,9 +127,9 @@ class Reference {
   /// Throws a [LibGit2Error] if error occured.
   static List<String> list(Repository repo) => bindings.list(repo.pointer);
 
-  /// Suggests that the [repo]sitory's refdb compress or optimize its references.
-  /// This mechanism is implementation specific. For on-disk reference databases,
-  /// for example, this may pack all loose references.
+  /// Suggests that the [repo]sitory's refdb compress or optimize its
+  /// references. This mechanism is implementation specific. For on-disk
+  /// reference databases, for example, this may pack all loose references.
   ///
   /// Throws a [LibGit2Error] if error occured.
   static void compress(Repository repo) {
@@ -159,11 +161,11 @@ class Reference {
 
   /// Updates the [target] of this reference.
   ///
-  /// [target] being either Oid for direct reference or string reference name for symbolic
-  /// reference.
+  /// [target] being either Oid for direct reference or string reference name
+  /// for symbolic reference.
   ///
-  /// Throws a [LibGit2Error] if error occured or [ArgumentError] if [target] is not
-  /// [Oid] or string.
+  /// Throws a [LibGit2Error] if error occured or [ArgumentError] if [target]
+  /// is not [Oid] or string.
   void setTarget({required Object target, String? logMessage}) {
     if (target is Oid) {
       final newPointer = bindings.setTarget(
@@ -189,11 +191,14 @@ class Reference {
 
   /// Recursively peel reference until object of the specified [type] is found.
   ///
-  /// The retrieved peeled object is owned by the repository and should be closed to release memory.
+  /// The retrieved peeled object is owned by the repository and should be
+  /// freed to release memory.
   ///
-  /// If no [type] is provided, then the object will be peeled until a non-tag object is met.
+  /// If no [type] is provided, then the object will be peeled until a non-tag
+  /// object is met.
   ///
-  /// Returned object should be explicitly downcasted to one of four of git object types.
+  /// Returned object should be explicitly downcasted to one of four of git
+  /// object types.
   ///
   /// ```dart
   /// final commit = ref.peel(GitObject.commit) as Commit;
@@ -223,8 +228,8 @@ class Reference {
 
   /// Reference's short name.
   ///
-  /// This will transform the reference name into a name "human-readable" version.
-  /// If no shortname is appropriate, it will return the full name.
+  /// This will transform the reference name into a name "human-readable"
+  /// version. If no shortname is appropriate, it will return the full name.
   String get shorthand => bindings.shorthand(_refPointer);
 
   /// Whether reflog exists for the specified reference [name].
@@ -272,7 +277,8 @@ class Reference {
 
   @override
   String toString() {
-    return 'Reference{name: $name, target: $target, type: $type, isBranch: $isBranch, '
-        'isNote: $isNote, isRemote: $isRemote, isTag: $isTag}';
+    return 'Reference{name: $name, target: $target, type: $type, '
+        'isBranch: $isBranch, isNote: $isNote, isRemote: $isRemote, '
+        'isTag: $isTag}';
   }
 }

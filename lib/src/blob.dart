@@ -39,8 +39,9 @@ class Blob {
     ));
   }
 
-  /// Creates a new blob from the file in working directory of a repository and writes
-  /// it to the ODB. Provided [relativePath] should be relative to the working directory.
+  /// Creates a new blob from the file in working directory of a repository and
+  /// writes it to the ODB. Provided [relativePath] should be relative to the
+  /// working directory.
   ///
   /// Throws a [LibGit2Error] if error occured.
   static Oid createFromWorkdir({
@@ -120,7 +121,8 @@ class Blob {
     );
   }
 
-  /// Directly generates a [Patch] from the difference between the blob and a buffer.
+  /// Directly generates a [Patch] from the difference between the blob and a
+  /// buffer.
   ///
   /// [buffer] is the raw data for new side of diff, or null for empty.
   ///

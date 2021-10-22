@@ -92,7 +92,8 @@ void drop({required Pointer<git_repository> repoPointer, required int index}) {
   }
 }
 
-/// Apply a single stashed state from the stash list and remove it from the list if successful.
+/// Apply a single stashed state from the stash list and remove it from the
+/// list if successful.
 ///
 /// Throws a [LibGit2Error] if error occured.
 void pop({

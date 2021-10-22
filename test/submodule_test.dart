@@ -153,7 +153,8 @@ void main() {
           isA<LibGit2Error>().having(
             (e) => e.toString(),
             'error',
-            'failed to resolve address for wrong.url: Name or service not known',
+            'failed to resolve address for wrong.url: Name or service '
+                'not known',
           ),
         ),
       );

@@ -119,8 +119,8 @@ void main() {
     });
 
     test(
-        '.range returns revspec with correct fields values based on provided spec',
-        () {
+        '.range returns revspec with correct fields values based on '
+        'provided spec', () {
       var revspec = repo.revParse('master');
 
       expect(revspec.from.oid.sha, headSHA);
@@ -165,12 +165,12 @@ void main() {
         ),
       );
       expect(
-        () => repo.revParse('master........5aecfa'),
+        () => repo.revParse('master.......5aecfa'),
         throwsA(
           isA<LibGit2Error>().having(
             (e) => e.toString(),
             'error',
-            "failed to parse revision specifier - Invalid pattern '.....5aecfa'",
+            "failed to parse revision specifier - Invalid pattern '....5aecfa'",
           ),
         ),
       );

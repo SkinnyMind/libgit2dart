@@ -39,8 +39,8 @@ bool isBinary(Pointer<git_blob> blob) {
 /// Get a read-only buffer with the raw content of a blob.
 ///
 /// A pointer to the raw content of a blob is returned; this pointer is owned
-/// internally by the object and shall not be free'd. The pointer may be invalidated
-/// at a later time.
+/// internally by the object and shall not be free'd. The pointer may be
+/// invalidated at a later time.
 String content(Pointer<git_blob> blob) {
   return libgit2.git_blob_rawcontent(blob).cast<Utf8>().toDartString();
 }
@@ -101,7 +101,8 @@ Pointer<git_oid> createFromWorkdir({
   }
 }
 
-/// Read a file from the filesystem and write its content to the Object Database as a loose blob.
+/// Read a file from the filesystem and write its content to the Object
+/// Database as a loose blob.
 ///
 /// Throws a [LibGit2Error] if error occured.
 Pointer<git_oid> createFromDisk({

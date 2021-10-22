@@ -47,7 +47,8 @@ Pointer<git_remote> lookup({
   }
 }
 
-/// Add a remote with the default fetch refspec to the repository's configuration.
+/// Add a remote with the default fetch refspec to the repository's
+/// configuration.
 ///
 /// Throws a [LibGit2Error] if error occured.
 Pointer<git_remote> create({
@@ -71,7 +72,8 @@ Pointer<git_remote> create({
   }
 }
 
-/// Add a remote with the provided fetch refspec to the repository's configuration.
+/// Add a remote with the provided fetch refspec to the repository's
+/// configuration.
 ///
 /// Throws a [LibGit2Error] if error occured.
 Pointer<git_remote> createWithFetchSpec({
@@ -106,7 +108,8 @@ Pointer<git_remote> createWithFetchSpec({
 
 /// Delete an existing persisted remote.
 ///
-/// All remote-tracking branches and configuration settings for the remote will be removed.
+/// All remote-tracking branches and configuration settings for the remote will
+/// be removed.
 ///
 /// Throws a [LibGit2Error] if error occured.
 void delete({
@@ -127,12 +130,13 @@ void delete({
 ///
 /// Returns list of non-default refspecs that cannot be renamed.
 ///
-/// All remote-tracking branches and configuration settings for the remote are updated.
+/// All remote-tracking branches and configuration settings for the remote are
+/// updated.
 ///
 /// The new name will be checked for validity.
 ///
-/// No loaded instances of a the remote with the old name will change their name or
-/// their list of refspecs.
+/// No loaded instances of a the remote with the old name will change their
+/// name or their list of refspecs.
 ///
 /// Throws a [LibGit2Error] if error occured.
 List<String> rename({
@@ -163,8 +167,8 @@ List<String> rename({
 
 /// Set the remote's url in the configuration.
 ///
-/// Remote objects already in memory will not be affected. This assumes the common
-/// case of a single-url remote and will otherwise return an error.
+/// Remote objects already in memory will not be affected. This assumes the
+/// common case of a single-url remote and will otherwise return an error.
 ///
 /// Throws a [LibGit2Error] if error occured.
 void setUrl({
@@ -186,8 +190,8 @@ void setUrl({
 
 /// Set the remote's url for pushing in the configuration.
 ///
-/// Remote objects already in memory will not be affected. This assumes the common
-/// case of a single-url remote and will otherwise return an error.
+/// Remote objects already in memory will not be affected. This assumes the
+/// common case of a single-url remote and will otherwise return an error.
 ///
 /// Throws a [LibGit2Error] if error occured.
 void setPushUrl({
@@ -266,8 +270,8 @@ List<String> pushRefspecs(Pointer<git_remote> remote) {
 
 /// Add a fetch refspec to the remote's configuration.
 ///
-/// Add the given refspec to the fetch list in the configuration. No loaded remote
-/// instances will be affected.
+/// Add the given refspec to the fetch list in the configuration. No loaded
+/// remote instances will be affected.
 ///
 /// Throws a [LibGit2Error] if error occured.
 void addFetch({
@@ -289,8 +293,8 @@ void addFetch({
 
 /// Add a push refspec to the remote's configuration.
 ///
-/// Add the given refspec to the push list in the configuration. No loaded remote
-/// instances will be affected.
+/// Add the given refspec to the push list in the configuration. No loaded
+/// remote instances will be affected.
 ///
 /// Throws a [LibGit2Error] if error occured.
 void addPush({
@@ -312,9 +316,9 @@ void addPush({
 
 /// Open a connection to a remote.
 ///
-/// The transport is selected based on the URL. The direction argument is due to a
-/// limitation of the git protocol (over TCP or SSH) which starts up a specific binary
-/// which can only do the one or the other.
+/// The transport is selected based on the URL. The direction argument is due
+/// to a limitation of the git protocol (over TCP or SSH) which starts up a
+/// specific binary which can only do the one or the other.
 ///
 /// Throws a [LibGit2Error] if error occured.
 void connect({
@@ -355,11 +359,12 @@ void connect({
 
 /// Get the remote repository's reference advertisement list.
 ///
-/// Get the list of references with which the server responds to a new connection.
+/// Get the list of references with which the server responds to a new
+/// connection.
 ///
-/// The remote (or more exactly its transport) must have connected to the remote repository.
-/// This list is available as soon as the connection to the remote is initiated and it
-/// remains available after disconnecting.
+/// The remote (or more exactly its transport) must have connected to the
+/// remote repository. This list is available as soon as the connection to the
+/// remote is initiated and it remains available after disconnecting.
 ///
 /// Throws a [LibGit2Error] if error occured.
 List<Map<String, Object?>> lsRemotes(Pointer<git_remote> remote) {
@@ -395,8 +400,8 @@ List<Map<String, Object?>> lsRemotes(Pointer<git_remote> remote) {
 
 /// Download new data and update tips.
 ///
-/// Convenience function to connect to a remote, download the data, disconnect and
-/// update the remote-tracking branches.
+/// Convenience function to connect to a remote, download the data, disconnect
+/// and update the remote-tracking branches.
 ///
 /// Throws a [LibGit2Error] if error occured.
 void fetch({

@@ -30,11 +30,13 @@ Pointer<git_repository> open(String path) {
   }
 }
 
-/// Look for a git repository and return its path. The lookup start from [startPath]
-/// and walk across parent directories if nothing has been found. The lookup ends when
-/// the first repository is found, or when reaching a directory referenced in [ceilingDirs].
+/// Look for a git repository and return its path. The lookup start from
+/// [startPath] and walk across parent directories if nothing has been found.
+/// The lookup ends when the first repository is found, or when reaching a
+/// directory referenced in [ceilingDirs].
 ///
-/// The method will automatically detect if the repository is bare (if there is a repository).
+/// The method will automatically detect if the repository is bare (if there is
+/// a repository).
 String discover({
   required String startPath,
   String? ceilingDirs,
@@ -201,10 +203,11 @@ String getNamespace(Pointer<git_repository> repo) {
 
 /// Sets the active namespace for this repository.
 ///
-/// This namespace affects all reference operations for the repo. See `man gitnamespaces`
+/// This namespace affects all reference operations for the repo. See
+/// `man gitnamespaces`.
 ///
-/// The [namespace] should not include the refs folder, e.g. to namespace all references
-/// under refs/namespaces/foo/, use foo as the namespace.
+/// The [namespace] should not include the refs folder, e.g. to namespace all
+/// references under refs/namespaces/foo/, use foo as the namespace.
 void setNamespace({
   required Pointer<git_repository> repoPointer,
   String? namespace,
@@ -255,7 +258,8 @@ Pointer<git_reference> head(Pointer<git_repository> repo) {
 
 /// Check if a repository's HEAD is detached.
 ///
-/// A repository's HEAD is detached when it points directly to a commit instead of a branch.
+/// A repository's HEAD is detached when it points directly to a commit instead
+/// of a branch.
 ///
 /// Throws a [LibGit2Error] if error occured.
 bool isHeadDetached(Pointer<git_repository> repo) {
@@ -270,8 +274,8 @@ bool isHeadDetached(Pointer<git_repository> repo) {
 
 /// Check if the current branch is unborn.
 ///
-/// An unborn branch is one named from HEAD but which doesn't exist in the refs namespace,
-/// because it doesn't have any commit to point to.
+/// An unborn branch is one named from HEAD but which doesn't exist in the refs
+/// namespace, because it doesn't have any commit to point to.
 ///
 /// Throws a [LibGit2Error] if error occured.
 bool isBranchUnborn(Pointer<git_repository> repo) {
@@ -287,7 +291,8 @@ bool isBranchUnborn(Pointer<git_repository> repo) {
 /// Set the identity to be used for writing reflogs.
 ///
 /// If both are set, this name and email will be used to write to the reflog.
-/// Pass NULL to unset. When unset, the identity will be taken from the repository's configuration.
+/// Pass NULL to unset. When unset, the identity will be taken from the
+/// repository's configuration.
 void setIdentity({
   required Pointer<git_repository> repoPointer,
   String? name,
@@ -324,10 +329,12 @@ Map<String, String> identity(Pointer<git_repository> repo) {
 
 /// Get the configuration file for this repository.
 ///
-/// If a configuration file has not been set, the default config set for the repository
-/// will be returned, including global and system configurations (if they are available).
+/// If a configuration file has not been set, the default config set for the
+/// repository will be returned, including global and system configurations (if
+/// they are available).
 ///
-/// The configuration file must be freed once it's no longer being used by the user.
+/// The configuration file must be freed once it's no longer being used by the
+/// user.
 Pointer<git_config> config(Pointer<git_repository> repo) {
   final out = calloc<Pointer<git_config>>();
   libgit2.git_repository_config(out, repo);
@@ -337,9 +344,11 @@ Pointer<git_config> config(Pointer<git_repository> repo) {
 /// Get a snapshot of the repository's configuration.
 ///
 /// Convenience function to take a snapshot from the repository's configuration.
-/// The contents of this snapshot will not change, even if the underlying config files are modified.
+/// The contents of this snapshot will not change, even if the underlying
+/// config files are modified.
 ///
-/// The configuration file must be freed once it's no longer being used by the user.
+/// The configuration file must be freed once it's no longer being used by the
+/// user.
 Pointer<git_config> configSnapshot(Pointer<git_repository> repo) {
   final out = calloc<Pointer<git_config>>();
   libgit2.git_repository_config_snapshot(out, repo);
@@ -376,7 +385,8 @@ bool isWorktree(Pointer<git_repository> repo) {
 /// can present it to the user for them to amend if they wish.
 ///
 /// Use this function to get the contents of this file.
-/// Don't forget to remove the file with [removeMessage] after you create the commit.
+/// Don't forget to remove the file with [removeMessage] after you create the
+/// commit.
 ///
 /// Throws a [LibGit2Error] if error occured.
 String message(Pointer<git_repository> repo) {
@@ -443,10 +453,11 @@ Pointer<git_refdb> refdb(Pointer<git_repository> repo) {
 ///
 /// If the provided reference points to a Tree or a Blob, the HEAD is unaltered.
 ///
-/// If the provided reference points to a branch, the HEAD will point to that branch,
-/// staying attached, or become attached if it isn't yet.
+/// If the provided reference points to a branch, the HEAD will point to that
+/// branch, staying attached, or become attached if it isn't yet.
 ///
-/// If the branch doesn't exist yet, the HEAD will be attached to an unborn branch.
+/// If the branch doesn't exist yet, the HEAD will be attached to an unborn
+/// branch.
 ///
 /// Otherwise, the HEAD will be detached and will directly point to the Commit.
 ///
@@ -467,11 +478,14 @@ void setHead({
 
 /// Make the repository HEAD directly point to the commit.
 ///
-/// If the provided committish cannot be found in the repository, the HEAD is unaltered.
+/// If the provided committish cannot be found in the repository, the HEAD is
+/// unaltered.
 ///
-/// If the provided commitish cannot be peeled into a commit, the HEAD is unaltered.
+/// If the provided commitish cannot be peeled into a commit, the HEAD is
+/// unaltered.
 ///
-/// Otherwise, the HEAD will eventually be detached and will directly point to the peeled commit.
+/// Otherwise, the HEAD will eventually be detached and will directly point to
+/// the peeled commit.
 ///
 /// Throws a [LibGit2Error] if error occured.
 void setHeadDetached({
@@ -493,8 +507,8 @@ void setHeadDetached({
 /// The working directory doesn't need to be the same one that contains the
 /// `.git` folder for this repository.
 ///
-/// If this repository is bare, setting its working directory will turn it into a
-/// normal repository, capable of performing all the common workdir operations
+/// If this repository is bare, setting its working directory will turn it into
+/// a normal repository, capable of performing all the common workdir operations
 /// (checkout, status, index manipulation, etc).
 ///
 /// Throws a [LibGit2Error] if error occured.

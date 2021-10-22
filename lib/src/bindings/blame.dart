@@ -79,7 +79,8 @@ Pointer<git_blame_hunk> getHunkByIndex({
   }
 }
 
-/// Gets the hunk that relates to the given line number (1-based) in the newest commit.
+/// Gets the hunk that relates to the given line number (1-based) in the newest
+/// commit.
 ///
 /// Throws [RangeError] if [lineNumber] is out of range.
 Pointer<git_blame_hunk> getHunkByLine({

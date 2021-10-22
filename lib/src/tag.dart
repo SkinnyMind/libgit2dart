@@ -28,8 +28,9 @@ class Tag {
 
   /// Creates a new tag in the repository for provided [target] object.
   ///
-  /// A new reference will also be created pointing to this tag object. If [force] is true
-  /// and a reference already exists with the given name, it'll be replaced.
+  /// A new reference will also be created pointing to this tag object. If
+  /// [force] is true and a reference already exists with the given name, it'll
+  /// be replaced.
   ///
   /// The [message] will not be cleaned up.
   ///
@@ -39,18 +40,23 @@ class Tag {
   ///
   /// [repo] is the repository where to store the tag.
   ///
-  /// [tagName] is the name for the tag. This name is validated for consistency. It should
-  /// also not conflict with an already existing tag name.
+  /// [tagName] is the name for the tag. This name is validated for
+  /// consistency. It should also not conflict with an already existing tag
+  /// name.
   ///
-  /// [target] is the object to which this tag points. This object must belong to the given [repo].
+  /// [target] is the object to which this tag points. This object must belong
+  /// to the given [repo].
   ///
-  /// [targetType] is one of the [GitObject] basic types: commit, tree, blob or tag.
+  /// [targetType] is one of the [GitObject] basic types: commit, tree, blob or
+  /// tag.
   ///
-  /// [tagger] is the signature of the tagger for this tag, and of the tagging time.
+  /// [tagger] is the signature of the tagger for this tag, and of the tagging
+  /// time.
   ///
   /// [message] is the full message for this tag.
   ///
-  /// [force] determines whether existing reference with the same [tagName] should be replaced.
+  /// [force] determines whether existing reference with the same [tagName]
+  /// should be replaced.
   ///
   /// Throws a [LibGit2Error] if error occured.
   static Oid create({
@@ -100,9 +106,14 @@ class Tag {
 
   /// Tagged object (commit, tree, blob, tag) of a tag.
   ///
-  /// This method performs a repository lookup for the given object and returns it.
+  /// This method performs a repository lookup for the given object and returns
+  /// it.
   ///
-  /// Returned object should be explicitly downcasted to one of four of git object types.
+  /// Returned object should be explicitly downcasted to one of four of git
+  /// object types.
+  ///
+  /// **IMPORTANT**: returned object should be freed to release allocated
+  /// memory.
   ///
   /// ```dart
   /// final commit = tag.target as Commit;
@@ -151,6 +162,7 @@ class Tag {
 
   @override
   String toString() {
-    return 'Tag{oid: $oid, name: $name, message: $message, target: $target, tagger: $tagger}';
+    return 'Tag{oid: $oid, name: $name, message: $message, target: $target, '
+        'tagger: $tagger}';
   }
 }

@@ -4,16 +4,18 @@ import 'bindings/libgit2_bindings.dart';
 import 'bindings/revparse.dart' as bindings;
 
 class RevParse {
-  /// Finds a single object and intermediate reference (if there is one) by a [spec] revision string.
+  /// Finds a single object and intermediate reference (if there is one) by a
+  /// [spec] revision string.
   ///
   /// See `man gitrevisions`, or https://git-scm.com/docs/git-rev-parse.html#_specifying_revisions
   /// for information on the syntax accepted.
   ///
-  /// In some cases (@{<-n>} or <branchname>@{upstream}), the expression may point to an
-  /// intermediate reference. When such expressions are being passed in, reference_out will be
-  /// valued as well.
+  /// In some cases (@{<-n>} or <branchname>@{upstream}), the expression may
+  /// point to an intermediate reference. When such expressions are being
+  /// passed in, reference_out will be valued as well.
   ///
-  /// **IMPORTANT**: The returned object and reference should be freed to release allocated memory.
+  /// **IMPORTANT**: The returned object and reference should be freed to
+  /// release allocated memory.
   ///
   /// Throws a [LibGit2Error] if error occured.
   RevParse.ext({required Repository repo, required String spec}) {

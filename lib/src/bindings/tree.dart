@@ -33,8 +33,8 @@ Pointer<git_repository> owner(Pointer<git_tree> tree) =>
 
 /// Lookup a tree entry by its position in the tree.
 ///
-/// This returns a tree entry that is owned by the tree. You don't have to free it,
-/// but you must not use it after the tree is released.
+/// This returns a tree entry that is owned by the tree. You don't have to free
+/// it, but you must not use it after the tree is released.
 ///
 /// Throws [RangeError] when provided index is outside of valid range.
 Pointer<git_tree_entry> getByIndex({
@@ -52,8 +52,8 @@ Pointer<git_tree_entry> getByIndex({
 
 /// Lookup a tree entry by its filename.
 ///
-/// This returns a tree entry that is owned by the tree. You don't have to free it,
-/// but you must not use it after the tree is released.
+/// This returns a tree entry that is owned by the tree. You don't have to free
+/// it, but you must not use it after the tree is released.
 ///
 /// Throws [ArgumentError] if nothing found for provided filename.
 Pointer<git_tree_entry> getByName({
@@ -72,10 +72,11 @@ Pointer<git_tree_entry> getByName({
   }
 }
 
-/// Retrieve a tree entry contained in a tree or in any of its subtrees, given its relative path.
+/// Retrieve a tree entry contained in a tree or in any of its subtrees, given
+/// its relative path.
 ///
-/// Unlike the other lookup functions, the returned tree entry is owned by the user and must be
-/// freed explicitly with [entryFree].
+/// Unlike the other lookup functions, the returned tree entry is owned by the
+/// user and must be freed explicitly with [entryFree].
 ///
 /// Throws a [LibGit2Error] if error occured.
 Pointer<git_tree_entry> getByPath({

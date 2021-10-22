@@ -14,18 +14,20 @@ class Blame with IterableMixin<BlameHunk> {
   ///
   /// [path] is the path to file to consider.
   ///
-  /// [flags] is a combination of [GitBlameFlag]s. Defaults to [GitBlameFlag.normal].
+  /// [flags] is a combination of [GitBlameFlag]s. Defaults to
+  /// [GitBlameFlag.normal].
   ///
   /// [minMatchCharacters] is the lower bound on the number of alphanumeric
   /// characters that must be detected as moving/copying within a file for
-  /// it to associate those lines with the parent commit. The default value is 20.
-  /// This value only takes effect if any of the [GitBlameFlag.trackCopies*]
+  /// it to associate those lines with the parent commit. The default value is
+  /// 20. This value only takes effect if any of the [GitBlameFlag.trackCopies*]
   /// flags are specified.
   ///
-  /// [newestCommit] is the id of the newest commit to consider. The default is HEAD.
+  /// [newestCommit] is the id of the newest commit to consider. The default is
+  /// HEAD.
   ///
-  /// [oldestCommit] is the id of the oldest commit to consider. The default is the
-  /// first commit encountered with no parent.
+  /// [oldestCommit] is the id of the oldest commit to consider. The default is
+  /// the first commit encountered with no parent.
   ///
   /// [minLine] is the first line in the file to blame. The default is 1
   /// (line numbers start with 1).
@@ -71,7 +73,8 @@ class Blame with IterableMixin<BlameHunk> {
     ));
   }
 
-  /// Returns the hunk that relates to the given line number (1-based) in the newest commit.
+  /// Returns the hunk that relates to the given line number (1-based) in the
+  /// newest commit.
   ///
   /// Throws [RangeError] if [lineNumber] is out of range.
   BlameHunk forLine(int lineNumber) {
@@ -105,7 +108,8 @@ class BlameHunk {
     return _blameHunkPointer.ref.boundary == 1 ? true : false;
   }
 
-  /// 1-based line number where this hunk begins, in the final version of the file.
+  /// 1-based line number where this hunk begins, in the final version of the
+  /// file.
   int get finalStartLineNumber => _blameHunkPointer.ref.final_start_line_number;
 
   /// Author of [finalCommitOid]. If [GitBlameFlag.useMailmap] has been
@@ -116,8 +120,8 @@ class BlameHunk {
   /// [Oid] of the commit where this line was last changed.
   Oid get finalCommitOid => Oid.fromRaw(_blameHunkPointer.ref.final_commit_id);
 
-  /// 1-based line number where this hunk begins, in the file named by [originPath]
-  /// in the commit specified by [originCommitId].
+  /// 1-based line number where this hunk begins, in the file named by
+  /// [originPath] in the commit specified by [originCommitId].
   int get originStartLineNumber => _blameHunkPointer.ref.orig_start_line_number;
 
   /// Author of [originCommitOid]. If [GitBlameFlag.useMailmap] has been
@@ -125,9 +129,9 @@ class BlameHunk {
   Signature get originCommitter =>
       Signature(_blameHunkPointer.ref.orig_signature);
 
-  /// [Oid] of the commit where this hunk was found. This will usually be the same
-  /// as [finalCommitOid], except when [GitBlameFlag.trackCopiesAnyCommitCopies]
-  /// been specified.
+  /// [Oid] of the commit where this hunk was found. This will usually be the
+  /// same as [finalCommitOid], except when
+  /// [GitBlameFlag.trackCopiesAnyCommitCopies] been specified.
   Oid get originCommitOid => Oid.fromRaw(_blameHunkPointer.ref.orig_commit_id);
 
   /// Path to the file where this hunk originated, as of the commit specified by
@@ -138,8 +142,9 @@ class BlameHunk {
   @override
   String toString() {
     return 'BlameHunk{linesCount: $linesCount, isBoundary: $isBoundary, '
-        'finalStartLineNumber: $finalStartLineNumber, finalCommitter: $finalCommitter, '
-        'finalCommitOid: $finalCommitOid, originStartLineNumber: $originStartLineNumber, '
+        'finalStartLineNumber: $finalStartLineNumber, '
+        'finalCommitter: $finalCommitter, finalCommitOid: $finalCommitOid, '
+        'originStartLineNumber: $originStartLineNumber, '
         'originCommitter: $originCommitter, originCommitOid: $originCommitOid, '
         'originPath: $originPath}';
   }

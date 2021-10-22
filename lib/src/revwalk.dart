@@ -39,10 +39,11 @@ class RevWalk {
 
   /// Adds a new root commit [oid] for the traversal.
   ///
-  /// The pushed commit will be marked as one of the roots from which to start the walk.
-  /// This commit may not be walked if it or a child is hidden.
+  /// The pushed commit will be marked as one of the roots from which to start
+  /// the walk. This commit may not be walked if it or a child is hidden.
   ///
-  /// At least one commit must be pushed onto the walker before a walk can be started.
+  /// At least one commit must be pushed onto the walker before a walk can be
+  /// started.
   ///
   /// The given [oid] must belong to a committish on the walked repository.
   ///
@@ -58,7 +59,8 @@ class RevWalk {
   ///
   /// The given id must belong to a committish on the walked repository.
   ///
-  /// The resolved commit and all its parents will be hidden from the output on the revision walk.
+  /// The resolved commit and all its parents will be hidden from the output on
+  /// the revision walk.
   ///
   /// Throws a [LibGit2Error] if error occured.
   void hide(Oid oid) {
@@ -70,8 +72,9 @@ class RevWalk {
 
   /// Resets the revision walker for reuse.
   ///
-  /// This will clear all the pushed and hidden commits, and leave the walker in a blank state
-  /// (just like at creation) ready to receive new commit pushes and start a new walk.
+  /// This will clear all the pushed and hidden commits, and leave the walker
+  /// in a blank state (just like at creation) ready to receive new commit
+  /// pushes and start a new walk.
   ///
   /// The revision walk is automatically reset when a walk is over.
   void reset() => bindings.reset(_revWalkPointer);

@@ -53,8 +53,8 @@ void main() {
     });
 
     test(
-        'successfully creates worktree at provided path from provided reference',
-        () {
+        'successfully creates worktree at provided path from '
+        'provided reference', () {
       final head = repo.revParseSingle('HEAD');
       final worktreeBranch = repo.createBranch(name: 'v1', target: head);
       final ref = repo.lookupReference('refs/heads/v1');

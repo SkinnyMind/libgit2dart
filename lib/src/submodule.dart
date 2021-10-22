@@ -4,7 +4,8 @@ import 'bindings/libgit2_bindings.dart';
 import 'bindings/submodule.dart' as bindings;
 
 class Submodule {
-  /// Lookups submodule information by [name] or path (they are usually the same).
+  /// Lookups submodule information by [name] or path (they are usually the
+  /// same).
   ///
   /// **IMPORTANT**: Should be freed to release allocated memory.
   ///
@@ -25,7 +26,8 @@ class Submodule {
   /// [useGitLink] determines if workdir should contain a gitlink to the repo in `.git/modules`
   /// vs. repo directly in workdir. Default is true.
   ///
-  /// [callbacks] is the combination of callback functions from [Callbacks] object.
+  /// [callbacks] is the combination of callback functions from [Callbacks]
+  /// object.
   ///
   /// **IMPORTANT**: Should be freed to release allocated memory.
   ///
@@ -57,8 +59,8 @@ class Submodule {
   /// Just like `git submodule init`, this copies information about the
   /// submodule into ".git/config".
   ///
-  /// By default, existing entries will not be overwritten, but setting [overwrite]
-  /// to true forces them to be updated.
+  /// By default, existing entries will not be overwritten, but setting
+  /// [overwrite] to true forces them to be updated.
   ///
   /// Throws a [LibGit2Error] if error occured.
   static void init({
@@ -77,14 +79,14 @@ class Submodule {
   }
 
   /// Updates a submodule. This will clone a missing submodule and checkout the
-  /// subrepository to the commit specified in the index of the containing repository.
-  /// If the submodule repository doesn't contain the target commit (e.g. because
-  /// fetchRecurseSubmodules isn't set), then the submodule is fetched using the fetch
-  /// options supplied in [callbacks].
+  /// subrepository to the commit specified in the index of the containing
+  /// repository. If the submodule repository doesn't contain the target commit
+  /// (e.g. because fetchRecurseSubmodules isn't set), then the submodule is
+  /// fetched using the fetch options supplied in [callbacks].
   ///
-  /// If the submodule is not initialized, setting [init] to true will initialize the
-  /// submodule before updating. Otherwise, this will return an error if attempting
-  /// to update an uninitialzed repository.
+  /// If the submodule is not initialized, setting [init] to true will
+  /// initialize the submodule before updating. Otherwise, this will return an
+  /// error if attempting to update an uninitialzed repository.
   ///
   /// Throws a [LibGit2Error] if error occured.
   static void update({
@@ -112,11 +114,14 @@ class Submodule {
 
   /// Opens the repository for a submodule.
   ///
-  /// Multiple calls to this function will return distinct git repository objects.
+  /// Multiple calls to this function will return distinct git repository
+  /// objects.
   ///
-  /// This will only work if the submodule is checked out into the working directory.
+  /// This will only work if the submodule is checked out into the working
+  /// directory.
   ///
-  /// **IMPORTANT**: Returned [Repository] object should be freed to release allocated memory.
+  /// **IMPORTANT**: Returned [Repository] object should be freed to release
+  /// allocated memory.
   ///
   /// Throws a [LibGit2Error] if error occured.
   Repository open() {
@@ -125,9 +130,9 @@ class Submodule {
 
   /// Returns the status for a submodule.
   ///
-  /// This looks at a submodule and tries to determine the status. How deeply it examines
-  /// the working directory to do this will depend on the combination of [GitSubmoduleIgnore]
-  /// values provided to [ignore] .
+  /// This looks at a submodule and tries to determine the status. How deeply
+  /// it examines the working directory to do this will depend on the
+  /// combination of [GitSubmoduleIgnore] values provided to [ignore] .
   Set<GitSubmoduleStatus> status({
     GitSubmoduleIgnore ignore = GitSubmoduleIgnore.unspecified,
   }) {
@@ -144,16 +149,16 @@ class Submodule {
 
   /// Copies submodule remote info into submodule repo.
   ///
-  /// This copies the information about the submodules URL into the checked out submodule
-  /// config, acting like `git submodule sync`. This is useful if you have altered the URL
-  /// for the submodule (or it has been altered by a fetch of upstream changes) and you
-  /// need to update your local repo.
+  /// This copies the information about the submodules URL into the checked out
+  /// submodule config, acting like `git submodule sync`. This is useful if you
+  /// have altered the URL for the submodule (or it has been altered by a fetch
+  /// of upstream changes) and you need to update your local repo.
   void sync() => bindings.sync(_submodulePointer);
 
   /// Rereads submodule info from config, index, and HEAD.
   ///
-  /// Call this to reread cached submodule information for this submodule if you have
-  /// reason to believe that it has changed.
+  /// Call this to reread cached submodule information for this submodule if
+  /// you have reason to believe that it has changed.
   ///
   /// Set [force] to true to reload even if the data doesn't seem out of date.
   void reload({bool force = false}) {
@@ -199,26 +204,27 @@ class Submodule {
     );
   }
 
-  /// [Oid] for the submodule in the current HEAD tree or null if submodule is not
-  /// in the HEAD.
+  /// [Oid] for the submodule in the current HEAD tree or null if submodule is
+  /// not in the HEAD.
   Oid? get headOid {
     final result = bindings.headId(_submodulePointer);
     return result == null ? null : Oid(result);
   }
 
-  /// [Oid] for the submodule in the index or null if submodule is not in the index.
+  /// [Oid] for the submodule in the index or null if submodule is not in the
+  /// index.
   Oid? get indexOid {
     final result = bindings.indexId(_submodulePointer);
     return result == null ? null : Oid(result);
   }
 
-  /// [Oid] for the submodule in the current working directory or null if submodule
-  /// is not checked out.
+  /// [Oid] for the submodule in the current working directory or null if
+  /// submodule is not checked out.
   ///
-  /// This returns the [Oid] that corresponds to looking up `HEAD` in the checked out
-  /// submodule. If there are pending changes in the index or anything else, this
-  /// won't notice that. You should call [status] for a more complete picture about
-  /// the state of the working directory.
+  /// This returns the [Oid] that corresponds to looking up `HEAD` in the
+  /// checked out submodule. If there are pending changes in the index or
+  /// anything else, this won't notice that. You should call [status] for a
+  /// more complete picture about the state of the working directory.
   Oid? get workdirOid {
     final result = bindings.workdirId(_submodulePointer);
     return result == null ? null : Oid(result);
@@ -263,7 +269,7 @@ class Submodule {
   @override
   String toString() {
     return 'Submodule{name: $name, path: $path, url: $url, status: $status, '
-        'branch: $branch, headOid: $headOid, indexOid: $indexOid, workdirOid: $workdirOid, '
-        'ignore: $ignore, updateRule: $updateRule}';
+        'branch: $branch, headOid: $headOid, indexOid: $indexOid, '
+        'workdirOid: $workdirOid, ignore: $ignore, updateRule: $updateRule}';
   }
 }

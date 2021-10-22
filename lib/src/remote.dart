@@ -50,7 +50,8 @@ class Remote {
 
   /// Deletes an existing persisted remote with provided [name].
   ///
-  /// All remote-tracking branches and configuration settings for the remote will be removed.
+  /// All remote-tracking branches and configuration settings for the remote
+  /// will be removed.
   ///
   /// Throws a [LibGit2Error] if error occured.
   static void delete({required Repository repo, required String name}) {
@@ -61,12 +62,13 @@ class Remote {
   ///
   /// Returns list of non-default refspecs that cannot be renamed.
   ///
-  /// All remote-tracking branches and configuration settings for the remote are updated.
+  /// All remote-tracking branches and configuration settings for the remote
+  /// are updated.
   ///
   /// The [newName] will be checked for validity.
   ///
-  /// No loaded instances of a the remote with the old name will change their name or
-  /// their list of refspecs.
+  /// No loaded instances of a the remote with the old name will change their
+  /// name or their list of refspecs.
   ///
   /// Throws a [LibGit2Error] if error occured.
   static List<String> rename({
@@ -88,8 +90,8 @@ class Remote {
 
   /// Sets the [remote]'s [url] in the configuration.
   ///
-  /// Remote objects already in memory will not be affected. This assumes the common
-  /// case of a single-url remote and will otherwise return an error.
+  /// Remote objects already in memory will not be affected. This assumes the
+  /// common case of a single-url remote and will otherwise return an error.
   ///
   /// Throws a [LibGit2Error] if error occured.
   static void setUrl({
@@ -106,8 +108,8 @@ class Remote {
 
   /// Sets the [remote]'s [url] for pushing in the configuration.
   ///
-  /// Remote objects already in memory will not be affected. This assumes the common
-  /// case of a single-url remote and will otherwise return an error.
+  /// Remote objects already in memory will not be affected. This assumes the
+  /// common case of a single-url remote and will otherwise return an error.
   ///
   /// Throws a [LibGit2Error] if error occured.
   static void setPushUrl({
@@ -184,17 +186,20 @@ class Remote {
   /// List of push refspecs.
   List<String> get pushRefspecs => bindings.pushRefspecs(_remotePointer);
 
-  /// Returns the remote repository's reference list and their associated commit ids.
+  /// Returns the remote repository's reference list and their associated
+  /// commit ids.
   ///
-  /// [proxy] can be 'auto' to try to auto-detect the proxy from the git configuration or some
-  /// specified url. By default connection isn't done through proxy.
+  /// [proxy] can be 'auto' to try to auto-detect the proxy from the git
+  /// configuration or some specified url. By default connection isn't done
+  /// through proxy.
   ///
-  /// [callbacks] is the combination of callback functions from [Callbacks] object.
+  /// [callbacks] is the combination of callback functions from [Callbacks]
+  /// object.
   ///
   /// Returned map keys:
   /// - `local` is true if remote head is available locally, false otherwise.
-  /// - `loid` is the oid of the object the local copy of the remote head is currently
-  /// pointing to. null if there is no local copy of the remote head.
+  /// - `loid` is the oid of the object the local copy of the remote head is
+  /// currently pointing to. null if there is no local copy of the remote head.
   /// - `name` is the name of the reference.
   /// - `oid` is the oid of the object the remote head is currently pointing to.
   /// - `symref` is the target of the symbolic reference or empty string.
@@ -217,16 +222,20 @@ class Remote {
 
   /// Downloads new data and updates tips.
   ///
-  /// [refspecs] is the list of refspecs to use for this fetch. Defaults to the base refspecs.
+  /// [refspecs] is the list of refspecs to use for this fetch. Defaults to the
+  /// base refspecs.
   ///
-  /// [reflogMessage] is the message to insert into the reflogs. Default is "fetch".
+  /// [reflogMessage] is the message to insert into the reflogs. Default is
+  /// "fetch".
   ///
   /// [prune] determines whether to perform a prune after the fetch.
   ///
-  /// [proxy] can be 'auto' to try to auto-detect the proxy from the git configuration or some
-  /// specified url. By default connection isn't done through proxy.
+  /// [proxy] can be 'auto' to try to auto-detect the proxy from the git
+  /// configuration or some specified url. By default connection isn't done
+  /// through proxy.
   ///
-  /// [callbacks] is the combination of callback functions from [Callbacks] object.
+  /// [callbacks] is the combination of callback functions from [Callbacks]
+  /// object.
   ///
   /// Throws a [LibGit2Error] if error occured.
   TransferProgress fetch({
@@ -249,12 +258,15 @@ class Remote {
 
   /// Performs a push.
   ///
-  /// [refspecs] is the list of refspecs to use for pushing. Defaults to the configured refspecs.
+  /// [refspecs] is the list of refspecs to use for pushing. Defaults to the
+  /// configured refspecs.
   ///
-  /// [proxy] can be 'auto' to try to auto-detect the proxy from the git configuration or some
-  /// specified url. By default connection isn't done through proxy.
+  /// [proxy] can be 'auto' to try to auto-detect the proxy from the git
+  /// configuration or some specified url. By default connection isn't done
+  /// through proxy.
   ///
-  /// [callbacks] is the combination of callback functions from [Callbacks] object.
+  /// [callbacks] is the combination of callback functions from [Callbacks]
+  /// object.
   ///
   /// Throws a [LibGit2Error] if error occured.
   void push({
@@ -272,7 +284,8 @@ class Remote {
 
   /// Prunes tracking refs that are no longer present on remote.
   ///
-  /// [callbacks] is the combination of callback functions from [Callbacks] object.
+  /// [callbacks] is the combination of callback functions from [Callbacks]
+  /// object.
   ///
   /// Throws a [LibGit2Error] if error occured.
   void prune([Callbacks callbacks = const Callbacks()]) {
@@ -287,15 +300,16 @@ class Remote {
 
   @override
   String toString() {
-    return 'Remote{name: $name, url: $url, pushUrl: $pushUrl, refspecCount: $refspecCount}';
+    return 'Remote{name: $name, url: $url, pushUrl: $pushUrl, '
+        'refspecCount: $refspecCount}';
   }
 }
 
-/// Provides callers information about the progress of indexing a packfile, either
-/// directly or part of a fetch or clone that downloads a packfile.
+/// Provides callers information about the progress of indexing a packfile,
+/// either directly or part of a fetch or clone that downloads a packfile.
 class TransferProgress {
-  /// Initializes a new instance of [TransferProgress] class from provided pointer
-  /// to transfer progress object in memory.
+  /// Initializes a new instance of [TransferProgress] class from provided
+  /// pointer to transfer progress object in memory.
   const TransferProgress(this._transferProgressPointer);
 
   /// Pointer to memory address for allocated transfer progress object.
@@ -324,8 +338,9 @@ class TransferProgress {
 
   @override
   String toString() {
-    return 'TransferProgress{totalObjects: $totalObjects, indexedObjects: $indexedObjects, '
-        'receivedObjects: $receivedObjects, localObjects: $localObjects, totalDeltas: $totalDeltas, '
+    return 'TransferProgress{totalObjects: $totalObjects, '
+        'indexedObjects: $indexedObjects, receivedObjects: $receivedObjects, '
+        'localObjects: $localObjects, totalDeltas: $totalDeltas, '
         'indexedDeltas: $indexedDeltas, receivedBytes: $receivedBytes}';
   }
 }

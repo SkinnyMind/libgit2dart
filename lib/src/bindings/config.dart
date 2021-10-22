@@ -106,9 +106,9 @@ String findXdg() {
 
 /// Create a snapshot of the configuration.
 ///
-/// Create a snapshot of the current state of a configuration, which allows you to look
-/// into a consistent view of the configuration for looking up complex values
-/// (e.g. a remote, submodule).
+/// Create a snapshot of the current state of a configuration, which allows you
+/// to look into a consistent view of the configuration for looking up complex
+/// values (e.g. a remote, submodule).
 Pointer<git_config> snapshot(Pointer<git_config> config) {
   final out = calloc<Pointer<git_config>>();
   libgit2.git_config_snapshot(out, config);

@@ -69,11 +69,11 @@ class Branch {
   /// Pointer to memory address for allocated branch object.
   Pointer<git_reference> get pointer => _branchPointer;
 
-  /// Returns a list of branches that can be found in a [repo]sitory for provided [type].
-  /// Default is all branches (local and remote).
+  /// Returns a list of branches that can be found in a [repo]sitory for
+  /// provided [type]. Default is all branches (local and remote).
   ///
-  /// **IMPORTANT**: Branches must be freed manually when no longer needed to prevent
-  /// memory leak.
+  /// **IMPORTANT**: Branches must be freed manually when no longer needed to
+  /// prevent memory leak.
   ///
   /// Throws a [LibGit2Error] if error occured.
   static List<Branch> list({
@@ -133,8 +133,9 @@ class Branch {
 
   /// Whether any HEAD points to the current branch.
   ///
-  /// This will iterate over all known linked repositories (usually in the form of worktrees)
-  /// and report whether any HEAD is pointing at the current branch.
+  /// This will iterate over all known linked repositories (usually in the form
+  /// of worktrees) and report whether any HEAD is pointing at the current
+  /// branch.
   ///
   /// Throws a [LibGit2Error] if error occured.
   bool get isCheckedOut => bindings.isCheckedOut(_branchPointer);
@@ -152,6 +153,7 @@ class Branch {
 
   @override
   String toString() {
-    return 'Branch{name: $name, target: $target, isHead: $isHead, isCheckedOut: $isCheckedOut}';
+    return 'Branch{name: $name, target: $target, isHead: $isHead, '
+        'isCheckedOut: $isCheckedOut}';
   }
 }

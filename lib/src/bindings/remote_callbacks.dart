@@ -16,8 +16,8 @@ class RemoteCallbacks {
   /// Callback function that reports transfer progress.
   static void Function(TransferProgress)? transferProgress;
 
-  /// A callback that will be regularly called with the current count of progress
-  /// done by the indexer during the download of new data.
+  /// A callback that will be regularly called with the current count of
+  /// progress done by the indexer during the download of new data.
   static int transferProgressCb(
     Pointer<git_indexer_progress> stats,
     Pointer<Void> payload,
@@ -70,12 +70,14 @@ class RemoteCallbacks {
     return 0;
   }
 
-  /// A function matching the `Remote Function(Repository repo, String name, String url)` signature
-  /// to override the remote creation and customization process during a clone operation.
+  /// A function matching the
+  /// `Remote Function(Repository repo, String name, String url)` signature to
+  /// override the remote creation and customization process during a clone
+  /// operation.
   static Remote Function(Repository, String, String)? remoteFunction;
 
-  /// A callback used to create the git remote, prior to its being used to perform
-  /// the clone operation.
+  /// A callback used to create the git remote, prior to its being used to
+  /// perform the clone operation.
   static int remoteCb(
     Pointer<Pointer<git_remote>> remote,
     Pointer<git_repository> repo,
@@ -92,8 +94,9 @@ class RemoteCallbacks {
     return 0;
   }
 
-  /// A function matching the `Repository Function(String path, bool bare)` signature to override
-  /// the repository creation and customization process during a clone operation.
+  /// A function matching the `Repository Function(String path, bool bare)`
+  /// signature to override the repository creation and customization process
+  /// during a clone operation.
   static Repository Function(String, bool)? repositoryFunction;
 
   /// A callback used to create the new repository into which to clone.
@@ -111,11 +114,12 @@ class RemoteCallbacks {
     return 0;
   }
 
-  /// [Credentials] object used for authentication in order to connect to remote.
+  /// [Credentials] object used for authentication in order to connect to
+  /// remote.
   static Credentials? credentials;
 
-  /// Credential acquisition callback that will be called if the remote host requires
-  /// authentication in order to connect to it.
+  /// Credential acquisition callback that will be called if the remote host
+  /// requires authentication in order to connect to it.
   static int credentialsCb(
     Pointer<Pointer<git_credential>> credPointer,
     Pointer<Int8> url,

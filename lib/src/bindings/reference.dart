@@ -14,7 +14,8 @@ int referenceType(Pointer<git_reference> ref) =>
 
 /// Get the OID pointed to by a direct reference.
 ///
-/// Only available if the reference is direct (i.e. an object id reference, not a symbolic one).
+/// Only available if the reference is direct (i.e. an object id reference, not
+/// a symbolic one).
 Pointer<git_oid> target(Pointer<git_reference> ref) =>
     libgit2.git_reference_target(ref);
 
@@ -25,8 +26,8 @@ Pointer<git_oid> target(Pointer<git_reference> ref) =>
 ///
 /// The peeled reference must be freed manually once it's no longer needed.
 ///
-/// If a direct reference is passed as an argument, a copy of that reference is returned.
-/// This copy must be manually freed too.
+/// If a direct reference is passed as an argument, a copy of that reference is
+/// returned. This copy must be manually freed too.
 ///
 /// Throws a [LibGit2Error] if error occured.
 Pointer<git_reference> resolve(Pointer<git_reference> ref) {
@@ -85,11 +86,11 @@ String shorthand(Pointer<git_reference> ref) {
 ///
 /// The new name will be checked for validity.
 ///
-/// If the force flag is not enabled, and there's already a reference with the given name,
-/// the renaming will fail.
+/// If the force flag is not enabled, and there's already a reference with the
+/// given name, the renaming will fail.
 ///
-/// IMPORTANT: The user needs to write a proper reflog entry if the reflog is enabled for
-/// the repository. We only rename the reflog if it exists.
+/// IMPORTANT: The user needs to write a proper reflog entry if the reflog is
+/// enabled for the repository. We only rename the reflog if it exists.
 ///
 /// Throws a [LibGit2Error] if error occured.
 Pointer<git_reference> rename({
@@ -179,25 +180,29 @@ bool isTag(Pointer<git_reference> ref) {
 /// Create a new direct reference.
 ///
 /// A direct reference (also called an object id reference) refers directly to a
-/// specific object id (a.k.a. OID or SHA) in the repository. The id permanently refers to
-/// the object (although the reference itself can be moved). For example, in libgit2
-/// the direct ref "refs/tags/v0.17.0" refers to OID 5b9fac39d8a76b9139667c26a63e6b3f204b3977.
+/// specific object id (a.k.a. OID or SHA) in the repository. The id
+/// permanently refers to the object (although the reference itself can be
+/// moved). For example, in libgit2 the direct ref "refs/tags/v0.17.0" refers
+/// to OID 5b9fac39d8a76b9139667c26a63e6b3f204b3977.
 ///
-/// The direct reference will be created in the repository and written to the disk.
-/// The generated reference object must be freed by the user.
+/// The direct reference will be created in the repository and written to the
+/// disk. The generated reference object must be freed by the user.
 ///
 /// Valid reference names must follow one of two patterns:
 ///
-/// Top-level names must contain only capital letters and underscores, and must begin and end
-/// with a letter. (e.g. "HEAD", "ORIG_HEAD").
-/// Names prefixed with "refs/" can be almost anything. You must avoid the characters
-/// '~', '^', ':', '\', '?', '[', and '*', and the sequences ".." and "@{" which have
-/// special meaning to revparse.
-/// This function will throw a [LibGit2Error] if a reference already exists with the given name
-/// unless force is true, in which case it will be overwritten.
+/// Top-level names must contain only capital letters and underscores, and
+/// must begin and end with a letter. (e.g. "HEAD", "ORIG_HEAD").
+/// Names prefixed with "refs/" can be almost anything. You must avoid the
+/// characters '~', '^', ':', '\', '?', '[', and '*', and the sequences ".."
+/// and "@{" which have special meaning to revparse.
 ///
-/// The message for the reflog will be ignored if the reference does not belong in the
-/// standard set (HEAD, branches and remote-tracking branches) and it does not have a reflog.
+/// This function will throw a [LibGit2Error] if a reference already exists
+/// with the given name unless force is true, in which case it will be
+/// overwritten.
+///
+/// The message for the reflog will be ignored if the reference does not belong
+/// in the standard set (HEAD, branches and remote-tracking branches) and it
+/// does not have a reflog.
 ///
 /// Throws a [LibGit2Error] if error occured.
 Pointer<git_reference> createDirect({
@@ -233,26 +238,29 @@ Pointer<git_reference> createDirect({
 
 /// Create a new symbolic reference.
 ///
-/// A symbolic reference is a reference name that refers to another reference name.
-/// If the other name moves, the symbolic name will move, too. As a simple example,
-/// the "HEAD" reference might refer to "refs/heads/master" while on the "master" branch
-/// of a repository.
+/// A symbolic reference is a reference name that refers to another reference
+/// name. If the other name moves, the symbolic name will move, too. As a
+/// simple example, the "HEAD" reference might refer to "refs/heads/master"
+/// while on the "master" branch of a repository.
 ///
-/// The symbolic reference will be created in the repository and written to the disk.
-/// The generated reference object must be freed by the user.
+/// The symbolic reference will be created in the repository and written to the
+/// disk. The generated reference object must be freed by the user.
 ///
 /// Valid reference names must follow one of two patterns:
 ///
-/// Top-level names must contain only capital letters and underscores, and must begin and end
-/// with a letter. (e.g. "HEAD", "ORIG_HEAD").
-/// Names prefixed with "refs/" can be almost anything. You must avoid the characters
-/// '~', '^', ':', '\', '?', '[', and '*', and the sequences ".." and "@{" which have special
-/// meaning to revparse.
-/// This function will throw an [LibGit2Error] if a reference already exists with the given
-/// name unless force is true, in which case it will be overwritten.
+/// Top-level names must contain only capital letters and underscores, and must
+/// begin and end with a letter. (e.g. "HEAD", "ORIG_HEAD").
+/// Names prefixed with "refs/" can be almost anything. You must avoid the
+/// characters '~', '^', ':', '\', '?', '[', and '*', and the sequences ".." and
+/// "@{" which have special meaning to revparse.
 ///
-/// The message for the reflog will be ignored if the reference does not belong in the standard
-/// set (HEAD, branches and remote-tracking branches) and it does not have a reflog.
+/// This function will throw an [LibGit2Error] if a reference already exists
+/// with the given name unless force is true, in which case it will be
+/// overwritten.
+///
+/// The message for the reflog will be ignored if the reference does not belong
+/// in the standard set (HEAD, branches and remote-tracking branches) and it
+/// does not have a reflog.
 ///
 /// Throws a [LibGit2Error] if error occured.
 Pointer<git_reference> createSymbolic({
@@ -291,7 +299,8 @@ Pointer<git_reference> createSymbolic({
 /// Delete an existing reference.
 ///
 /// This method works for both direct and symbolic references.
-/// The reference will be immediately removed on disk but the memory will not be freed.
+/// The reference will be immediately removed on disk but the memory will not
+/// be freed.
 void delete(Pointer<git_reference> ref) => libgit2.git_reference_delete(ref);
 
 /// Get the repository where a reference resides.
@@ -299,8 +308,9 @@ Pointer<git_repository> owner(Pointer<git_reference> ref) {
   return libgit2.git_reference_owner(ref);
 }
 
-/// Conditionally create a new reference with the same name as the given reference
-/// but a different OID target. The reference must be a direct reference, otherwise this will fail.
+/// Conditionally create a new reference with the same name as the given
+/// reference but a different OID target. The reference must be a direct
+/// reference, otherwise this will fail.
 ///
 /// The new reference will be written to disk, overwriting the given reference.
 ///
@@ -329,15 +339,17 @@ Pointer<git_reference> setTarget({
   }
 }
 
-/// Create a new reference with the same name as the given reference but a different
-/// symbolic target. The reference must be a symbolic reference, otherwise this will fail.
+/// Create a new reference with the same name as the given reference but a
+/// different symbolic target. The reference must be a symbolic reference,
+/// otherwise this will fail.
 ///
 /// The new reference will be written to disk, overwriting the given reference.
 ///
 /// The target name will be checked for validity.
 ///
-/// The message for the reflog will be ignored if the reference does not belong in the
-/// standard set (HEAD, branches and remote-tracking branches) and and it does not have a reflog.
+/// The message for the reflog will be ignored if the reference does not belong
+/// in the standard set (HEAD, branches and remote-tracking branches) and and
+/// it does not have a reflog.
 ///
 /// Throws a [LibGit2Error] if error occured.
 Pointer<git_reference> setTargetSymbolic({
@@ -378,10 +390,11 @@ bool compare({
 
 /// Recursively peel reference until object of the specified type is found.
 ///
-/// The retrieved peeled object is owned by the repository and should be closed to release memory.
+/// The retrieved peeled object is owned by the repository and should be closed
+/// to release memory.
 ///
-/// If you pass GIT_OBJECT_ANY as the target type, then the object will be peeled until a
-/// non-tag object is met.
+/// If you pass GIT_OBJECT_ANY as the target type, then the object will be
+/// peeled until a non-tag object is met.
 ///
 /// Throws a [LibGit2Error] if error occured.
 Pointer<git_object> peel({

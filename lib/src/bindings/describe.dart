@@ -10,7 +10,8 @@ import 'libgit2_bindings.dart';
 ///
 /// Perform the describe operation on the given committish object.
 ///
-/// Returned object should be freed with `describeResultFree()` once no longer needed.
+/// Returned object should be freed with `describeResultFree()` once no longer
+/// needed.
 ///
 /// Throws a [LibGit2Error] if error occured.
 Pointer<git_describe_result> commit({

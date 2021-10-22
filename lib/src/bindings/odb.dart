@@ -20,11 +20,11 @@ Pointer<git_odb> create() {
 
 /// Add an on-disk alternate to an existing Object DB.
 ///
-/// Note that the added path must point to an `objects`, not to a full repository,
-/// to use it as an alternate store.
+/// Note that the added path must point to an `objects`, not to a full
+/// repository, to use it as an alternate store.
 ///
-/// Alternate backends are always checked for objects after all the main backends
-/// have been exhausted.
+/// Alternate backends are always checked for objects after all the main
+/// backends have been exhausted.
 ///
 /// Writing is disabled on alternate backends.
 void addDiskAlternate({
@@ -36,7 +36,8 @@ void addDiskAlternate({
   calloc.free(pathC);
 }
 
-/// Determine if an object can be found in the object database by an abbreviated object ID.
+/// Determine if an object can be found in the object database by an
+/// abbreviated object ID.
 ///
 /// Throws a [LibGit2Error] if error occured.
 Pointer<git_oid> existsPrefix({
@@ -108,8 +109,8 @@ List<Oid> objects(Pointer<git_odb> odb) {
 ///
 /// This method queries all available ODB backends trying to read the given OID.
 ///
-/// The returned object is reference counted and internally cached, so it should be
-/// closed by the user once it's no longer in use.
+/// The returned object is reference counted and internally cached, so it
+/// should be closed by the user once it's no longer in use.
 ///
 /// Throws a [LibGit2Error] if error occured.
 Pointer<git_odb_object> read({
@@ -141,14 +142,16 @@ int objectType(Pointer<git_odb_object> object) {
 
 /// Return the data of an ODB object.
 ///
-/// This is the uncompressed, raw data as read from the ODB, without the leading header.
+/// This is the uncompressed, raw data as read from the ODB, without the
+/// leading header.
 String objectData(Pointer<git_odb_object> object) {
   return libgit2.git_odb_object_data(object).cast<Utf8>().toDartString();
 }
 
 /// Return the size of an ODB object.
 ///
-/// This is the real size of the `data` buffer, not the actual size of the object.
+/// This is the real size of the `data` buffer, not the actual size of the
+/// object.
 int objectSize(Pointer<git_odb_object> object) {
   return libgit2.git_odb_object_size(object);
 }

@@ -6,13 +6,14 @@ import '../error.dart';
 import '../util.dart';
 import 'libgit2_bindings.dart';
 
-/// Updates files in the index and the working tree to match the content of the commit
-/// pointed at by HEAD.
+/// Updates files in the index and the working tree to match the content of the
+/// commit pointed at by HEAD.
 ///
-/// Note that this is not the correct mechanism used to switch branches; do not change
-/// your HEAD and then call this method, that would leave you with checkout conflicts
-/// since your working directory would then appear to be dirty. Instead, checkout the
-/// target of the branch and then update HEAD using `setHead` to point to the branch you checked out.
+/// Note that this is not the correct mechanism used to switch branches; do not
+/// change your HEAD and then call this method, that would leave you with
+/// checkout conflicts since your working directory would then appear to be
+/// dirty. Instead, checkout the target of the branch and then update HEAD
+/// using [setHead] to point to the branch you checked out.
 ///
 /// Throws a [LibGit2Error] if error occured.
 void head({

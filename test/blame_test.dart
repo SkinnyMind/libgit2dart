@@ -98,8 +98,8 @@ void main() {
     });
 
     test(
-        'successfully gets the blame for provided file with minMatchCharacters set',
-        () {
+        'successfully gets the blame for provided file with '
+        'minMatchCharacters set', () {
       final blame = repo.blame(
         path: 'feature_file',
         minMatchCharacters: 1,
@@ -165,8 +165,8 @@ void main() {
     });
 
     test(
-        'successfully gets the blame for provided file with newestCommit argument',
-        () {
+        'successfully gets the blame for provided file with '
+        'newestCommit argument', () {
       final blame = repo.blame(
         path: 'feature_file',
         newestCommit: repo['fc38877'],
@@ -194,8 +194,8 @@ void main() {
     });
 
     test(
-        'successfully gets the blame for provided file with minLine and maxLine set',
-        () {
+        'successfully gets the blame for provided file with minLine and '
+        'maxLine set', () {
       final blame = repo.blame(
         path: 'feature_file',
         minLine: 1,

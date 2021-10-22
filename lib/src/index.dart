@@ -84,18 +84,20 @@ class Index with IterableMixin<IndexEntry> {
 
   /// Clears the contents (all the entries) of an index object.
   ///
-  /// This clears the index object in memory; changes must be explicitly written to
-  /// disk for them to take effect persistently.
+  /// This clears the index object in memory; changes must be explicitly
+  /// written to disk for them to take effect persistently.
   ///
   /// Throws a [LibGit2Error] if error occured.
   void clear() => bindings.clear(_indexPointer);
 
-  /// Adds or updates an index entry from an [IndexEntry] or from a file on disk.
+  /// Adds or updates an index entry from an [IndexEntry] or from a file on
+  /// disk.
   ///
-  /// If a previous index entry exists that has the same path and stage as the given `entry`,
-  /// it will be replaced. Otherwise, the `entry` will be added.
+  /// If a previous index entry exists that has the same path and stage as the
+  /// given [entry], it will be replaced. Otherwise, the [entry] will be added.
   ///
-  /// The file path must be relative to the repository's working folder and must be readable.
+  /// The file path must be relative to the repository's working folder and
+  /// must be readable.
   ///
   /// This method will fail in bare index instances.
   ///
@@ -115,47 +117,51 @@ class Index with IterableMixin<IndexEntry> {
   ///
   /// This method will fail in bare index instances.
   ///
-  /// The [pathspec] is a list of file names or shell glob patterns that will be matched
-  /// against files in the repository's working directory. Each file that matches will be
-  /// added to the index (either updating an existing entry or adding a new entry).
+  /// The [pathspec] is a list of file names or shell glob patterns that will
+  /// be matched against files in the repository's working directory. Each file
+  /// that matches will be added to the index (either updating an existing
+  /// entry or adding a new entry).
   ///
   /// Throws a [LibGit2Error] if error occured.
   void addAll(List<String> pathspec) {
     bindings.addAll(indexPointer: _indexPointer, pathspec: pathspec);
   }
 
-  /// Updates the contents of an existing index object in memory by reading from the hard disk.
+  /// Updates the contents of an existing index object in memory by reading
+  /// from the hard disk.
   ///
-  /// If [force] is true (default), this performs a "hard" read that discards in-memory changes and
-  /// always reloads the on-disk index data. If there is no on-disk version,
-  /// the index will be cleared.
+  /// If [force] is true (default), this performs a "hard" read that discards
+  /// in-memory changes and always reloads the on-disk index data. If there is
+  /// no on-disk version, the index will be cleared.
   ///
-  /// If [force] is false, this does a "soft" read that reloads the index data from disk only
-  /// if it has changed since the last time it was loaded. Purely in-memory index data
-  /// will be untouched. Be aware: if there are changes on disk, unwritten in-memory changes
-  /// are discarded.
+  /// If [force] is false, this does a "soft" read that reloads the index data
+  /// from disk only if it has changed since the last time it was loaded.
+  /// Purely in-memory index data will be untouched. Be aware: if there are
+  /// changes on disk, unwritten in-memory changes are discarded.
   void read({bool force = true}) =>
       bindings.read(indexPointer: _indexPointer, force: force);
 
-  /// Updates the contents of an existing index object in memory by reading from the
-  /// specified [tree].
+  /// Updates the contents of an existing index object in memory by reading
+  /// from the specified [tree].
   void readTree(Tree tree) {
     bindings.readTree(indexPointer: _indexPointer, treePointer: tree.pointer);
   }
 
-  /// Writes an existing index object from memory back to disk using an atomic file lock.
+  /// Writes an existing index object from memory back to disk using an atomic
+  /// file lock.
   void write() => bindings.write(_indexPointer);
 
   /// Writes the index as a tree.
   ///
-  /// This method will scan the index and write a representation of its current state back to disk;
-  /// it recursively creates tree objects for each of the subtrees stored in the index, but only
-  /// returns the [Oid] of the root tree. This is the oid that can be used e.g. to create a commit.
+  /// This method will scan the index and write a representation of its current
+  /// state back to disk; it recursively creates tree objects for each of the
+  /// subtrees stored in the index, but only returns the [Oid] of the root
+  /// tree. This is the oid that can be used e.g. to create a commit.
   ///
   /// The index must not contain any file in conflict.
   ///
-  /// Throws a [LibGit2Error] if error occured or there is no associated repository
-  /// and no [repo] passed.
+  /// Throws a [LibGit2Error] if error occured or there is no associated
+  /// repository and no [repo] passed.
   Oid writeTree([Repository? repo]) {
     if (repo == null) {
       return Oid(bindings.writeTree(_indexPointer));
@@ -167,15 +173,15 @@ class Index with IterableMixin<IndexEntry> {
     }
   }
 
-  /// Removes an entry from the index at provided [path] relative to repository working
-  /// directory with optional [stage].
+  /// Removes an entry from the index at provided [path] relative to repository
+  /// working directory with optional [stage].
   ///
   /// Throws a [LibGit2Error] if error occured.
   void remove(String path, [int stage = 0]) =>
       bindings.remove(indexPointer: _indexPointer, path: path, stage: stage);
 
-  /// Removes all matching index entries at provided list of [path]s relative to repository
-  /// working directory.
+  /// Removes all matching index entries at provided list of [path]s relative
+  /// to repository working directory.
   ///
   /// Throws a [LibGit2Error] if error occured.
   void removeAll(List<String> path) =>
@@ -310,7 +316,8 @@ class ConflictEntry {
 
   @override
   String toString() =>
-      'ConflictEntry{ancestor: $ancestor, our: $our, their: $their, path: $_path}';
+      'ConflictEntry{ancestor: $ancestor, our: $our, their: $their, '
+      'path: $_path}';
 }
 
 class _IndexIterator implements Iterator<IndexEntry> {

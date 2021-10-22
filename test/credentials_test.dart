@@ -153,7 +153,8 @@ void main() {
           isA<LibGit2Error>().having(
             (e) => e.toString(),
             'error',
-            "Failed to authenticate SSH session: Unable to open public key file",
+            'Failed to authenticate SSH session: Unable to open public key '
+                'file',
           ),
         ),
       );

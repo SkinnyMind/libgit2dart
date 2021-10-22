@@ -8,8 +8,8 @@ import 'libgit2_bindings.dart';
 
 /// Directly generate a patch from the difference between two buffers.
 ///
-/// You can use the standard patch accessor functions to read the patch data, and
-/// you must free the patch when done.
+/// You can use the standard patch accessor functions to read the patch data,
+/// and you must free the patch when done.
 Map<String, Pointer?> fromBuffers({
   String? oldBuffer,
   String? oldAsPath,
@@ -47,16 +47,16 @@ Map<String, Pointer?> fromBuffers({
   calloc.free(newAsPathC);
   calloc.free(opts);
 
-  // Returning map with pointers to patch and buffers because patch object does not
-  // have refenrece to underlying buffers or blobs. So if the buffer or blob is freed/removed
+  // Returning map with pointers to patch and buffers because patch object does
+  // not have refenrece to underlying buffers or blobs. So if the buffer or blob is freed/removed
   // the patch text becomes corrupted.
   return {'patch': out.value, 'a': oldBufferC, 'b': newBufferC};
 }
 
 /// Directly generate a patch from the difference between two blobs.
 ///
-/// You can use the standard patch accessor functions to read the patch data, and you
-/// must free the patch when done.
+/// You can use the standard patch accessor functions to read the patch data,
+/// and you must free the patch when done.
 Map<String, Pointer?> fromBlobs({
   required Pointer<git_blob> oldBlobPointer,
   String? oldAsPath,
@@ -88,16 +88,16 @@ Map<String, Pointer?> fromBlobs({
   calloc.free(newAsPathC);
   calloc.free(opts);
 
-  // Returning map with pointers to patch and blobs because patch object does not
-  // have reference to underlying blobs. So if the blob is freed/removed the patch
-  // text becomes corrupted.
+  // Returning map with pointers to patch and blobs because patch object does
+  // not have reference to underlying blobs. So if the blob is freed/removed the
+  // patch text becomes corrupted.
   return {'patch': out.value, 'a': oldBlobPointer, 'b': newBlobPointer};
 }
 
 /// Directly generate a patch from the difference between a blob and a buffer.
 ///
-/// You can use the standard patch accessor functions to read the patch data, and you must
-/// free the patch when done.
+/// You can use the standard patch accessor functions to read the patch data,
+/// and you must free the patch when done.
 Map<String, Pointer?> fromBlobAndBuffer({
   Pointer<git_blob>? oldBlobPointer,
   String? oldAsPath,
@@ -132,17 +132,17 @@ Map<String, Pointer?> fromBlobAndBuffer({
   calloc.free(bufferAsPathC);
   calloc.free(opts);
 
-  // Returning map with pointers to patch and buffers because patch object does not
-  // have reference to underlying buffers or blobs. So if the buffer or blob is freed/removed
-  // the patch text becomes corrupted.
+  // Returning map with pointers to patch and buffers because patch object does
+  // not have reference to underlying buffers or blobs. So if the buffer or
+  // blob is freed/removed the patch text becomes corrupted.
   return {'patch': out.value, 'a': oldBlobPointer, 'b': bufferC};
 }
 
 /// Return a patch for an entry in the diff list.
 ///
-/// The newly created patch object contains the text diffs for the delta. You have to call
-/// `free()` when you are done with it. You can use the patch object to loop over all the
-/// hunks and lines in the diff of the one delta.
+/// The newly created patch object contains the text diffs for the delta. You
+/// have to call [free] when you are done with it. You can use the patch object
+/// to loop over all the hunks and lines in the diff of the one delta.
 ///
 /// Throws a [LibGit2Error] if error occured.
 Pointer<git_patch> fromDiff({
@@ -169,8 +169,8 @@ int numHunks(Pointer<git_patch> patch) => libgit2.git_patch_num_hunks(patch);
 
 /// Get the information about a hunk in a patch.
 ///
-/// Given a patch and a hunk index into the patch, this returns detailed information
-/// about that hunk.
+/// Given a patch and a hunk index into the patch, this returns detailed
+/// information about that hunk.
 Map<String, Object> hunk({
   required Pointer<git_patch> patchPointer,
   required int hunkIndex,
@@ -215,12 +215,12 @@ String text(Pointer<git_patch> patch) {
 
 /// Look up size of patch diff data in bytes.
 ///
-/// This returns the raw size of the patch data. This only includes the actual data from
-/// the lines of the diff, not the file or hunk headers.
+/// This returns the raw size of the patch data. This only includes the actual
+/// data from the lines of the diff, not the file or hunk headers.
 ///
-/// If you pass `includeContext` as true, this will be the size of all of the diff output;
-/// if you pass it as false, this will only include the actual changed lines (as if
-/// contextLines was 0).
+/// If you pass `includeContext` as true, this will be the size of all of the
+/// diff output; if you pass it as false, this will only include the actual
+/// changed lines (as if contextLines was 0).
 int size({
   required Pointer<git_patch> patchPointer,
   required bool includeContext,

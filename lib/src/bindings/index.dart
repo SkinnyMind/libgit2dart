@@ -6,16 +6,17 @@ import '../error.dart';
 import '../util.dart';
 import 'libgit2_bindings.dart';
 
-/// Update the contents of an existing index object in memory by reading from the hard disk.
+/// Update the contents of an existing index object in memory by reading from
+/// the hard disk.
 ///
-/// If force is true, this performs a "hard" read that discards in-memory changes and
-/// always reloads the on-disk index data. If there is no on-disk version,
-/// the index will be cleared.
+/// If force is true, this performs a "hard" read that discards in-memory
+/// changes and always reloads the on-disk index data. If there is no on-disk
+/// version, the index will be cleared.
 ///
-/// If force is false, this does a "soft" read that reloads the index data from disk only
-/// if it has changed since the last time it was loaded. Purely in-memory index data
-/// will be untouched. Be aware: if there are changes on disk, unwritten in-memory changes
-/// are discarded.
+/// If force is false, this does a "soft" read that reloads the index data from
+/// disk only if it has changed since the last time it was loaded. Purely
+/// in-memory index data will be untouched. Be aware: if there are changes on
+/// disk, unwritten in-memory changes are discarded.
 void read({required Pointer<git_index> indexPointer, required bool force}) {
   final forceC = force == true ? 1 : 0;
   libgit2.git_index_read(indexPointer, forceC);
@@ -33,11 +34,13 @@ void readTree({
 
 /// Write the index as a tree.
 ///
-/// This method will scan the index and write a representation of its current state back to disk;
-/// it recursively creates tree objects for each of the subtrees stored in the index, but only
-/// returns the OID of the root tree. This is the OID that can be used e.g. to create a commit.
+/// This method will scan the index and write a representation of its current
+/// state back to disk; it recursively creates tree objects for each of the
+/// subtrees stored in the index, but only returns the OID of the root tree.
+/// This is the OID that can be used e.g. to create a commit.
 ///
-/// The index instance cannot be bare, and needs to be associated to an existing repository.
+/// The index instance cannot be bare, and needs to be associated to an
+/// existing repository.
 ///
 /// The index must not contain any file in conflict.
 ///
@@ -56,8 +59,8 @@ Pointer<git_oid> writeTree(Pointer<git_index> index) {
 
 /// Write the index as a tree to the given repository.
 ///
-/// This method will do the same as [writeTree], but letting the user choose the repository
-/// where the tree will be written.
+/// This method will do the same as [writeTree], but letting the user choose
+/// the repository where the tree will be written.
 ///
 /// The index must not contain any file in conflict.
 ///
@@ -77,7 +80,8 @@ Pointer<git_oid> writeTreeTo({
   }
 }
 
-/// Find the first position of any entries which point to given path in the Git index.
+/// Find the first position of any entries which point to given path in the Git
+/// index.
 bool find({required Pointer<git_index> indexPointer, required String path}) {
   final pathC = path.toNativeUtf8().cast<Int8>();
   final result = libgit2.git_index_find(nullptr, indexPointer, pathC);
@@ -132,8 +136,8 @@ Pointer<git_index_entry> getByPath({
 
 /// Clear the contents (all the entries) of an index object.
 ///
-/// This clears the index object in memory; changes must be explicitly written to
-/// disk for them to take effect persistently.
+/// This clears the index object in memory; changes must be explicitly written
+/// to disk for them to take effect persistently.
 ///
 /// Throws a [LibGit2Error] if error occured.
 void clear(Pointer<git_index> index) {
@@ -146,8 +150,9 @@ void clear(Pointer<git_index> index) {
 
 /// Add or update an index entry from an in-memory struct.
 ///
-/// If a previous index entry exists that has the same path and stage as the given `sourceEntry`,
-/// it will be replaced. Otherwise, the `sourceEntry` will be added.
+/// If a previous index entry exists that has the same path and stage as the
+/// given `sourceEntry`, it will be replaced. Otherwise, the `sourceEntry` will
+/// be added.
 ///
 /// Throws a [LibGit2Error] if error occured.
 void add({
@@ -163,15 +168,17 @@ void add({
 
 /// Add or update an index entry from a file on disk.
 ///
-/// The file path must be relative to the repository's working folder and must be readable.
+/// The file path must be relative to the repository's working folder and must
+/// be readable.
 ///
 /// This method will fail in bare index instances.
 ///
-/// This forces the file to be added to the index, not looking at gitignore rules.
+/// This forces the file to be added to the index, not looking at gitignore
+/// rules.
 ///
-/// If this file currently is the result of a merge conflict, this file will no longer be
-/// marked as conflicting. The data about the conflict will be moved to the "resolve undo"
-/// (REUC) section.
+/// If this file currently is the result of a merge conflict, this file will no
+/// longer be marked as conflicting. The data about the conflict will be moved
+/// to the "resolve undo" (REUC) section.
 ///
 /// Throws a [LibGit2Error] if error occured.
 void addByPath({
@@ -192,9 +199,10 @@ void addByPath({
 ///
 /// This method will fail in bare index instances.
 ///
-/// The `pathspec` is a list of file names or shell glob patterns that will be matched
-/// against files in the repository's working directory. Each file that matches will be
-/// added to the index (either updating an existing entry or adding a new entry).
+/// The `pathspec` is a list of file names or shell glob patterns that will be
+/// matched against files in the repository's working directory. Each file that
+/// matches will be added to the index (either updating an existing entry or
+/// adding a new entry).
 ///
 /// Throws a [LibGit2Error] if error occured.
 void addAll({
@@ -232,7 +240,8 @@ void addAll({
   }
 }
 
-/// Write an existing index object from memory back to disk using an atomic file lock.
+/// Write an existing index object from memory back to disk using an atomic
+/// file lock.
 void write(Pointer<git_index> index) => libgit2.git_index_write(index);
 
 /// Remove an entry from the index.

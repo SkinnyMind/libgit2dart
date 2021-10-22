@@ -112,7 +112,8 @@ void main() {
             isA<LibGit2Error>().having(
               (e) => e.toString(),
               'error',
-              "could not find '${repo.workdir}not_there' to stat: No such file or directory",
+              "could not find '${repo.workdir}not_there' to stat: No such file "
+                  "or directory",
             ),
           ),
         );
@@ -141,7 +142,8 @@ void main() {
             isA<LibGit2Error>().having(
               (e) => e.toString(),
               'error',
-              "cannot create blob from file. This operation is not allowed against bare repositories.",
+              "cannot create blob from file. This operation is not allowed "
+                  "against bare repositories.",
             ),
           ),
         );
@@ -184,7 +186,8 @@ void main() {
             isA<LibGit2Error>().having(
               (e) => e.toString(),
               'error',
-              "cannot index add all. This operation is not allowed against bare repositories.",
+              "cannot index add all. This operation is not allowed against "
+                  "bare repositories.",
             ),
           ),
         );

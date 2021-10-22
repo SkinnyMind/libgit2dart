@@ -32,22 +32,24 @@ void main() {
           isA<LibGit2Error>().having(
             (e) => e.toString(),
             'error',
-            "failed to parse signature - Signature cannot have an empty name or email",
+            "failed to parse signature - Signature cannot have an empty name "
+                "or email",
           ),
         ),
       );
     });
 
     test(
-        'throws when trying to create with empty name and email and default time',
-        () {
+        'throws when trying to create with empty name and email and '
+        'default time', () {
       expect(
         () => Signature.create(name: '', email: ''),
         throwsA(
           isA<LibGit2Error>().having(
             (e) => e.toString(),
             'error',
-            "failed to parse signature - Signature cannot have an empty name or email",
+            "failed to parse signature - Signature cannot have an empty name "
+                "or email",
           ),
         ),
       );
