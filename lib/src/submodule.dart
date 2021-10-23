@@ -1,7 +1,7 @@
 import 'dart:ffi';
 import 'package:libgit2dart/libgit2dart.dart';
-import 'bindings/libgit2_bindings.dart';
-import 'bindings/submodule.dart' as bindings;
+import 'package:libgit2dart/src/bindings/libgit2_bindings.dart';
+import 'package:libgit2dart/src/bindings/submodule.dart' as bindings;
 
 class Submodule {
   /// Lookups submodule information by [name] or path (they are usually the

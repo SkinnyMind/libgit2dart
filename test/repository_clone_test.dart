@@ -1,3 +1,5 @@
+// ignore_for_file: avoid_positional_boolean_parameters
+
 import 'dart:io';
 
 import 'package:libgit2dart/libgit2dart.dart';
@@ -101,13 +103,13 @@ void main() {
     });
 
     test('successfully clones repository with provided repository callback',
-        () async {
+        () {
       final callbackPath =
           Directory('${Directory.systemTemp.path}/callbackRepo');
-      if (await callbackPath.exists()) {
-        callbackPath.delete(recursive: true);
+      if (callbackPath.existsSync()) {
+        callbackPath.deleteSync(recursive: true);
       }
-      callbackPath.create();
+      callbackPath.createSync();
 
       Repository repository(String path, bool bare) =>
           Repository.init(path: callbackPath.path);
@@ -123,7 +125,7 @@ void main() {
       expect(clonedRepo.path, '${callbackPath.path}/.git/');
 
       clonedRepo.free();
-      callbackPath.delete(recursive: true);
+      callbackPath.deleteSync(recursive: true);
     });
 
     test('throws when cloning repository with invalid repository callback', () {

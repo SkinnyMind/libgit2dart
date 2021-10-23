@@ -1,9 +1,9 @@
 import 'dart:ffi';
 import 'package:ffi/ffi.dart';
 import 'package:libgit2dart/libgit2dart.dart';
-import 'bindings/libgit2_bindings.dart';
-import 'bindings/signature.dart' as bindings;
-import 'util.dart';
+import 'package:libgit2dart/src/bindings/libgit2_bindings.dart';
+import 'package:libgit2dart/src/bindings/signature.dart' as bindings;
+import 'package:libgit2dart/src/util.dart';
 
 class Signature {
   /// Initializes a new instance of [Signature] class from provided pointer to
@@ -39,18 +39,19 @@ class Signature {
     }
   }
 
-  late final Pointer<git_signature> _signaturePointer;
-
-  /// Pointer to memory address for allocated signature object.
-  Pointer<git_signature> get pointer => _signaturePointer;
-
   /// Creates a new action signature with default user and now timestamp.
   ///
   /// This looks up the user.name and user.email from the configuration and
   /// uses the current time as the timestamp, and creates a new signature based
   /// on that information.
-  static Signature defaultSignature(Repository repo) =>
-      Signature(bindings.defaultSignature(repo.pointer));
+  Signature.defaultSignature(Repository repo) {
+    _signaturePointer = bindings.defaultSignature(repo.pointer);
+  }
+
+  late final Pointer<git_signature> _signaturePointer;
+
+  /// Pointer to memory address for allocated signature object.
+  Pointer<git_signature> get pointer => _signaturePointer;
 
   /// Full name of the author.
   String get name => _signaturePointer.ref.name.cast<Utf8>().toDartString();
@@ -65,7 +66,7 @@ class Signature {
   int get offset => _signaturePointer.ref.when.offset;
 
   @override
-  bool operator ==(other) {
+  bool operator ==(Object other) {
     return (other is Signature) &&
         (name == other.name) &&
         (email == other.email) &&

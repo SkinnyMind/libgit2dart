@@ -1,7 +1,7 @@
 import 'dart:ffi';
 
-import '../util.dart';
-import 'libgit2_bindings.dart';
+import 'package:libgit2dart/src/bindings/libgit2_bindings.dart';
+import 'package:libgit2dart/src/util.dart';
 
 /// Suggests that the given refdb compress or optimize its references.
 /// This mechanism is implementation specific. For on-disk reference databases,

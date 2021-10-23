@@ -1,11 +1,12 @@
 import 'dart:ffi';
+
 import 'package:ffi/ffi.dart';
-import '../callbacks.dart';
-import '../error.dart';
-import '../oid.dart';
-import '../util.dart';
-import 'libgit2_bindings.dart';
-import 'remote_callbacks.dart';
+import 'package:libgit2dart/src/bindings/libgit2_bindings.dart';
+import 'package:libgit2dart/src/bindings/remote_callbacks.dart';
+import 'package:libgit2dart/src/callbacks.dart';
+import 'package:libgit2dart/src/error.dart';
+import 'package:libgit2dart/src/oid.dart';
+import 'package:libgit2dart/src/util.dart';
 
 /// Get a list of the configured remotes for a repo.
 ///
@@ -14,7 +15,7 @@ List<String> list(Pointer<git_repository> repo) {
   final out = calloc<git_strarray>();
   libgit2.git_remote_list(out, repo);
 
-  var result = <String>[];
+  final result = <String>[];
   for (var i = 0; i < out.ref.count; i++) {
     result.add(out.ref.strings[i].cast<Utf8>().toDartString());
   }
@@ -156,7 +157,7 @@ List<String> rename({
     calloc.free(out);
     throw LibGit2Error(libgit2.git_error_last());
   } else {
-    var result = <String>[];
+    final result = <String>[];
     for (var i = 0; i < out.ref.count; i++) {
       result.add(out.ref.strings[i].cast<Utf8>().toDartString());
     }
@@ -247,7 +248,7 @@ List<String> fetchRefspecs(Pointer<git_remote> remote) {
   final out = calloc<git_strarray>();
   libgit2.git_remote_get_fetch_refspecs(out, remote);
 
-  var result = <String>[];
+  final result = <String>[];
   for (var i = 0; i < out.ref.count; i++) {
     result.add(out.ref.strings[i].cast<Utf8>().toDartString());
   }
@@ -260,7 +261,7 @@ List<String> pushRefspecs(Pointer<git_remote> remote) {
   final out = calloc<git_strarray>();
   libgit2.git_remote_get_push_refspecs(out, remote);
 
-  var result = <String>[];
+  final result = <String>[];
   for (var i = 0; i < out.ref.count; i++) {
     result.add(out.ref.strings[i].cast<Utf8>().toDartString());
   }
@@ -372,12 +373,12 @@ List<Map<String, Object?>> lsRemotes(Pointer<git_remote> remote) {
   final size = calloc<Uint64>();
   libgit2.git_remote_ls(out, size, remote);
 
-  var result = <Map<String, Object?>>[];
+  final result = <Map<String, Object?>>[];
 
   for (var i = 0; i < size.value; i++) {
-    var remote = <String, Object?>{};
+    final remote = <String, Object?>{};
 
-    final local = out[0][i].ref.local == 1 ? true : false;
+    final local = out[0][i].ref.local == 1 || false;
 
     remote['local'] = local;
     remote['loid'] = local ? Oid.fromRaw(out[0][i].ref.loid) : null;
@@ -412,7 +413,7 @@ void fetch({
   String? reflogMessage,
   String? proxyOption,
 }) {
-  var refspecsC = calloc<git_strarray>();
+  final refspecsC = calloc<git_strarray>();
   final refspecsPointers =
       refspecs.map((e) => e.toNativeUtf8().cast<Int8>()).toList();
   final strArray = calloc<Pointer<Int8>>(refspecs.length);
@@ -468,7 +469,7 @@ void push({
   required Callbacks callbacks,
   String? proxyOption,
 }) {
-  var refspecsC = calloc<git_strarray>();
+  final refspecsC = calloc<git_strarray>();
   final refspecsPointers =
       refspecs.map((e) => e.toNativeUtf8().cast<Int8>()).toList();
   final strArray = calloc<Pointer<Int8>>(refspecs.length);

@@ -2,11 +2,10 @@ import 'dart:ffi';
 
 import 'package:ffi/ffi.dart';
 import 'package:libgit2dart/libgit2dart.dart';
-
-import 'bindings/diff.dart' as bindings;
-import 'bindings/libgit2_bindings.dart';
-import 'bindings/patch.dart' as patch_bindings;
-import 'util.dart';
+import 'package:libgit2dart/src/bindings/diff.dart' as bindings;
+import 'package:libgit2dart/src/bindings/libgit2_bindings.dart';
+import 'package:libgit2dart/src/bindings/patch.dart' as patch_bindings;
+import 'package:libgit2dart/src/util.dart';
 
 class Diff {
   /// Initializes a new instance of [Diff] class from provided
@@ -43,12 +42,16 @@ class Diff {
   /// revisions.
   List<DiffDelta> get deltas {
     final length = bindings.length(_diffPointer);
-    var deltas = <DiffDelta>[];
+    final deltas = <DiffDelta>[];
     for (var i = 0; i < length; i++) {
-      deltas.add(DiffDelta(bindings.getDeltaByIndex(
-        diffPointer: _diffPointer,
-        index: i,
-      )));
+      deltas.add(
+        DiffDelta(
+          bindings.getDeltaByIndex(
+            diffPointer: _diffPointer,
+            index: i,
+          ),
+        ),
+      );
     }
     return deltas;
   }
@@ -56,7 +59,7 @@ class Diff {
   /// A List of [Patch]es.
   List<Patch> get patches {
     final length = bindings.length(_diffPointer);
-    var patches = <Patch>[];
+    final patches = <Patch>[];
     for (var i = 0; i < length; i++) {
       patches.add(Patch.fromDiff(diff: this, index: i));
     }
@@ -336,7 +339,7 @@ class DiffHunk {
 
   /// Header of a hunk.
   String get header {
-    var list = <int>[];
+    final list = <int>[];
     for (var i = 0; i < _diffHunkPointer.ref.header_len; i++) {
       list.add(_diffHunkPointer.ref.header[i]);
     }
@@ -345,13 +348,17 @@ class DiffHunk {
 
   /// List of lines in a hunk of a patch.
   List<DiffLine> get lines {
-    var lines = <DiffLine>[];
+    final lines = <DiffLine>[];
     for (var i = 0; i < linesCount; i++) {
-      lines.add(DiffLine(patch_bindings.lines(
-        patchPointer: _patchPointer,
-        hunkIndex: index,
-        lineOfHunk: i,
-      )));
+      lines.add(
+        DiffLine(
+          patch_bindings.lines(
+            patchPointer: _patchPointer,
+            hunkIndex: index,
+            lineOfHunk: i,
+          ),
+        ),
+      );
     }
     return lines;
   }

@@ -1,10 +1,9 @@
 import 'dart:ffi';
 
 import 'package:libgit2dart/libgit2dart.dart';
-
-import 'bindings/branch.dart' as bindings;
-import 'bindings/libgit2_bindings.dart';
-import 'bindings/reference.dart' as reference_bindings;
+import 'package:libgit2dart/src/bindings/branch.dart' as bindings;
+import 'package:libgit2dart/src/bindings/libgit2_bindings.dart';
+import 'package:libgit2dart/src/bindings/reference.dart' as reference_bindings;
 
 class Branch {
   /// Initializes a new instance of [Branch] class from provided pointer to

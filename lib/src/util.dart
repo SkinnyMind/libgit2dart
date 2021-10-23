@@ -3,12 +3,13 @@
 import 'dart:ffi';
 import 'dart:io';
 
-import 'bindings/libgit2_bindings.dart';
+import 'package:libgit2dart/src/bindings/libgit2_bindings.dart';
 
 DynamicLibrary loadLibrary() {
   if (Platform.isLinux || Platform.isAndroid || Platform.isFuchsia) {
     return DynamicLibrary.open(
-        '${Directory.current.path}/libgit2/libgit2.so.1.3.0');
+      '${Directory.current.path}/libgit2/libgit2.so.1.3.0',
+    );
   }
   // if (Platform.isMacOS) {
   //   return DynamicLibrary.open(

@@ -1,10 +1,9 @@
 import 'dart:ffi';
 
 import 'package:ffi/ffi.dart';
-
-import '../error.dart';
-import '../util.dart';
-import 'libgit2_bindings.dart';
+import 'package:libgit2dart/src/bindings/libgit2_bindings.dart';
+import 'package:libgit2dart/src/error.dart';
+import 'package:libgit2dart/src/util.dart';
 
 /// Fill a list with all the tags in the repository.
 ///
@@ -13,7 +12,7 @@ List<String> list(Pointer<git_repository> repo) {
   final out = calloc<git_strarray>();
   final error = libgit2.git_tag_list(out, repo);
 
-  var result = <String>[];
+  final result = <String>[];
 
   if (error < 0) {
     calloc.free(out);

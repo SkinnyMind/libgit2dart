@@ -1,10 +1,9 @@
 import 'dart:ffi';
 
 import 'package:ffi/ffi.dart';
-
-import '../error.dart';
-import '../util.dart';
-import 'libgit2_bindings.dart';
+import 'package:libgit2dart/src/bindings/libgit2_bindings.dart';
+import 'package:libgit2dart/src/error.dart';
+import 'package:libgit2dart/src/util.dart';
 
 /// Directly generate a patch from the difference between two buffers.
 ///

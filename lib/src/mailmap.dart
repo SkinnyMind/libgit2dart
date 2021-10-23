@@ -1,8 +1,8 @@
 import 'dart:ffi';
 import 'package:libgit2dart/libgit2dart.dart';
-import 'bindings/libgit2_bindings.dart';
-import 'bindings/mailmap.dart' as bindings;
-import 'util.dart';
+import 'package:libgit2dart/src/bindings/libgit2_bindings.dart';
+import 'package:libgit2dart/src/bindings/mailmap.dart' as bindings;
+import 'package:libgit2dart/src/util.dart';
 
 class Mailmap {
   /// Initializes a new instance of [Mailmap] class.
@@ -62,10 +62,12 @@ class Mailmap {
 
   /// Resolves a [signature] to use real names and emails with a mailmap.
   Signature resolveSignature(Signature signature) {
-    return Signature(bindings.resolveSignature(
-      mailmapPointer: _mailmapPointer,
-      signaturePointer: signature.pointer,
-    ));
+    return Signature(
+      bindings.resolveSignature(
+        mailmapPointer: _mailmapPointer,
+        signaturePointer: signature.pointer,
+      ),
+    );
   }
 
   /// Adds a single entry to the given mailmap object. If the entry already
@@ -79,7 +81,7 @@ class Mailmap {
     required String replaceEmail,
   }) {
     if (replaceEmail.trim().isEmpty) {
-      throw ArgumentError.value('replaceEmail can\'t be empty');
+      throw ArgumentError.value("replaceEmail can't be empty");
     } else {
       bindings.addEntry(
         mailmapPointer: _mailmapPointer,

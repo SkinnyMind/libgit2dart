@@ -2,11 +2,10 @@ import 'dart:ffi';
 
 import 'package:ffi/ffi.dart';
 import 'package:libgit2dart/libgit2dart.dart';
-
-import '../error.dart';
-import '../util.dart';
-import 'libgit2_bindings.dart';
-import 'reference.dart' as reference_bindings;
+import 'package:libgit2dart/src/bindings/libgit2_bindings.dart';
+import 'package:libgit2dart/src/bindings/reference.dart' as reference_bindings;
+import 'package:libgit2dart/src/error.dart';
+import 'package:libgit2dart/src/util.dart';
 
 /// Return a list of branches.
 ///
@@ -27,7 +26,7 @@ List<Pointer<git_reference>> list({
     throw LibGit2Error(libgit2.git_error_last());
   }
 
-  var result = <Pointer<git_reference>>[];
+  final result = <Pointer<git_reference>>[];
   var error = 0;
 
   while (error == 0) {
@@ -163,7 +162,7 @@ bool isHead(Pointer<git_reference> branch) {
   if (result < 0) {
     throw LibGit2Error(libgit2.git_error_last());
   } else {
-    return result == 1 ? true : false;
+    return result == 1 || false;
   }
 }
 
@@ -179,7 +178,7 @@ bool isCheckedOut(Pointer<git_reference> branch) {
   if (result < 0) {
     throw LibGit2Error(libgit2.git_error_last());
   } else {
-    return result == 1 ? true : false;
+    return result == 1 || false;
   }
 }
 

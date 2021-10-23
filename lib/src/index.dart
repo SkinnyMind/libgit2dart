@@ -3,10 +3,9 @@ import 'dart:ffi';
 
 import 'package:ffi/ffi.dart';
 import 'package:libgit2dart/libgit2dart.dart';
-
-import 'bindings/diff.dart' as diff_bindings;
-import 'bindings/index.dart' as bindings;
-import 'bindings/libgit2_bindings.dart';
+import 'package:libgit2dart/src/bindings/diff.dart' as diff_bindings;
+import 'package:libgit2dart/src/bindings/index.dart' as bindings;
+import 'package:libgit2dart/src/bindings/libgit2_bindings.dart';
 
 class Index with IterableMixin<IndexEntry> {
   /// Initializes a new instance of [Index] class from provided
@@ -26,16 +25,20 @@ class Index with IterableMixin<IndexEntry> {
   /// [ArgumentError] if nothing found for provided path.
   IndexEntry operator [](Object value) {
     if (value is int) {
-      return IndexEntry(bindings.getByIndex(
-        indexPointer: _indexPointer,
-        position: value,
-      ));
+      return IndexEntry(
+        bindings.getByIndex(
+          indexPointer: _indexPointer,
+          position: value,
+        ),
+      );
     } else {
-      return IndexEntry(bindings.getByPath(
-        indexPointer: _indexPointer,
-        path: value as String,
-        stage: 0,
-      ));
+      return IndexEntry(
+        bindings.getByPath(
+          indexPointer: _indexPointer,
+          path: value as String,
+          stage: 0,
+        ),
+      );
     }
   }
 
@@ -56,7 +59,7 @@ class Index with IterableMixin<IndexEntry> {
   /// Throws a [LibGit2Error] if error occured.
   Map<String, ConflictEntry> get conflicts {
     final conflicts = bindings.conflictList(_indexPointer);
-    var result = <String, ConflictEntry>{};
+    final result = <String, ConflictEntry>{};
 
     for (final entry in conflicts) {
       IndexEntry? ancestor, our, their;
@@ -166,10 +169,12 @@ class Index with IterableMixin<IndexEntry> {
     if (repo == null) {
       return Oid(bindings.writeTree(_indexPointer));
     } else {
-      return Oid(bindings.writeTreeTo(
-        indexPointer: _indexPointer,
-        repoPointer: repo.pointer,
-      ));
+      return Oid(
+        bindings.writeTreeTo(
+          indexPointer: _indexPointer,
+          repoPointer: repo.pointer,
+        ),
+      );
     }
   }
 
@@ -201,13 +206,15 @@ class Index with IterableMixin<IndexEntry> {
     int contextLines = 3,
     int interhunkLines = 0,
   }) {
-    return Diff(diff_bindings.indexToWorkdir(
-      repoPointer: bindings.owner(_indexPointer),
-      indexPointer: _indexPointer,
-      flags: flags.fold(0, (acc, e) => acc | e.value),
-      contextLines: contextLines,
-      interhunkLines: interhunkLines,
-    ));
+    return Diff(
+      diff_bindings.indexToWorkdir(
+        repoPointer: bindings.owner(_indexPointer),
+        indexPointer: _indexPointer,
+        flags: flags.fold(0, (acc, e) => acc | e.value),
+        contextLines: contextLines,
+        interhunkLines: interhunkLines,
+      ),
+    );
   }
 
   /// Creates a diff between a tree and repository index.
@@ -227,14 +234,16 @@ class Index with IterableMixin<IndexEntry> {
     int contextLines = 3,
     int interhunkLines = 0,
   }) {
-    return Diff(diff_bindings.treeToIndex(
-      repoPointer: bindings.owner(_indexPointer),
-      treePointer: tree.pointer,
-      indexPointer: _indexPointer,
-      flags: flags.fold(0, (acc, e) => acc | e.value),
-      contextLines: contextLines,
-      interhunkLines: interhunkLines,
-    ));
+    return Diff(
+      diff_bindings.treeToIndex(
+        repoPointer: bindings.owner(_indexPointer),
+        treePointer: tree.pointer,
+        indexPointer: _indexPointer,
+        flags: flags.fold(0, (acc, e) => acc | e.value),
+        contextLines: contextLines,
+        interhunkLines: interhunkLines,
+      ),
+    );
   }
 
   /// Releases memory allocated for index object.
@@ -338,10 +347,12 @@ class _IndexIterator implements Iterator<IndexEntry> {
     if (_index == count) {
       return false;
     } else {
-      _currentEntry = IndexEntry(bindings.getByIndex(
-        indexPointer: _indexPointer,
-        position: _index,
-      ));
+      _currentEntry = IndexEntry(
+        bindings.getByIndex(
+          indexPointer: _indexPointer,
+          position: _index,
+        ),
+      );
       _index++;
       return true;
     }

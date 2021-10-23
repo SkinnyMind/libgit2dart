@@ -2,9 +2,9 @@ import 'dart:ffi';
 
 import 'package:ffi/ffi.dart';
 
-import '../error.dart';
-import '../util.dart';
-import 'libgit2_bindings.dart';
+import 'package:libgit2dart/src/bindings/libgit2_bindings.dart';
+import 'package:libgit2dart/src/error.dart';
+import 'package:libgit2dart/src/util.dart';
 
 /// Lookup a blob object from a repository.
 ///
@@ -33,7 +33,7 @@ Pointer<git_oid> id(Pointer<git_blob> blob) => libgit2.git_blob_id(blob);
 /// Searching for NUL bytes and looking for a reasonable ratio of printable to
 /// non-printable characters among the first 8000 bytes.
 bool isBinary(Pointer<git_blob> blob) {
-  return libgit2.git_blob_is_binary(blob) == 1 ? true : false;
+  return libgit2.git_blob_is_binary(blob) == 1 || false;
 }
 
 /// Get a read-only buffer with the raw content of a blob.

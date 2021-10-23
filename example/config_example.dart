@@ -1,3 +1,5 @@
+// ignore_for_file: avoid_print
+
 import 'dart:io';
 import 'package:libgit2dart/libgit2dart.dart';
 import '../test/helpers/util.dart';
@@ -28,8 +30,10 @@ void main() {
 
     // Set value of config variable
     repoConfig['core.variable'] = 'value';
-    print('\nNew value for variable '
-        '"core.variable": ${repoConfig['core.variable']}');
+    print(
+      '\nNew value for variable '
+      '"core.variable": ${repoConfig['core.variable']}',
+    );
 
     // Delete variable
     repoConfig.delete('core.variable');

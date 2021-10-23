@@ -1,7 +1,7 @@
 import 'dart:ffi';
 import 'package:libgit2dart/libgit2dart.dart';
-import 'bindings/libgit2_bindings.dart';
-import 'bindings/refspec.dart' as bindings;
+import 'package:libgit2dart/src/bindings/libgit2_bindings.dart';
+import 'package:libgit2dart/src/bindings/refspec.dart' as bindings;
 
 class Refspec {
   /// Initializes a new instance of the [Refspec] class

@@ -1,7 +1,7 @@
 import 'dart:ffi';
 import 'package:libgit2dart/libgit2dart.dart';
-import 'bindings/libgit2_bindings.dart';
-import 'bindings/revwalk.dart' as bindings;
+import 'package:libgit2dart/src/bindings/libgit2_bindings.dart';
+import 'package:libgit2dart/src/bindings/revwalk.dart' as bindings;
 
 class RevWalk {
   /// Initializes a new instance of the [RevWalk] class.

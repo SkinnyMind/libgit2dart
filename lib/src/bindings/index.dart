@@ -1,10 +1,9 @@
 import 'dart:ffi';
 
 import 'package:ffi/ffi.dart';
-
-import '../error.dart';
-import '../util.dart';
-import 'libgit2_bindings.dart';
+import 'package:libgit2dart/src/bindings/libgit2_bindings.dart';
+import 'package:libgit2dart/src/error.dart';
+import 'package:libgit2dart/src/util.dart';
 
 /// Update the contents of an existing index object in memory by reading from
 /// the hard disk.
@@ -88,7 +87,7 @@ bool find({required Pointer<git_index> indexPointer, required String path}) {
 
   calloc.free(pathC);
 
-  return result == git_error_code.GIT_ENOTFOUND ? false : true;
+  return result != git_error_code.GIT_ENOTFOUND || false;
 }
 
 /// Get the count of entries currently in the index.
@@ -209,7 +208,7 @@ void addAll({
   required Pointer<git_index> indexPointer,
   required List<String> pathspec,
 }) {
-  var pathspecC = calloc<git_strarray>();
+  final pathspecC = calloc<git_strarray>();
   final pathPointers =
       pathspec.map((e) => e.toNativeUtf8().cast<Int8>()).toList();
   final strArray = calloc<Pointer<Int8>>(pathspec.length);
@@ -290,7 +289,7 @@ void removeAll({
 
 /// Determine if the index contains entries representing file conflicts.
 bool hasConflicts(Pointer<git_index> index) {
-  return libgit2.git_index_has_conflicts(index) == 1 ? true : false;
+  return libgit2.git_index_has_conflicts(index) == 1 || false;
 }
 
 /// Return list of conflicts in the index.
@@ -302,7 +301,7 @@ List<Map<String, Pointer<git_index_entry>>> conflictList(
   final iterator = calloc<Pointer<git_index_conflict_iterator>>();
   libgit2.git_index_conflict_iterator_new(iterator, index);
 
-  var result = <Map<String, Pointer<git_index_entry>>>[];
+  final result = <Map<String, Pointer<git_index_entry>>>[];
   var error = 0;
 
   while (error >= 0) {

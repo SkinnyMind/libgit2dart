@@ -172,7 +172,9 @@ void main() {
 
       test('returns string representation of object', () {
         expect(
-            GitMergeFileFlag.defaults.toString(), 'GitMergeFileFlag.defaults');
+          GitMergeFileFlag.defaults.toString(),
+          'GitMergeFileFlag.defaults',
+        );
       });
     });
 
@@ -413,7 +415,9 @@ void main() {
 
       test('returns string representation of object', () {
         expect(
-            GitFetchPrune.unspecified.toString(), 'GitFetchPrune.unspecified');
+          GitFetchPrune.unspecified.toString(),
+          'GitFetchPrune.unspecified',
+        );
       });
     });
 
@@ -552,7 +556,9 @@ void main() {
 
       test('returns string representation of object', () {
         expect(
-            GitSubmoduleStatus.inHead.toString(), 'GitSubmoduleStatus.inHead');
+          GitSubmoduleStatus.inHead.toString(),
+          'GitSubmoduleStatus.inHead',
+        );
       });
     });
   });

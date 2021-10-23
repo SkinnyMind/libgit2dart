@@ -2,15 +2,15 @@ import 'dart:ffi';
 
 import 'package:ffi/ffi.dart';
 import 'package:libgit2dart/libgit2dart.dart';
+import 'package:libgit2dart/src/bindings/credentials.dart'
+    as credentials_bindings;
+import 'package:libgit2dart/src/bindings/libgit2_bindings.dart';
+import 'package:libgit2dart/src/callbacks.dart';
+import 'package:libgit2dart/src/credentials.dart';
+import 'package:libgit2dart/src/oid.dart';
+import 'package:libgit2dart/src/remote.dart';
+import 'package:libgit2dart/src/repository.dart';
 import 'package:libgit2dart/src/util.dart';
-
-import '../callbacks.dart';
-import '../credentials.dart';
-import '../oid.dart';
-import '../remote.dart';
-import '../repository.dart';
-import 'credentials.dart' as credentials_bindings;
-import 'libgit2_bindings.dart';
 
 class RemoteCallbacks {
   /// Callback function that reports transfer progress.
@@ -108,7 +108,7 @@ class RemoteCallbacks {
   ) {
     repo[0] = repositoryFunction!(
       path.cast<Utf8>().toDartString(),
-      bare == 1 ? true : false,
+      bare == 1 || false,
     ).pointer;
 
     return 0;
@@ -146,7 +146,7 @@ class RemoteCallbacks {
     }
 
     if (credentials is UserPass) {
-      final cred = credentials as UserPass;
+      final cred = credentials! as UserPass;
       credPointer[0] = credentials_bindings.userPass(
         username: cred.username,
         password: cred.password,
@@ -155,7 +155,7 @@ class RemoteCallbacks {
     }
 
     if (credentials is Keypair) {
-      final cred = credentials as Keypair;
+      final cred = credentials! as Keypair;
       credPointer[0] = credentials_bindings.sshKey(
         username: cred.username,
         publicKey: cred.pubKey,
@@ -166,13 +166,13 @@ class RemoteCallbacks {
     }
 
     if (credentials is KeypairFromAgent) {
-      final cred = credentials as KeypairFromAgent;
+      final cred = credentials! as KeypairFromAgent;
       credPointer[0] = credentials_bindings.sshKeyFromAgent(cred.username);
       payload.cast<Int8>().value++;
     }
 
     if (credentials is KeypairFromMemory) {
-      final cred = credentials as KeypairFromMemory;
+      final cred = credentials! as KeypairFromMemory;
       credPointer[0] = credentials_bindings.sshKeyFromMemory(
         username: cred.username,
         publicKey: cred.pubKey,

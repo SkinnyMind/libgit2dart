@@ -1,11 +1,10 @@
 import 'dart:ffi';
 
 import 'package:libgit2dart/libgit2dart.dart';
-
-import 'bindings/libgit2_bindings.dart';
-import 'bindings/odb.dart' as odb_bindings;
-import 'bindings/oid.dart' as bindings;
-import 'util.dart';
+import 'package:libgit2dart/src/bindings/libgit2_bindings.dart';
+import 'package:libgit2dart/src/bindings/odb.dart' as odb_bindings;
+import 'package:libgit2dart/src/bindings/oid.dart' as bindings;
+import 'package:libgit2dart/src/util.dart';
 
 class Oid {
   /// Initializes a new instance of [Oid] class from provided
@@ -52,7 +51,7 @@ class Oid {
   String get sha => bindings.toSHA(_oidPointer);
 
   @override
-  bool operator ==(other) {
+  bool operator ==(Object other) {
     return (other is Oid) &&
         (bindings.compare(aPointer: _oidPointer, bPointer: other._oidPointer) ==
             0);

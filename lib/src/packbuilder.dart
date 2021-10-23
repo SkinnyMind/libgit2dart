@@ -1,7 +1,7 @@
 import 'dart:ffi';
 import 'package:libgit2dart/libgit2dart.dart';
-import 'bindings/libgit2_bindings.dart';
-import 'bindings/packbuilder.dart' as bindings;
+import 'package:libgit2dart/src/bindings/libgit2_bindings.dart';
+import 'package:libgit2dart/src/bindings/packbuilder.dart' as bindings;
 
 class PackBuilder {
   /// Initializes a new instance of [PackBuilder] class.

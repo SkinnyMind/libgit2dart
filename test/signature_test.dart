@@ -13,7 +13,6 @@ void main() {
       name: name,
       email: email,
       time: time,
-      offset: offset,
     );
   });
 
@@ -80,7 +79,6 @@ void main() {
         name: name,
         email: email,
         time: time,
-        offset: offset,
       );
       expect(signature == otherSignature, true);
 

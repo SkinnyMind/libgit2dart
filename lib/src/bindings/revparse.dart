@@ -1,10 +1,9 @@
 import 'dart:ffi';
 
 import 'package:ffi/ffi.dart';
-
-import '../error.dart';
-import '../util.dart';
-import 'libgit2_bindings.dart';
+import 'package:libgit2dart/src/bindings/libgit2_bindings.dart';
+import 'package:libgit2dart/src/error.dart';
+import 'package:libgit2dart/src/util.dart';
 
 /// Parse a revision string for from, to, and intent.
 ///
@@ -69,7 +68,7 @@ Pointer<git_object> revParseSingle({
 /// The returned object and reference should be released when no longer needed.
 ///
 /// Throws a [LibGit2Error] if error occured.
-List revParseExt({
+List<Pointer> revParseExt({
   required Pointer<git_repository> repoPointer,
   required String spec,
 }) {
@@ -91,7 +90,7 @@ List revParseExt({
     calloc.free(referenceOut);
     throw LibGit2Error(libgit2.git_error_last());
   } else {
-    var result = <Pointer>[];
+    final result = <Pointer>[];
     result.add(objectOut.value);
     if (referenceOut.value != nullptr) {
       result.add(referenceOut.value);

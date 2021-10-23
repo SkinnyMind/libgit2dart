@@ -1,8 +1,8 @@
 import 'dart:collection';
 import 'dart:ffi';
 import 'package:libgit2dart/libgit2dart.dart';
-import 'bindings/libgit2_bindings.dart';
-import 'bindings/reflog.dart' as bindings;
+import 'package:libgit2dart/src/bindings/libgit2_bindings.dart';
+import 'package:libgit2dart/src/bindings/reflog.dart' as bindings;
 
 class RefLog with IterableMixin<RefLogEntry> {
   /// Initializes a new instance of [RefLog] class from provided [Reference].
@@ -23,10 +23,12 @@ class RefLog with IterableMixin<RefLogEntry> {
   /// Requesting the reflog entry with an index of 0 will return the most
   /// recently created entry.
   RefLogEntry operator [](int index) {
-    return RefLogEntry(bindings.getByIndex(
-      reflogPointer: _reflogPointer,
-      index: index,
-    ));
+    return RefLogEntry(
+      bindings.getByIndex(
+        reflogPointer: _reflogPointer,
+        index: index,
+      ),
+    );
   }
 
   /// Releases memory allocated for reflog object.
@@ -74,10 +76,12 @@ class _RefLogIterator implements Iterator<RefLogEntry> {
     if (_index == _count) {
       return false;
     } else {
-      _currentEntry = RefLogEntry(bindings.getByIndex(
-        reflogPointer: _reflogPointer,
-        index: _index,
-      ));
+      _currentEntry = RefLogEntry(
+        bindings.getByIndex(
+          reflogPointer: _reflogPointer,
+          index: _index,
+        ),
+      );
       _index++;
       return true;
     }

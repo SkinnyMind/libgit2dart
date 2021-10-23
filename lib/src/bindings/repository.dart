@@ -1,14 +1,13 @@
 import 'dart:ffi';
 
 import 'package:ffi/ffi.dart';
-
-import '../callbacks.dart';
-import '../error.dart';
-import '../remote.dart';
-import '../repository.dart';
-import '../util.dart';
-import 'libgit2_bindings.dart';
-import 'remote_callbacks.dart';
+import 'package:libgit2dart/src/bindings/libgit2_bindings.dart';
+import 'package:libgit2dart/src/bindings/remote_callbacks.dart';
+import 'package:libgit2dart/src/callbacks.dart';
+import 'package:libgit2dart/src/error.dart';
+import 'package:libgit2dart/src/remote.dart';
+import 'package:libgit2dart/src/repository.dart';
+import 'package:libgit2dart/src/util.dart';
 
 /// Attempt to open an already-existing repository at [path].
 ///
@@ -219,7 +218,7 @@ void setNamespace({
 
 /// Check if a repository is bare or not.
 bool isBare(Pointer<git_repository> repo) {
-  return libgit2.git_repository_is_bare(repo) == 1 ? true : false;
+  return libgit2.git_repository_is_bare(repo) == 1 || false;
 }
 
 /// Check if a repository is empty.
@@ -234,7 +233,7 @@ bool isEmpty(Pointer<git_repository> repo) {
   if (error < 0) {
     throw LibGit2Error(libgit2.git_error_last());
   } else {
-    return error == 1 ? true : false;
+    return error == 1 || false;
   }
 }
 
@@ -268,7 +267,7 @@ bool isHeadDetached(Pointer<git_repository> repo) {
   if (error < 0) {
     throw LibGit2Error(libgit2.git_error_last());
   } else {
-    return error == 1 ? true : false;
+    return error == 1 || false;
   }
 }
 
@@ -284,7 +283,7 @@ bool isBranchUnborn(Pointer<git_repository> repo) {
   if (error < 0) {
     throw LibGit2Error(libgit2.git_error_last());
   } else {
-    return error == 1 ? true : false;
+    return error == 1 || false;
   }
 }
 
@@ -312,7 +311,7 @@ Map<String, String> identity(Pointer<git_repository> repo) {
   final name = calloc<Pointer<Int8>>();
   final email = calloc<Pointer<Int8>>();
   libgit2.git_repository_ident(name, email, repo);
-  var identity = <String, String>{};
+  final identity = <String, String>{};
 
   if (name.value == nullptr && email.value == nullptr) {
     return identity;
@@ -369,12 +368,12 @@ Pointer<git_index> index(Pointer<git_repository> repo) {
 
 /// Determine if the repository was a shallow clone.
 bool isShallow(Pointer<git_repository> repo) {
-  return libgit2.git_repository_is_shallow(repo) == 1 ? true : false;
+  return libgit2.git_repository_is_shallow(repo) == 1 || false;
 }
 
 /// Check if a repository is a linked work tree.
 bool isWorktree(Pointer<git_repository> repo) {
-  return libgit2.git_repository_is_worktree(repo) == 1 ? true : false;
+  return libgit2.git_repository_is_worktree(repo) == 1 || false;
 }
 
 /// Retrieve git's prepared message.

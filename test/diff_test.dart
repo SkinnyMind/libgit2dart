@@ -217,7 +217,7 @@ index e69de29..c217c63 100644
     test('throws when trying to diff between null and tree', () {
       final tree = repo.lookupTree(repo['b85d53c']);
       expect(
-        () => repo.diff(a: null, b: tree),
+        () => repo.diff(b: tree),
         throwsA(
           isA<ArgumentError>().having(
             (e) => e.message,

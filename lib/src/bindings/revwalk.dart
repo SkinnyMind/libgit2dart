@@ -1,11 +1,10 @@
 import 'dart:ffi';
 
 import 'package:ffi/ffi.dart';
-
-import '../error.dart';
-import '../util.dart';
-import 'commit.dart' as commit_bindings;
-import 'libgit2_bindings.dart';
+import 'package:libgit2dart/src/bindings/commit.dart' as commit_bindings;
+import 'package:libgit2dart/src/bindings/libgit2_bindings.dart';
+import 'package:libgit2dart/src/error.dart';
+import 'package:libgit2dart/src/util.dart';
 
 /// Allocate a new revision walker to iterate through a repo.
 ///
@@ -79,7 +78,7 @@ List<Pointer<git_commit>> walk({
   required Pointer<git_repository> repoPointer,
   required Pointer<git_revwalk> walkerPointer,
 }) {
-  var result = <Pointer<git_commit>>[];
+  final result = <Pointer<git_commit>>[];
   var error = 0;
 
   while (error == 0) {

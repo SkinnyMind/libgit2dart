@@ -1,9 +1,8 @@
 import 'dart:ffi';
 
 import 'package:ffi/ffi.dart';
-
-import '../util.dart';
-import 'libgit2_bindings.dart';
+import 'package:libgit2dart/src/bindings/libgit2_bindings.dart';
+import 'package:libgit2dart/src/util.dart';
 
 /// Parse N characters of a hex formatted object id into a git_oid.
 Pointer<git_oid> fromStrN(String hex) {
@@ -30,7 +29,7 @@ Pointer<git_oid> fromSHA(String hex) {
 /// Copy an already raw oid into a git_oid structure.
 Pointer<git_oid> fromRaw(Array<Uint8> raw) {
   final out = calloc<git_oid>();
-  var rawC = calloc<Uint8>(20);
+  final rawC = calloc<Uint8>(20);
 
   for (var i = 0; i < 20; i++) {
     rawC[i] = raw[i];

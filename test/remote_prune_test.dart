@@ -70,7 +70,7 @@ void main() {
     });
 
     test('prune() successfully prunes branches', () {
-      var pruned = <String>[];
+      final pruned = <String>[];
       void updateTips(String refname, Oid oldOid, Oid newOid) {
         pruned.add(refname);
       }

@@ -1,12 +1,11 @@
 import 'dart:ffi';
 
 import 'package:ffi/ffi.dart';
-
-import '../callbacks.dart';
-import '../error.dart';
-import '../util.dart';
-import 'libgit2_bindings.dart';
-import 'remote_callbacks.dart';
+import 'package:libgit2dart/src/bindings/libgit2_bindings.dart';
+import 'package:libgit2dart/src/bindings/remote_callbacks.dart';
+import 'package:libgit2dart/src/callbacks.dart';
+import 'package:libgit2dart/src/error.dart';
+import 'package:libgit2dart/src/util.dart';
 
 /// List of submodule paths.
 ///
@@ -27,8 +26,10 @@ int _listCb(
 List<String> list(Pointer<git_repository> repo) {
   const except = -1;
   final callback = Pointer.fromFunction<
-          Int32 Function(Pointer<git_submodule>, Pointer<Int8>, Pointer<Void>)>(
-      _listCb, except);
+      Int32 Function(Pointer<git_submodule>, Pointer<Int8>, Pointer<Void>)>(
+    _listCb,
+    except,
+  );
 
   libgit2.git_submodule_foreach(repo, callback, nullptr);
 

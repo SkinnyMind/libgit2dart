@@ -1,7 +1,8 @@
 import 'dart:ffi';
+
 import 'package:ffi/ffi.dart';
-import '../util.dart';
-import 'libgit2_bindings.dart';
+import 'package:libgit2dart/src/bindings/libgit2_bindings.dart';
+import 'package:libgit2dart/src/util.dart';
 
 /// Create a new plain-text username and password credential object.
 Pointer<git_credential> userPass({

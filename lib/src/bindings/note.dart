@@ -1,8 +1,9 @@
 import 'dart:ffi';
+
 import 'package:ffi/ffi.dart';
-import '../error.dart';
-import '../util.dart';
-import 'libgit2_bindings.dart';
+import 'package:libgit2dart/src/bindings/libgit2_bindings.dart';
+import 'package:libgit2dart/src/error.dart';
+import 'package:libgit2dart/src/util.dart';
 
 /// Returns list of notes for repository.
 ///
@@ -19,12 +20,12 @@ List<Map<String, Pointer>> list(Pointer<git_repository> repo) {
     throw LibGit2Error(libgit2.git_error_last());
   }
 
-  var result = <Map<String, Pointer>>[];
+  final result = <Map<String, Pointer>>[];
   var nextError = 0;
 
   while (nextError >= 0) {
     final noteOid = calloc<git_oid>();
-    var annotatedOid = calloc<git_oid>();
+    final annotatedOid = calloc<git_oid>();
     nextError = libgit2.git_note_next(noteOid, annotatedOid, iterator.value);
     if (nextError >= 0) {
       final out = calloc<Pointer<git_note>>();

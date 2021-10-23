@@ -1,7 +1,7 @@
 import 'dart:ffi';
 import 'package:libgit2dart/libgit2dart.dart';
-import 'bindings/libgit2_bindings.dart';
-import 'bindings/treebuilder.dart' as bindings;
+import 'package:libgit2dart/src/bindings/libgit2_bindings.dart';
+import 'package:libgit2dart/src/bindings/treebuilder.dart' as bindings;
 
 class TreeBuilder {
   /// Initializes a new instance of [TreeBuilder] class from provided
@@ -36,10 +36,12 @@ class TreeBuilder {
   ///
   /// Throws [ArgumentError] if nothing found for provided [filename].
   TreeEntry operator [](String filename) {
-    return TreeEntry(bindings.getByFilename(
-      builderPointer: _treeBuilderPointer,
-      filename: filename,
-    ));
+    return TreeEntry(
+      bindings.getByFilename(
+        builderPointer: _treeBuilderPointer,
+        filename: filename,
+      ),
+    );
   }
 
   /// Adds or updates an entry to the tree builder with the given attributes.

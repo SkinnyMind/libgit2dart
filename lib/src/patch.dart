@@ -1,9 +1,9 @@
 import 'dart:ffi';
 import 'package:ffi/ffi.dart';
 import 'package:libgit2dart/libgit2dart.dart';
-import 'bindings/libgit2_bindings.dart';
-import 'bindings/patch.dart' as bindings;
-import 'util.dart';
+import 'package:libgit2dart/src/bindings/libgit2_bindings.dart';
+import 'package:libgit2dart/src/bindings/patch.dart' as bindings;
+import 'package:libgit2dart/src/util.dart';
 
 class Patch {
   /// Initializes a new instance of [Patch] class from provided
@@ -82,7 +82,7 @@ class Patch {
       throw ArgumentError('Provided argument(s) is not Blob or String');
     }
 
-    _patchPointer = result['patch'] as Pointer<git_patch>;
+    _patchPointer = result['patch']! as Pointer<git_patch>;
     _aPointer = result['a'];
     _bPointer = result['b'];
   }
@@ -149,12 +149,14 @@ class Patch {
 
     for (var i = 0; i < length; i++) {
       final hunk = bindings.hunk(patchPointer: _patchPointer, hunkIndex: i);
-      hunks.add(DiffHunk(
-        _patchPointer,
-        hunk['hunk'] as Pointer<git_diff_hunk>,
-        hunk['linesN'] as int,
-        i,
-      ));
+      hunks.add(
+        DiffHunk(
+          _patchPointer,
+          hunk['hunk']! as Pointer<git_diff_hunk>,
+          hunk['linesN']! as int,
+          i,
+        ),
+      );
     }
 
     return hunks;

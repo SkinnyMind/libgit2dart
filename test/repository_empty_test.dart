@@ -8,7 +8,7 @@ void main() {
   late Repository repo;
 
   group('Repository.open', () {
-    test('throws when repository isn\'t found at provided path', () {
+    test("throws when repository isn't found at provided path", () {
       expect(
         () => Repository.open(''),
         throwsA(isA<LibGit2Error>()),
@@ -71,7 +71,7 @@ void main() {
         );
       });
 
-      test('returns path to parent repo\'s .git folder for the repository', () {
+      test("returns path to parent repo's .git folder for the repository", () {
         expect(
           repo.commonDir,
           '${Directory.current.path}/test/assets/empty_standard/.gitdir/',

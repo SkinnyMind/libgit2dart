@@ -1,7 +1,7 @@
 import 'dart:ffi';
 import 'package:libgit2dart/libgit2dart.dart';
-import 'bindings/libgit2_bindings.dart';
-import 'bindings/revparse.dart' as bindings;
+import 'package:libgit2dart/src/bindings/libgit2_bindings.dart';
+import 'package:libgit2dart/src/bindings/revparse.dart' as bindings;
 
 class RevParse {
   /// Finds a single object and intermediate reference (if there is one) by a
@@ -23,11 +23,9 @@ class RevParse {
       repoPointer: repo.pointer,
       spec: spec,
     );
-    object = Commit(pointers[0].cast<git_commit>() as Pointer<git_commit>);
+    object = Commit(pointers[0].cast<git_commit>());
     if (pointers.length == 2) {
-      reference = Reference(
-        pointers[1].cast<git_reference>() as Pointer<git_reference>,
-      );
+      reference = Reference(pointers[1].cast<git_reference>());
     } else {
       reference = null;
     }
@@ -47,12 +45,14 @@ class RevParse {
   ///
   /// Throws a [LibGit2Error] if error occured.
   static Commit single({required Repository repo, required String spec}) {
-    return Commit(bindings
-        .revParseSingle(
-          repoPointer: repo.pointer,
-          spec: spec,
-        )
-        .cast());
+    return Commit(
+      bindings
+          .revParseSingle(
+            repoPointer: repo.pointer,
+            spec: spec,
+          )
+          .cast(),
+    );
   }
 
   /// Parses a revision string for from, to, and intent.
@@ -62,10 +62,12 @@ class RevParse {
   ///
   /// Throws a [LibGit2Error] if error occured.
   static RevSpec range({required Repository repo, required String spec}) {
-    return RevSpec(bindings.revParse(
-      repoPointer: repo.pointer,
-      spec: spec,
-    ));
+    return RevSpec(
+      bindings.revParse(
+        repoPointer: repo.pointer,
+        spec: spec,
+      ),
+    );
   }
 
   @override

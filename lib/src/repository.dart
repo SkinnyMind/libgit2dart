@@ -3,19 +3,19 @@ import 'dart:ffi';
 import 'package:ffi/ffi.dart';
 import 'package:libgit2dart/libgit2dart.dart';
 
-import 'bindings/attr.dart' as attr_bindings;
-import 'bindings/checkout.dart' as checkout_bindings;
-import 'bindings/commit.dart' as commit_bindings;
-import 'bindings/describe.dart' as describe_bindings;
-import 'bindings/diff.dart' as diff_bindings;
-import 'bindings/graph.dart' as graph_bindings;
-import 'bindings/libgit2_bindings.dart';
-import 'bindings/merge.dart' as merge_bindings;
-import 'bindings/object.dart' as object_bindings;
-import 'bindings/repository.dart' as bindings;
-import 'bindings/reset.dart' as reset_bindings;
-import 'bindings/status.dart' as status_bindings;
-import 'util.dart';
+import 'package:libgit2dart/src/bindings/attr.dart' as attr_bindings;
+import 'package:libgit2dart/src/bindings/checkout.dart' as checkout_bindings;
+import 'package:libgit2dart/src/bindings/commit.dart' as commit_bindings;
+import 'package:libgit2dart/src/bindings/describe.dart' as describe_bindings;
+import 'package:libgit2dart/src/bindings/diff.dart' as diff_bindings;
+import 'package:libgit2dart/src/bindings/graph.dart' as graph_bindings;
+import 'package:libgit2dart/src/bindings/libgit2_bindings.dart';
+import 'package:libgit2dart/src/bindings/merge.dart' as merge_bindings;
+import 'package:libgit2dart/src/bindings/object.dart' as object_bindings;
+import 'package:libgit2dart/src/bindings/repository.dart' as bindings;
+import 'package:libgit2dart/src/bindings/reset.dart' as reset_bindings;
+import 'package:libgit2dart/src/bindings/status.dart' as status_bindings;
+import 'package:libgit2dart/src/util.dart';
 
 class Repository {
   /// Initializes a new instance of the [Repository] class from provided
@@ -262,7 +262,8 @@ class Repository {
       bindings.setHead(repoPointer: _repoPointer, refname: target);
     } else {
       throw ArgumentError.value(
-          '$target must be either Oid or String reference name');
+        '$target must be either Oid or String reference name',
+      );
     }
   }
 
@@ -650,12 +651,14 @@ class Repository {
     required Commit ourCommit,
     int mainline = 0,
   }) {
-    return Index(commit_bindings.revertCommit(
-      repoPointer: _repoPointer,
-      revertCommitPointer: revertCommit.pointer,
-      ourCommitPointer: ourCommit.pointer,
-      mainline: mainline,
-    ));
+    return Index(
+      commit_bindings.revertCommit(
+        repoPointer: _repoPointer,
+        revertCommitPointer: revertCommit.pointer,
+        ourCommitPointer: ourCommit.pointer,
+        mainline: mainline,
+      ),
+    );
   }
 
   /// Finds a single object and intermediate reference (if there is one) by a
@@ -768,13 +771,14 @@ class Repository {
     bool force = false,
   }) {
     return Tag.create(
-        repo: this,
-        tagName: tagName,
-        target: target,
-        targetType: targetType,
-        tagger: tagger,
-        message: message,
-        force: force);
+      repo: this,
+      tagName: tagName,
+      target: target,
+      targetType: targetType,
+      tagger: tagger,
+      message: message,
+      force: force,
+    );
   }
 
   /// Deletes an existing tag reference with provided [name].
@@ -880,9 +884,9 @@ class Repository {
   ///
   /// Throws a [LibGit2Error] if error occured.
   Map<String, Set<GitStatus>> get status {
-    var result = <String, Set<GitStatus>>{};
-    var list = status_bindings.listNew(_repoPointer);
-    var count = status_bindings.listEntryCount(list);
+    final result = <String, Set<GitStatus>>{};
+    final list = status_bindings.listNew(_repoPointer);
+    final count = status_bindings.listEntryCount(list);
 
     for (var i = 0; i < count; i++) {
       late String path;
@@ -945,11 +949,13 @@ class Repository {
   ///
   /// Throws a [LibGit2Error] if error occured.
   Oid mergeBase({required Oid a, required Oid b}) {
-    return Oid(merge_bindings.mergeBase(
-      repoPointer: _repoPointer,
-      aPointer: a.pointer,
-      bPointer: b.pointer,
-    ));
+    return Oid(
+      merge_bindings.mergeBase(
+        repoPointer: _repoPointer,
+        aPointer: a.pointer,
+        bPointer: b.pointer,
+      ),
+    );
   }
 
   /// Analyzes the given branch's [theirHead] oid and determines the
@@ -1058,14 +1064,16 @@ class Repository {
     Set<GitMergeFlag> mergeFlags = const {GitMergeFlag.findRenames},
     Set<GitMergeFileFlag> fileFlags = const {GitMergeFileFlag.defaults},
   }) {
-    return Index(merge_bindings.mergeCommits(
-      repoPointer: _repoPointer,
-      ourCommitPointer: ourCommit.pointer,
-      theirCommitPointer: theirCommit.pointer,
-      favor: favor.value,
-      mergeFlags: mergeFlags.fold(0, (acc, e) => acc | e.value),
-      fileFlags: fileFlags.fold(0, (acc, e) => acc | e.value),
-    ));
+    return Index(
+      merge_bindings.mergeCommits(
+        repoPointer: _repoPointer,
+        ourCommitPointer: ourCommit.pointer,
+        theirCommitPointer: theirCommit.pointer,
+        favor: favor.value,
+        mergeFlags: mergeFlags.fold(0, (acc, e) => acc | e.value),
+        fileFlags: fileFlags.fold(0, (acc, e) => acc | e.value),
+      ),
+    );
   }
 
   /// Merges two trees, producing an index that reflects the result of the
@@ -1101,15 +1109,17 @@ class Repository {
     List<GitMergeFlag> mergeFlags = const [GitMergeFlag.findRenames],
     List<GitMergeFileFlag> fileFlags = const [GitMergeFileFlag.defaults],
   }) {
-    return Index(merge_bindings.mergeTrees(
-      repoPointer: _repoPointer,
-      ancestorTreePointer: ancestorTree?.pointer ?? nullptr,
-      ourTreePointer: ourTree.pointer,
-      theirTreePointer: theirTree.pointer,
-      favor: favor.value,
-      mergeFlags: mergeFlags.fold(0, (acc, element) => acc | element.value),
-      fileFlags: fileFlags.fold(0, (acc, element) => acc | element.value),
-    ));
+    return Index(
+      merge_bindings.mergeTrees(
+        repoPointer: _repoPointer,
+        ancestorTreePointer: ancestorTree?.pointer ?? nullptr,
+        ourTreePointer: ourTree.pointer,
+        theirTreePointer: theirTree.pointer,
+        favor: favor.value,
+        mergeFlags: mergeFlags.fold(0, (acc, element) => acc | element.value),
+        fileFlags: fileFlags.fold(0, (acc, element) => acc | element.value),
+      ),
+    );
   }
 
   /// Cherry-picks the provided [commit], producing changes in the index and
@@ -1243,41 +1253,49 @@ class Repository {
     final int flagsInt = flags.fold(0, (acc, e) => acc | e.value);
 
     if (a is Tree && b is Tree) {
-      return Diff(diff_bindings.treeToTree(
-        repoPointer: _repoPointer,
-        oldTreePointer: a.pointer,
-        newTreePointer: b.pointer,
-        flags: flagsInt,
-        contextLines: contextLines,
-        interhunkLines: interhunkLines,
-      ));
+      return Diff(
+        diff_bindings.treeToTree(
+          repoPointer: _repoPointer,
+          oldTreePointer: a.pointer,
+          newTreePointer: b.pointer,
+          flags: flagsInt,
+          contextLines: contextLines,
+          interhunkLines: interhunkLines,
+        ),
+      );
     } else if (a is Tree && b == null) {
       if (cached) {
-        return Diff(diff_bindings.treeToIndex(
+        return Diff(
+          diff_bindings.treeToIndex(
+            repoPointer: _repoPointer,
+            treePointer: a.pointer,
+            indexPointer: index.pointer,
+            flags: flagsInt,
+            contextLines: contextLines,
+            interhunkLines: interhunkLines,
+          ),
+        );
+      } else {
+        return Diff(
+          diff_bindings.treeToWorkdir(
+            repoPointer: _repoPointer,
+            treePointer: a.pointer,
+            flags: flagsInt,
+            contextLines: contextLines,
+            interhunkLines: interhunkLines,
+          ),
+        );
+      }
+    } else if (a == null && b == null) {
+      return Diff(
+        diff_bindings.indexToWorkdir(
           repoPointer: _repoPointer,
-          treePointer: a.pointer,
           indexPointer: index.pointer,
           flags: flagsInt,
           contextLines: contextLines,
           interhunkLines: interhunkLines,
-        ));
-      } else {
-        return Diff(diff_bindings.treeToWorkdir(
-          repoPointer: _repoPointer,
-          treePointer: a.pointer,
-          flags: flagsInt,
-          contextLines: contextLines,
-          interhunkLines: interhunkLines,
-        ));
-      }
-    } else if (a == null && b == null) {
-      return Diff(diff_bindings.indexToWorkdir(
-        repoPointer: _repoPointer,
-        indexPointer: index.pointer,
-        flags: flagsInt,
-        contextLines: contextLines,
-        interhunkLines: interhunkLines,
-      ));
+        ),
+      );
     } else {
       throw ArgumentError.notNull('a');
     }

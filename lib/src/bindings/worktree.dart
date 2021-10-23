@@ -2,10 +2,9 @@ import 'dart:ffi';
 
 import 'package:ffi/ffi.dart';
 import 'package:libgit2dart/libgit2dart.dart';
-
-import '../error.dart';
-import '../util.dart';
-import 'libgit2_bindings.dart';
+import 'package:libgit2dart/src/bindings/libgit2_bindings.dart';
+import 'package:libgit2dart/src/error.dart';
+import 'package:libgit2dart/src/util.dart';
 
 /// Add a new working tree.
 ///
@@ -81,7 +80,7 @@ bool isPrunable(Pointer<git_worktree> wt) {
     GIT_WORKTREE_PRUNE_OPTIONS_VERSION,
   );
 
-  return libgit2.git_worktree_is_prunable(wt, opts) > 0 ? true : false;
+  return libgit2.git_worktree_is_prunable(wt, opts) > 0 || false;
 }
 
 /// Prune working tree.
@@ -126,7 +125,7 @@ String path(Pointer<git_worktree> wt) {
 /// A worktree may be locked if the linked working tree is stored on a portable
 /// device which is not available.
 bool isLocked(Pointer<git_worktree> wt) {
-  return libgit2.git_worktree_is_locked(nullptr, wt) == 1 ? true : false;
+  return libgit2.git_worktree_is_locked(nullptr, wt) == 1 || false;
 }
 
 /// Lock worktree if not already locked.
@@ -140,7 +139,7 @@ void unlock(Pointer<git_worktree> wt) => libgit2.git_worktree_unlock(wt);
 /// A valid worktree requires both the git data structures inside the linked
 /// parent repository and the linked working copy to be present.
 bool isValid(Pointer<git_worktree> wt) {
-  return libgit2.git_worktree_validate(wt) == 0 ? true : false;
+  return libgit2.git_worktree_validate(wt) == 0 || false;
 }
 
 /// Free a previously allocated worktree.

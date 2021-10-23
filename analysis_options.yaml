@@ -1,13 +1,50 @@
 include: package:lints/recommended.yaml
-linter:
-  rules:
-    - prefer_const_constructors
-    - sort_constructors_first
-    - directives_ordering
-    - lines_longer_than_80_chars
+
 analyzer:
   strong-mode:
     implicit-casts: false
     implicit-dynamic: false
+
   exclude:
     - lib/src/bindings/libgit2_bindings.dart
+
+linter:
+  rules:
+    - always_use_package_imports
+    - avoid_bool_literals_in_conditional_expressions
+    - avoid_dynamic_calls
+    - avoid_escaping_inner_quotes
+    - avoid_field_initializers_in_const_classes
+    - avoid_positional_boolean_parameters
+    - avoid_print
+    - avoid_redundant_argument_values
+    - avoid_returning_this
+    - avoid_returning_null_for_future
+    - avoid_setters_without_getters
+    - avoid_slow_async_io
+    - avoid_type_to_string
+    - avoid_void_async
+    - cast_nullable_to_non_nullable
+    - directives_ordering
+    - eol_at_end_of_file
+    - join_return_with_assignment
+    - library_private_types_in_public_api
+    - lines_longer_than_80_chars
+    - missing_whitespace_between_adjacent_strings
+    - noop_primitive_operations
+    - parameter_assignments
+    - prefer_const_constructors
+    - prefer_constructors_over_static_methods
+    - prefer_final_in_for_each
+    - prefer_final_locals
+    - prefer_if_elements_to_conditional_expressions
+    - prefer_null_aware_method_calls
+    - require_trailing_commas
+    - sort_constructors_first
+    - type_annotate_public_apis
+    - use_named_constants
+    - use_raw_strings
+    - use_setters_to_change_properties
+    - use_string_buffers
+    - sort_unnamed_constructors_first
+    - sort_pub_dependencies

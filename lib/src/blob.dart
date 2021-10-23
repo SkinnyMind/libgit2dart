@@ -1,10 +1,9 @@
 import 'dart:ffi';
 
 import 'package:libgit2dart/libgit2dart.dart';
-
-import 'bindings/blob.dart' as bindings;
-import 'bindings/libgit2_bindings.dart';
-import 'bindings/patch.dart' as patch_bindings;
+import 'package:libgit2dart/src/bindings/blob.dart' as bindings;
+import 'package:libgit2dart/src/bindings/libgit2_bindings.dart';
+import 'package:libgit2dart/src/bindings/patch.dart' as patch_bindings;
 
 class Blob {
   /// Initializes a new instance of [Blob] class from provided pointer to
@@ -32,11 +31,13 @@ class Blob {
   ///
   /// Throws a [LibGit2Error] if error occured.
   static Oid create({required Repository repo, required String content}) {
-    return Oid(bindings.create(
-      repoPointer: repo.pointer,
-      buffer: content,
-      len: content.length,
-    ));
+    return Oid(
+      bindings.create(
+        repoPointer: repo.pointer,
+        buffer: content,
+        len: content.length,
+      ),
+    );
   }
 
   /// Creates a new blob from the file in working directory of a repository and
@@ -48,10 +49,12 @@ class Blob {
     required Repository repo,
     required String relativePath,
   }) {
-    return Oid(bindings.createFromWorkdir(
-      repoPointer: repo.pointer,
-      relativePath: relativePath,
-    ));
+    return Oid(
+      bindings.createFromWorkdir(
+        repoPointer: repo.pointer,
+        relativePath: relativePath,
+      ),
+    );
   }
 
   /// Creates a new blob from the file in filesystem and writes it to the ODB.
@@ -115,7 +118,7 @@ class Blob {
     );
 
     return Patch(
-      result['patch'] as Pointer<git_patch>,
+      result['patch']! as Pointer<git_patch>,
       result['a'],
       result['b'],
     );
@@ -160,7 +163,7 @@ class Blob {
     );
 
     return Patch(
-      result['patch'] as Pointer<git_patch>,
+      result['patch']! as Pointer<git_patch>,
       result['a'],
       result['b'],
     );

@@ -1,3 +1,5 @@
+// ignore_for_file: avoid_print
+
 import 'dart:io';
 import 'package:libgit2dart/libgit2dart.dart';
 import '../test/helpers/util.dart';

@@ -1,5 +1,5 @@
 import 'package:libgit2dart/libgit2dart.dart';
-import 'util.dart';
+import 'package:libgit2dart/src/util.dart';
 
 class Features {
   /// Returns list of compile time options for libgit2.

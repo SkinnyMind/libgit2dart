@@ -1,10 +1,9 @@
 import 'dart:ffi';
 
 import 'package:libgit2dart/libgit2dart.dart';
-
-import 'bindings/diff.dart' as diff_bindings;
-import 'bindings/libgit2_bindings.dart';
-import 'bindings/tree.dart' as bindings;
+import 'package:libgit2dart/src/bindings/diff.dart' as diff_bindings;
+import 'package:libgit2dart/src/bindings/libgit2_bindings.dart';
+import 'package:libgit2dart/src/bindings/tree.dart' as bindings;
 
 class Tree {
   /// Initializes a new instance of [Tree] class from provided pointer to
@@ -31,12 +30,16 @@ class Tree {
   /// List with tree entries of a tree.
   List<TreeEntry> get entries {
     final entryCount = bindings.entryCount(_treePointer);
-    var result = <TreeEntry>[];
+    final result = <TreeEntry>[];
     for (var i = 0; i < entryCount; i++) {
-      result.add(TreeEntry(bindings.getByIndex(
-        treePointer: _treePointer,
-        index: i,
-      )));
+      result.add(
+        TreeEntry(
+          bindings.getByIndex(
+            treePointer: _treePointer,
+            index: i,
+          ),
+        ),
+      );
     }
 
     return result;
@@ -54,23 +57,30 @@ class Tree {
   /// Throws [ArgumentError] if provided [value] is not int or string.
   TreeEntry operator [](Object value) {
     if (value is int) {
-      return TreeEntry(bindings.getByIndex(
-        treePointer: _treePointer,
-        index: value,
-      ));
+      return TreeEntry(
+        bindings.getByIndex(
+          treePointer: _treePointer,
+          index: value,
+        ),
+      );
     } else if (value is String && value.contains('/')) {
-      return TreeEntry(bindings.getByPath(
-        rootPointer: _treePointer,
-        path: value,
-      ));
+      return TreeEntry(
+        bindings.getByPath(
+          rootPointer: _treePointer,
+          path: value,
+        ),
+      );
     } else if (value is String) {
-      return TreeEntry(bindings.getByName(
-        treePointer: _treePointer,
-        filename: value,
-      ));
+      return TreeEntry(
+        bindings.getByName(
+          treePointer: _treePointer,
+          filename: value,
+        ),
+      );
     } else {
       throw ArgumentError.value(
-          '$value should be either index position, filename or path');
+        '$value should be either index position, filename or path',
+      );
     }
   }
 
@@ -96,13 +106,15 @@ class Tree {
     int contextLines = 3,
     int interhunkLines = 0,
   }) {
-    return Diff(diff_bindings.treeToWorkdir(
-      repoPointer: bindings.owner(_treePointer),
-      treePointer: _treePointer,
-      flags: flags.fold(0, (acc, e) => acc | e.value),
-      contextLines: contextLines,
-      interhunkLines: interhunkLines,
-    ));
+    return Diff(
+      diff_bindings.treeToWorkdir(
+        repoPointer: bindings.owner(_treePointer),
+        treePointer: _treePointer,
+        flags: flags.fold(0, (acc, e) => acc | e.value),
+        contextLines: contextLines,
+        interhunkLines: interhunkLines,
+      ),
+    );
   }
 
   /// Creates a diff between a tree and repository index.
@@ -122,14 +134,16 @@ class Tree {
     int contextLines = 3,
     int interhunkLines = 0,
   }) {
-    return Diff(diff_bindings.treeToIndex(
-      repoPointer: bindings.owner(_treePointer),
-      treePointer: _treePointer,
-      indexPointer: index.pointer,
-      flags: flags.fold(0, (acc, e) => acc | e.value),
-      contextLines: contextLines,
-      interhunkLines: interhunkLines,
-    ));
+    return Diff(
+      diff_bindings.treeToIndex(
+        repoPointer: bindings.owner(_treePointer),
+        treePointer: _treePointer,
+        indexPointer: index.pointer,
+        flags: flags.fold(0, (acc, e) => acc | e.value),
+        contextLines: contextLines,
+        interhunkLines: interhunkLines,
+      ),
+    );
   }
 
   /// Creates a diff with the difference between two tree objects.
@@ -151,14 +165,16 @@ class Tree {
     int contextLines = 3,
     int interhunkLines = 0,
   }) {
-    return Diff(diff_bindings.treeToTree(
-      repoPointer: bindings.owner(_treePointer),
-      oldTreePointer: _treePointer,
-      newTreePointer: tree.pointer,
-      flags: flags.fold(0, (acc, e) => acc | e.value),
-      contextLines: contextLines,
-      interhunkLines: interhunkLines,
-    ));
+    return Diff(
+      diff_bindings.treeToTree(
+        repoPointer: bindings.owner(_treePointer),
+        oldTreePointer: _treePointer,
+        newTreePointer: tree.pointer,
+        flags: flags.fold(0, (acc, e) => acc | e.value),
+        contextLines: contextLines,
+        interhunkLines: interhunkLines,
+      ),
+    );
   }
 
   /// Releases memory allocated for tree object.

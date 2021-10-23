@@ -89,7 +89,7 @@ void main() {
       odb.free();
     });
 
-    test('returns list of all objects oid\'s in database', () {
+    test("returns list of all objects oid's in database", () {
       final odb = repo.odb;
 
       expect(odb.objects, isNot(isEmpty));

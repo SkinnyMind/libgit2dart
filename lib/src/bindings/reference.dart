@@ -1,10 +1,9 @@
 import 'dart:ffi';
 
 import 'package:ffi/ffi.dart';
-
-import '../error.dart';
-import '../util.dart';
-import 'libgit2_bindings.dart';
+import 'package:libgit2dart/src/bindings/libgit2_bindings.dart';
+import 'package:libgit2dart/src/error.dart';
+import 'package:libgit2dart/src/util.dart';
 
 /// Get the type of a reference.
 ///
@@ -126,16 +125,17 @@ Pointer<git_reference> rename({
 ///
 /// Throws a [LibGit2Error] if error occured.
 List<String> list(Pointer<git_repository> repo) {
-  var array = calloc<git_strarray>();
+  final array = calloc<git_strarray>();
   final error = libgit2.git_reference_list(array, repo);
-  var result = <String>[];
+  final result = <String>[];
 
   if (error < 0) {
     throw LibGit2Error(libgit2.git_error_last());
   } else {
     for (var i = 0; i < array.ref.count; i++) {
       result.add(
-          array.ref.strings.elementAt(i).value.cast<Utf8>().toDartString());
+        array.ref.strings.elementAt(i).value.cast<Utf8>().toDartString(),
+      );
     }
   }
 
@@ -154,27 +154,27 @@ bool hasLog({
 
   calloc.free(refname);
 
-  return result == 1 ? true : false;
+  return result == 1 || false;
 }
 
 /// Check if a reference is a local branch.
 bool isBranch(Pointer<git_reference> ref) {
-  return libgit2.git_reference_is_branch(ref) == 1 ? true : false;
+  return libgit2.git_reference_is_branch(ref) == 1 || false;
 }
 
 /// Check if a reference is a note.
 bool isNote(Pointer<git_reference> ref) {
-  return libgit2.git_reference_is_note(ref) == 1 ? true : false;
+  return libgit2.git_reference_is_note(ref) == 1 || false;
 }
 
 /// Check if a reference is a remote tracking branch.
 bool isRemote(Pointer<git_reference> ref) {
-  return libgit2.git_reference_is_remote(ref) == 1 ? true : false;
+  return libgit2.git_reference_is_remote(ref) == 1 || false;
 }
 
 /// Check if a reference is a tag.
 bool isTag(Pointer<git_reference> ref) {
-  return libgit2.git_reference_is_tag(ref) == 1 ? true : false;
+  return libgit2.git_reference_is_tag(ref) == 1 || false;
 }
 
 /// Create a new direct reference.
@@ -383,9 +383,7 @@ bool compare({
   required Pointer<git_reference> ref1Pointer,
   required Pointer<git_reference> ref2Pointer,
 }) {
-  return libgit2.git_reference_cmp(ref1Pointer, ref2Pointer) == 0
-      ? true
-      : false;
+  return libgit2.git_reference_cmp(ref1Pointer, ref2Pointer) == 0 || false;
 }
 
 /// Recursively peel reference until object of the specified type is found.

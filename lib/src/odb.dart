@@ -1,8 +1,8 @@
 import 'dart:ffi';
 import 'package:libgit2dart/libgit2dart.dart';
-import 'bindings/libgit2_bindings.dart';
-import 'bindings/odb.dart' as bindings;
-import 'util.dart';
+import 'package:libgit2dart/src/bindings/libgit2_bindings.dart';
+import 'package:libgit2dart/src/bindings/odb.dart' as bindings;
+import 'package:libgit2dart/src/util.dart';
 
 class Odb {
   /// Initializes a new instance of [Odb] class from provided
@@ -64,10 +64,12 @@ class Odb {
   ///
   /// Throws a [LibGit2Error] if error occured.
   OdbObject read(Oid oid) {
-    return OdbObject(bindings.read(
-      odbPointer: _odbPointer,
-      oidPointer: oid.pointer,
-    ));
+    return OdbObject(
+      bindings.read(
+        odbPointer: _odbPointer,
+        oidPointer: oid.pointer,
+      ),
+    );
   }
 
   /// Writes raw [data] to into the object database.
@@ -84,11 +86,13 @@ class Odb {
         type == GitObject.refDelta) {
       throw ArgumentError.value('$type is invalid type');
     } else {
-      return Oid(bindings.write(
-        odbPointer: _odbPointer,
-        type: type.value,
-        data: data,
-      ));
+      return Oid(
+        bindings.write(
+          odbPointer: _odbPointer,
+          type: type.value,
+          data: data,
+        ),
+      );
     }
   }
 

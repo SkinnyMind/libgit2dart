@@ -1,10 +1,9 @@
 import 'dart:ffi';
 
 import 'package:libgit2dart/libgit2dart.dart';
-
-import 'bindings/commit.dart' as bindings;
-import 'bindings/libgit2_bindings.dart';
-import 'bindings/tree.dart' as tree_bindings;
+import 'package:libgit2dart/src/bindings/commit.dart' as bindings;
+import 'package:libgit2dart/src/bindings/libgit2_bindings.dart';
+import 'package:libgit2dart/src/bindings/tree.dart' as tree_bindings;
 
 class Commit {
   /// Initializes a new instance of [Commit] class from provided pointer to
@@ -67,17 +66,19 @@ class Commit {
     required Tree tree,
     required List<Commit> parents,
   }) {
-    return Oid(bindings.create(
-      repoPointer: repo.pointer,
-      updateRef: updateRef,
-      authorPointer: author.pointer,
-      committerPointer: committer.pointer,
-      messageEncoding: messageEncoding,
-      message: message,
-      treePointer: tree.pointer,
-      parentCount: parents.length,
-      parents: parents.map((e) => e.pointer).toList(),
-    ));
+    return Oid(
+      bindings.create(
+        repoPointer: repo.pointer,
+        updateRef: updateRef,
+        authorPointer: author.pointer,
+        committerPointer: committer.pointer,
+        messageEncoding: messageEncoding,
+        message: message,
+        treePointer: tree.pointer,
+        parentCount: parents.length,
+        parents: parents.map((e) => e.pointer).toList(),
+      ),
+    );
   }
 
   /// Amends an existing commit by replacing only non-null values.
@@ -109,16 +110,18 @@ class Commit {
     String? message,
     String? messageEncoding,
   }) {
-    return Oid(bindings.amend(
-      repoPointer: repo.pointer,
-      commitPointer: commit.pointer,
-      authorPointer: author?.pointer,
-      committerPointer: committer?.pointer,
-      treePointer: tree?.pointer,
-      updateRef: updateRef,
-      message: message,
-      messageEncoding: messageEncoding,
-    ));
+    return Oid(
+      bindings.amend(
+        repoPointer: repo.pointer,
+        commitPointer: commit.pointer,
+        authorPointer: author?.pointer,
+        committerPointer: committer?.pointer,
+        treePointer: tree?.pointer,
+        updateRef: updateRef,
+        message: message,
+        messageEncoding: messageEncoding,
+      ),
+    );
   }
 
   /// Wncoding for the message of a commit, as a string representing a standard
@@ -145,7 +148,7 @@ class Commit {
 
   /// List of parent commits [Oid]s.
   List<Oid> get parents {
-    var parents = <Oid>[];
+    final parents = <Oid>[];
     final parentCount = bindings.parentCount(_commitPointer);
 
     for (var i = 0; i < parentCount; i++) {
@@ -161,10 +164,12 @@ class Commit {
 
   /// Tree pointed to by a commit.
   Tree get tree {
-    return Tree(tree_bindings.lookup(
-      repoPointer: bindings.owner(_commitPointer),
-      oidPointer: bindings.tree(_commitPointer),
-    ));
+    return Tree(
+      tree_bindings.lookup(
+        repoPointer: bindings.owner(_commitPointer),
+        oidPointer: bindings.tree(_commitPointer),
+      ),
+    );
   }
 
   /// Releases memory allocated for commit object.

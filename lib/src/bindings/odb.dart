@@ -1,12 +1,11 @@
 import 'dart:ffi';
 
 import 'package:ffi/ffi.dart';
-
-import '../error.dart';
-import '../oid.dart';
-import '../util.dart';
-import 'libgit2_bindings.dart';
-import 'oid.dart' as oid_bindings;
+import 'package:libgit2dart/src/bindings/libgit2_bindings.dart';
+import 'package:libgit2dart/src/bindings/oid.dart' as oid_bindings;
+import 'package:libgit2dart/src/error.dart';
+import 'package:libgit2dart/src/oid.dart';
+import 'package:libgit2dart/src/util.dart';
 
 /// Create a new object database with no backends.
 ///
@@ -66,7 +65,7 @@ bool exists({
   required Pointer<git_odb> odbPointer,
   required Pointer<git_oid> oidPointer,
 }) {
-  return libgit2.git_odb_exists(odbPointer, oidPointer) == 1 ? true : false;
+  return libgit2.git_odb_exists(odbPointer, oidPointer) == 1 || false;
 }
 
 /// List of objects in the database.
@@ -91,7 +90,9 @@ List<Oid> objects(Pointer<git_odb> odb) {
   const except = -1;
   final cb =
       Pointer.fromFunction<Int32 Function(Pointer<git_oid>, Pointer<Void>)>(
-          _forEachCb, except);
+    _forEachCb,
+    except,
+  );
   final error = libgit2.git_odb_foreach(odb, cb, nullptr);
 
   if (error < 0) {

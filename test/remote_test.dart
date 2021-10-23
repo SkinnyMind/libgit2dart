@@ -315,7 +315,7 @@ void main() {
       );
     });
 
-    test('successfully returns remote repo\'s reference list', () {
+    test("successfully returns remote repo's reference list", () {
       Remote.setUrl(
         repo: repo,
         remote: 'libgit2',
@@ -329,7 +329,7 @@ void main() {
       expect(refs.first['name'], 'HEAD');
       expect(refs.first['symref'], 'refs/heads/master');
       expect(
-        (refs.first['oid'] as Oid).sha,
+        (refs.first['oid']! as Oid).sha,
         '49322bb17d3acc9146f98c97d078513228bbf3c0',
       );
 
@@ -337,8 +337,8 @@ void main() {
     });
 
     test(
-        'throws when trying to get remote repo\'s reference list with '
-        'invalid url', () {
+        "throws when trying to get remote repo's reference list with "
+        "invalid url", () {
       Remote.setUrl(repo: repo, remote: 'libgit2', url: 'invalid');
       final remote = repo.lookupRemote('libgit2');
 
@@ -504,7 +504,7 @@ Total 69 (delta 0), reused 1 (delta 0), pack-reused 68
       );
       final remote = repo.lookupRemote('libgit2');
 
-      var sidebandOutput = StringBuffer();
+      final sidebandOutput = StringBuffer();
       void sideband(String message) {
         sidebandOutput.write(message);
       }
@@ -542,7 +542,7 @@ Total 69 (delta 0), reused 1 (delta 0), pack-reused 68
         },
       ];
 
-      var updateTipsOutput = <Map<String, String>>[];
+      final updateTipsOutput = <Map<String, String>>[];
       void updateTips(String refname, Oid oldOid, Oid newOid) {
         updateTipsOutput.add({
           'refname': refname,
@@ -576,7 +576,7 @@ Total 69 (delta 0), reused 1 (delta 0), pack-reused 68
       repo.createRemote(name: 'local', url: originDir.path);
       final remote = repo.lookupRemote('local');
 
-      var updateRefOutput = <String, String>{};
+      final updateRefOutput = <String, String>{};
       void updateRef(String refname, String message) {
         updateRefOutput[refname] = message;
       }

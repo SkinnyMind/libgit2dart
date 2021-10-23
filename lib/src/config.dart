@@ -4,10 +4,9 @@ import 'dart:io';
 
 import 'package:ffi/ffi.dart';
 import 'package:libgit2dart/libgit2dart.dart';
-
-import 'bindings/config.dart' as bindings;
-import 'bindings/libgit2_bindings.dart';
-import 'util.dart';
+import 'package:libgit2dart/src/bindings/config.dart' as bindings;
+import 'package:libgit2dart/src/bindings/libgit2_bindings.dart';
+import 'package:libgit2dart/src/util.dart';
 
 class Config with IterableMixin<ConfigEntry> {
   /// Initializes a new instance of [Config] class from provided
@@ -84,10 +83,12 @@ class Config with IterableMixin<ConfigEntry> {
 
   /// Returns the [ConfigEntry] of a [variable].
   ConfigEntry operator [](String variable) {
-    return ConfigEntry(bindings.getEntry(
-      configPointer: _configPointer,
-      variable: variable,
-    ));
+    return ConfigEntry(
+      bindings.getEntry(
+        configPointer: _configPointer,
+        variable: variable,
+      ),
+    );
   }
 
   /// Sets the [value] of config [variable].

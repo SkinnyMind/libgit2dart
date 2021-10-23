@@ -1,10 +1,9 @@
 import 'dart:ffi';
 
 import 'package:ffi/ffi.dart';
-
-import '../error.dart';
-import '../util.dart';
-import 'libgit2_bindings.dart';
+import 'package:libgit2dart/src/bindings/libgit2_bindings.dart';
+import 'package:libgit2dart/src/error.dart';
+import 'package:libgit2dart/src/util.dart';
 
 /// Get the source specifier.
 String source(Pointer<git_refspec> refspec) {
@@ -18,7 +17,7 @@ String destination(Pointer<git_refspec> refspec) {
 
 /// Get the force update setting.
 bool force(Pointer<git_refspec> refspec) {
-  return libgit2.git_refspec_force(refspec) == 1 ? true : false;
+  return libgit2.git_refspec_force(refspec) == 1 || false;
 }
 
 /// Get the refspec's string.
@@ -40,7 +39,7 @@ bool matchesSource({
 
   calloc.free(refnameC);
 
-  return result == 1 ? true : false;
+  return result == 1 || false;
 }
 
 /// Check if a refspec's destination descriptor matches a reference.
@@ -53,7 +52,7 @@ bool matchesDestination({
 
   calloc.free(refnameC);
 
-  return result == 1 ? true : false;
+  return result == 1 || false;
 }
 
 /// Transform a reference to its target following the refspec's rules.

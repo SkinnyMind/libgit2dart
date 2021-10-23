@@ -3,9 +3,8 @@ import 'dart:ffi';
 
 import 'package:ffi/ffi.dart';
 import 'package:libgit2dart/libgit2dart.dart';
-
-import 'bindings/blame.dart' as bindings;
-import 'bindings/libgit2_bindings.dart';
+import 'package:libgit2dart/src/bindings/blame.dart' as bindings;
+import 'package:libgit2dart/src/bindings/libgit2_bindings.dart';
 
 class Blame with IterableMixin<BlameHunk> {
   /// Returns the blame for a single file.
@@ -67,10 +66,12 @@ class Blame with IterableMixin<BlameHunk> {
   ///
   /// Throws [RangeError] if index out of range.
   BlameHunk operator [](int index) {
-    return BlameHunk(bindings.getHunkByIndex(
-      blamePointer: _blamePointer,
-      index: index,
-    ));
+    return BlameHunk(
+      bindings.getHunkByIndex(
+        blamePointer: _blamePointer,
+        index: index,
+      ),
+    );
   }
 
   /// Returns the hunk that relates to the given line number (1-based) in the
@@ -78,10 +79,12 @@ class Blame with IterableMixin<BlameHunk> {
   ///
   /// Throws [RangeError] if [lineNumber] is out of range.
   BlameHunk forLine(int lineNumber) {
-    return BlameHunk(bindings.getHunkByLine(
-      blamePointer: _blamePointer,
-      lineNumber: lineNumber,
-    ));
+    return BlameHunk(
+      bindings.getHunkByLine(
+        blamePointer: _blamePointer,
+        lineNumber: lineNumber,
+      ),
+    );
   }
 
   /// Releases memory allocated for blame object.
@@ -105,7 +108,7 @@ class BlameHunk {
   /// Whether the hunk has been tracked to a boundary commit
   /// (the root, or the commit specified in [oldestCommit] argument).
   bool get isBoundary {
-    return _blameHunkPointer.ref.boundary == 1 ? true : false;
+    return _blameHunkPointer.ref.boundary == 1 || false;
   }
 
   /// 1-based line number where this hunk begins, in the final version of the
@@ -168,10 +171,12 @@ class _BlameIterator implements Iterator<BlameHunk> {
     if (index == count) {
       return false;
     } else {
-      currentHunk = BlameHunk(bindings.getHunkByIndex(
-        blamePointer: _blamePointer,
-        index: index,
-      ));
+      currentHunk = BlameHunk(
+        bindings.getHunkByIndex(
+          blamePointer: _blamePointer,
+          index: index,
+        ),
+      );
       index++;
       return true;
     }

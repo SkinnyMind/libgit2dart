@@ -118,7 +118,7 @@ void main() {
         expect(config['core.bare'].value, 'false');
       });
 
-      test('throws when variable isn\'t found', () {
+      test("throws when variable isn't found", () {
         expect(
           () => config['not.there'],
           throwsA(
@@ -192,7 +192,7 @@ void main() {
         expect(
           config.multivar(
             variable: 'core.gitproxy',
-            regexp: 'for kernel.org\$',
+            regexp: r'for kernel.org$',
           ),
           ['proxy-command for kernel.org'],
         );
@@ -234,20 +234,20 @@ void main() {
         expect(
           config.multivar(
             variable: 'core.gitproxy',
-            regexp: 'for kernel.org\$',
+            regexp: r'for kernel.org$',
           ),
           ['proxy-command for kernel.org'],
         );
 
         config.deleteMultivar(
           variable: 'core.gitproxy',
-          regexp: 'for kernel.org\$',
+          regexp: r'for kernel.org$',
         );
 
         expect(
           config.multivar(
             variable: 'core.gitproxy',
-            regexp: 'for kernel.org\$',
+            regexp: r'for kernel.org$',
           ),
           <String>[],
         );

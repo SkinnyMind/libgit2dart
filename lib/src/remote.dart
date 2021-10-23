@@ -1,7 +1,7 @@
 import 'dart:ffi';
 import 'package:libgit2dart/libgit2dart.dart';
-import 'bindings/libgit2_bindings.dart';
-import 'bindings/remote.dart' as bindings;
+import 'package:libgit2dart/src/bindings/libgit2_bindings.dart';
+import 'package:libgit2dart/src/bindings/remote.dart' as bindings;
 
 class Remote {
   /// Lookups remote with provided [name] in a [repo]sitory.
@@ -174,10 +174,12 @@ class Remote {
 
   /// [Refspec] object from the remote at provided position.
   Refspec getRefspec(int index) {
-    return Refspec(bindings.getRefspec(
-      remotePointer: _remotePointer,
-      position: index,
-    ));
+    return Refspec(
+      bindings.getRefspec(
+        remotePointer: _remotePointer,
+        position: index,
+      ),
+    );
   }
 
   /// List of fetch refspecs.

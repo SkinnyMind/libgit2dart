@@ -1,7 +1,7 @@
 import 'dart:ffi';
 import 'package:libgit2dart/libgit2dart.dart';
-import 'bindings/libgit2_bindings.dart';
-import 'bindings/note.dart' as bindings;
+import 'package:libgit2dart/src/bindings/libgit2_bindings.dart';
+import 'package:libgit2dart/src/bindings/note.dart' as bindings;
 
 class Note {
   /// Initializes a new instance of the [Note] class from provided
@@ -64,15 +64,17 @@ class Note {
     String notesRef = 'refs/notes/commits',
     bool force = false,
   }) {
-    return Oid(bindings.create(
-      repoPointer: repo.pointer,
-      authorPointer: author.pointer,
-      committerPointer: committer.pointer,
-      oidPointer: annotatedOid.pointer,
-      note: note,
-      notesRef: notesRef,
-      force: force,
-    ));
+    return Oid(
+      bindings.create(
+        repoPointer: repo.pointer,
+        authorPointer: author.pointer,
+        committerPointer: committer.pointer,
+        oidPointer: annotatedOid.pointer,
+        note: note,
+        notesRef: notesRef,
+        force: force,
+      ),
+    );
   }
 
   /// Deletes the note for an [annotatedOid].
@@ -111,10 +113,12 @@ class Note {
   static List<Note> list(Repository repo) {
     final notesPointers = bindings.list(repo.pointer);
     return notesPointers
-        .map((e) => Note(
-              e['note'] as Pointer<git_note>,
-              e['annotatedOid'] as Pointer<git_oid>,
-            ))
+        .map(
+          (e) => Note(
+            e['note']! as Pointer<git_note>,
+            e['annotatedOid']! as Pointer<git_oid>,
+          ),
+        )
         .toList();
   }
 

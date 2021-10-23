@@ -1,12 +1,12 @@
 import 'dart:ffi';
 
 import 'package:libgit2dart/libgit2dart.dart';
-
-import 'bindings/libgit2_bindings.dart';
-import 'bindings/object.dart' as object_bindings;
-import 'bindings/refdb.dart' as refdb_bindings;
-import 'bindings/reference.dart' as bindings;
-import 'bindings/repository.dart' as repository_bindings;
+import 'package:libgit2dart/src/bindings/libgit2_bindings.dart';
+import 'package:libgit2dart/src/bindings/object.dart' as object_bindings;
+import 'package:libgit2dart/src/bindings/refdb.dart' as refdb_bindings;
+import 'package:libgit2dart/src/bindings/reference.dart' as bindings;
+import 'package:libgit2dart/src/bindings/repository.dart'
+    as repository_bindings;
 
 class Reference {
   /// Initializes a new instance of the [Reference] class.
@@ -62,7 +62,8 @@ class Reference {
       );
     } else {
       throw ArgumentError.value(
-          '$target must be either Oid or String reference name');
+        '$target must be either Oid or String reference name',
+      );
     }
   }
 
@@ -185,7 +186,8 @@ class Reference {
       _refPointer = newPointer;
     } else {
       throw ArgumentError.value(
-          '$target must be either Oid or String reference name');
+        '$target must be either Oid or String reference name',
+      );
     }
   }
 
@@ -261,7 +263,7 @@ class Reference {
   Repository get owner => Repository(bindings.owner(_refPointer));
 
   @override
-  bool operator ==(other) {
+  bool operator ==(Object other) {
     return (other is Reference) &&
         bindings.compare(
           ref1Pointer: _refPointer,

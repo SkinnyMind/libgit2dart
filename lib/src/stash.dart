@@ -1,5 +1,5 @@
 import 'package:libgit2dart/libgit2dart.dart';
-import 'bindings/stash.dart' as bindings;
+import 'package:libgit2dart/src/bindings/stash.dart' as bindings;
 
 class Stash {
   /// Initializes a new instance of [Stash] class from provided stash [index],
@@ -42,12 +42,14 @@ class Stash {
   }) {
     final int flagsInt = flags.fold(0, (acc, e) => acc | e.value);
 
-    return Oid(bindings.save(
-      repoPointer: repo.pointer,
-      stasherPointer: stasher.pointer,
-      message: message,
-      flags: flagsInt,
-    ));
+    return Oid(
+      bindings.save(
+        repoPointer: repo.pointer,
+        stasherPointer: stasher.pointer,
+        message: message,
+        flags: flagsInt,
+      ),
+    );
   }
 
   /// Applies a single stashed state from the stash list.

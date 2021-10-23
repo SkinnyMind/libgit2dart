@@ -1,13 +1,12 @@
 import 'dart:ffi';
 
 import 'package:ffi/ffi.dart';
-
-import '../error.dart';
-import '../oid.dart';
-import '../stash.dart';
-import '../util.dart';
-import 'checkout.dart' as checkout_bindings;
-import 'libgit2_bindings.dart';
+import 'package:libgit2dart/src/bindings/checkout.dart' as checkout_bindings;
+import 'package:libgit2dart/src/bindings/libgit2_bindings.dart';
+import 'package:libgit2dart/src/error.dart';
+import 'package:libgit2dart/src/oid.dart';
+import 'package:libgit2dart/src/stash.dart';
+import 'package:libgit2dart/src/util.dart';
 
 /// Save the local modifications to a new stash.
 ///
@@ -148,18 +147,20 @@ int _stashCb(
   Pointer<git_oid> oid,
   Pointer<Void> payload,
 ) {
-  _stashList.add(Stash(
-    index: index,
-    message: message.cast<Utf8>().toDartString(),
-    oid: Oid(oid),
-  ));
+  _stashList.add(
+    Stash(
+      index: index,
+      message: message.cast<Utf8>().toDartString(),
+      oid: Oid(oid),
+    ),
+  );
   return 0;
 }
 
 /// Loop over all the stashed states.
 List<Stash> list(Pointer<git_repository> repo) {
   const except = -1;
-  git_stash_cb callBack = Pointer.fromFunction(_stashCb, except);
+  final git_stash_cb callBack = Pointer.fromFunction(_stashCb, except);
   libgit2.git_stash_foreach(repo, callBack, nullptr);
 
   final result = _stashList.toList(growable: false);
