@@ -6,3 +6,6 @@ pubspec.lock
 
 # Coverage
 coverage/
+
+# libgit2 headers for ffigen
+libgit2/
