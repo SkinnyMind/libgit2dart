@@ -5,11 +5,6 @@ import 'package:libgit2dart/libgit2dart.dart';
 import 'package:libgit2dart/src/bindings/credentials.dart'
     as credentials_bindings;
 import 'package:libgit2dart/src/bindings/libgit2_bindings.dart';
-import 'package:libgit2dart/src/callbacks.dart';
-import 'package:libgit2dart/src/credentials.dart';
-import 'package:libgit2dart/src/oid.dart';
-import 'package:libgit2dart/src/remote.dart';
-import 'package:libgit2dart/src/repository.dart';
 import 'package:libgit2dart/src/util.dart';
 
 class RemoteCallbacks {
