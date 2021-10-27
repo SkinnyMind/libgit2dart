@@ -13,7 +13,7 @@ const libUrl =
 const libgit2Version = '1.3.0';
 const libDir = '.dart_tool/libgit2/';
 
-String getLibName(String platform) {
+String getLibName() {
   var ext = 'so';
 
   if (Platform.isWindows) {
@@ -34,7 +34,7 @@ bool _doesFileExist(Uri uri) {
 
 String? _resolveLibUri(String name) {
   var libUri = Directory.current.uri.resolve(name);
-  final dartTool = '.dart_tool/libgit2/${Platform.operatingSystem}';
+  final dartToolDir = '$libDir${Platform.operatingSystem}';
 
   // If lib is in Present Working Directory.
   if (_doesFileExist(libUri)) {
@@ -42,7 +42,7 @@ String? _resolveLibUri(String name) {
   }
 
   // If lib is in Present Working Directory's .dart_tool folder.
-  libUri = Directory.current.uri.resolve('$dartTool/$name');
+  libUri = Directory.current.uri.resolve('$dartToolDir/$name');
   if (_doesFileExist(libUri)) {
     return libUri.toFilePath(windows: Platform.isWindows);
   }
@@ -71,17 +71,9 @@ DynamicLibrary loadLibrary(String name) {
     logger.stdout(ansi.none);
     rethrow;
   }
-  // if (Platform.isMacOS) {
-  //   return DynamicLibrary.open(
-  //       '${Directory.current.path}/libgit2/libgit2-1.2.0.dylib');
-  // }
-  // if (Platform.isWindows) {
-  //   return DynamicLibrary.open(
-  //       '${Directory.current.path}/libgit2/libgit2-1.2.0.dll');
-  // }
 }
 
-final libgit2 = Libgit2(loadLibrary(getLibName(Platform.operatingSystem)));
+final libgit2 = Libgit2(loadLibrary(getLibName()));
 
 String getVersionNumber() {
   libgit2.git_libgit2_init();

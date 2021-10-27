@@ -8,7 +8,7 @@ import 'package:libgit2dart/src/util.dart';
 bool libgit2IsPresent(String platform) {
   final result = File.fromUri(
     Directory.current.uri
-        .resolve('.dart_tool/libgit2/$platform/${getLibName(platform)}'),
+        .resolve('.dart_tool/libgit2/$platform/${getLibName()}'),
   ).existsSync();
   return result;
 }
