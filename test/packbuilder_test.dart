@@ -94,6 +94,7 @@ void main() {
     test('successfully packs with default arguments', () {
       final odb = repo.odb;
       final objectsCount = odb.objects.length;
+      Directory('${repo.workdir}.git/objects/pack/').createSync();
       final writtenCount = repo.pack();
 
       expect(writtenCount, objectsCount);
@@ -120,6 +121,7 @@ void main() {
     });
 
     test('successfully packs with provided packDelegate', () {
+      Directory('${repo.workdir}.git/objects/pack/').createSync();
       void packDelegate(PackBuilder packBuilder) {
         final branches = repo.branches;
         for (final branch in branches) {

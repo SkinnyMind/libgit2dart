@@ -26,7 +26,11 @@ void main() {
 
   group('Rebase', () {
     test('successfully performs rebase when there is no conflicts', () {
-      final signature = repo.defaultSignature;
+      final signature = Signature.create(
+        name: 'Author',
+        email: 'author@email.com',
+        time: 1234,
+      );
       final master = repo.lookupReference('refs/heads/master');
       final feature = repo.lookupReference('refs/heads/feature');
 
@@ -65,7 +69,11 @@ void main() {
     });
 
     test('successfully performs rebase without branch provided', () {
-      final signature = repo.defaultSignature;
+      final signature = Signature.create(
+        name: 'Author',
+        email: 'author@email.com',
+        time: 1234,
+      );
       final feature = repo.lookupReference('refs/heads/feature');
 
       final rebase = Rebase.init(
@@ -97,7 +105,11 @@ void main() {
     });
 
     test('successfully performs rebase with provided upstream', () {
-      final signature = repo.defaultSignature;
+      final signature = Signature.create(
+        name: 'Author',
+        email: 'author@email.com',
+        time: 1234,
+      );
       final master = repo.lookupReference('refs/heads/master');
       final feature = repo.lookupReference('refs/heads/feature');
       final startCommit = repo.lookupCommit(repo[shas[1]]);
@@ -136,7 +148,11 @@ void main() {
     });
 
     test('stops when there is conflicts', () {
-      final signature = repo.defaultSignature;
+      final signature = Signature.create(
+        name: 'Author',
+        email: 'author@email.com',
+        time: 1234,
+      );
       final master = repo.lookupReference('refs/heads/master');
       final conflict = repo.lookupReference('refs/heads/conflict-branch');
 
@@ -165,7 +181,11 @@ void main() {
 
     test('throws when trying to perfrom next rebase operation and error occurs',
         () {
-      final signature = repo.defaultSignature;
+      final signature = Signature.create(
+        name: 'Author',
+        email: 'author@email.com',
+        time: 1234,
+      );
       final master = repo.lookupReference('refs/heads/master');
       final conflict = repo.lookupReference('refs/heads/conflict-branch');
 

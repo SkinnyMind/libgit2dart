@@ -91,7 +91,7 @@ void main() {
       tmpWorkDir.createSync();
 
       repo.setWorkdir(path: tmpWorkDir.path);
-      expect(repo.workdir, '${tmpWorkDir.path}/');
+      expect(repo.workdir, contains('${tmpWorkDir.path}/'));
 
       tmpWorkDir.deleteSync();
     });

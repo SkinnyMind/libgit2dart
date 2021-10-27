@@ -51,4 +51,4 @@ jobs:
         run: dart run libgit2dart:setup
 
       - name: Run tests
-        run: dart test
+        run: dart test --exclude-tags "remote_fetch" --platform vm

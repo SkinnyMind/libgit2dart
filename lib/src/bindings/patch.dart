@@ -9,7 +9,7 @@ import 'package:libgit2dart/src/util.dart';
 ///
 /// You can use the standard patch accessor functions to read the patch data,
 /// and you must free the patch when done.
-Map<String, Pointer?> fromBuffers({
+Pointer<git_patch> fromBuffers({
   String? oldBuffer,
   String? oldAsPath,
   String? newBuffer,
@@ -45,18 +45,18 @@ Map<String, Pointer?> fromBuffers({
   calloc.free(oldAsPathC);
   calloc.free(newAsPathC);
   calloc.free(opts);
+  // We are not freeing buffers because patch object does not have reference to
+  // underlying buffers. So if the buffer is freed the patch text becomes
+  // corrupted.
 
-  // Returning map with pointers to patch and buffers because patch object does
-  // not have refenrece to underlying buffers or blobs. So if the buffer or blob is freed/removed
-  // the patch text becomes corrupted.
-  return {'patch': out.value, 'a': oldBufferC, 'b': newBufferC};
+  return out.value;
 }
 
 /// Directly generate a patch from the difference between two blobs.
 ///
 /// You can use the standard patch accessor functions to read the patch data,
 /// and you must free the patch when done.
-Map<String, Pointer?> fromBlobs({
+Pointer<git_patch> fromBlobs({
   required Pointer<git_blob> oldBlobPointer,
   String? oldAsPath,
   required Pointer<git_blob> newBlobPointer,
@@ -87,17 +87,14 @@ Map<String, Pointer?> fromBlobs({
   calloc.free(newAsPathC);
   calloc.free(opts);
 
-  // Returning map with pointers to patch and blobs because patch object does
-  // not have reference to underlying blobs. So if the blob is freed/removed the
-  // patch text becomes corrupted.
-  return {'patch': out.value, 'a': oldBlobPointer, 'b': newBlobPointer};
+  return out.value;
 }
 
 /// Directly generate a patch from the difference between a blob and a buffer.
 ///
 /// You can use the standard patch accessor functions to read the patch data,
 /// and you must free the patch when done.
-Map<String, Pointer?> fromBlobAndBuffer({
+Pointer<git_patch> fromBlobAndBuffer({
   Pointer<git_blob>? oldBlobPointer,
   String? oldAsPath,
   String? buffer,
@@ -131,10 +128,7 @@ Map<String, Pointer?> fromBlobAndBuffer({
   calloc.free(bufferAsPathC);
   calloc.free(opts);
 
-  // Returning map with pointers to patch and buffers because patch object does
-  // not have reference to underlying buffers or blobs. So if the buffer or
-  // blob is freed/removed the patch text becomes corrupted.
-  return {'patch': out.value, 'a': oldBlobPointer, 'b': bufferC};
+  return out.value;
 }
 
 /// Return a patch for an entry in the diff list.

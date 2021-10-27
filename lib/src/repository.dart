@@ -1600,7 +1600,7 @@ class Repository {
 
   /// List of notes for repository.
   ///
-  /// **IMPORTANT**: Notes must be freed to release allocated memory.
+  /// **IMPORTANT**: Notes Should be freed to release allocated memory.
   ///
   /// Throws a [LibGit2Error] if error occured.
   List<Note> get notes => Note.list(this);
@@ -1611,7 +1611,7 @@ class Repository {
   ///
   /// [notesRef] is the canonical name of the reference to use. Defaults to "refs/notes/commits".
   ///
-  /// **IMPORTANT**: Notes must be freed to release allocated memory.
+  /// **IMPORTANT**: Should be freed to release allocated memory.
   ///
   /// Throws a [LibGit2Error] if error occured.
   Note lookupNote({

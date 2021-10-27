@@ -107,20 +107,16 @@ class Blob {
     int contextLines = 3,
     int interhunkLines = 0,
   }) {
-    final result = patch_bindings.fromBlobs(
-      oldBlobPointer: _blobPointer,
-      oldAsPath: oldAsPath,
-      newBlobPointer: newBlob?.pointer ?? nullptr,
-      newAsPath: newAsPath,
-      flags: flags.fold(0, (acc, e) => acc | e.value),
-      contextLines: contextLines,
-      interhunkLines: interhunkLines,
-    );
-
     return Patch(
-      result['patch']! as Pointer<git_patch>,
-      result['a'],
-      result['b'],
+      patch_bindings.fromBlobs(
+        oldBlobPointer: _blobPointer,
+        oldAsPath: oldAsPath,
+        newBlobPointer: newBlob?.pointer ?? nullptr,
+        newAsPath: newAsPath,
+        flags: flags.fold(0, (acc, e) => acc | e.value),
+        contextLines: contextLines,
+        interhunkLines: interhunkLines,
+      ),
     );
   }
 
@@ -152,20 +148,16 @@ class Blob {
     int contextLines = 3,
     int interhunkLines = 0,
   }) {
-    final result = patch_bindings.fromBlobAndBuffer(
-      oldBlobPointer: _blobPointer,
-      oldAsPath: oldAsPath,
-      buffer: buffer,
-      bufferAsPath: bufferAsPath,
-      flags: flags.fold(0, (acc, e) => acc | e.value),
-      contextLines: contextLines,
-      interhunkLines: interhunkLines,
-    );
-
     return Patch(
-      result['patch']! as Pointer<git_patch>,
-      result['a'],
-      result['b'],
+      patch_bindings.fromBlobAndBuffer(
+        oldBlobPointer: _blobPointer,
+        oldAsPath: oldAsPath,
+        buffer: buffer,
+        bufferAsPath: bufferAsPath,
+        flags: flags.fold(0, (acc, e) => acc | e.value),
+        contextLines: contextLines,
+        interhunkLines: interhunkLines,
+      ),
     );
   }
 

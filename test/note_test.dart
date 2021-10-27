@@ -64,7 +64,11 @@ void main() {
     });
 
     test('successfully creates note', () {
-      final signature = repo.defaultSignature;
+      final signature = Signature.create(
+        name: 'Author',
+        email: 'author@email.com',
+        time: 1234,
+      );
       final head = repo.head;
       final noteOid = repo.createNote(
         author: signature,
@@ -96,7 +100,11 @@ void main() {
     });
 
     test('successfully deletes note', () {
-      final signature = repo.defaultSignature;
+      final signature = Signature.create(
+        name: 'Author',
+        email: 'author@email.com',
+        time: 1234,
+      );
       final head = repo.head;
 
       repo.deleteNote(

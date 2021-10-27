@@ -8,7 +8,6 @@ import 'helpers/util.dart';
 
 void main() {
   late Repository repo;
-  late Blob blob;
   late Directory tmpDir;
   const blobSHA = '9c78c21d6680a7ffebc76f7ac68cacc11d8f48bc';
   const blobContent = 'Feature edit\n';
@@ -17,18 +16,18 @@ void main() {
   setUp(() {
     tmpDir = setupRepo(Directory('test/assets/testrepo/'));
     repo = Repository.open(tmpDir.path);
-    blob = repo.lookupBlob(repo[blobSHA]);
   });
 
   tearDown(() {
-    blob.free();
     repo.free();
     tmpDir.deleteSync(recursive: true);
   });
 
   group('Blob', () {
     test('successfully initializes blob from provided Oid', () {
+      final blob = repo.lookupBlob(repo[blobSHA]);
       expect(blob, isA<Blob>());
+      blob.free();
     });
 
     test('throws when trying to lookup with invalid oid', () {
@@ -39,10 +38,14 @@ void main() {
     });
 
     test('returns correct values', () {
+      final blob = repo.lookupBlob(repo[blobSHA]);
+
       expect(blob.oid.sha, blobSHA);
       expect(blob.isBinary, false);
       expect(blob.size, 13);
       expect(blob.content, blobContent);
+
+      blob.free();
     });
 
     test('successfully creates new blob', () {
@@ -139,13 +142,15 @@ index e69de29..0000000
         expect(patch.text, blobPatch);
 
         patch.free();
+        a.free();
+        b.free();
       });
 
       test('successfully creates from one blob (delete)', () {
-        final _blob = repo.lookupBlob(
+        final blob = repo.lookupBlob(
           repo['e69de29bb2d1d6434b8b29ae775ad8c2e48c5391'],
         );
-        final patch = _blob.diff(
+        final patch = blob.diff(
           newBlob: null,
           oldAsPath: path,
           newAsPath: path,
@@ -153,21 +158,23 @@ index e69de29..0000000
 
         expect(patch.text, blobPatchDelete);
 
+        blob.free();
         patch.free();
       });
 
       test('successfully creates from blob and buffer', () {
-        final _blob = repo.lookupBlob(
+        final blob = repo.lookupBlob(
           repo['e69de29bb2d1d6434b8b29ae775ad8c2e48c5391'],
         );
 
-        final patch = _blob.diffToBuffer(
+        final patch = blob.diffToBuffer(
           buffer: 'Feature edit\n',
           oldAsPath: path,
         );
         expect(patch.text, blobPatch);
 
         patch.free();
+        blob.free();
       });
 
       test('successfully creates from blob and buffer (delete)', () {
@@ -184,11 +191,14 @@ index e69de29..0000000
         expect(patch.text, blobPatchDelete);
 
         patch.free();
+        a.free();
       });
     });
 
     test('returns string representation of Blob object', () {
+      final blob = repo.lookupBlob(repo[blobSHA]);
       expect(blob.toString(), contains('Blob{'));
+      blob.free();
     });
   });
 }

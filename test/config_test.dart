@@ -99,7 +99,6 @@ void main() {
         expect(entry.name, expectedEntries[i]);
         expect(entry.includeDepth, 0);
         expect(entry.level, GitConfigLevel.local);
-        entry.free();
         i++;
       }
     });
@@ -223,7 +222,6 @@ void main() {
     test('returns string representation of ConfigEntry object', () {
       final entry = config.first;
       expect(entry.toString(), contains('ConfigEntry{'));
-      entry.free();
     });
   });
 }

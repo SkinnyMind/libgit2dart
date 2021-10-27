@@ -186,10 +186,7 @@ index e69de29..0000000
     });
 
     test('throws when trying to text of patch and error occurs', () {
-      expect(
-        () => Patch(nullptr, nullptr, nullptr).text,
-        throwsA(isA<LibGit2Error>()),
-      );
+      expect(() => Patch(nullptr).text, throwsA(isA<LibGit2Error>()));
     });
 
     test('returns string representation of Patch object', () {

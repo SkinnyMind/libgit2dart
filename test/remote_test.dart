@@ -304,88 +304,100 @@ void main() {
       remote.free();
     });
 
-    test('successfully fetches data', () {
-      Remote.setUrl(
-        repo: repo,
-        remote: 'libgit2',
-        url: 'https://github.com/libgit2/TestGitRepository',
-      );
-      Remote.addFetch(
-        repo: repo,
-        remote: 'libgit2',
-        refspec: '+refs/heads/*:refs/remotes/origin/*',
-      );
-      final remote = repo.lookupRemote('libgit2');
+    test(
+      'successfully fetches data',
+      () {
+        Remote.setUrl(
+          repo: repo,
+          remote: 'libgit2',
+          url: 'https://github.com/libgit2/TestGitRepository',
+        );
+        Remote.addFetch(
+          repo: repo,
+          remote: 'libgit2',
+          refspec: '+refs/heads/*:refs/remotes/origin/*',
+        );
+        final remote = repo.lookupRemote('libgit2');
 
-      final stats = remote.fetch(
-        refspecs: ['+refs/heads/*:refs/remotes/origin/*'],
-      );
-
-      expect(stats.totalObjects, 69);
-      expect(stats.indexedObjects, 69);
-      expect(stats.receivedObjects, 69);
-      expect(stats.localObjects, 0);
-      expect(stats.totalDeltas, 3);
-      expect(stats.indexedDeltas, 3);
-      expect(stats.receivedBytes, 0);
-      expect(stats.toString(), contains('TransferProgress{'));
-
-      remote.free();
-    });
-
-    test('successfully fetches data with proxy set to auto', () {
-      Remote.setUrl(
-        repo: repo,
-        remote: 'libgit2',
-        url: 'https://github.com/libgit2/TestGitRepository',
-      );
-      Remote.addFetch(
-        repo: repo,
-        remote: 'libgit2',
-        refspec: '+refs/heads/*:refs/remotes/origin/*',
-      );
-      final remote = repo.lookupRemote('libgit2');
-
-      final stats = remote.fetch(
-        refspecs: ['+refs/heads/*:refs/remotes/origin/*'],
-        proxy: 'auto',
-      );
-
-      expect(stats.totalObjects, 69);
-      expect(stats.indexedObjects, 69);
-      expect(stats.receivedObjects, 69);
-      expect(stats.localObjects, 0);
-      expect(stats.totalDeltas, 3);
-      expect(stats.indexedDeltas, 3);
-      expect(stats.receivedBytes, 0);
-      expect(stats.toString(), contains('TransferProgress{'));
-
-      remote.free();
-    });
-
-    test('uses specified proxy for fetch', () {
-      Remote.setUrl(
-        repo: repo,
-        remote: 'libgit2',
-        url: 'https://github.com/libgit2/TestGitRepository',
-      );
-      Remote.addFetch(
-        repo: repo,
-        remote: 'libgit2',
-        refspec: '+refs/heads/*:refs/remotes/origin/*',
-      );
-      final remote = repo.lookupRemote('libgit2');
-
-      expect(
-        () => remote.fetch(
+        final stats = remote.fetch(
           refspecs: ['+refs/heads/*:refs/remotes/origin/*'],
-          proxy: 'https://1.1.1.1',
-        ),
-        throwsA(isA<LibGit2Error>()),
-      );
+        );
 
-      remote.free();
-    });
+        expect(stats.totalObjects, 69);
+        expect(stats.indexedObjects, 69);
+        expect(stats.receivedObjects, 69);
+        expect(stats.localObjects, 0);
+        expect(stats.totalDeltas, 3);
+        expect(stats.indexedDeltas, 3);
+        expect(stats.receivedBytes, 0);
+        expect(stats.toString(), contains('TransferProgress{'));
+
+        remote.free();
+      },
+      tags: 'remote_fetch',
+    );
+
+    test(
+      'successfully fetches data with proxy set to auto',
+      () {
+        Remote.setUrl(
+          repo: repo,
+          remote: 'libgit2',
+          url: 'https://github.com/libgit2/TestGitRepository',
+        );
+        Remote.addFetch(
+          repo: repo,
+          remote: 'libgit2',
+          refspec: '+refs/heads/*:refs/remotes/origin/*',
+        );
+        final remote = repo.lookupRemote('libgit2');
+
+        final stats = remote.fetch(
+          refspecs: ['+refs/heads/*:refs/remotes/origin/*'],
+          proxy: 'auto',
+        );
+
+        expect(stats.totalObjects, 69);
+        expect(stats.indexedObjects, 69);
+        expect(stats.receivedObjects, 69);
+        expect(stats.localObjects, 0);
+        expect(stats.totalDeltas, 3);
+        expect(stats.indexedDeltas, 3);
+        expect(stats.receivedBytes, 0);
+        expect(stats.toString(), contains('TransferProgress{'));
+
+        remote.free();
+      },
+      tags: 'remote_fetch',
+    );
+
+    test(
+      'uses specified proxy for fetch',
+      () {
+        Remote.setUrl(
+          repo: repo,
+          remote: 'libgit2',
+          url: 'https://github.com/libgit2/TestGitRepository',
+        );
+        Remote.addFetch(
+          repo: repo,
+          remote: 'libgit2',
+          refspec: '+refs/heads/*:refs/remotes/origin/*',
+        );
+        final remote = repo.lookupRemote('libgit2');
+
+        expect(
+          () => remote.fetch(
+            refspecs: ['+refs/heads/*:refs/remotes/origin/*'],
+            proxy: 'https://1.1.1.1',
+          ),
+          throwsA(isA<LibGit2Error>()),
+        );
+
+        remote.free();
+      },
+      tags: 'remote_fetch',
+    );
 
     test('throws when trying to fetch data with invalid url', () {
       Remote.setUrl(repo: repo, remote: 'libgit2', url: 'https://wrong.url');
@@ -399,100 +411,110 @@ void main() {
       remote.free();
     });
 
-    test('successfully fetches data with provided transfer progress callback',
-        () {
-      Remote.setUrl(
-        repo: repo,
-        remote: 'libgit2',
-        url: 'https://github.com/libgit2/TestGitRepository',
-      );
-      final remote = repo.lookupRemote('libgit2');
+    test(
+      'successfully fetches data with provided transfer progress callback',
+      () {
+        Remote.setUrl(
+          repo: repo,
+          remote: 'libgit2',
+          url: 'https://github.com/libgit2/TestGitRepository',
+        );
+        final remote = repo.lookupRemote('libgit2');
 
-      TransferProgress? callbackStats;
-      void tp(TransferProgress stats) => callbackStats = stats;
-      final callbacks = Callbacks(transferProgress: tp);
+        TransferProgress? callbackStats;
+        void tp(TransferProgress stats) => callbackStats = stats;
+        final callbacks = Callbacks(transferProgress: tp);
 
-      final stats = remote.fetch(callbacks: callbacks);
+        final stats = remote.fetch(callbacks: callbacks);
 
-      expect(stats.totalObjects == callbackStats?.totalObjects, true);
-      expect(stats.indexedObjects == callbackStats?.indexedObjects, true);
-      expect(stats.receivedObjects == callbackStats?.receivedObjects, true);
-      expect(stats.localObjects == callbackStats?.localObjects, true);
-      expect(stats.totalDeltas == callbackStats?.totalDeltas, true);
-      expect(stats.indexedDeltas == callbackStats?.indexedDeltas, true);
-      expect(stats.receivedBytes == callbackStats?.receivedBytes, true);
+        expect(stats.totalObjects == callbackStats?.totalObjects, true);
+        expect(stats.indexedObjects == callbackStats?.indexedObjects, true);
+        expect(stats.receivedObjects == callbackStats?.receivedObjects, true);
+        expect(stats.localObjects == callbackStats?.localObjects, true);
+        expect(stats.totalDeltas == callbackStats?.totalDeltas, true);
+        expect(stats.indexedDeltas == callbackStats?.indexedDeltas, true);
+        expect(stats.receivedBytes == callbackStats?.receivedBytes, true);
 
-      remote.free();
-    });
+        remote.free();
+      },
+      tags: 'remote_fetch',
+    );
 
-    test('successfully fetches data with provided sideband progress callback',
-        () {
-      const sidebandMessage = """
+    test(
+      'successfully fetches data with provided sideband progress callback',
+      () {
+        const sidebandMessage = """
 Enumerating objects: 69, done.
 Counting objects: 100% (1/1)\rCounting objects: 100% (1/1), done.
 Total 69 (delta 0), reused 1 (delta 0), pack-reused 68
 """;
-      Remote.setUrl(
-        repo: repo,
-        remote: 'libgit2',
-        url: 'https://github.com/libgit2/TestGitRepository',
-      );
-      final remote = repo.lookupRemote('libgit2');
+        Remote.setUrl(
+          repo: repo,
+          remote: 'libgit2',
+          url: 'https://github.com/libgit2/TestGitRepository',
+        );
+        final remote = repo.lookupRemote('libgit2');
 
-      final sidebandOutput = StringBuffer();
-      void sideband(String message) {
-        sidebandOutput.write(message);
-      }
+        final sidebandOutput = StringBuffer();
+        void sideband(String message) {
+          sidebandOutput.write(message);
+        }
 
-      final callbacks = Callbacks(sidebandProgress: sideband);
+        final callbacks = Callbacks(sidebandProgress: sideband);
 
-      remote.fetch(callbacks: callbacks);
-      expect(sidebandOutput.toString(), sidebandMessage);
+        remote.fetch(callbacks: callbacks);
+        expect(sidebandOutput.toString(), sidebandMessage);
 
-      remote.free();
-    });
+        remote.free();
+      },
+      tags: 'remote_fetch',
+    );
 
-    test('successfully fetches data with provided update tips callback', () {
-      Remote.setUrl(
-        repo: repo,
-        remote: 'libgit2',
-        url: 'https://github.com/libgit2/TestGitRepository',
-      );
-      final remote = repo.lookupRemote('libgit2');
-      final tipsExpected = [
-        {
-          'refname': 'refs/tags/annotated_tag',
-          'oldSha': '0' * 40,
-          'newSha': 'd96c4e80345534eccee5ac7b07fc7603b56124cb',
-        },
-        {
-          'refname': 'refs/tags/blob',
-          'oldSha': '0' * 40,
-          'newSha': '55a1a760df4b86a02094a904dfa511deb5655905'
-        },
-        {
-          'refname': 'refs/tags/commit_tree',
-          'oldSha': '0' * 40,
-          'newSha': '8f50ba15d49353813cc6e20298002c0d17b0a9ee',
-        },
-      ];
+    test(
+      'successfully fetches data with provided update tips callback',
+      () {
+        Remote.setUrl(
+          repo: repo,
+          remote: 'libgit2',
+          url: 'https://github.com/libgit2/TestGitRepository',
+        );
+        final remote = repo.lookupRemote('libgit2');
+        final tipsExpected = [
+          {
+            'refname': 'refs/tags/annotated_tag',
+            'oldSha': '0' * 40,
+            'newSha': 'd96c4e80345534eccee5ac7b07fc7603b56124cb',
+          },
+          {
+            'refname': 'refs/tags/blob',
+            'oldSha': '0' * 40,
+            'newSha': '55a1a760df4b86a02094a904dfa511deb5655905'
+          },
+          {
+            'refname': 'refs/tags/commit_tree',
+            'oldSha': '0' * 40,
+            'newSha': '8f50ba15d49353813cc6e20298002c0d17b0a9ee',
+          },
+        ];
 
-      final updateTipsOutput = <Map<String, String>>[];
-      void updateTips(String refname, Oid oldOid, Oid newOid) {
-        updateTipsOutput.add({
-          'refname': refname,
-          'oldSha': oldOid.sha,
-          'newSha': newOid.sha,
-        });
-      }
+        final updateTipsOutput = <Map<String, String>>[];
+        void updateTips(String refname, Oid oldOid, Oid newOid) {
+          updateTipsOutput.add({
+            'refname': refname,
+            'oldSha': oldOid.sha,
+            'newSha': newOid.sha,
+          });
+        }
 
-      final callbacks = Callbacks(updateTips: updateTips);
+        final callbacks = Callbacks(updateTips: updateTips);
 
-      remote.fetch(callbacks: callbacks);
-      expect(updateTipsOutput, tipsExpected);
+        remote.fetch(callbacks: callbacks);
+        expect(updateTipsOutput, tipsExpected);
 
-      remote.free();
-    });
+        remote.free();
+      },
+      tags: 'remote_fetch',
+    );
 
     test('successfully pushes with update reference callback', () {
       final originDir =

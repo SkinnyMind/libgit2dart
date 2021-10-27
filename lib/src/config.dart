@@ -177,8 +177,6 @@ class Config with IterableMixin<ConfigEntry> {
 class ConfigEntry {
   /// Initializes a new instance of [ConfigEntry] class from provided
   /// pointer to config entry object in memory.
-  ///
-  /// **IMPORTANT**: Should be freed to release allocated memory.
   const ConfigEntry(this._configEntryPointer);
 
   /// Pointer to memory address for allocated config entry object.
@@ -199,9 +197,6 @@ class ConfigEntry {
       (e) => _configEntryPointer.ref.level == e.value,
     );
   }
-
-  /// Releases memory allocated for config entry object.
-  void free() => calloc.free(_configEntryPointer);
 
   @override
   String toString() {

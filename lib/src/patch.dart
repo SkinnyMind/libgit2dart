@@ -1,5 +1,5 @@
 import 'dart:ffi';
-import 'package:ffi/ffi.dart';
+
 import 'package:libgit2dart/libgit2dart.dart';
 import 'package:libgit2dart/src/bindings/libgit2_bindings.dart';
 import 'package:libgit2dart/src/bindings/patch.dart' as bindings;
@@ -10,7 +10,7 @@ class Patch {
   /// pointer to patch object in memory and pointers to old and new blobs/buffers.
   ///
   /// **IMPORTANT**: Should be freed to release allocated memory.
-  Patch(this._patchPointer, this._aPointer, this._bPointer);
+  Patch(this._patchPointer);
 
   /// Directly generates a patch from the difference between two blobs, buffers
   /// or blob and a buffer.
@@ -42,11 +42,10 @@ class Patch {
     libgit2.git_libgit2_init();
 
     final int flagsInt = flags.fold(0, (acc, e) => acc | e.value);
-    var result = <String, Pointer?>{};
 
     if (a is Blob?) {
       if (b is Blob?) {
-        result = bindings.fromBlobs(
+        _patchPointer = bindings.fromBlobs(
           oldBlobPointer: a?.pointer ?? nullptr,
           oldAsPath: aPath,
           newBlobPointer: b?.pointer ?? nullptr,
@@ -56,7 +55,7 @@ class Patch {
           interhunkLines: interhunkLines,
         );
       } else if (b is String?) {
-        result = bindings.fromBlobAndBuffer(
+        _patchPointer = bindings.fromBlobAndBuffer(
           oldBlobPointer: a?.pointer,
           oldAsPath: aPath,
           buffer: b as String?,
@@ -69,7 +68,7 @@ class Patch {
         throw ArgumentError('Provided argument(s) is not Blob or String');
       }
     } else if ((a is String?) && (b is String?)) {
-      result = bindings.fromBuffers(
+      _patchPointer = bindings.fromBuffers(
         oldBuffer: a as String?,
         oldAsPath: aPath,
         newBuffer: b,
@@ -81,10 +80,6 @@ class Patch {
     } else {
       throw ArgumentError('Provided argument(s) is not Blob or String');
     }
-
-    _patchPointer = result['patch']! as Pointer<git_patch>;
-    _aPointer = result['a'];
-    _bPointer = result['b'];
   }
 
   /// Creates a patch for an entry in the diff list.
@@ -103,9 +98,6 @@ class Patch {
   }
 
   late final Pointer<git_patch> _patchPointer;
-
-  Pointer<NativeType>? _aPointer;
-  Pointer<NativeType>? _bPointer;
 
   /// Pointer to memory address for allocated patch object.
   Pointer<git_patch> get pointer => _patchPointer;
@@ -163,15 +155,7 @@ class Patch {
   }
 
   /// Releases memory allocated for patch object.
-  void free() {
-    if (_aPointer != null) {
-      calloc.free(_aPointer!);
-    }
-    if (_bPointer != null) {
-      calloc.free(_bPointer!);
-    }
-    bindings.free(_patchPointer);
-  }
+  void free() => bindings.free(_patchPointer);
 
   @override
   String toString() => 'Patch{size: ${size()}, delta: $delta}';

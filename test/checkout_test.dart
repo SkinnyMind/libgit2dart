@@ -21,6 +21,8 @@ void main() {
 
   group('Checkout', () {
     test('successfully checkouts head', () {
+      repo.reset(oid: repo['821ed6e'], resetType: GitReset.hard);
+      expect(repo.status, isEmpty);
       File('${tmpDir.path}/feature_file').writeAsStringSync('edit');
       expect(repo.status, contains('feature_file'));
 

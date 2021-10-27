@@ -67,7 +67,11 @@ void main() {
     });
 
     test('successfully describes with provided pattern', () {
-      final signature = repo.defaultSignature;
+      final signature = Signature.create(
+        name: 'Author',
+        email: 'author@email.com',
+        time: 1234,
+      );
       final commit = repo.lookupCommit(repo['fc38877']);
       repo.createTag(
         tagName: 'test/tag1',
