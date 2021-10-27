@@ -78,16 +78,7 @@ void main() {
     });
 
     test('throws when trying to clear the contents and error occurs', () {
-      expect(
-        () => Index(nullptr).clear(),
-        throwsA(
-          isA<LibGit2Error>().having(
-            (e) => e.toString(),
-            'error',
-            "invalid argument: 'index'",
-          ),
-        ),
-      );
+      expect(() => Index(nullptr).clear(), throwsA(isA<LibGit2Error>()));
     });
 
     group('add()', () {
@@ -106,29 +97,13 @@ void main() {
       });
 
       test('throws if file not found at provided path', () {
-        expect(
-          () => index.add('not_there'),
-          throwsA(
-            isA<LibGit2Error>().having(
-              (e) => e.toString(),
-              'error',
-              "could not find '${repo.workdir}not_there' to stat: No such file "
-                  "or directory",
-            ),
-          ),
-        );
+        expect(() => index.add('not_there'), throwsA(isA<LibGit2Error>()));
       });
 
       test('throws if provided IndexEntry is invalid', () {
         expect(
           () => index.add(IndexEntry(nullptr)),
-          throwsA(
-            isA<LibGit2Error>().having(
-              (e) => e.toString(),
-              'error',
-              "invalid argument: 'source_entry && source_entry->path'",
-            ),
-          ),
+          throwsA(isA<LibGit2Error>()),
         );
       });
 
@@ -136,17 +111,7 @@ void main() {
         final bare = Repository.open('test/assets/empty_bare.git');
         final bareIndex = bare.index;
 
-        expect(
-          () => bareIndex.add('config'),
-          throwsA(
-            isA<LibGit2Error>().having(
-              (e) => e.toString(),
-              'error',
-              "cannot create blob from file. This operation is not allowed "
-                  "against bare repositories.",
-            ),
-          ),
-        );
+        expect(() => bareIndex.add('config'), throwsA(isA<LibGit2Error>()));
 
         bareIndex.free();
         bare.free();
@@ -180,17 +145,7 @@ void main() {
         final bare = Repository.open('test/assets/empty_bare.git');
         final bareIndex = bare.index;
 
-        expect(
-          () => bareIndex.addAll([]),
-          throwsA(
-            isA<LibGit2Error>().having(
-              (e) => e.toString(),
-              'error',
-              "cannot index add all. This operation is not allowed against "
-                  "bare repositories.",
-            ),
-          ),
-        );
+        expect(() => bareIndex.addAll([]), throwsA(isA<LibGit2Error>()));
 
         bareIndex.free();
         bare.free();
@@ -218,16 +173,7 @@ void main() {
     });
 
     test('throws when trying to remove entry with invalid path', () {
-      expect(
-        () => index.remove('invalid'),
-        throwsA(
-          isA<LibGit2Error>().having(
-            (e) => e.toString(),
-            'error',
-            "index does not contain invalid at stage 0",
-          ),
-        ),
-      );
+      expect(() => index.remove('invalid'), throwsA(isA<LibGit2Error>()));
     });
 
     test('removes all entries with matching pathspec', () {
@@ -262,13 +208,7 @@ void main() {
     test('throws when trying to write tree to invalid repository', () {
       expect(
         () => index.writeTree(Repository(nullptr)),
-        throwsA(
-          isA<LibGit2Error>().having(
-            (e) => e.toString(),
-            'error',
-            "invalid argument: 'repo'",
-          ),
-        ),
+        throwsA(isA<LibGit2Error>()),
       );
     });
 
@@ -280,16 +220,7 @@ void main() {
       final index = repo.index;
       repo.merge(conflictBranch.target);
 
-      expect(
-        () => index.writeTree(),
-        throwsA(
-          isA<LibGit2Error>().having(
-            (e) => e.toString(),
-            'error',
-            "cannot create a tree from a not fully merged index.",
-          ),
-        ),
-      );
+      expect(() => index.writeTree(), throwsA(isA<LibGit2Error>()));
 
       conflictBranch.free();
       index.free();
@@ -418,13 +349,7 @@ void main() {
       expect(
         () => ConflictEntry(index.pointer, 'invalid.path', null, null, null)
             .remove(),
-        throwsA(
-          isA<LibGit2Error>().having(
-            (e) => e.toString(),
-            'error',
-            "index does not contain invalid.path",
-          ),
-        ),
+        throwsA(isA<LibGit2Error>()),
       );
     });
 

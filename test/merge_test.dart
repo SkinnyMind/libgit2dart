@@ -173,13 +173,7 @@ Another feature edit
             ours: IndexEntry(nullptr),
             theirs: IndexEntry(nullptr),
           ),
-          throwsA(
-            isA<LibGit2Error>().having(
-              (e) => e.toString(),
-              'error',
-              "invalid argument: 'ours'",
-            ),
-          ),
+          throwsA(isA<LibGit2Error>()),
         );
       });
     });
@@ -255,13 +249,7 @@ Another feature edit
             ourCommit: Commit(nullptr),
             theirCommit: Commit(nullptr),
           ),
-          throwsA(
-            isA<LibGit2Error>().having(
-              (e) => e.toString(),
-              'error',
-              "invalid argument: 'commit'",
-            ),
-          ),
+          throwsA(isA<LibGit2Error>()),
         );
       });
     });
@@ -277,13 +265,7 @@ Another feature edit
     test('throws when trying to find merge base for invalid oid', () {
       expect(
         () => repo.mergeBase(a: repo['0' * 40], b: repo['5aecfa0']),
-        throwsA(
-          isA<LibGit2Error>().having(
-            (e) => e.toString(),
-            'error',
-            "odb: cannot read object: null OID cannot exist",
-          ),
-        ),
+        throwsA(isA<LibGit2Error>()),
       );
     });
 
@@ -364,13 +346,7 @@ Another feature edit
             ourTree: Tree(nullptr),
             theirTree: Tree(nullptr),
           ),
-          throwsA(
-            isA<LibGit2Error>().having(
-              (e) => e.toString(),
-              'error',
-              "invalid argument: 'repo'",
-            ),
-          ),
+          throwsA(isA<LibGit2Error>()),
         );
       });
     });
@@ -387,13 +363,7 @@ Another feature edit
       repo.removeMessage();
       expect(
         () => repo.message,
-        throwsA(
-          isA<LibGit2Error>().having(
-            (e) => e.toString(),
-            'error',
-            "could not access message file: No such file or directory",
-          ),
-        ),
+        throwsA(isA<LibGit2Error>()),
       );
 
       index.free();
@@ -402,13 +372,7 @@ Another feature edit
     test('throws when error occurs', () {
       expect(
         () => repo.cherryPick(Commit(nullptr)),
-        throwsA(
-          isA<LibGit2Error>().having(
-            (e) => e.toString(),
-            'error',
-            "invalid argument: 'commit'",
-          ),
-        ),
+        throwsA(isA<LibGit2Error>()),
       );
     });
   });

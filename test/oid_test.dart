@@ -41,26 +41,14 @@ void main() {
       test('throws when sha hex string is too short', () {
         expect(
           () => Oid.fromSHA(repo: repo, sha: 'sha'),
-          throwsA(
-            isA<ArgumentError>().having(
-              (e) => e.toString(),
-              'value',
-              'Invalid argument: "sha is not a valid sha hex string"',
-            ),
-          ),
+          throwsA(isA<ArgumentError>()),
         );
       });
 
       test('throws when sha hex string is invalid', () {
         expect(
           () => Oid.fromSHA(repo: repo, sha: '0000000'),
-          throwsA(
-            isA<LibGit2Error>().having(
-              (e) => e.toString(),
-              'error',
-              "object not found - no match for id prefix (0000000)",
-            ),
-          ),
+          throwsA(isA<LibGit2Error>()),
         );
       });
     });

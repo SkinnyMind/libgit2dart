@@ -45,13 +45,7 @@ void main() {
     test('throws when trying to initialize and error occurs', () {
       expect(
         () => TreeBuilder(repo: Repository(nullptr)),
-        throwsA(
-          isA<LibGit2Error>().having(
-            (e) => e.toString(),
-            'error',
-            "invalid argument: 'repo'",
-          ),
-        ),
+        throwsA(isA<LibGit2Error>()),
       );
     });
 
@@ -91,13 +85,7 @@ void main() {
           oid: repo['0' * 40],
           filemode: GitFilemode.blob,
         ),
-        throwsA(
-          isA<LibGit2Error>().having(
-            (e) => e.toString(),
-            'error',
-            "failed to insert entry: invalid name for a tree entry - ",
-          ),
-        ),
+        throwsA(isA<LibGit2Error>()),
       );
       expect(
         () => builder.add(
@@ -105,13 +93,7 @@ void main() {
           oid: repo['0' * 40],
           filemode: GitFilemode.blob,
         ),
-        throwsA(
-          isA<LibGit2Error>().having(
-            (e) => e.toString(),
-            'error',
-            "failed to insert entry: invalid null OID - some.file",
-          ),
-        ),
+        throwsA(isA<LibGit2Error>()),
       );
 
       builder.free();
@@ -131,18 +113,7 @@ void main() {
 
     test('throws when trying to remove entry that is not in the tree', () {
       final builder = TreeBuilder(repo: repo);
-
-      expect(
-        () => builder.remove('not.there'),
-        throwsA(
-          isA<LibGit2Error>().having(
-            (e) => e.toString(),
-            'error',
-            "failed to remove entry: file isn't in the tree - not.there",
-          ),
-        ),
-      );
-
+      expect(() => builder.remove('not.there'), throwsA(isA<LibGit2Error>()));
       builder.free();
     });
   });

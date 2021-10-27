@@ -7,6 +7,9 @@ on:
     branches: [master]
   workflow_dispatch:
 
+env:
+  PUB_ENVIRONMENT: bot.github
+
 jobs:
   analyze:
     runs-on: ubuntu-latest

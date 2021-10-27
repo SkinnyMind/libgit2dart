@@ -33,13 +33,7 @@ void main() {
       Directory('${repo.workdir}.git/objects/').deleteSync(recursive: true);
       expect(
         () => repo.odb,
-        throwsA(
-          isA<LibGit2Error>().having(
-            (e) => e.toString(),
-            'error',
-            contains("failed to load object database"),
-          ),
-        ),
+        throwsA(isA<LibGit2Error>()),
       );
     });
 
@@ -77,13 +71,7 @@ void main() {
 
       expect(
         () => odb.read(repo['0' * 40]),
-        throwsA(
-          isA<LibGit2Error>().having(
-            (e) => e.toString(),
-            'error',
-            "odb: cannot read object: null OID cannot exist",
-          ),
-        ),
+        throwsA(isA<LibGit2Error>()),
       );
 
       odb.free();
@@ -104,13 +92,7 @@ void main() {
 
       expect(
         () => odb.objects,
-        throwsA(
-          isA<LibGit2Error>().having(
-            (e) => e.toString(),
-            'error',
-            "object not found - failed to refresh packfiles",
-          ),
-        ),
+        throwsA(isA<LibGit2Error>()),
       );
 
       odb.free();
@@ -132,13 +114,7 @@ void main() {
       final odb = repo.odb;
       expect(
         () => odb.write(type: GitObject.any, data: 'testing'),
-        throwsA(
-          isA<ArgumentError>().having(
-            (e) => e.toString(),
-            'error',
-            'Invalid argument: "GitObject.any is invalid type"',
-          ),
-        ),
+        throwsA(isA<ArgumentError>()),
       );
 
       odb.free();
@@ -150,13 +126,7 @@ void main() {
 
       expect(
         () => odb.write(type: GitObject.blob, data: ''),
-        throwsA(
-          isA<LibGit2Error>().having(
-            (e) => e.toString(),
-            'error',
-            "cannot write object - unsupported in the loaded odb backends",
-          ),
-        ),
+        throwsA(isA<LibGit2Error>()),
       );
 
       odb.free();

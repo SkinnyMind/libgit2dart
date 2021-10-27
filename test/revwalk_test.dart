@@ -37,13 +37,7 @@ void main() {
     test('throws when trying to initialize and error occurs', () {
       expect(
         () => RevWalk(Repository(nullptr)),
-        throwsA(
-          isA<LibGit2Error>().having(
-            (e) => e.toString(),
-            'error',
-            "invalid argument: 'repo'",
-          ),
-        ),
+        throwsA(isA<LibGit2Error>()),
       );
     });
 
@@ -128,13 +122,7 @@ void main() {
 
       expect(
         () => walker.hide(repo['0' * 40]),
-        throwsA(
-          isA<LibGit2Error>().having(
-            (e) => e.toString(),
-            'error',
-            "odb: cannot read object: null OID cannot exist",
-          ),
-        ),
+        throwsA(isA<LibGit2Error>()),
       );
 
       walker.free();
@@ -178,13 +166,7 @@ void main() {
 
       expect(
         () => walker.push(repo['0' * 40]),
-        throwsA(
-          isA<LibGit2Error>().having(
-            (e) => e.toString(),
-            'error',
-            "odb: cannot read object: null OID cannot exist",
-          ),
-        ),
+        throwsA(isA<LibGit2Error>()),
       );
 
       walker.free();

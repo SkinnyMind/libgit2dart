@@ -31,16 +31,7 @@ void main() {
       final feature = repo.lookupReference('refs/heads/feature');
 
       repo.checkout(refName: feature.name);
-      expect(
-        () => repo.index['.gitignore'],
-        throwsA(
-          isA<ArgumentError>().having(
-            (e) => e.toString(),
-            'error',
-            'Invalid argument: ".gitignore was not found"',
-          ),
-        ),
-      );
+      expect(() => repo.index['.gitignore'], throwsA(isA<ArgumentError>()));
 
       final rebase = Rebase.init(
         repo: repo,
@@ -112,16 +103,7 @@ void main() {
       final startCommit = repo.lookupCommit(repo[shas[1]]);
 
       repo.checkout(refName: feature.name);
-      expect(
-        () => repo.index['conflict_file'],
-        throwsA(
-          isA<ArgumentError>().having(
-            (e) => e.toString(),
-            'error',
-            'Invalid argument: "conflict_file was not found"',
-          ),
-        ),
-      );
+      expect(() => repo.index['conflict_file'], throwsA(isA<ArgumentError>()));
 
       final rebase = Rebase.init(
         repo: repo,
@@ -150,16 +132,7 @@ void main() {
     test(
         'throws when trying to initialize rebase without upstream and onto '
         'provided', () {
-      expect(
-        () => Rebase.init(repo: repo),
-        throwsA(
-          isA<LibGit2Error>().having(
-            (e) => e.toString(),
-            'error',
-            "invalid argument: 'upstream || onto'",
-          ),
-        ),
-      );
+      expect(() => Rebase.init(repo: repo), throwsA(isA<LibGit2Error>()));
     });
 
     test('stops when there is conflicts', () {
@@ -181,13 +154,7 @@ void main() {
       expect(repo.state, GitRepositoryState.rebaseMerge);
       expect(
         () => rebase.commit(committer: signature),
-        throwsA(
-          isA<LibGit2Error>().having(
-            (e) => e.toString(),
-            'error',
-            'unstaged changes exist in workdir',
-          ),
-        ),
+        throwsA(isA<LibGit2Error>()),
       );
 
       rebase.free();
@@ -212,17 +179,7 @@ void main() {
       expect(rebase.operationsCount, 1);
 
       rebase.next(); // repo now have conflicts
-      expect(
-        () => rebase.next(),
-        throwsA(
-          isA<LibGit2Error>().having(
-            (e) => e.toString(),
-            'error',
-            "object not found - failed to find pack entry "
-                "(790b86f5fb50db485586370f27c5f90bada97d83)",
-          ),
-        ),
-      );
+      expect(() => rebase.next(), throwsA(isA<LibGit2Error>()));
 
       rebase.free();
       conflict.free();

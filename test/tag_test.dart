@@ -33,27 +33,12 @@ void main() {
     test('throws when trying to lookup tag for invalid oid', () {
       expect(
         () => repo.lookupTag(repo['0' * 40]),
-        throwsA(
-          isA<LibGit2Error>().having(
-            (e) => e.toString(),
-            'error',
-            "odb: cannot read object: null OID cannot exist",
-          ),
-        ),
+        throwsA(isA<LibGit2Error>()),
       );
     });
 
     test('throws when trying to get target of a tag and error occurs', () {
-      expect(
-        () => Tag(nullptr).target,
-        throwsA(
-          isA<LibGit2Error>().having(
-            (e) => e.toString(),
-            'error',
-            "invalid argument: 't'",
-          ),
-        ),
-      );
+      expect(() => Tag(nullptr).target, throwsA(isA<LibGit2Error>()));
     });
 
     test('returns correct values', () {
@@ -217,13 +202,7 @@ void main() {
           tagger: Signature(nullptr),
           message: '',
         ),
-        throwsA(
-          isA<LibGit2Error>().having(
-            (e) => e.toString(),
-            'error',
-            "invalid argument: '!create_tag_annotation || (tagger && message)'",
-          ),
-        ),
+        throwsA(isA<LibGit2Error>()),
       );
     });
 
@@ -236,13 +215,7 @@ void main() {
           tagger: Signature(nullptr),
           message: '',
         ),
-        throwsA(
-          isA<LibGit2Error>().having(
-            (e) => e.toString(),
-            'error',
-            "odb: cannot read object: null OID cannot exist",
-          ),
-        ),
+        throwsA(isA<LibGit2Error>()),
       );
     });
 
@@ -251,16 +224,7 @@ void main() {
     });
 
     test('throws when trying to get list of tags and error occurs', () {
-      expect(
-        () => Repository(nullptr).tags,
-        throwsA(
-          isA<LibGit2Error>().having(
-            (e) => e.toString(),
-            'error',
-            "invalid argument: 'repo'",
-          ),
-        ),
-      );
+      expect(() => Repository(nullptr).tags, throwsA(isA<LibGit2Error>()));
     });
 
     test('successfully deletes tag', () {
@@ -271,16 +235,7 @@ void main() {
     });
 
     test('throws when trying to delete non existing tag', () {
-      expect(
-        () => repo.deleteTag('not.there'),
-        throwsA(
-          isA<LibGit2Error>().having(
-            (e) => e.toString(),
-            'error',
-            "reference 'refs/tags/not.there' not found",
-          ),
-        ),
-      );
+      expect(() => repo.deleteTag('not.there'), throwsA(isA<LibGit2Error>()));
     });
   });
 }

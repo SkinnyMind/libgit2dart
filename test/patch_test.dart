@@ -162,13 +162,7 @@ index e69de29..0000000
           aPath: 'file',
           bPath: 'file',
         ),
-        throwsA(
-          isA<ArgumentError>().having(
-            (e) => e.toString(),
-            'error',
-            "Invalid argument(s): Provided argument(s) is not Blob or String",
-          ),
-        ),
+        throwsA(isA<ArgumentError>()),
       );
 
       expect(
@@ -178,13 +172,7 @@ index e69de29..0000000
           aPath: 'file',
           bPath: 'file',
         ),
-        throwsA(
-          isA<ArgumentError>().having(
-            (e) => e.toString(),
-            'error',
-            "Invalid argument(s): Provided argument(s) is not Blob or String",
-          ),
-        ),
+        throwsA(isA<ArgumentError>()),
       );
 
       commit.free();
@@ -193,26 +181,14 @@ index e69de29..0000000
     test('throws when trying to create from diff and error occurs', () {
       expect(
         () => Patch.fromDiff(diff: Diff(nullptr), index: 0),
-        throwsA(
-          isA<LibGit2Error>().having(
-            (e) => e.toString(),
-            'error',
-            "invalid argument: 'diff'",
-          ),
-        ),
+        throwsA(isA<LibGit2Error>()),
       );
     });
 
     test('throws when trying to text of patch and error occurs', () {
       expect(
         () => Patch(nullptr, nullptr, nullptr).text,
-        throwsA(
-          isA<LibGit2Error>().having(
-            (e) => e.toString(),
-            'error',
-            "invalid argument: 'patch'",
-          ),
-        ),
+        throwsA(isA<LibGit2Error>()),
       );
     });
 

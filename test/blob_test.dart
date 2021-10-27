@@ -34,13 +34,7 @@ void main() {
     test('throws when trying to lookup with invalid oid', () {
       expect(
         () => repo.lookupBlob(repo['0' * 40]),
-        throwsA(
-          isA<LibGit2Error>().having(
-            (e) => e.toString(),
-            'error',
-            'odb: cannot read object: null OID cannot exist',
-          ),
-        ),
+        throwsA(isA<LibGit2Error>()),
       );
     });
 
@@ -67,13 +61,7 @@ void main() {
       final nullRepo = Repository(nullptr);
       expect(
         () => Blob.create(repo: nullRepo, content: ''),
-        throwsA(
-          isA<LibGit2Error>().having(
-            (e) => e.toString(),
-            'error',
-            "invalid argument: 'repo'",
-          ),
-        ),
+        throwsA(isA<LibGit2Error>()),
       );
     });
 
@@ -93,13 +81,7 @@ void main() {
     test('throws when creating new blob from invalid path', () {
       expect(
         () => repo.createBlobFromWorkdir('invalid/path.txt'),
-        throwsA(
-          isA<LibGit2Error>().having(
-            (e) => e.toString(),
-            'error',
-            "could not find '${repo.workdir}invalid/path.txt' to stat: No such file or directory",
-          ),
-        ),
+        throwsA(isA<LibGit2Error>()),
       );
     });
 
@@ -118,13 +100,7 @@ void main() {
     test('throws when trying to create from invalid path', () {
       expect(
         () => repo.createBlobFromDisk('invalid.file'),
-        throwsA(
-          isA<LibGit2Error>().having(
-            (e) => e.toString(),
-            'error',
-            "failed to resolve path 'invalid.file': No such file or directory",
-          ),
-        ),
+        throwsA(isA<LibGit2Error>()),
       );
     });
 

@@ -178,13 +178,7 @@ Santa Claus <santa.claus@northpole.xx> <me@company.xx>
     test('throws when initializing from repository and error occurs', () {
       expect(
         () => Mailmap.fromRepository(Repository(nullptr)),
-        throwsA(
-          isA<LibGit2Error>().having(
-            (e) => e.toString(),
-            'error',
-            "invalid argument: 'repo'",
-          ),
-        ),
+        throwsA(isA<LibGit2Error>()),
       );
     });
 
@@ -230,13 +224,7 @@ Santa Claus <santa.claus@northpole.xx> <me@company.xx>
         () => mailmap.addEntry(
           replaceEmail: ' ',
         ),
-        throwsA(
-          isA<ArgumentError>().having(
-            (e) => e.toString(),
-            'error',
-            'Invalid argument: "replaceEmail can\'t be empty"',
-          ),
-        ),
+        throwsA(isA<ArgumentError>()),
       );
 
       mailmap.free();

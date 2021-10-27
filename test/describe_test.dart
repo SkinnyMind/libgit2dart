@@ -27,16 +27,7 @@ void main() {
 
     test('throws when trying to describe and error occurs', () {
       final nullRepo = Repository(nullptr);
-      expect(
-        () => nullRepo.describe(),
-        throwsA(
-          isA<LibGit2Error>().having(
-            (e) => e.toString(),
-            'error',
-            "invalid argument: 'repo'",
-          ),
-        ),
-      );
+      expect(() => nullRepo.describe(), throwsA(isA<LibGit2Error>()));
     });
 
     test('successfully describes commit', () {
@@ -50,17 +41,7 @@ void main() {
 
     test('throws when trying to describe and no reference found', () {
       final commit = repo.lookupCommit(repo['f17d0d48']);
-      expect(
-        () => repo.describe(commit: commit),
-        throwsA(
-          isA<LibGit2Error>().having(
-            (e) => e.toString(),
-            'error',
-            "cannot describe - no tags can describe "
-                "'f17d0d48eae3aa08cecf29128a35e310c97b3521'.",
-          ),
-        ),
-      );
+      expect(() => repo.describe(commit: commit), throwsA(isA<LibGit2Error>()));
       commit.free();
     });
 
@@ -93,7 +74,7 @@ void main() {
         target: repo['f17d0d48'],
         targetType: GitObject.commit,
         tagger: signature,
-        message: '',
+        message: 'message',
       );
 
       expect(

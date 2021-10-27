@@ -33,13 +33,7 @@ void main() {
     test('throws when trying to initialize and error occurs', () {
       expect(
         () => PackBuilder(Repository(nullptr)),
-        throwsA(
-          isA<LibGit2Error>().having(
-            (e) => e.toString(),
-            'error',
-            "invalid argument: 'repo'",
-          ),
-        ),
+        throwsA(isA<LibGit2Error>()),
       );
     });
 
@@ -62,13 +56,7 @@ void main() {
 
       expect(
         () => packbuilder.add(Oid(nullptr)),
-        throwsA(
-          isA<LibGit2Error>().having(
-            (e) => e.toString(),
-            'error',
-            "invalid argument: 'oid'",
-          ),
-        ),
+        throwsA(isA<LibGit2Error>()),
       );
 
       packbuilder.free();
@@ -89,13 +77,7 @@ void main() {
 
       expect(
         () => packbuilder.addRecursively(Oid(nullptr)),
-        throwsA(
-          isA<LibGit2Error>().having(
-            (e) => e.toString(),
-            'error',
-            "invalid argument: 'id'",
-          ),
-        ),
+        throwsA(isA<LibGit2Error>()),
       );
 
       packbuilder.free();
@@ -160,13 +142,7 @@ void main() {
 
       expect(
         () => packbuilder.write('invalid/path'),
-        throwsA(
-          isA<LibGit2Error>().having(
-            (e) => e.toString(),
-            'error',
-            contains('failed to create temporary file'),
-          ),
-        ),
+        throwsA(isA<LibGit2Error>()),
       );
 
       packbuilder.free();

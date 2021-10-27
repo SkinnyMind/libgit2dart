@@ -48,16 +48,7 @@ void main() {
 
     test('throws when trying to get list of notes and error occurs', () {
       Directory('${repo.workdir}.git/refs/notes').deleteSync(recursive: true);
-      expect(
-        () => repo.notes,
-        throwsA(
-          isA<LibGit2Error>().having(
-            (e) => e.toString(),
-            'error',
-            "reference 'refs/notes/commits' not found",
-          ),
-        ),
-      );
+      expect(() => repo.notes, throwsA(isA<LibGit2Error>()));
     });
 
     test('successfully lookups note', () {
@@ -100,13 +91,7 @@ void main() {
           annotatedOid: repo['0' * 40],
           note: '',
         ),
-        throwsA(
-          isA<LibGit2Error>().having(
-            (e) => e.toString(),
-            'error',
-            "invalid argument: 'repo'",
-          ),
-        ),
+        throwsA(isA<LibGit2Error>()),
       );
     });
 
@@ -122,13 +107,7 @@ void main() {
 
       expect(
         () => repo.lookupNote(annotatedOid: head.target),
-        throwsA(
-          isA<LibGit2Error>().having(
-            (e) => e.toString(),
-            'error',
-            "note could not be found",
-          ),
-        ),
+        throwsA(isA<LibGit2Error>()),
       );
 
       head.free();
@@ -142,13 +121,7 @@ void main() {
           committer: Signature(nullptr),
           annotatedOid: repo['0' * 40],
         ),
-        throwsA(
-          isA<LibGit2Error>().having(
-            (e) => e.toString(),
-            'error',
-            "invalid argument: 'repo'",
-          ),
-        ),
+        throwsA(isA<LibGit2Error>()),
       );
     });
 

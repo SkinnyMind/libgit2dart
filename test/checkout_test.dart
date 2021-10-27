@@ -40,13 +40,7 @@ void main() {
           refName: 'HEAD',
           directory: 'not/there',
         ),
-        throwsA(
-          isA<LibGit2Error>().having(
-            (e) => e.toString(),
-            'error',
-            "failed to make directory 'not/there': No such file or directory",
-          ),
-        ),
+        throwsA(isA<LibGit2Error>()),
       );
     });
 
@@ -69,13 +63,7 @@ void main() {
         'directory', () {
       expect(
         () => repo.checkout(directory: 'not/there'),
-        throwsA(
-          isA<LibGit2Error>().having(
-            (e) => e.toString(),
-            'error',
-            "failed to make directory 'not/there': No such file or directory",
-          ),
-        ),
+        throwsA(isA<LibGit2Error>()),
       );
     });
 
@@ -117,13 +105,7 @@ void main() {
           refName: 'refs/heads/feature',
           directory: 'not/there',
         ),
-        throwsA(
-          isA<LibGit2Error>().having(
-            (e) => e.toString(),
-            'error',
-            "failed to make directory 'not/there': No such file or directory",
-          ),
-        ),
+        throwsA(isA<LibGit2Error>()),
       );
     });
 

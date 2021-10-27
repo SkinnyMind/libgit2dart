@@ -99,53 +99,20 @@ void main() {
     test('throws when trying to set working directory to invalid', () {
       expect(
         () => repo.setWorkdir(path: 'invalid/path'),
-        throwsA(
-          isA<LibGit2Error>().having(
-            (e) => e.toString(),
-            'error',
-            "failed to resolve path 'invalid/path': No such file or directory",
-          ),
-        ),
+        throwsA(isA<LibGit2Error>()),
       );
     });
 
     test('throws when trying to get head and error occurs', () {
       File('${repo.workdir}.git/HEAD').deleteSync();
-      expect(
-        () => repo.head,
-        throwsA(
-          isA<LibGit2Error>().having(
-            (e) => e.toString(),
-            'error',
-            "reference 'HEAD' not found",
-          ),
-        ),
-      );
-      expect(
-        () => repo.isHeadDetached,
-        throwsA(
-          isA<LibGit2Error>().having(
-            (e) => e.toString(),
-            'error',
-            "reference 'HEAD' not found",
-          ),
-        ),
-      );
+      expect(() => repo.head, throwsA(isA<LibGit2Error>()));
+      expect(() => repo.isHeadDetached, throwsA(isA<LibGit2Error>()));
     });
 
     test('throws when trying to check if branch is unborn and error occurs',
         () {
       File('${repo.workdir}.git/HEAD').deleteSync();
-      expect(
-        () => repo.isBranchUnborn,
-        throwsA(
-          isA<LibGit2Error>().having(
-            (e) => e.toString(),
-            'error',
-            "reference 'HEAD' not found",
-          ),
-        ),
-      );
+      expect(() => repo.isBranchUnborn, throwsA(isA<LibGit2Error>()));
     });
 
     group('setHead', () {
@@ -177,39 +144,17 @@ void main() {
       });
 
       test('throws when target is invalid', () {
-        expect(
-          () => repo.setHead(0),
-          throwsA(
-            isA<ArgumentError>().having(
-              (e) => e.toString(),
-              'error',
-              'Invalid argument: "0 must be either Oid or String reference '
-                  'name"',
-            ),
-          ),
-        );
+        expect(() => repo.setHead(0), throwsA(isA<ArgumentError>()));
       });
 
       test('throws when error occurs', () {
         expect(
           () => Repository(nullptr).setHead('refs/heads/feature'),
-          throwsA(
-            isA<LibGit2Error>().having(
-              (e) => e.toString(),
-              'error',
-              "invalid argument: 'repo'",
-            ),
-          ),
+          throwsA(isA<LibGit2Error>()),
         );
         expect(
           () => Repository(nullptr).setHead(repo['0' * 40]),
-          throwsA(
-            isA<LibGit2Error>().having(
-              (e) => e.toString(),
-              'error',
-              "invalid argument: 'repo'",
-            ),
-          ),
+          throwsA(isA<LibGit2Error>()),
         );
       });
     });
@@ -300,17 +245,7 @@ void main() {
     test('throws when trying to get status of bare repository', () {
       final bare = Repository.open('test/assets/empty_bare.git');
 
-      expect(
-        () => bare.status,
-        throwsA(
-          isA<LibGit2Error>().having(
-            (e) => e.toString(),
-            'error',
-            "cannot status. This operation is not allowed against bare "
-                "repositories.",
-          ),
-        ),
-      );
+      expect(() => bare.status, throwsA(isA<LibGit2Error>()));
 
       bare.free();
     });
@@ -330,13 +265,7 @@ void main() {
     test('throws when trying to clean up state and error occurs', () {
       expect(
         () => Repository(nullptr).stateCleanup(),
-        throwsA(
-          isA<LibGit2Error>().having(
-            (e) => e.toString(),
-            'error',
-            "invalid argument: 'repo'",
-          ),
-        ),
+        throwsA(isA<LibGit2Error>()),
       );
     });
 
@@ -353,16 +282,7 @@ void main() {
     });
 
     test('throws when checking status of a single file for invalid path', () {
-      expect(
-        () => repo.statusFile('not-there'),
-        throwsA(
-          isA<LibGit2Error>().having(
-            (e) => e.toString(),
-            'error',
-            "attempt to get status of nonexistent file 'not-there'",
-          ),
-        ),
-      );
+      expect(() => repo.statusFile('not-there'), throwsA(isA<LibGit2Error>()));
     });
 
     test('returns default signature', () {
@@ -418,13 +338,7 @@ void main() {
       final nullRepo = Repository(nullptr);
       expect(
         () => nullRepo.descendantOf(commit: commit1, ancestor: commit2),
-        throwsA(
-          isA<LibGit2Error>().having(
-            (e) => e.toString(),
-            'error',
-            "invalid argument: 'repo'",
-          ),
-        ),
+        throwsA(isA<LibGit2Error>()),
       );
     });
 

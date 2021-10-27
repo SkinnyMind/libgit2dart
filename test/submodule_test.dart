@@ -49,13 +49,7 @@ void main() {
     test('throws when trying to lookup and submodule not found', () {
       expect(
         () => repo.lookupSubmodule('not/there'),
-        throwsA(
-          isA<LibGit2Error>().having(
-            (e) => e.toString(),
-            'error',
-            "no submodule named 'not/there'",
-          ),
-        ),
+        throwsA(isA<LibGit2Error>()),
       );
     });
 
@@ -81,13 +75,7 @@ void main() {
     test('throws when trying to update not initialized submodule', () {
       expect(
         () => repo.updateSubmodule(submodule: testSubmodule),
-        throwsA(
-          isA<LibGit2Error>().having(
-            (e) => e.toString(),
-            'error',
-            "submodule is not initialized",
-          ),
-        ),
+        throwsA(isA<LibGit2Error>()),
       );
     });
 
@@ -113,18 +101,7 @@ void main() {
     test('throws when trying to open repository for not initialized submodule',
         () {
       final submodule = repo.lookupSubmodule(testSubmodule);
-
-      expect(
-        () => submodule.open(),
-        throwsA(
-          isA<LibGit2Error>().having(
-            (e) => e.toString(),
-            'error',
-            contains("failed to resolve path"),
-          ),
-        ),
-      );
-
+      expect(() => submodule.open(), throwsA(isA<LibGit2Error>()));
       submodule.free();
     });
 
@@ -149,14 +126,7 @@ void main() {
           url: 'https://wrong.url/',
           path: 'test',
         ),
-        throwsA(
-          isA<LibGit2Error>().having(
-            (e) => e.toString(),
-            'error',
-            'failed to resolve address for wrong.url: Name or service '
-                'not known',
-          ),
-        ),
+        throwsA(isA<LibGit2Error>()),
       );
     });
 
@@ -166,13 +136,7 @@ void main() {
           url: 'https://wrong.url/',
           path: 'test',
         ),
-        throwsA(
-          isA<LibGit2Error>().having(
-            (e) => e.toString(),
-            'error',
-            "invalid argument: 'repo'",
-          ),
-        ),
+        throwsA(isA<LibGit2Error>()),
       );
     });
 

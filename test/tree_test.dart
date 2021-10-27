@@ -34,13 +34,7 @@ void main() {
     test('throws when looking up tree for invalid oid', () {
       expect(
         () => repo.lookupTree(repo['0' * 40]),
-        throwsA(
-          isA<LibGit2Error>().having(
-            (e) => e.toString(),
-            'error',
-            "odb: cannot read object: null OID cannot exist",
-          ),
-        ),
+        throwsA(isA<LibGit2Error>()),
       );
     });
 
@@ -101,7 +95,6 @@ void main() {
       expect(entry.oid, fileOid);
 
       builder.free();
-      entry.free();
       newTree.free();
     });
   });

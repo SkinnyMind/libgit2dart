@@ -40,24 +40,9 @@ void main() {
     test('.single() throws when spec string not found or invalid', () {
       expect(
         () => repo.revParseSingle('invalid'),
-        throwsA(
-          isA<LibGit2Error>().having(
-            (e) => e.toString(),
-            'error',
-            "revspec 'invalid' not found",
-          ),
-        ),
+        throwsA(isA<LibGit2Error>()),
       );
-      expect(
-        () => repo.revParseSingle(''),
-        throwsA(
-          isA<LibGit2Error>().having(
-            (e) => e.toString(),
-            'error',
-            "failed to parse revision specifier - Invalid pattern ''",
-          ),
-        ),
-      );
+      expect(() => repo.revParseSingle(''), throwsA(isA<LibGit2Error>()));
     });
 
     test('.ext() returns commit and reference', () {
@@ -98,24 +83,9 @@ void main() {
     test('.ext() throws when spec string not found or invalid', () {
       expect(
         () => repo.revParseExt('invalid'),
-        throwsA(
-          isA<LibGit2Error>().having(
-            (e) => e.toString(),
-            'error',
-            "revspec 'invalid' not found",
-          ),
-        ),
+        throwsA(isA<LibGit2Error>()),
       );
-      expect(
-        () => repo.revParseExt(''),
-        throwsA(
-          isA<LibGit2Error>().having(
-            (e) => e.toString(),
-            'error',
-            "failed to parse revision specifier - Invalid pattern ''",
-          ),
-        ),
-      );
+      expect(() => repo.revParseExt(''), throwsA(isA<LibGit2Error>()));
     });
 
     test(
@@ -156,23 +126,11 @@ void main() {
     test('throws on invalid range spec', () {
       expect(
         () => repo.revParse('invalid..5aecfa'),
-        throwsA(
-          isA<LibGit2Error>().having(
-            (e) => e.toString(),
-            'error',
-            "revspec 'invalid' not found",
-          ),
-        ),
+        throwsA(isA<LibGit2Error>()),
       );
       expect(
         () => repo.revParse('master.......5aecfa'),
-        throwsA(
-          isA<LibGit2Error>().having(
-            (e) => e.toString(),
-            'error',
-            "failed to parse revision specifier - Invalid pattern '....5aecfa'",
-          ),
-        ),
+        throwsA(isA<LibGit2Error>()),
       );
     });
   });

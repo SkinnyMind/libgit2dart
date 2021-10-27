@@ -148,16 +148,7 @@ index e69de29..c217c63 100644
         () {
       final nullRepo = Repository(nullptr);
       final nullTree = Tree(nullptr);
-      expect(
-        () => nullRepo.diff(a: nullTree),
-        throwsA(
-          isA<LibGit2Error>().having(
-            (e) => e.toString(),
-            'error',
-            "invalid argument: 'repo'",
-          ),
-        ),
-      );
+      expect(() => nullRepo.diff(a: nullTree), throwsA(isA<LibGit2Error>()));
     });
 
     test('successfully returns diff between tree and index', () {
@@ -204,28 +195,13 @@ index e69de29..c217c63 100644
       final nullTree = Tree(nullptr);
       expect(
         () => nullRepo.diff(a: nullTree, b: nullTree),
-        throwsA(
-          isA<LibGit2Error>().having(
-            (e) => e.toString(),
-            'error',
-            "invalid argument: 'repo'",
-          ),
-        ),
+        throwsA(isA<LibGit2Error>()),
       );
     });
 
     test('throws when trying to diff between null and tree', () {
       final tree = repo.lookupTree(repo['b85d53c']);
-      expect(
-        () => repo.diff(b: tree),
-        throwsA(
-          isA<ArgumentError>().having(
-            (e) => e.message,
-            'error',
-            "Must not be null",
-          ),
-        ),
-      );
+      expect(() => repo.diff(b: tree), throwsA(isA<ArgumentError>()));
       tree.free();
     });
 
@@ -293,16 +269,7 @@ index e69de29..c217c63 100644
 
     test('throws when trying to apply diff and error occurs', () {
       final nullDiff = Diff(nullptr);
-      expect(
-        () => repo.apply(diff: nullDiff),
-        throwsA(
-          isA<LibGit2Error>().having(
-            (e) => e.toString(),
-            'error',
-            "invalid argument: 'diff'",
-          ),
-        ),
-      );
+      expect(() => repo.apply(diff: nullDiff), throwsA(isA<LibGit2Error>()));
     });
 
     test('successfully creates patch from entry index in diff', () {
@@ -345,30 +312,12 @@ index e69de29..c217c63 100644
 
     test('throws when trying to find similar entries and error occurs', () {
       final nullDiff = Diff(nullptr);
-      expect(
-        () => nullDiff.findSimilar(),
-        throwsA(
-          isA<LibGit2Error>().having(
-            (e) => e.toString(),
-            'error',
-            "invalid argument: 'diff'",
-          ),
-        ),
-      );
+      expect(() => nullDiff.findSimilar(), throwsA(isA<LibGit2Error>()));
     });
 
     test('throws when trying to get patch Oid and error occurs', () {
       final nullDiff = Diff(nullptr);
-      expect(
-        () => nullDiff.patchOid,
-        throwsA(
-          isA<LibGit2Error>().having(
-            (e) => e.toString(),
-            'error',
-            "invalid argument: 'diff'",
-          ),
-        ),
-      );
+      expect(() => nullDiff.patchOid, throwsA(isA<LibGit2Error>()));
     });
 
     test('returns deltas', () {
@@ -409,16 +358,7 @@ index e69de29..c217c63 100644
       final index = repo.index;
       final diff = index.diffToWorkdir();
 
-      expect(
-        () => diff.deltas[-1],
-        throwsA(
-          isA<RangeError>().having(
-            (e) => e.message,
-            'error',
-            "Invalid value",
-          ),
-        ),
-      );
+      expect(() => diff.deltas[-1], throwsA(isA<RangeError>()));
 
       diff.free();
       index.free();
@@ -456,29 +396,14 @@ index e69de29..c217c63 100644
 
     test('throws when trying to get stats and error occurs', () {
       final nullDiff = Diff(nullptr);
-      expect(
-        () => nullDiff.stats,
-        throwsA(
-          isA<LibGit2Error>().having(
-            (e) => e.toString(),
-            'error',
-            "invalid argument: 'diff'",
-          ),
-        ),
-      );
+      expect(() => nullDiff.stats, throwsA(isA<LibGit2Error>()));
     });
 
     test('throws when trying to print stats and error occurs', () {
       final nullStats = DiffStats(nullptr);
       expect(
         () => nullStats.print(format: {GitDiffStats.full}, width: 80),
-        throwsA(
-          isA<LibGit2Error>().having(
-            (e) => e.toString(),
-            'error',
-            "invalid argument: 'stats'",
-          ),
-        ),
+        throwsA(isA<LibGit2Error>()),
       );
     });
 

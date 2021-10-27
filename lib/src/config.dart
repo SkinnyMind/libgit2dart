@@ -141,7 +141,6 @@ class Config with IterableMixin<ConfigEntry> {
   /// highest level (usually the local one).
   ///
   /// The [regexp] is applied case-sensitively on the value.
-  /// Empty [regexp] sets [value] for all values of a multivar [variable].
   void setMultivar({
     required String variable,
     required String regexp,
@@ -159,7 +158,6 @@ class Config with IterableMixin<ConfigEntry> {
   /// file with the highest level (usually the local one).
   ///
   /// The [regexp] is applied case-sensitively on the value.
-  /// Empty [regexp] deletes all values of a multivar [variable].
   void deleteMultivar({required String variable, required String regexp}) {
     bindings.deleteMultivar(
       configPointer: _configPointer,

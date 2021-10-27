@@ -85,16 +85,7 @@ void main() {
     });
 
     test('throws when provided file path is invalid', () {
-      expect(
-        () => repo.blame(path: 'invalid'),
-        throwsA(
-          isA<LibGit2Error>().having(
-            (e) => e.toString(),
-            'error',
-            "the path 'invalid' does not exist in the given tree",
-          ),
-        ),
-      );
+      expect(() => repo.blame(path: 'invalid'), throwsA(isA<LibGit2Error>()));
     });
 
     test(
@@ -134,32 +125,14 @@ void main() {
 
     test('throws when provided index for hunk is invalid', () {
       final blame = repo.blame(path: 'feature_file');
-      expect(
-        () => blame[10],
-        throwsA(
-          isA<RangeError>().having(
-            (e) => e.message,
-            'error',
-            '10 is out of bounds',
-          ),
-        ),
-      );
+      expect(() => blame[10], throwsA(isA<RangeError>()));
 
       blame.free();
     });
 
     test('throws when provided line number for hunk is invalid', () {
       final blame = repo.blame(path: 'feature_file');
-      expect(
-        () => blame.forLine(10),
-        throwsA(
-          isA<RangeError>().having(
-            (e) => e.message,
-            'error',
-            '10 is out of bounds',
-          ),
-        ),
-      );
+      expect(() => blame.forLine(10), throwsA(isA<RangeError>()));
 
       blame.free();
     });

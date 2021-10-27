@@ -51,16 +51,7 @@ void main() {
 
     test('throws when trying to return list and error occurs', () {
       final nullRepo = Repository(nullptr);
-      expect(
-        () => Branch.list(repo: nullRepo),
-        throwsA(
-          isA<LibGit2Error>().having(
-            (e) => e.toString(),
-            'error',
-            "invalid argument: 'repo'",
-          ),
-        ),
-      );
+      expect(() => Branch.list(repo: nullRepo), throwsA(isA<LibGit2Error>()));
     });
 
     test('returns a branch with provided name', () {
@@ -72,24 +63,12 @@ void main() {
     test('throws when provided name not found', () {
       expect(
         () => repo.lookupBranch(name: 'invalid'),
-        throwsA(
-          isA<LibGit2Error>().having(
-            (e) => e.toString(),
-            'error',
-            "cannot locate local branch 'invalid'",
-          ),
-        ),
+        throwsA(isA<LibGit2Error>()),
       );
 
       expect(
         () => repo.lookupBranch(name: 'origin/invalid', type: GitBranch.remote),
-        throwsA(
-          isA<LibGit2Error>().having(
-            (e) => e.toString(),
-            'error',
-            "cannot locate remote-tracking branch 'origin/invalid'",
-          ),
-        ),
+        throwsA(isA<LibGit2Error>()),
       );
     });
 
@@ -108,13 +87,7 @@ void main() {
       final nullBranch = Branch(nullptr);
       expect(
         () => nullBranch.isHead,
-        throwsA(
-          isA<LibGit2Error>().having(
-            (e) => e.toString(),
-            'error',
-            "invalid argument: 'branch'",
-          ),
-        ),
+        throwsA(isA<LibGit2Error>()),
       );
     });
 
@@ -133,13 +106,7 @@ void main() {
       final nullBranch = Branch(nullptr);
       expect(
         () => nullBranch.isCheckedOut,
-        throwsA(
-          isA<LibGit2Error>().having(
-            (e) => e.toString(),
-            'error',
-            "invalid argument: 'branch'",
-          ),
-        ),
+        throwsA(isA<LibGit2Error>()),
       );
     });
 
@@ -151,16 +118,7 @@ void main() {
 
     test('throws when getting name and error occurs', () {
       final nullBranch = Branch(nullptr);
-      expect(
-        () => nullBranch.name,
-        throwsA(
-          isA<LibGit2Error>().having(
-            (e) => e.toString(),
-            'error',
-            "invalid argument: 'ref'",
-          ),
-        ),
-      );
+      expect(() => nullBranch.name, throwsA(isA<LibGit2Error>()));
     });
 
     group('create()', () {
@@ -185,14 +143,7 @@ void main() {
 
         expect(
           () => repo.createBranch(name: 'feature', target: commit),
-          throwsA(
-            isA<LibGit2Error>().having(
-              (e) => e.toString(),
-              'error',
-              "failed to write reference 'refs/heads/feature': "
-                  "a reference with that name already exists.",
-            ),
-          ),
+          throwsA(isA<LibGit2Error>()),
         );
 
         commit.free();
@@ -225,26 +176,14 @@ void main() {
 
         expect(
           () => repo.lookupBranch(name: 'feature'),
-          throwsA(
-            isA<LibGit2Error>().having(
-              (e) => e.toString(),
-              'error',
-              "cannot locate local branch 'feature'",
-            ),
-          ),
+          throwsA(isA<LibGit2Error>()),
         );
       });
 
       test('throws when trying to delete current HEAD', () {
         expect(
           () => repo.deleteBranch('master'),
-          throwsA(
-            isA<LibGit2Error>().having(
-              (e) => e.toString(),
-              'error',
-              "cannot delete branch 'refs/heads/master' as it is the current HEAD of the repository.",
-            ),
-          ),
+          throwsA(isA<LibGit2Error>()),
         );
       });
     });
@@ -258,13 +197,7 @@ void main() {
         expect(branches.length, 2);
         expect(
           () => repo.lookupBranch(name: 'feature'),
-          throwsA(
-            isA<LibGit2Error>().having(
-              (e) => e.toString(),
-              'error',
-              "cannot locate local branch 'feature'",
-            ),
-          ),
+          throwsA(isA<LibGit2Error>()),
         );
         expect(branch.target, featureCommit);
 
@@ -277,14 +210,7 @@ void main() {
       test('throws when name already exists', () {
         expect(
           () => repo.renameBranch(oldName: 'feature', newName: 'master'),
-          throwsA(
-            isA<LibGit2Error>().having(
-              (e) => e.toString(),
-              'error',
-              "failed to write reference 'refs/heads/master': "
-                  "a reference with that name already exists.",
-            ),
-          ),
+          throwsA(isA<LibGit2Error>()),
         );
       });
 
@@ -304,13 +230,7 @@ void main() {
       test('throws when name is invalid', () {
         expect(
           () => repo.renameBranch(oldName: 'feature', newName: 'inv@{id'),
-          throwsA(
-            isA<LibGit2Error>().having(
-              (e) => e.toString(),
-              'error',
-              "the given reference name 'refs/heads/inv@{id' is not valid",
-            ),
-          ),
+          throwsA(isA<LibGit2Error>()),
         );
       });
     });

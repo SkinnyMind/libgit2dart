@@ -1,3 +1,5 @@
+// coverage:ignore-file
+
 import 'dart:ffi';
 import 'package:ffi/ffi.dart';
 import 'package:libgit2dart/src/bindings/libgit2_bindings.dart';

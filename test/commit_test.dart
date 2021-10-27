@@ -53,13 +53,7 @@ void main() {
     test('throws when trying to lookup with invalid oid', () {
       expect(
         () => repo.lookupCommit(repo['0' * 40]),
-        throwsA(
-          isA<LibGit2Error>().having(
-            (e) => e.toString(),
-            'error',
-            "odb: cannot read object: null OID cannot exist",
-          ),
-        ),
+        throwsA(isA<LibGit2Error>()),
       );
     });
 
@@ -72,13 +66,7 @@ void main() {
     test('throws when trying to lookup annotated commit with invalid oid', () {
       expect(
         () => AnnotatedCommit.lookup(repo: repo, oid: repo['0' * 40]),
-        throwsA(
-          isA<LibGit2Error>().having(
-            (e) => e.toString(),
-            'error',
-            "odb: cannot read object: null OID cannot exist",
-          ),
-        ),
+        throwsA(isA<LibGit2Error>()),
       );
     });
 
@@ -108,13 +96,7 @@ void main() {
           revertCommit: nullCommit,
           ourCommit: nullCommit,
         ),
-        throwsA(
-          isA<LibGit2Error>().having(
-            (e) => e.toString(),
-            'error',
-            "invalid argument: 'revert_commit'",
-          ),
-        ),
+        throwsA(isA<LibGit2Error>()),
       );
     });
 
@@ -212,13 +194,7 @@ void main() {
           tree: tree,
           parents: [parent],
         ),
-        throwsA(
-          isA<LibGit2Error>().having(
-            (e) => e.toString(),
-            'error',
-            "invalid argument: 'git_tree_owner(tree) == repo'",
-          ),
-        ),
+        throwsA(isA<LibGit2Error>()),
       );
 
       parent.free();
@@ -309,13 +285,7 @@ void main() {
           message: 'amended commit\n',
           updateRef: 'HEAD',
         ),
-        throwsA(
-          isA<LibGit2Error>().having(
-            (e) => e.toString(),
-            'error',
-            "commit to amend is not the tip of the given branch",
-          ),
-        ),
+        throwsA(isA<LibGit2Error>()),
       );
 
       commit.free();

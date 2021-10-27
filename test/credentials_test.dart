@@ -88,13 +88,7 @@ void main() {
           localPath: cloneDir.path,
           callbacks: callbacks,
         ),
-        throwsA(
-          isA<LibGit2Error>().having(
-            (e) => e.toString(),
-            'error',
-            "Incorrect credentials.",
-          ),
-        ),
+        throwsA(isA<LibGit2Error>()),
       );
     });
 
@@ -124,13 +118,7 @@ void main() {
           url: 'ssh://git@github.com/libgit2/TestGitRepository',
           localPath: cloneDir.path,
         ),
-        throwsA(
-          isA<LibGit2Error>().having(
-            (e) => e.toString(),
-            'error',
-            "authentication required but no callback set",
-          ),
-        ),
+        throwsA(isA<LibGit2Error>()),
       );
     });
 
@@ -149,14 +137,7 @@ void main() {
           localPath: cloneDir.path,
           callbacks: callbacks,
         ),
-        throwsA(
-          isA<LibGit2Error>().having(
-            (e) => e.toString(),
-            'error',
-            'Failed to authenticate SSH session: Unable to open public key '
-                'file',
-          ),
-        ),
+        throwsA(isA<LibGit2Error>()),
       );
     });
 
@@ -175,13 +156,7 @@ void main() {
           localPath: cloneDir.path,
           callbacks: callbacks,
         ),
-        throwsA(
-          isA<LibGit2Error>().having(
-            (e) => e.toString(),
-            'error',
-            "Incorrect credentials.",
-          ),
-        ),
+        throwsA(isA<LibGit2Error>()),
       );
     });
 
@@ -199,13 +174,7 @@ void main() {
           localPath: cloneDir.path,
           callbacks: callbacks,
         ),
-        throwsA(
-          isA<LibGit2Error>().having(
-            (e) => e.toString(),
-            'error',
-            "Invalid credential type GitCredential.userPassPlainText",
-          ),
-        ),
+        throwsA(isA<LibGit2Error>()),
       );
     });
 
@@ -247,13 +216,7 @@ void main() {
           localPath: cloneDir.path,
           callbacks: callbacks,
         ),
-        throwsA(
-          isA<LibGit2Error>().having(
-            (e) => e.toString(),
-            'error',
-            "Incorrect credentials.",
-          ),
-        ),
+        throwsA(isA<LibGit2Error>()),
       );
     });
 
@@ -266,13 +229,7 @@ void main() {
           localPath: cloneDir.path,
           callbacks: callbacks,
         ),
-        throwsA(
-          isA<LibGit2Error>().having(
-            (e) => e.toString(),
-            'error',
-            "Incorrect credentials.",
-          ),
-        ),
+        throwsA(isA<LibGit2Error>()),
       );
     });
   });

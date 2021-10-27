@@ -77,13 +77,7 @@ void main() {
           url: '',
           fetch: '',
         ),
-        throwsA(
-          isA<LibGit2Error>().having(
-            (e) => e.toString(),
-            'error',
-            "'' is not a valid remote name.",
-          ),
-        ),
+        throwsA(isA<LibGit2Error>()),
       );
     });
 
@@ -100,13 +94,7 @@ void main() {
     test('throws when trying to delete non existing remote', () {
       expect(
         () => repo.deleteRemote('not/there'),
-        throwsA(
-          isA<LibGit2Error>().having(
-            (e) => e.toString(),
-            'error',
-            "remote 'not/there' does not exist",
-          ),
-        ),
+        throwsA(isA<LibGit2Error>()),
       );
     });
 
@@ -142,13 +130,7 @@ void main() {
     test('throws when renaming with invalid names', () {
       expect(
         () => repo.renameRemote(oldName: '', newName: ''),
-        throwsA(
-          isA<LibGit2Error>().having(
-            (e) => e.toString(),
-            'error',
-            "'' is not a valid remote name.",
-          ),
-        ),
+        throwsA(isA<LibGit2Error>()),
       );
     });
 
@@ -225,24 +207,12 @@ void main() {
 
       expect(
         () => refspec.transform('invalid/name'),
-        throwsA(
-          isA<LibGit2Error>().having(
-            (e) => e.toString(),
-            'error',
-            "ref 'invalid/name' doesn't match the source",
-          ),
-        ),
+        throwsA(isA<LibGit2Error>()),
       );
 
       expect(
         () => refspec.rTransform('invalid/name'),
-        throwsA(
-          isA<LibGit2Error>().having(
-            (e) => e.toString(),
-            'error',
-            "ref 'invalid/name' doesn't match the destination",
-          ),
-        ),
+        throwsA(isA<LibGit2Error>()),
       );
 
       remote.free();
@@ -274,13 +244,7 @@ void main() {
           remote: '',
           refspec: '',
         ),
-        throwsA(
-          isA<LibGit2Error>().having(
-            (e) => e.toString(),
-            'error',
-            "'' is not a valid remote name.",
-          ),
-        ),
+        throwsA(isA<LibGit2Error>()),
       );
     });
 
@@ -304,13 +268,7 @@ void main() {
           remote: '',
           refspec: '',
         ),
-        throwsA(
-          isA<LibGit2Error>().having(
-            (e) => e.toString(),
-            'error',
-            "'' is not a valid remote name.",
-          ),
-        ),
+        throwsA(isA<LibGit2Error>()),
       );
     });
 
@@ -341,16 +299,7 @@ void main() {
       Remote.setUrl(repo: repo, remote: 'libgit2', url: 'invalid');
       final remote = repo.lookupRemote('libgit2');
 
-      expect(
-        () => remote.ls(),
-        throwsA(
-          isA<LibGit2Error>().having(
-            (e) => e.toString(),
-            'error',
-            "unsupported URL protocol",
-          ),
-        ),
-      );
+      expect(() => remote.ls(), throwsA(isA<LibGit2Error>()));
 
       remote.free();
     });
@@ -432,13 +381,7 @@ void main() {
           refspecs: ['+refs/heads/*:refs/remotes/origin/*'],
           proxy: 'https://1.1.1.1',
         ),
-        throwsA(
-          isA<LibGit2Error>().having(
-            (e) => e.toString(),
-            'error',
-            "proxy returned unexpected status: 400",
-          ),
-        ),
+        throwsA(isA<LibGit2Error>()),
       );
 
       remote.free();
@@ -450,14 +393,7 @@ void main() {
 
       expect(
         () => remote.fetch(),
-        throwsA(
-          isA<LibGit2Error>().having(
-            (e) => e.toString(),
-            'error',
-            "failed to resolve address for wrong.url: Name or service "
-                "not known",
-          ),
-        ),
+        throwsA(isA<LibGit2Error>()),
       );
 
       remote.free();
@@ -600,14 +536,7 @@ Total 69 (delta 0), reused 1 (delta 0), pack-reused 68
 
       expect(
         () => remote.push(refspecs: ['refs/heads/master']),
-        throwsA(
-          isA<LibGit2Error>().having(
-            (e) => e.toString(),
-            'error',
-            "failed to resolve address for wrong.url: Name or service "
-                "not known",
-          ),
-        ),
+        throwsA(isA<LibGit2Error>()),
       );
 
       remote.free();

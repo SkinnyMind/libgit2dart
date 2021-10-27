@@ -96,17 +96,10 @@ void main() {
       }
     });
 
-    test('throws when trying to prune remote refs and error occurs', () {
-      expect(
-        () => remote.prune(),
-        throwsA(
-          isA<LibGit2Error>().having(
-            (e) => e.toString(),
-            'error',
-            "this remote has never connected",
-          ),
-        ),
-      );
+    test(
+        'throws when trying to prune remote refs and remote has never '
+        'connected', () {
+      expect(() => remote.prune(), throwsA(isA<LibGit2Error>()));
     });
   });
 }

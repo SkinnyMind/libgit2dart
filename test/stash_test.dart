@@ -40,13 +40,7 @@ void main() {
     test('throws when trying to save and error occurs', () {
       expect(
         () => Repository(nullptr).createStash(stasher: stasher),
-        throwsA(
-          isA<LibGit2Error>().having(
-            (e) => e.toString(),
-            'error',
-            "invalid argument: 'repo'",
-          ),
-        ),
+        throwsA(isA<LibGit2Error>()),
       );
     });
 
@@ -131,16 +125,7 @@ void main() {
 
       repo.createStash(stasher: stasher);
 
-      expect(
-        () => repo.applyStash(index: 10),
-        throwsA(
-          isA<LibGit2Error>().having(
-            (e) => e.toString(),
-            'error',
-            "no stashed state at position 10",
-          ),
-        ),
-      );
+      expect(() => repo.applyStash(index: 10), throwsA(isA<LibGit2Error>()));
     });
 
     test('successfully drops stash', () {
@@ -163,16 +148,7 @@ void main() {
 
       repo.createStash(stasher: stasher);
 
-      expect(
-        () => repo.dropStash(index: 10),
-        throwsA(
-          isA<LibGit2Error>().having(
-            (e) => e.toString(),
-            'error',
-            "no stashed state at position 10",
-          ),
-        ),
-      );
+      expect(() => repo.dropStash(index: 10), throwsA(isA<LibGit2Error>()));
     });
 
     test('successfully pops from stash', () {
@@ -224,16 +200,7 @@ void main() {
 
       repo.createStash(stasher: stasher);
 
-      expect(
-        () => repo.popStash(index: 10),
-        throwsA(
-          isA<LibGit2Error>().having(
-            (e) => e.toString(),
-            'error',
-            "no stashed state at position 10",
-          ),
-        ),
-      );
+      expect(() => repo.popStash(index: 10), throwsA(isA<LibGit2Error>()));
     });
 
     test('returns list of stashes', () {

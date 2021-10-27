@@ -54,16 +54,7 @@ void main() {
     });
 
     test('throws when trying to open non existing file', () {
-      expect(
-        () => Config.open('not.there'),
-        throwsA(
-          isA<Exception>().having(
-            (e) => e.toString(),
-            'error',
-            "Exception: File not found",
-          ),
-        ),
-      );
+      expect(() => Config.open('not.there'), throwsA(isA<Exception>()));
     });
 
     test('successfully opens system file or throws is there is none', () {
@@ -121,13 +112,7 @@ void main() {
       test("throws when variable isn't found", () {
         expect(
           () => config['not.there'],
-          throwsA(
-            isA<LibGit2Error>().having(
-              (e) => e.toString(),
-              'error',
-              "config value 'not.there' was not found",
-            ),
-          ),
+          throwsA(isA<LibGit2Error>()),
         );
       });
     });
@@ -151,13 +136,7 @@ void main() {
       test('throws when trying to set invalid value', () {
         expect(
           () => config['remote.origin.url'] = 0.1,
-          throwsA(
-            isA<ArgumentError>().having(
-              (e) => e.toString(),
-              'error',
-              'Invalid argument: "0.1 must be either bool, int or String"',
-            ),
-          ),
+          throwsA(isA<ArgumentError>()),
         );
       });
     });
@@ -214,19 +193,6 @@ void main() {
         expect(multivarValues, isNot(contains('default-proxy')));
         expect(multivarValues, contains('updated'));
       });
-
-      test('sets value for all multivar values when regexp is empty', () {
-        config.setMultivar(
-          variable: 'core.gitproxy',
-          regexp: '',
-          value: 'updated',
-        );
-        final multivarValues = config.multivar(variable: 'core.gitproxy');
-        expect(multivarValues, isNot(contains('default-proxy')));
-        expect(multivarValues, isNot(contains('proxy-command for kernel.org')));
-        expect(multivarValues, contains('updated'));
-        expect(multivarValues.length, 2);
-      });
     });
 
     group('deleteMultivar()', () {
@@ -251,21 +217,6 @@ void main() {
           ),
           <String>[],
         );
-      });
-
-      test('successfully deletes all values of a multivar when regexp is empty',
-          () {
-        expect(
-          config.multivar(variable: 'core.gitproxy'),
-          [
-            'proxy-command for kernel.org',
-            'default-proxy',
-          ],
-        );
-
-        config.deleteMultivar(variable: 'core.gitproxy', regexp: '');
-
-        expect(config.multivar(variable: 'core.gitproxy'), <String>[]);
       });
     });
 

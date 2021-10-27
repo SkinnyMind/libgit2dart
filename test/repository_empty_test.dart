@@ -83,16 +83,7 @@ void main() {
       });
 
       test('throws when checking if it is empty and error occurs', () {
-        expect(
-          () => Repository(nullptr).isEmpty,
-          throwsA(
-            isA<LibGit2Error>().having(
-              (e) => e.toString(),
-              'error',
-              "invalid argument: 'repo'",
-            ),
-          ),
-        );
+        expect(() => Repository(nullptr).isEmpty, throwsA(isA<LibGit2Error>()));
       });
 
       test('checks if head is detached', () {

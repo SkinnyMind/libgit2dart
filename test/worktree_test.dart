@@ -94,26 +94,14 @@ void main() {
           name: '',
           path: worktreeDir.path,
         ),
-        throwsA(
-          isA<LibGit2Error>().having(
-            (e) => e.toString(),
-            'error',
-            contains('failed to make directory'),
-          ),
-        ),
+        throwsA(isA<LibGit2Error>()),
       );
       expect(
         () => repo.createWorktree(
           name: 'name',
           path: '',
         ),
-        throwsA(
-          isA<LibGit2Error>().having(
-            (e) => e.toString(),
-            'error',
-            'attempt to create empty path: Invalid argument',
-          ),
-        ),
+        throwsA(isA<LibGit2Error>()),
       );
     });
 
@@ -135,13 +123,7 @@ void main() {
     test('throws when trying to lookup and error occurs', () {
       expect(
         () => Worktree.lookup(repo: Repository(nullptr), name: 'name'),
-        throwsA(
-          isA<LibGit2Error>().having(
-            (e) => e.toString(),
-            'error',
-            "invalid argument: 'repo'",
-          ),
-        ),
+        throwsA(isA<LibGit2Error>()),
       );
     });
 
@@ -185,13 +167,7 @@ void main() {
     test('throws when trying get list of worktrees and error occurs', () {
       expect(
         () => Worktree.list(Repository(nullptr)),
-        throwsA(
-          isA<LibGit2Error>().having(
-            (e) => e.toString(),
-            'error',
-            "invalid argument: 'repo'",
-          ),
-        ),
+        throwsA(isA<LibGit2Error>()),
       );
     });
   });
