@@ -41,7 +41,7 @@ void main() {
       expect(repo.worktrees, [worktreeName]);
       expect(branches.any((branch) => branch.name == worktreeName), true);
       expect(worktree.name, worktreeName);
-      expect(worktree.path, contains(worktreeDir.path));
+      expect(worktree.path, contains('/worktree'));
       expect(worktree.isLocked, false);
       expect(worktree.toString(), contains('Worktree{'));
       expect(File('${worktreeDir.path}/.git').existsSync(), true);
@@ -113,7 +113,7 @@ void main() {
       final lookedupWorktree = repo.lookupWorktree(worktreeName);
 
       expect(lookedupWorktree.name, worktreeName);
-      expect(lookedupWorktree.path, contains(worktreeDir.path));
+      expect(lookedupWorktree.path, contains('/worktree'));
       expect(lookedupWorktree.isLocked, false);
 
       lookedupWorktree.free();

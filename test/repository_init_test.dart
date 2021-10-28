@@ -23,14 +23,14 @@ void main() {
     test('successfully creates new bare repo at provided path', () {
       repo = Repository.init(path: initDir.path, bare: true);
 
-      expect(repo.path, contains('${initDir.path}/'));
+      expect(repo.path, contains('/init_repo/'));
       expect(repo.isBare, true);
     });
 
     test('successfully creates new standard repo at provided path', () {
       repo = Repository.init(path: initDir.path);
 
-      expect(repo.path, contains('${initDir.path}/.git/'));
+      expect(repo.path, contains('/init_repo/.git/'));
       expect(repo.isBare, false);
       expect(repo.isEmpty, true);
     });
@@ -43,11 +43,11 @@ void main() {
         flags: {GitRepositoryInit.mkdir, GitRepositoryInit.mkpath},
       );
 
-      expect(repo.path, contains('${initDir.path}/.git/'));
+      expect(repo.path, contains('/init_repo/.git/'));
       expect(repo.isBare, false);
       expect(repo.isEmpty, true);
       expect(
-        File('${initDir.path}/.git/description').readAsStringSync(),
+        File('${repo.workdir}.git/description').readAsStringSync(),
         'test repo',
       );
       expect(repo.lookupRemote('origin').url, 'test.url');

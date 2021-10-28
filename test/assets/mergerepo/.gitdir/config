@@ -3,7 +3,7 @@
 	filemode = true
 	bare = false
 	logallrefupdates = true
-  editor = vim
+	editor = vim
 [remote "origin"]
 	url = git://github.com/SkinnyMind/libgit2dart.git
 	fetch = +refs/heads/*:refs/remotes/origin/*

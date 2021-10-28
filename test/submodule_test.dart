@@ -20,7 +20,11 @@ void main() {
 
   tearDown(() {
     repo.free();
-    tmpDir.deleteSync(recursive: true);
+    try {
+      tmpDir.deleteSync(recursive: true);
+    } catch (e) {
+      return;
+    }
   });
 
   group('Submodule', () {

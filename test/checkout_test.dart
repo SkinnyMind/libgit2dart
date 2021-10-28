@@ -1,5 +1,6 @@
 import 'dart:io';
 
+import 'package:cli_util/cli_logging.dart';
 import 'package:libgit2dart/libgit2dart.dart';
 import 'package:test/test.dart';
 
@@ -8,21 +9,28 @@ import 'helpers/util.dart';
 void main() {
   late Repository repo;
   late Directory tmpDir;
+  late Config config;
 
   setUp(() {
     tmpDir = setupRepo(Directory('test/assets/testrepo/'));
+    config = Config.open('${tmpDir.path}/.git/config');
+    config['core.autocrlf'] = false;
+    config['eol'] = 'lf';
     repo = Repository.open(tmpDir.path);
   });
 
   tearDown(() {
     repo.free();
+    config.free();
     tmpDir.deleteSync(recursive: true);
   });
 
   group('Checkout', () {
     test('successfully checkouts head', () {
-      repo.reset(oid: repo['821ed6e'], resetType: GitReset.hard);
-      expect(repo.status, isEmpty);
+      final logger = Logger.standard();
+      logger.stdout(
+        Process.runSync('git', ['ls-files', '--eol']).stdout as String,
+      );
       File('${tmpDir.path}/feature_file').writeAsStringSync('edit');
       expect(repo.status, contains('feature_file'));
 

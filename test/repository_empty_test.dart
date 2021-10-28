@@ -1,5 +1,4 @@
 import 'dart:ffi';
-import 'dart:io';
 
 import 'package:libgit2dart/libgit2dart.dart';
 import 'package:test/test.dart';
@@ -10,7 +9,7 @@ void main() {
   group('Repository.open', () {
     test("throws when repository isn't found at provided path", () {
       expect(
-        () => Repository.open(''),
+        () => Repository.open('/not/there'),
         throwsA(isA<LibGit2Error>()),
       );
     });
@@ -35,14 +34,14 @@ void main() {
       test('returns path to the repository', () {
         expect(
           repo.path,
-          '${Directory.current.path}/test/assets/empty_bare.git/',
+          contains('/test/assets/empty_bare.git/'),
         );
       });
 
       test('returns path to root directory for the repository', () {
         expect(
           repo.commonDir,
-          '${Directory.current.path}/test/assets/empty_bare.git/',
+          contains('/test/assets/empty_bare.git/'),
         );
       });
 
@@ -67,14 +66,14 @@ void main() {
       test('returns path to the repository', () {
         expect(
           repo.path,
-          '${Directory.current.path}/test/assets/empty_standard/.gitdir/',
+          contains('/test/assets/empty_standard/.gitdir/'),
         );
       });
 
       test("returns path to parent repo's .git folder for the repository", () {
         expect(
           repo.commonDir,
-          '${Directory.current.path}/test/assets/empty_standard/.gitdir/',
+          contains('/test/assets/empty_standard/.gitdir/'),
         );
       });
 
@@ -113,10 +112,7 @@ void main() {
       });
 
       test('returns path to working directory', () {
-        expect(
-          repo.workdir,
-          '${Directory.current.path}/test/assets/empty_standard/',
-        );
+        expect(repo.workdir, contains('/test/assets/empty_standard/'));
       });
     });
   });
