@@ -1,6 +1,6 @@
+import 'dart:ffi';
 import 'dart:io';
 
-import 'package:cli_util/cli_logging.dart';
 import 'package:libgit2dart/libgit2dart.dart';
 import 'package:test/test.dart';
 
@@ -31,15 +31,7 @@ void main() {
     });
 
     test('throws when trying to get odb and error occurs', () {
-      final logger = Logger.standard();
-      final objectsDir = Directory('${repo.workdir}.git/objects/');
-      logger.stdout(objectsDir.path);
-      objectsDir.deleteSync(recursive: true);
-      expect(objectsDir.existsSync(), false);
-      expect(
-        () => repo.odb,
-        throwsA(isA<LibGit2Error>()),
-      );
+      expect(() => Repository((nullptr)).odb, throwsA(isA<LibGit2Error>()));
     });
 
     test('successfully creates new odb with no backends', () {
