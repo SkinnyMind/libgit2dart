@@ -39,6 +39,11 @@ jobs:
     runs-on: ${{ matrix.platform }}
 
     steps:
+      - name: Set git to use LF
+        run: |
+          git config --global core.autocrlf false
+          git config --global core.eol lf
+
       - uses: actions/checkout@v2
       - uses: dart-lang/setup-dart@v1
         with:
@@ -52,4 +57,3 @@ jobs:
 
       - name: Run tests
         run: dart test --exclude-tags "remote_fetch" --platform vm
-        if: matrix.platform != 'windows-latest'
