@@ -57,4 +57,3 @@ jobs:
 
       - name: Run tests
         run: dart test --exclude-tags "remote_fetch" --platform vm
-        if: matrix.platform != 'windows-latest'
