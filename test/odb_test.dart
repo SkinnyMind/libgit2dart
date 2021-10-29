@@ -1,5 +1,6 @@
 import 'dart:io';
 
+import 'package:cli_util/cli_logging.dart';
 import 'package:libgit2dart/libgit2dart.dart';
 import 'package:test/test.dart';
 
@@ -30,8 +31,11 @@ void main() {
     });
 
     test('throws when trying to get odb and error occurs', () {
-      Directory('${repo.workdir}.git/objects/').deleteSync(recursive: true);
-      expect(Directory('${repo.workdir}.git/objects/').existsSync(), false);
+      final logger = Logger.standard();
+      final objectsDir = Directory('${repo.workdir}.git/objects/');
+      logger.stdout(objectsDir.path);
+      objectsDir.deleteSync(recursive: true);
+      expect(objectsDir.existsSync(), false);
       expect(
         () => repo.odb,
         throwsA(isA<LibGit2Error>()),
