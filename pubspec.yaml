@@ -4,6 +4,7 @@ version: 0.0.1
 
 environment:
   sdk: ">=2.15.0-82.0.dev <3.0.0"
+  flutter: ">=2.5.0"
 
 dependencies:
   archive: ^3.1.6
@@ -13,9 +14,21 @@ dependencies:
 
 dev_dependencies:
   ffigen: ^4.0.0
+  flutter_test:
+    sdk: flutter
   lints: ^1.0.1
   path: ^1.8.0
   test: ^1.17.5
+
+flutter:
+  plugin:
+    platforms:
+      linux:
+        pluginClass: Libgit2dartPlugin
+      macos:
+        pluginClass: Libgit2dartPlugin
+      windows:
+        pluginClass: Libgit2dartPlugin
 
 ffigen:
   output: "lib/src/bindings/libgit2_bindings.dart"
