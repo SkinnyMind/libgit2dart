@@ -17,18 +17,18 @@ jobs:
       fail-fast: false
     steps:
       - uses: actions/checkout@v2
-      - uses: dart-lang/setup-dart@v1
+      - uses: subosito/flutter-action@v1
         with:
           sdk: dev
 
       - name: Install dependencies
-        run: dart pub get
+        run: flutter pub get
 
       - name: Verify formatting
-        run: dart format --output=none --set-exit-if-changed .
+        run: flutter format --output=none --set-exit-if-changed .
 
       - name: Analyze source code
-        run: dart analyze --fatal-infos
+        run: flutter analyze --fatal-infos
 
   test:
     needs: analyze
@@ -45,15 +45,15 @@ jobs:
           git config --global core.eol lf
 
       - uses: actions/checkout@v2
-      - uses: dart-lang/setup-dart@v1
+      - uses: subosito/flutter-action@v1
         with:
           sdk: dev
 
       - name: Install dependencies
-        run: dart pub get
+        run: flutter pub get
 
       - name: Download libgit2 library
-        run: dart run libgit2dart:setup
+        run: flutter pub run libgit2dart:setup
 
       - name: Run tests
-        run: dart test --exclude-tags "remote_fetch" --platform vm
+        run: flutter test --exclude-tags "remote_fetch" --platform vm
