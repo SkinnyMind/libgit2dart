@@ -31,6 +31,7 @@ void main() {
 
     test('throws when trying to get odb and error occurs', () {
       Directory('${repo.workdir}.git/objects/').deleteSync(recursive: true);
+      expect(Directory('${repo.workdir}.git/objects/').existsSync(), false);
       expect(
         () => repo.odb,
         throwsA(isA<LibGit2Error>()),
