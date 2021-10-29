@@ -20,6 +20,6 @@ target_link_libraries(${PLUGIN_NAME} PRIVATE PkgConfig::GTK)
 
 # List of absolute paths to libraries that should be bundled with the plugin
 set(libgit2dart_bundled_libraries
-  "../../../../.dart_tool/libgit2/linux/libgit2-1.3.0.so"
+  "${CMAKE_CURRENT_SOURCE_DIR}/libgit2-1.3.0.so"
   PARENT_SCOPE
 )

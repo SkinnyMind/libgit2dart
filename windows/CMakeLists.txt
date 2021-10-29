@@ -19,6 +19,6 @@ target_link_libraries(${PLUGIN_NAME} PRIVATE flutter flutter_wrapper_plugin)
 
 # List of absolute paths to libraries that should be bundled with the plugin
 set(libgit2dart_bundled_libraries
-  "../../../../.dart_tool/libgit2/windows/libgit2-1.3.0.dll"
+  "${CMAKE_CURRENT_SOURCE_DIR}/libgit2-1.3.0.dll"
   PARENT_SCOPE
 )
