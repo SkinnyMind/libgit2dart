@@ -1,5 +1,3 @@
-@Retry(10)
-
 import 'dart:ffi';
 import 'dart:io';
 

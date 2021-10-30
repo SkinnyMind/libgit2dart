@@ -1,5 +1,3 @@
-@Retry(10)
-
 import 'dart:io';
 
 import 'package:libgit2dart/libgit2dart.dart';
