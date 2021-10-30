@@ -36,7 +36,7 @@ jobs:
     strategy:
       fail-fast: false
       matrix:
-        platform: [ubuntu-latest, macos-11, windows-latest]
+        platform: [ubuntu-latest, macos-latest, windows-latest]
     runs-on: ${{ matrix.platform }}
 
     steps:
@@ -58,4 +58,4 @@ jobs:
         run: flutter pub run libgit2dart:setup
 
       - name: Run tests
-        run: flutter test --exclude-tags "remote_fetch"
+        run: flutter test -j 1 --exclude-tags "remote_fetch"
