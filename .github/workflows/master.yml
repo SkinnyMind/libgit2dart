@@ -58,4 +58,4 @@ jobs:
         run: flutter pub run libgit2dart:setup
 
       - name: Run tests
-        run: flutter test -j 1 --exclude-tags "remote_fetch"
+        run: dart test --exclude-tags "remote_fetch" --platform=vm
