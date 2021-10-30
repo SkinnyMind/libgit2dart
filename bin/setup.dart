@@ -36,9 +36,13 @@ Future<void> download(String platform) async {
       logger.stdout('${ansi.green}libgit2 for $platform is already available.');
     } else {
       logger.stdout(
-        '${ansi.red}libgit2 for $platform is outdated. Run: \n'
+        '${ansi.red}libgit2 for $platform is outdated.\n'
+        'If it is dart application run: \n'
+        'dart run libgit2dart:setup clean\n'
+        'dart run libgit2dart:setup\n\n'
+        'If it is flutter application run: \n'
         'flutter pub run libgit2dart:setup clean\n'
-        'flutter pub run libgit2dart:setup',
+        'flutter pub run libgit2dart:setup\n\n',
       );
     }
   } else {

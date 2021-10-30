@@ -67,7 +67,15 @@ DynamicLibrary loadLibrary(String name) {
       'To download the library, please run the following command from the '
       'root of your project:',
     );
-    logger.stdout('${ansi.yellow}dart run libgit2dart:setup${ansi.none}');
+    logger.stdout(
+      '${ansi.yellow}dart run libgit2dart:setup${ansi.none} for '
+      'dart application',
+    );
+    logger.stdout(ansi.none);
+    logger.stdout(
+      '${ansi.yellow}flutter pub run libgit2dart:setup${ansi.none} for '
+      'flutter application',
+    );
     logger.stdout(ansi.none);
     rethrow;
   }
