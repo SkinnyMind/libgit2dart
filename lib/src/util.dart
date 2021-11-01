@@ -40,14 +40,12 @@ String? _resolveLibPath(String name) {
   }
 
   // If lib is in Present Working Directory's '.dart_tool/libgit2/[platform]' folder.
-  final logger = Logger.standard();
   libPath = path.join(
     Directory.current.path,
     libDir,
     Platform.operatingSystem,
     name,
   );
-  logger.stdout(libPath);
   if (_doesFileExist(libPath)) {
     return libPath;
   }
