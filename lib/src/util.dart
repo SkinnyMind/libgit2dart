@@ -6,12 +6,9 @@ import 'dart:io';
 import 'package:cli_util/cli_logging.dart' show Ansi, Logger;
 import 'package:ffi/ffi.dart';
 import 'package:libgit2dart/src/bindings/libgit2_bindings.dart';
-import 'package:path/path.dart' as p;
+import 'package:path/path.dart' as path;
 import 'package:pub_cache/pub_cache.dart';
 
-const tag = 'libs-v1.3.0';
-const libUrl =
-    'https://github.com/SkinnyMind/libgit2dart/releases/download/$tag/';
 const libgit2Version = '1.3.0';
 const libDir = '.dart_tool/libgit2/';
 
@@ -45,7 +42,7 @@ String? _resolveLibUri(String name) {
 
   // If lib is in Present Working Directory's '.dart_tool/libgit2/[platform]' folder.
   libUri = Directory.current.uri.resolve(
-    p.join(libDir, Platform.operatingSystem, name),
+    path.join(libDir, Platform.operatingSystem, name),
   );
   if (_doesFileExist(libUri)) {
     return libUri.toFilePath(windows: Platform.isWindows);
@@ -53,7 +50,7 @@ String? _resolveLibUri(String name) {
 
   // If lib is in Present Working Directory's '[platform]' folder.
   libUri = Directory.current.uri.resolve(
-    p.join(Platform.operatingSystem, name),
+    path.join(Platform.operatingSystem, name),
   );
   if (_doesFileExist(libUri)) {
     return libUri.toFilePath(windows: Platform.isWindows);
@@ -63,7 +60,7 @@ String? _resolveLibUri(String name) {
   final pubCache = PubCache();
   final pubCacheDir =
       pubCache.getLatestVersion('libgit2dart')!.resolve()!.location;
-  libUri = pubCacheDir.uri.resolve(p.join(Platform.operatingSystem, name));
+  libUri = pubCacheDir.uri.resolve(path.join(Platform.operatingSystem, name));
   if (_doesFileExist(libUri)) {
     return libUri.toFilePath(windows: Platform.isWindows);
   }
@@ -82,21 +79,8 @@ DynamicLibrary loadLibrary(String name) {
     final ansi = Ansi(Ansi.terminalSupportsAnsi);
 
     logger.stderr(
-      '${ansi.red}Failed to open the library. Make sure that required '
-      'library is in place.${ansi.none}',
-    );
-    logger.stdout(
-      'To download the library, please run the following command from the '
-      'root of your project:',
-    );
-    logger.stdout(
-      '${ansi.yellow}dart run libgit2dart:setup${ansi.none} for '
-      'dart application',
-    );
-    logger.stdout(ansi.none);
-    logger.stdout(
-      '${ansi.yellow}flutter pub run libgit2dart:setup${ansi.none} for '
-      'flutter application',
+      '${ansi.red}Failed to open the library. Make sure that libgit2 '
+      'library is bundled with the application.${ansi.none}',
     );
     logger.stdout(ansi.none);
     rethrow;
