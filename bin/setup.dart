@@ -35,12 +35,13 @@ Future<void> copyLibrary(String platform) async {
     final pubCache = PubCache();
     final pubCacheDir =
         pubCache.getLatestVersion('libgit2dart')!.resolve()!.location;
-    final libUri = pubCacheDir.uri.resolve(path.join(platform, getLibName()));
+    final libName = getLibName();
+    final libUri = pubCacheDir.uri.resolve(path.join(platform, libName));
 
     logger.stdout('Copying libgit2 for $platform');
     final destination = path.join(libDir, platform);
     Directory(destination).createSync(recursive: true);
-    File.fromUri(libUri).copySync(destination);
+    File.fromUri(libUri).copySync(path.join(destination, libName));
 
     logger.stdout(
       '${ansi.green}Done! libgit2 for $platform is now available!'
