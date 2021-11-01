@@ -26,44 +26,45 @@ String getLibName() {
 }
 
 /// Checks if [File]/[Link] exists for an [uri].
-bool _doesFileExist(Uri uri) {
-  return File.fromUri(uri).existsSync() || Link.fromUri(uri).existsSync();
+bool _doesFileExist(String path) {
+  return File(path).existsSync() || Link(path).existsSync();
 }
 
 /// Returns path to dynamic library if found.
-String? _resolveLibUri(String name) {
-  var libUri = Directory.current.uri.resolve(name);
+String? _resolveLibPath(String name) {
+  var libPath = path.join(Directory.current.path, name);
 
   // If lib is in Present Working Directory.
-  if (_doesFileExist(libUri)) {
-    return libUri.toFilePath(windows: Platform.isWindows);
+  if (_doesFileExist(libPath)) {
+    return libPath;
   }
 
   // If lib is in Present Working Directory's '.dart_tool/libgit2/[platform]' folder.
   final logger = Logger.standard();
-  libUri = Directory.current.uri.resolve(
-    path.join(libDir, Platform.operatingSystem, name),
+  libPath = path.join(
+    Directory.current.path,
+    libDir,
+    Platform.operatingSystem,
+    name,
   );
-  logger.stdout('$libUri');
-  if (_doesFileExist(libUri)) {
-    return libUri.toFilePath(windows: Platform.isWindows);
+  logger.stdout(libPath);
+  if (_doesFileExist(libPath)) {
+    return libPath;
   }
 
   // If lib is in Present Working Directory's '[platform]' folder.
-  libUri = Directory.current.uri.resolve(
-    path.join(Platform.operatingSystem, name),
-  );
-  if (_doesFileExist(libUri)) {
-    return libUri.toFilePath(windows: Platform.isWindows);
+  libPath = path.join(Directory.current.path, Platform.operatingSystem, name);
+  if (_doesFileExist(libPath)) {
+    return libPath;
   }
 
   // If lib is in '.pub_cache' folder.
   final pubCache = PubCache();
   final pubCacheDir =
       pubCache.getLatestVersion('libgit2dart')!.resolve()!.location;
-  libUri = pubCacheDir.uri.resolve(path.join(Platform.operatingSystem, name));
-  if (_doesFileExist(libUri)) {
-    return libUri.toFilePath(windows: Platform.isWindows);
+  libPath = path.join(pubCacheDir.path, Platform.operatingSystem, name);
+  if (_doesFileExist(libPath)) {
+    return libPath;
   }
 
   return null;
@@ -72,7 +73,7 @@ String? _resolveLibUri(String name) {
 DynamicLibrary loadLibrary(String name) {
   try {
     return DynamicLibrary.open(
-      _resolveLibUri(name) ?? name,
+      _resolveLibPath(name) ?? name,
     );
   } catch (e) {
     final logger = Logger.standard();
