@@ -54,8 +54,5 @@ jobs:
       - name: Install dependencies
         run: flutter pub get
 
-      - name: Download libgit2 library
-        run: flutter pub run libgit2dart:setup
-
       - name: Run tests
         run: dart test --exclude-tags "remote_fetch" --platform=vm

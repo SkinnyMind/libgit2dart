@@ -1,75 +1,43 @@
 import 'dart:io';
 
-import 'package:archive/archive.dart';
 import 'package:args/command_runner.dart';
 import 'package:cli_util/cli_logging.dart' show Ansi, Logger;
+import 'package:libgit2dart/libgit2dart.dart';
+import 'package:libgit2dart/src/libgit2.dart';
 import 'package:libgit2dart/src/util.dart';
+import 'package:path/path.dart' as path;
+import 'package:pub_cache/pub_cache.dart';
 
-bool libgit2IsPresent(String platform) {
-  final result = File.fromUri(
-    Directory.current.uri
-        .resolve('.dart_tool/libgit2/$platform/${getLibName()}'),
-  ).existsSync();
-  return result;
-}
-
-/// Extracts a tar.gz file.
-void extract(String fileName, String dir) {
-  final tarGzFile = File(fileName).readAsBytesSync();
-  final archive = GZipDecoder().decodeBytes(tarGzFile, verify: true);
-  final tarData = TarDecoder().decodeBytes(archive, verify: true);
-  for (final file in tarData) {
-    File('$dir${file.name}')
-      ..createSync(recursive: true)
-      ..writeAsBytesSync(file.content as List<int>);
-  }
-}
-
-/// Downloads libgit2 from GitHub releases, extracts and places it in correct
-/// directory.
-Future<void> download(String platform) async {
+/// Copies prebuilt libgit2 library from package in '.pub_cache' into correct
+/// directory for [platform].
+Future<void> copyLibrary(String platform) async {
   final logger = Logger.standard();
   final ansi = Ansi(Ansi.terminalSupportsAnsi);
 
-  if (libgit2IsPresent(platform)) {
-    if (libgit2Version == getVersionNumber()) {
+  if (File(path.join(Directory.current.path, libDir, platform, getLibName()))
+      .existsSync()) {
+    if (libgit2Version == Libgit2.version) {
       logger.stdout('${ansi.green}libgit2 for $platform is already available.');
     } else {
       logger.stdout(
         '${ansi.red}libgit2 for $platform is outdated.\n'
-        'If it is dart application run: \n'
+        'Please run following commands: \n'
         'dart run libgit2dart:setup clean\n'
-        'dart run libgit2dart:setup\n\n'
-        'If it is flutter application run: \n'
-        'flutter pub run libgit2dart:setup clean\n'
-        'flutter pub run libgit2dart:setup\n\n',
+        'dart run libgit2dart:setup\n\n',
       );
     }
   } else {
-    final fileName = '$platform.tar.gz';
-    final downloadUrl = '$libUrl$fileName';
-    logger.stdout('Downloading libgit2 for $platform');
-    logger.stdout(downloadUrl);
+    final pubCache = PubCache();
+    final pubCacheDir =
+        pubCache.getLatestVersion('libgit2dart')!.resolve()!.location;
+    final libName = getLibName();
 
-    try {
-      final httpClient = HttpClient();
-      final request = await httpClient.getUrl(Uri.parse(downloadUrl));
-      final response = await request.close();
-      final fileSink = File(fileName).openWrite();
-      await response.pipe(fileSink);
-      await fileSink.flush();
-      await fileSink.close();
-      httpClient.close();
-    } catch (error) {
-      Exception("Can't download. Check your internet connection.");
-    }
-
-    logger.stdout('${ansi.yellow}Extracting libgit2 for $platform${ansi.none}');
-    Directory('$libDir$platform/').createSync(recursive: true);
-    extract(fileName, '$libDir$platform/');
-    logger.stdout('${ansi.green}Done! Cleaning up...');
-
-    File(fileName).deleteSync();
+    logger.stdout('Copying libgit2 for $platform');
+    final destination = path.join(libDir, platform);
+    Directory(destination).createSync(recursive: true);
+    File(path.join(pubCacheDir.path, platform, libName)).copySync(
+      path.join(destination, libName),
+    );
 
     logger.stdout(
       '${ansi.green}Done! libgit2 for $platform is now available!'
@@ -80,7 +48,7 @@ Future<void> download(String platform) async {
 
 class CleanCommand extends Command<void> {
   @override
-  String get description => 'Cleans downloaded libraries.';
+  String get description => 'Cleans copied libgit2 libraries.';
 
   @override
   String get name => 'clean';
@@ -88,7 +56,7 @@ class CleanCommand extends Command<void> {
   @override
   void run() {
     final logger = Logger.standard();
-    logger.stdout('cleaning...');
+    logger.stdout('Cleaning...');
     Directory(libDir).deleteSync(recursive: true);
   }
 }
@@ -96,9 +64,9 @@ class CleanCommand extends Command<void> {
 void main(List<String> args) {
   final runner = CommandRunner<void>(
     'setup',
-    'Downloads the libgit2 library.',
+    'Setups the libgit2 library.',
   );
   runner.addCommand(CleanCommand());
 
-  (args.isEmpty) ? download(Platform.operatingSystem) : runner.run(args);
+  (args.isEmpty) ? copyLibrary(Platform.operatingSystem) : runner.run(args);
 }
