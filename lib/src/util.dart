@@ -9,7 +9,7 @@ import 'package:path/path.dart' as path;
 import 'package:pub_cache/pub_cache.dart';
 
 const libgit2Version = '1.3.0';
-const libDir = '.dart_tool/libgit2/';
+final libDir = path.join('.dart_tool', 'libgit2');
 
 String getLibName() {
   var ext = 'so';
@@ -68,10 +68,9 @@ String? _resolveLibUri(String name) {
 }
 
 DynamicLibrary loadLibrary(String name) {
-  final resolvedUri = _resolveLibUri(name);
   try {
     return DynamicLibrary.open(
-      resolvedUri ?? name,
+      _resolveLibUri(name) ?? name,
     );
   } catch (e) {
     final logger = Logger.standard();
