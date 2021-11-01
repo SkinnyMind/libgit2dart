@@ -2,6 +2,8 @@ import 'dart:io';
 
 import 'package:args/command_runner.dart';
 import 'package:cli_util/cli_logging.dart' show Ansi, Logger;
+import 'package:libgit2dart/libgit2dart.dart';
+import 'package:libgit2dart/src/libgit2.dart';
 import 'package:libgit2dart/src/util.dart';
 import 'package:path/path.dart' as path;
 import 'package:pub_cache/pub_cache.dart';
@@ -21,7 +23,7 @@ Future<void> copyLibrary(String platform) async {
   final ansi = Ansi(Ansi.terminalSupportsAnsi);
 
   if (libgit2IsPresent(platform)) {
-    if (libgit2Version == getVersionNumber()) {
+    if (libgit2Version == Libgit2.version) {
       logger.stdout('${ansi.green}libgit2 for $platform is already available.');
     } else {
       logger.stdout(

@@ -4,7 +4,6 @@ import 'dart:ffi';
 import 'dart:io';
 
 import 'package:cli_util/cli_logging.dart' show Ansi, Logger;
-import 'package:ffi/ffi.dart';
 import 'package:libgit2dart/src/bindings/libgit2_bindings.dart';
 import 'package:path/path.dart' as path;
 import 'package:pub_cache/pub_cache.dart';
@@ -88,23 +87,6 @@ DynamicLibrary loadLibrary(String name) {
 }
 
 final libgit2 = Libgit2(loadLibrary(getLibName()));
-
-String getVersionNumber() {
-  libgit2.git_libgit2_init();
-
-  final major = calloc<Int32>();
-  final minor = calloc<Int32>();
-  final rev = calloc<Int32>();
-  libgit2.git_libgit2_version(major, minor, rev);
-
-  final version = '${major.value}.${minor.value}.${rev.value}';
-
-  calloc.free(major);
-  calloc.free(minor);
-  calloc.free(rev);
-
-  return version;
-}
 
 bool isValidShaHex(String str) {
   final hexRegExp = RegExp(r'^[0-9a-fA-F]+$');
