@@ -40,9 +40,11 @@ String? _resolveLibUri(String name) {
   }
 
   // If lib is in Present Working Directory's '.dart_tool/libgit2/[platform]' folder.
+  final logger = Logger.standard();
   libUri = Directory.current.uri.resolve(
     path.join(libDir, Platform.operatingSystem, name),
   );
+  logger.stdout('$libUri');
   if (_doesFileExist(libUri)) {
     return libUri.toFilePath(windows: Platform.isWindows);
   }
