@@ -6,6 +6,8 @@ import 'dart:io';
 import 'package:cli_util/cli_logging.dart' show Ansi, Logger;
 import 'package:ffi/ffi.dart';
 import 'package:libgit2dart/src/bindings/libgit2_bindings.dart';
+import 'package:path/path.dart' as p;
+import 'package:pub_cache/pub_cache.dart';
 
 const tag = 'libs-v1.3.0';
 const libUrl =
@@ -20,7 +22,7 @@ String getLibName() {
     ext = 'dll';
   } else if (Platform.isMacOS) {
     ext = 'dylib';
-  } else if (!(Platform.isLinux || Platform.isAndroid)) {
+  } else if (!(Platform.isLinux)) {
     throw Exception('Unsupported platform.');
   }
 
@@ -32,17 +34,36 @@ bool _doesFileExist(Uri uri) {
   return File.fromUri(uri).existsSync() || Link.fromUri(uri).existsSync();
 }
 
+/// Returns path to dynamic library if found.
 String? _resolveLibUri(String name) {
   var libUri = Directory.current.uri.resolve(name);
-  final dartToolDir = '$libDir${Platform.operatingSystem}';
 
   // If lib is in Present Working Directory.
   if (_doesFileExist(libUri)) {
     return libUri.toFilePath(windows: Platform.isWindows);
   }
 
-  // If lib is in Present Working Directory's .dart_tool folder.
-  libUri = Directory.current.uri.resolve('$dartToolDir/$name');
+  // If lib is in Present Working Directory's '.dart_tool/libgit2/[platform]' folder.
+  libUri = Directory.current.uri.resolve(
+    p.join(libDir, Platform.operatingSystem, name),
+  );
+  if (_doesFileExist(libUri)) {
+    return libUri.toFilePath(windows: Platform.isWindows);
+  }
+
+  // If lib is in Present Working Directory's '[platform]' folder.
+  libUri = Directory.current.uri.resolve(
+    p.join(Platform.operatingSystem, name),
+  );
+  if (_doesFileExist(libUri)) {
+    return libUri.toFilePath(windows: Platform.isWindows);
+  }
+
+  // If lib is in '.pub_cache' folder.
+  final pubCache = PubCache();
+  final pubCacheDir =
+      pubCache.getLatestVersion('libgit2dart')!.resolve()!.location;
+  libUri = pubCacheDir.uri.resolve(p.join(Platform.operatingSystem, name));
   if (_doesFileExist(libUri)) {
     return libUri.toFilePath(windows: Platform.isWindows);
   }
@@ -51,9 +72,10 @@ String? _resolveLibUri(String name) {
 }
 
 DynamicLibrary loadLibrary(String name) {
+  final resolvedUri = _resolveLibUri(name);
   try {
     return DynamicLibrary.open(
-      _resolveLibUri(name) ?? name,
+      resolvedUri ?? name,
     );
   } catch (e) {
     final logger = Logger.standard();
