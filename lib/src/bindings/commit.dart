@@ -65,7 +65,7 @@ void annotatedFree(Pointer<git_annotated_commit> commit) {
 /// Throws a [LibGit2Error] if error occured.
 Pointer<git_oid> create({
   required Pointer<git_repository> repoPointer,
-  String? updateRef,
+  required String updateRef,
   required Pointer<git_signature> authorPointer,
   required Pointer<git_signature> committerPointer,
   String? messageEncoding,
@@ -75,7 +75,7 @@ Pointer<git_oid> create({
   required List<Pointer<git_commit>> parents,
 }) {
   final out = calloc<git_oid>();
-  final updateRefC = updateRef?.toNativeUtf8().cast<Int8>() ?? nullptr;
+  final updateRefC = updateRef.toNativeUtf8().cast<Int8>();
   final messageEncodingC =
       messageEncoding?.toNativeUtf8().cast<Int8>() ?? nullptr;
   final messageC = message.toNativeUtf8().cast<Int8>();

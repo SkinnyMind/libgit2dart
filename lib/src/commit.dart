@@ -58,7 +58,7 @@ class Commit {
   /// Throws a [LibGit2Error] if error occured.
   static Oid create({
     required Repository repo,
-    String? updateRef,
+    required String updateRef,
     required Signature author,
     required Signature committer,
     String? messageEncoding,
@@ -103,10 +103,10 @@ class Commit {
   static Oid amend({
     required Repository repo,
     required Commit commit,
+    required String? updateRef,
     Signature? author,
     Signature? committer,
     Tree? tree,
-    String? updateRef,
     String? message,
     String? messageEncoding,
   }) {

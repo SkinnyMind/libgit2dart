@@ -12,7 +12,7 @@ void main() {
   late Signature author;
   late Signature commiter;
   late Tree tree;
-  late Oid mergeCommit;
+  late Oid tip;
   const message = "Commit message.\n\nSome description.\n";
 
   setUp(() {
@@ -28,10 +28,10 @@ void main() {
       email: 'commiter@email.com',
       time: 124,
     );
-    mergeCommit = repo['78b8bf123e3952c970ae5c1ce0a3ea1d1336f6e8'];
+    tip = repo['821ed6e80627b8769d170a293862f9fc60825226'];
     tree = Tree.lookup(
       repo: repo,
-      oid: repo['7796359a96eb722939c24bafdb1afe9f07f2f628'],
+      oid: repo['a8ae3dd59e6e1802c6f78e05e301bfd57c9f334f'],
     );
   });
 
@@ -45,7 +45,7 @@ void main() {
 
   group('Commit', () {
     test('successfully lookups for provided oid', () {
-      final commit = repo.lookupCommit(mergeCommit);
+      final commit = repo.lookupCommit(tip);
       expect(commit, isA<Commit>());
       commit.free();
     });
@@ -58,7 +58,7 @@ void main() {
     });
 
     test('successfully lookups annotated commit for provided oid', () {
-      final annotated = AnnotatedCommit.lookup(repo: repo, oid: mergeCommit);
+      final annotated = AnnotatedCommit.lookup(repo: repo, oid: tip);
       expect(annotated, isA<AnnotatedCommit>());
       annotated.free();
     });
@@ -101,8 +101,9 @@ void main() {
     });
 
     test('successfully creates commit', () {
-      final parent = repo.lookupCommit(mergeCommit);
+      final parent = repo.lookupCommit(tip);
       final oid = repo.createCommit(
+        updateRef: 'HEAD',
         message: message,
         author: author,
         commiter: commiter,
@@ -120,7 +121,7 @@ void main() {
       expect(commit.time, 124);
       expect(commit.tree.oid, tree.oid);
       expect(commit.parents.length, 1);
-      expect(commit.parents[0], mergeCommit);
+      expect(commit.parents[0], tip);
 
       commit.free();
       parent.free();
@@ -128,6 +129,7 @@ void main() {
 
     test('successfully creates commit without parents', () {
       final oid = repo.createCommit(
+        updateRef: 'refs/heads/new',
         message: message,
         author: author,
         commiter: commiter,
@@ -150,12 +152,13 @@ void main() {
     });
 
     test('successfully creates commit with 2 parents', () {
-      final parent1 = repo.lookupCommit(mergeCommit);
+      final parent1 = repo.lookupCommit(tip);
       final parent2 = repo.lookupCommit(
         repo['fc38877b2552ab554752d9a77e1f48f738cca79b'],
       );
 
       final oid = Commit.create(
+        updateRef: 'HEAD',
         repo: repo,
         message: message,
         author: author,
@@ -174,7 +177,7 @@ void main() {
       expect(commit.time, 124);
       expect(commit.tree.oid, tree.oid);
       expect(commit.parents.length, 2);
-      expect(commit.parents[0], mergeCommit);
+      expect(commit.parents[0], tip);
       expect(commit.parents[1], parent2.oid);
 
       parent1.free();
@@ -183,11 +186,12 @@ void main() {
     });
 
     test('throws when trying to create commit and error occurs', () {
-      final parent = repo.lookupCommit(mergeCommit);
+      final parent = repo.lookupCommit(tip);
       final nullRepo = Repository(nullptr);
 
       expect(
         () => nullRepo.createCommit(
+          updateRef: 'HEAD',
           message: message,
           author: author,
           commiter: commiter,
@@ -262,6 +266,7 @@ void main() {
 
       expect(
         () => repo.amendCommit(
+          updateRef: null,
           commit: commit,
           message: 'amended commit\n',
         ),
@@ -293,7 +298,7 @@ void main() {
     });
 
     test('returns string representation of Commit object', () {
-      final commit = repo.lookupCommit(mergeCommit);
+      final commit = repo.lookupCommit(tip);
       expect(commit.toString(), contains('Commit{'));
       commit.free();
     });

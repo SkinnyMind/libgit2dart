@@ -558,8 +558,8 @@ class Repository {
   /// this commit. If the reference is not direct, it will be resolved to a
   /// direct reference. Use "HEAD" to update the HEAD of the current branch and
   /// make it point to this commit. If the reference doesn't exist yet, it will
-  /// be created. If it does exist, the first parent
-  /// must be the tip of this branch.
+  /// be created. If it does exist, the first parent must be the tip of this
+  /// branch.
   ///
   /// [author] is the signature with author and author time of commit.
   ///
@@ -580,21 +580,23 @@ class Repository {
   ///
   /// Throws a [LibGit2Error] if error occured.
   Oid createCommit({
+    required String updateRef,
     required String message,
     required Signature author,
     required Signature commiter,
     required Tree tree,
     required List<Commit> parents,
-    String? updateRef,
     String? messageEncoding,
   }) {
     return Commit.create(
       repo: this,
+      updateRef: updateRef,
       message: message,
       author: author,
       committer: commiter,
       tree: tree,
       parents: parents,
+      messageEncoding: messageEncoding,
     );
   }
 
@@ -619,20 +621,20 @@ class Repository {
   /// Throws a [LibGit2Error] if error occured.
   Oid amendCommit({
     required Commit commit,
+    required String? updateRef,
     Signature? author,
     Signature? committer,
     Tree? tree,
-    String? updateRef,
     String? message,
     String? messageEncoding,
   }) {
     return Commit.amend(
       repo: this,
       commit: commit,
+      updateRef: updateRef,
       author: author,
       committer: committer,
       tree: tree,
-      updateRef: updateRef,
       message: message,
       messageEncoding: messageEncoding,
     );
