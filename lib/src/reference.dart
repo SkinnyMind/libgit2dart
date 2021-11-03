@@ -123,7 +123,7 @@ class Reference {
     ref.free();
   }
 
-  /// List of all the references that can be found in a [repo]sitory.
+  /// List of all the references names that can be found in a [repo]sitory.
   ///
   /// Throws a [LibGit2Error] if error occured.
   static List<String> list(Repository repo) => bindings.list(repo.pointer);

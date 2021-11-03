@@ -96,7 +96,7 @@ class Tag {
     bindings.delete(repoPointer: repo.pointer, tagName: name);
   }
 
-  /// Returns a list with all the tags in the repository.
+  /// Returns a list with all the tags names in the repository.
   ///
   /// Throws a [LibGit2Error] if error occured.
   static List<String> list(Repository repo) {
