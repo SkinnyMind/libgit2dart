@@ -50,11 +50,9 @@ void main() {
 
       for (var i = 0; i < commits.length; i++) {
         expect(commits[i].oid.sha, log[i]);
+        commits[i].free();
       }
 
-      for (final c in commits) {
-        c.free();
-      }
       walker.free();
     });
 
@@ -68,11 +66,9 @@ void main() {
 
       for (var i = 0; i < commits.length; i++) {
         expect(commits[i].oid.sha, log.reversed.toList()[i]);
+        commits[i].free();
       }
 
-      for (final c in commits) {
-        c.free();
-      }
       walker.free();
     });
 
@@ -85,20 +81,16 @@ void main() {
 
       for (var i = 0; i < timeSortedCommits.length; i++) {
         expect(timeSortedCommits[i].oid.sha, log[i]);
+        timeSortedCommits[i].free();
       }
 
       walker.sorting({GitSort.time, GitSort.reverse});
       final reverseSortedCommits = walker.walk();
       for (var i = 0; i < reverseSortedCommits.length; i++) {
         expect(reverseSortedCommits[i].oid.sha, log.reversed.toList()[i]);
+        reverseSortedCommits[i].free();
       }
 
-      for (final c in timeSortedCommits) {
-        c.free();
-      }
-      for (final c in reverseSortedCommits) {
-        c.free();
-      }
       walker.free();
     });
 
@@ -152,11 +144,9 @@ void main() {
 
       for (var i = 0; i < commits.length; i++) {
         expect(commits.length, 3);
+        commits[i].free();
       }
 
-      for (final c in commits) {
-        c.free();
-      }
       walker.free();
     });
 
