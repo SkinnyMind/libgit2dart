@@ -5,6 +5,8 @@ import 'package:libgit2dart/libgit2dart.dart';
 import 'package:libgit2dart/src/util.dart';
 
 class Libgit2 {
+  Libgit2._();
+
   /// Returns libgit2 version number.
   static String get version {
     libgit2.git_libgit2_init();
