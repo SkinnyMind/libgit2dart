@@ -30,6 +30,7 @@ void main() {
           'refs/heads/feature',
           'refs/heads/master',
           'refs/notes/commits',
+          'refs/remotes/origin/master',
           'refs/tags/v0.1',
           'refs/tags/v0.2',
         ],
@@ -80,14 +81,14 @@ void main() {
 
     test('returns the short name', () {
       final ref = repo.createReference(
-        name: 'refs/remotes/origin/master',
+        name: 'refs/remotes/origin/upstream',
         target: repo[lastCommit],
       );
 
       final head = repo.head;
 
       expect(head.shorthand, 'master');
-      expect(ref.shorthand, 'origin/master');
+      expect(ref.shorthand, 'origin/upstream');
 
       head.free();
       ref.free();
@@ -106,13 +107,8 @@ void main() {
     });
 
     test('checks if reference is a remote branch', () {
-      final ref = repo.createReference(
-        name: 'refs/remotes/origin/master',
-        target: repo[lastCommit],
-      );
-
+      final ref = repo.lookupReference('refs/remotes/origin/master');
       expect(ref.isRemote, true);
-
       ref.free();
     });
 
@@ -431,7 +427,7 @@ void main() {
 
         expect(ref1.target.sha, '78b8bf123e3952c970ae5c1ce0a3ea1d1336f6e8');
         expect(ref2.target.sha, 'f0fdbf506397e9f58c59b88dfdd72778ec06cc0c');
-        expect(repo.references.length, 5);
+        expect(repo.references.length, 6);
 
         repo.renameReference(
           oldName: 'refs/tags/v0.1',
@@ -445,7 +441,7 @@ void main() {
           '78b8bf123e3952c970ae5c1ce0a3ea1d1336f6e8',
         );
         expect(repo.references, isNot(contains('refs/tags/v0.1')));
-        expect(repo.references.length, 4);
+        expect(repo.references.length, 5);
 
         ref1.free();
         ref2.free();

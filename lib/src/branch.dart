@@ -147,6 +147,79 @@ class Branch {
   /// Throws a [LibGit2Error] if error occured.
   String get name => bindings.name(_branchPointer);
 
+  /// Remote name of a remote-tracking branch.
+  ///
+  /// This will return the name of the remote whose fetch refspec is matching
+  /// the given branch. E.g. given a branch "refs/remotes/test/master", it
+  /// will extract the "test" part.
+  ///
+  /// Throws a [LibGit2Error] if refspecs from multiple remotes match or if
+  /// error occured.
+  String get remoteName {
+    final owner = reference_bindings.owner(_branchPointer);
+    final branchName = reference_bindings.name(_branchPointer);
+    return bindings.remoteName(repoPointer: owner, branchName: branchName);
+  }
+
+  /// Upstream [Reference] of a local branch.
+  ///
+  /// **IMPORTANT**: Should be freed to release allocated memory.
+  ///
+  /// Throws a [LibGit2Error] if error occured.
+  Reference get upstream => Reference(bindings.getUpstream(_branchPointer));
+
+  /// Sets a branch's upstream branch.
+  ///
+  /// This will update the configuration to set the branch named [branchName] as
+  /// the upstream of branch. Pass a null name to unset the upstream
+  /// information.
+  ///
+  /// **Note**: The actual tracking reference must have been already created for
+  /// the operation to succeed.
+  ///
+  /// Throws a [LibGit2Error] if error occured.
+  void setUpstream(String? branchName) => bindings.setUpstream(
+        branchPointer: _branchPointer,
+        branchName: branchName,
+      );
+
+  /// Upstream name of a branch.
+  ///
+  /// Given a local branch, this will return its remote-tracking branch
+  /// information, as a full reference name, ie. "feature/nice" would become
+  /// "refs/remotes/origin/feature/nice", depending on that branch's configuration.
+  ///
+  /// Throws a [LibGit2Error] if error occured.
+  String get upstreamName {
+    final owner = reference_bindings.owner(_branchPointer);
+    final branchName = reference_bindings.name(_branchPointer);
+    return bindings.upstreamName(repoPointer: owner, branchName: branchName);
+  }
+
+  /// Upstream remote of a local branch.
+  ///
+  /// This will return the currently configured "branch.*.remote" for a branch.
+  /// Branch must be local.
+  ///
+  /// Throws a [LibGit2Error] if error occured.
+  String get upstreamRemote {
+    final owner = reference_bindings.owner(_branchPointer);
+    final branchName = reference_bindings.name(_branchPointer);
+    return bindings.upstreamRemote(repoPointer: owner, branchName: branchName);
+  }
+
+  /// Upstream merge of a local branch.
+  ///
+  /// This will return the currently configured "branch.*.merge" for a branch.
+  /// Branch must be local.
+  ///
+  /// Throws a [LibGit2Error] if error occured.
+  String get upstreamMerge {
+    final owner = reference_bindings.owner(_branchPointer);
+    final branchName = reference_bindings.name(_branchPointer);
+    return bindings.upstreamMerge(repoPointer: owner, branchName: branchName);
+  }
+
   /// Releases memory allocated for branch object.
   void free() => bindings.free(_branchPointer);
 

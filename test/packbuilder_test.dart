@@ -123,7 +123,7 @@ void main() {
     test('successfully packs with provided packDelegate', () {
       Directory('${repo.workdir}.git/objects/pack/').createSync();
       void packDelegate(PackBuilder packBuilder) {
-        final branches = repo.branches;
+        final branches = repo.branchesLocal;
         for (final branch in branches) {
           final ref = repo.lookupReference('refs/heads/${branch.name}');
           for (final commit in repo.log(oid: ref.target)) {
