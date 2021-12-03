@@ -202,5 +202,159 @@ String name(Pointer<git_reference> ref) {
   }
 }
 
+/// Find the remote name of a remote-tracking branch.
+///
+/// This will return the name of the remote whose fetch refspec is matching the
+/// given branch. E.g. given a branch "refs/remotes/test/master", it will extract
+/// the "test" part.
+///
+/// Throws a [LibGit2Error] if refspecs from multiple remotes match or if error
+/// occured.
+String remoteName({
+  required Pointer<git_repository> repoPointer,
+  required String branchName,
+}) {
+  final out = calloc<git_buf>();
+  final branchNameC = branchName.toNativeUtf8().cast<Int8>();
+  final error = libgit2.git_branch_remote_name(out, repoPointer, branchNameC);
+
+  calloc.free(branchNameC);
+
+  if (error < 0) {
+    calloc.free(out);
+    throw LibGit2Error(libgit2.git_error_last());
+  } else {
+    final result = out.ref.ptr.cast<Utf8>().toDartString();
+    calloc.free(out);
+    return result;
+  }
+}
+
+/// Get the upstream of a branch.
+///
+/// Given a reference, this will return a new reference object corresponding to
+/// its remote tracking branch. The reference must be a local branch.
+///
+/// Throws a [LibGit2Error] if error occured.
+Pointer<git_reference> getUpstream(Pointer<git_reference> branch) {
+  final out = calloc<Pointer<git_reference>>();
+  final error = libgit2.git_branch_upstream(out, branch);
+
+  if (error < 0) {
+    calloc.free(out);
+    throw LibGit2Error(libgit2.git_error_last());
+  } else {
+    return out.value;
+  }
+}
+
+/// Set a branch's upstream branch.
+///
+/// This will update the configuration to set the branch named [branchName] as
+/// the upstream of branch. Pass a null name to unset the upstream information.
+///
+/// **Note**: The actual tracking reference must have been already created for
+/// the operation to succeed.
+///
+/// Throws a [LibGit2Error] if error occured.
+void setUpstream({
+  required Pointer<git_reference> branchPointer,
+  required String? branchName,
+}) {
+  final branchNameC = branchName?.toNativeUtf8().cast<Int8>() ?? nullptr;
+  final error = libgit2.git_branch_set_upstream(branchPointer, branchNameC);
+
+  calloc.free(branchNameC);
+
+  if (error < 0) {
+    throw LibGit2Error(libgit2.git_error_last());
+  }
+}
+
+/// Get the upstream name of a branch.
+///
+/// Given a local branch, this will return its remote-tracking branch
+/// information, as a full reference name, ie. "feature/nice" would become
+/// "refs/remotes/origin/feature/nice", depending on that branch's configuration.
+///
+/// Throws a [LibGit2Error] if error occured.
+String upstreamName({
+  required Pointer<git_repository> repoPointer,
+  required String branchName,
+}) {
+  final out = calloc<git_buf>();
+  final branchNameC = branchName.toNativeUtf8().cast<Int8>();
+  final error = libgit2.git_branch_upstream_name(out, repoPointer, branchNameC);
+
+  calloc.free(branchNameC);
+
+  if (error < 0) {
+    calloc.free(out);
+    throw LibGit2Error(libgit2.git_error_last());
+  } else {
+    final result = out.ref.ptr.cast<Utf8>().toDartString();
+    calloc.free(out);
+    return result;
+  }
+}
+
+/// Retrieve the upstream remote of a local branch.
+///
+/// This will return the currently configured "branch.*.remote" for a given
+/// branch. This branch must be local.
+///
+/// Throws a [LibGit2Error] if error occured.
+String upstreamRemote({
+  required Pointer<git_repository> repoPointer,
+  required String branchName,
+}) {
+  final out = calloc<git_buf>();
+  final branchNameC = branchName.toNativeUtf8().cast<Int8>();
+  final error = libgit2.git_branch_upstream_remote(
+    out,
+    repoPointer,
+    branchNameC,
+  );
+
+  calloc.free(branchNameC);
+
+  if (error < 0) {
+    calloc.free(out);
+    throw LibGit2Error(libgit2.git_error_last());
+  } else {
+    final result = out.ref.ptr.cast<Utf8>().toDartString();
+    calloc.free(out);
+    return result;
+  }
+}
+
+/// Retrieve the upstream merge of a local branch.
+///
+/// This will return the currently configured "branch.*.merge" for a given
+/// branch. This branch must be local.
+///
+/// Throws a [LibGit2Error] if error occured.
+String upstreamMerge({
+  required Pointer<git_repository> repoPointer,
+  required String branchName,
+}) {
+  final out = calloc<git_buf>();
+  final branchNameC = branchName.toNativeUtf8().cast<Int8>();
+  final error = libgit2.git_branch_upstream_merge(
+    out,
+    repoPointer,
+    branchNameC,
+  );
+
+  if (error < 0) {
+    calloc.free(out);
+    throw LibGit2Error(libgit2.git_error_last());
+  } else {
+    final result = out.ref.ptr.cast<Utf8>().toDartString();
+    calloc.free(out);
+    return result;
+  }
+}
+
 /// Free the given reference to release memory.
 void free(Pointer<git_reference> ref) => reference_bindings.free(ref);

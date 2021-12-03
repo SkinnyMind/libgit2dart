@@ -1,5 +1,4 @@
 import 'package:libgit2dart/libgit2dart.dart';
-import 'package:libgit2dart/src/libgit2.dart';
 import 'package:libgit2dart/src/util.dart';
 import 'package:test/test.dart';
 
