@@ -1227,6 +1227,26 @@ class Repository {
     object_bindings.free(object);
   }
 
+  /// Updates some entries in the index from the [oid] commit tree.
+  ///
+  /// The scope of the updated entries is determined by the paths being passed
+  /// in the [pathspec].
+  ///
+  /// Throws a [LibGit2Error] if error occured.
+  void resetDefault({required Oid oid, required List<String> pathspec}) {
+    final object = object_bindings.lookup(
+      repoPointer: _repoPointer,
+      oidPointer: oid.pointer,
+      type: GitObject.commit.value,
+    );
+
+    reset_bindings.resetDefault(
+      repoPointer: _repoPointer,
+      targetPointer: object,
+      pathspec: pathspec,
+    );
+  }
+
   /// Returns a [Diff] with changes between the trees, tree and index, tree and
   /// workdir or index and workdir.
   ///
