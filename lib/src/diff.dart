@@ -399,8 +399,9 @@ class DiffLine {
   int get contentOffset => _diffLinePointer.ref.content_offset;
 
   /// Content of the diff line.
-  String get content =>
-      _diffLinePointer.ref.content.cast<Utf8>().toDartString();
+  String get content => _diffLinePointer.ref.content
+      .cast<Utf8>()
+      .toDartString(length: _diffLinePointer.ref.content_len);
 
   @override
   String toString() {
