@@ -293,6 +293,8 @@ class Repository {
   }
 
   /// Configured identity to use for reflogs.
+  ///
+  /// Returns map with name as key and email as value.
   Map<String, String> get identity => bindings.identity(_repoPointer);
 
   /// Whether repository was a shallow clone.
