@@ -561,5 +561,20 @@ void main() {
         );
       });
     });
+
+    group('GitIndexCapability', () {
+      test('returns correct values', () {
+        const expected = [1, 2, 4, -1];
+        final actual = GitIndexCapability.values.map((e) => e.value).toList();
+        expect(actual, expected);
+      });
+
+      test('returns string representation of object', () {
+        expect(
+          GitIndexCapability.ignoreCase.toString(),
+          'GitIndexCapability.ignoreCase',
+        );
+      });
+    });
   });
 }

@@ -27,6 +27,37 @@ void main() {
     const fileSha = 'e69de29bb2d1d6434b8b29ae775ad8c2e48c5391';
     const featureFileSha = '9c78c21d6680a7ffebc76f7ac68cacc11d8f48bc';
 
+    test('returns full path to the index file on disk', () {
+      expect(index.path, '${repo.path}index');
+    });
+
+    group('capabilities', () {
+      test('returns index capabilities', () {
+        expect(index.capabilities, isEmpty);
+      });
+
+      test('successfully sets index capabilities', () {
+        expect(index.capabilities, isEmpty);
+
+        index.capabilities = {
+          GitIndexCapability.ignoreCase,
+          GitIndexCapability.noSymlinks,
+        };
+
+        expect(index.capabilities, {
+          GitIndexCapability.ignoreCase,
+          GitIndexCapability.noSymlinks,
+        });
+      });
+
+      test('throws when trying to set index capabilities and error occurs', () {
+        expect(
+          () => Index(nullptr).capabilities = {},
+          throwsA(isA<LibGit2Error>()),
+        );
+      });
+    });
+
     test('returns number of entries', () {
       expect(index.length, 4);
     });
@@ -35,6 +66,10 @@ void main() {
       for (final entry in index) {
         expect(entry.mode, GitFilemode.blob);
       }
+    });
+
+    test('returns stage of entry', () {
+      expect(index['file'].stage, 0);
     });
 
     test('returns index entry at provided position', () {
@@ -118,6 +153,26 @@ void main() {
       });
     });
 
+    group('addFromBuffer()', () {
+      test('successfully updates index entry from a buffer', () {
+        final entry = index['file'];
+        expect(repo.status, isEmpty);
+
+        index.addFromBuffer(entry: entry, buffer: 'updated');
+        expect(repo.status, {
+          'file': {GitStatus.indexModified, GitStatus.wtModified}
+        });
+      });
+
+      test('throws when trying to update entry and error occurs', () {
+        final nullEntry = IndexEntry(nullptr);
+        expect(
+          () => index.addFromBuffer(entry: nullEntry, buffer: ''),
+          throwsA(isA<LibGit2Error>()),
+        );
+      });
+    });
+
     group('addAll()', () {
       test('successfully adds with provided pathspec', () {
         index.clear();
@@ -146,6 +201,33 @@ void main() {
         final bareIndex = bare.index;
 
         expect(() => bareIndex.addAll([]), throwsA(isA<LibGit2Error>()));
+
+        bareIndex.free();
+        bare.free();
+      });
+    });
+
+    group('updateAll()', () {
+      test('successfully updates all entries to match working directory', () {
+        expect(repo.status, isEmpty);
+        File('${repo.workdir}file').deleteSync();
+        File('${repo.workdir}feature_file').deleteSync();
+
+        index.updateAll(['file', 'feature_file']);
+        expect(repo.status, {
+          'file': {GitStatus.indexDeleted},
+          'feature_file': {GitStatus.indexDeleted},
+        });
+      });
+
+      test('throws when trying to update all entries in bare repository', () {
+        final bare = Repository.open('test/assets/empty_bare.git');
+        final bareIndex = bare.index;
+
+        expect(
+          () => bareIndex.updateAll(['not_there']),
+          throwsA(isA<LibGit2Error>()),
+        );
 
         bareIndex.free();
         bare.free();
@@ -184,6 +266,17 @@ void main() {
 
       expect(index.find('file'), false);
       expect(index.find('feature_file'), false);
+    });
+
+    test('removes all entries from a directory', () {
+      Directory('${repo.workdir}subdir/').createSync();
+      File('${repo.workdir}subdir/subfile').createSync();
+
+      index.add('subdir/subfile');
+      expect(index.length, 5);
+
+      index.removeDirectory('subdir');
+      expect(index.length, 4);
     });
 
     test('successfully reads tree with provided SHA hex', () {
@@ -226,6 +319,19 @@ void main() {
       index.free();
       repo.free();
       tmpDir.deleteSync(recursive: true);
+    });
+
+    test('successfully adds conflict entry', () {
+      expect(index.conflicts, isEmpty);
+      index.addConflict(
+        ourEntry: index['file'],
+        theirEntry: index['feature_file'],
+      );
+      expect(index.conflicts.length, 2);
+    });
+
+    test('throws when trying to add conflict entry and error occurs', () {
+      expect(() => Index(nullptr).addConflict(), throwsA(isA<LibGit2Error>()));
     });
 
     test('returns conflicts with ancestor, our and their present', () {
@@ -322,7 +428,7 @@ void main() {
       repoDir.deleteSync(recursive: true);
     });
 
-    test('successfully removes conflicts', () {
+    test('successfully removes conflict', () {
       final repoDir = setupRepo(Directory('test/assets/mergerepo/'));
       final conflictRepo = Repository.open(repoDir.path);
 
@@ -331,6 +437,8 @@ void main() {
 
       conflictRepo.merge(conflictBranch.target);
       expect(index.hasConflicts, true);
+      expect(index['.gitignore'].isConflict, false);
+      expect(index.conflicts['conflict_file']!.our!.isConflict, true);
       expect(index.conflicts.length, 1);
 
       final conflictedFile = index.conflicts['conflict_file']!;
@@ -349,6 +457,34 @@ void main() {
       expect(
         () => ConflictEntry(index.pointer, 'invalid.path', null, null, null)
             .remove(),
+        throwsA(isA<LibGit2Error>()),
+      );
+    });
+
+    test('successfully removes all conflicts', () {
+      final repoDir = setupRepo(Directory('test/assets/mergerepo/'));
+      final conflictRepo = Repository.open(repoDir.path);
+
+      final conflictBranch = conflictRepo.lookupBranch(name: 'conflict-branch');
+      final index = conflictRepo.index;
+
+      conflictRepo.merge(conflictBranch.target);
+      expect(index.hasConflicts, true);
+      expect(index.conflicts.length, 1);
+
+      index.cleanupConflict();
+      expect(index.hasConflicts, false);
+      expect(index.conflicts, isEmpty);
+
+      index.free();
+      conflictBranch.free();
+      conflictRepo.free();
+      repoDir.deleteSync(recursive: true);
+    });
+
+    test('throws when trying to remove all conflicts and error occurs', () {
+      expect(
+        () => Index(nullptr).cleanupConflict(),
         throwsA(isA<LibGit2Error>()),
       );
     });

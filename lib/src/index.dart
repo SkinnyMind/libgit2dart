@@ -19,6 +19,24 @@ class Index with IterableMixin<IndexEntry> {
   /// Pointer to memory address for allocated index object.
   Pointer<git_index> get pointer => _indexPointer;
 
+  /// Full path to the index file on disk.
+  String get path => bindings.path(_indexPointer);
+
+  /// Index capabilities flags.
+  Set<GitIndexCapability> get capabilities {
+    final capInt = bindings.capabilities(_indexPointer);
+    return GitIndexCapability.values
+        .where((e) => capInt & e.value == e.value)
+        .toSet();
+  }
+
+  set capabilities(Set<GitIndexCapability> flags) {
+    bindings.setCapabilities(
+      indexPointer: _indexPointer,
+      caps: flags.fold(0, (acc, e) => acc | e.value),
+    );
+  }
+
   /// Returns index entry located at provided 0-based position or string path.
   ///
   /// Throws [RangeError] when provided [value] is outside of valid range or
@@ -85,6 +103,39 @@ class Index with IterableMixin<IndexEntry> {
     return result;
   }
 
+  /// Adds or updates index entries to represent a conflict. Any staged entries
+  /// that exist at the given paths will be removed.
+  ///
+  /// The entries are the entries from the tree included in the merge. Any entry
+  /// may be null to indicate that that file was not present in the trees during
+  /// the merge. For example, [ancestorEntry] may be null to indicate
+  /// that a file was added in both branches and must be resolved.
+  ///
+  /// [ancestorEntry] is the entry data for the ancestor of the conflict.
+  ///
+  /// [ourEntry] is the entry data for our side of the merge conflict.
+  ///
+  /// [theirEntry] is the entry data for their side of the merge conflict.
+  ///
+  /// Throws a [LibGit2Error] if error occured.
+  void addConflict({
+    IndexEntry? ancestorEntry,
+    IndexEntry? ourEntry,
+    IndexEntry? theirEntry,
+  }) {
+    bindings.conflictAdd(
+      indexPointer: _indexPointer,
+      ancestorEntryPointer: ancestorEntry?.pointer,
+      ourEntryPointer: ourEntry?.pointer,
+      theirEntryPointer: theirEntry?.pointer,
+    );
+  }
+
+  /// Removes all conflicts in the index (entries with a stage greater than 0).
+  ///
+  /// Throws a [LibGit2Error] if error occured.
+  void cleanupConflict() => bindings.conflictCleanup(_indexPointer);
+
   /// Clears the contents (all the entries) of an index object.
   ///
   /// This clears the index object in memory; changes must be explicitly
@@ -116,6 +167,31 @@ class Index with IterableMixin<IndexEntry> {
     }
   }
 
+  /// Adds or updates an index [entry] from a [buffer] in memory.
+  ///
+  /// This method will create a blob in the repository that owns the index and
+  /// then add the index entry to the index. The path of the entry represents
+  /// the position of the blob relative to the repository's root folder.
+  ///
+  /// If a previous index entry exists that has the same path as the given
+  /// 'entry', it will be replaced. Otherwise, the 'entry' will be added.
+  ///
+  /// This forces the file to be added to the index, not looking at gitignore
+  /// rules.
+  ///
+  /// If this file currently is the result of a merge conflict, this file will
+  /// no longer be marked as conflicting. The data about the conflict will be
+  /// moved to the "resolve undo" (REUC) section.
+  ///
+  /// Throws a [LibGit2Error] if error occured.
+  void addFromBuffer({required IndexEntry entry, required String buffer}) {
+    bindings.addFromBuffer(
+      indexPointer: _indexPointer,
+      entryPointer: entry.pointer,
+      buffer: buffer,
+    );
+  }
+
   /// Adds or updates index entries matching files in the working directory.
   ///
   /// This method will fail in bare index instances.
@@ -128,6 +204,20 @@ class Index with IterableMixin<IndexEntry> {
   /// Throws a [LibGit2Error] if error occured.
   void addAll(List<String> pathspec) {
     bindings.addAll(indexPointer: _indexPointer, pathspec: pathspec);
+  }
+
+  /// Updates all index entries to match the working directory.
+  ///
+  /// This method will fail in bare index instances.
+  ///
+  /// This scans the existing index entries and synchronizes them with the
+  /// working directory, deleting them if the corresponding working directory
+  /// file no longer exists otherwise updating the information (including adding
+  /// the latest version of file to the ODB if needed).
+  ///
+  /// Throws a [LibGit2Error] if error occured.
+  void updateAll(List<String> pathspec) {
+    bindings.updateAll(indexPointer: _indexPointer, pathspec: pathspec);
   }
 
   /// Updates the contents of an existing index object in memory by reading
@@ -184,6 +274,16 @@ class Index with IterableMixin<IndexEntry> {
   /// Throws a [LibGit2Error] if error occured.
   void remove(String path, [int stage = 0]) =>
       bindings.remove(indexPointer: _indexPointer, path: path, stage: stage);
+
+  /// Removes all entries from the index under a given [directory] with
+  /// optional [stage].
+  void removeDirectory(String directory, [int stage = 0]) {
+    bindings.removeDirectory(
+      indexPointer: _indexPointer,
+      dir: directory,
+      stage: stage,
+    );
+  }
 
   /// Removes all matching index entries at provided list of [path]s relative
   /// to repository working directory.
@@ -286,9 +386,15 @@ class IndexEntry {
   /// Sets the UNIX file attributes of a index entry.
   set mode(GitFilemode mode) => _indexEntryPointer.ref.mode = mode.value;
 
+  /// Stage number.
+  int get stage => bindings.entryStage(_indexEntryPointer);
+
+  /// Whether the given index entry is a conflict (has a high stage entry).
+  bool get isConflict => bindings.entryIsConflict(_indexEntryPointer);
+
   @override
   String toString() {
-    return 'IndexEntry{oid: $oid, path: $path, mode: $mode}';
+    return 'IndexEntry{oid: $oid, path: $path, mode: $mode, stage: $stage}';
   }
 }
 
