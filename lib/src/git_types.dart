@@ -1704,3 +1704,27 @@ class GitSubmoduleStatus {
   @override
   String toString() => 'GitSubmoduleStatus.$_name';
 }
+
+/// Capabilities of system that affect index actions.
+class GitIndexCapability {
+  const GitIndexCapability._(this._value, this._name);
+  final int _value;
+  final String _name;
+
+  static const ignoreCase = GitIndexCapability._(1, 'ignoreCase');
+  static const noFileMode = GitIndexCapability._(2, 'noFileMode');
+  static const noSymlinks = GitIndexCapability._(4, 'noSymlinks');
+  static const fromOwner = GitIndexCapability._(-1, 'fromOwner');
+
+  static const List<GitIndexCapability> values = [
+    ignoreCase,
+    noFileMode,
+    noSymlinks,
+    fromOwner,
+  ];
+
+  int get value => _value;
+
+  @override
+  String toString() => 'GitIndexCapability.$_name';
+}

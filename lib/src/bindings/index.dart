@@ -5,6 +5,32 @@ import 'package:libgit2dart/src/bindings/libgit2_bindings.dart';
 import 'package:libgit2dart/src/error.dart';
 import 'package:libgit2dart/src/util.dart';
 
+/// Read index capabilities flags.
+int capabilities(Pointer<git_index> index) => libgit2.git_index_caps(index);
+
+/// Set index capabilities flags.
+///
+/// If you pass [GitIndexCapability.fromOwner] for the caps, then capabilities
+/// will be read from the config of the owner object, looking at
+/// core.ignorecase, core.filemode, core.symlinks.
+///
+/// Throws a [LibGit2Error] if error occured.
+void setCapabilities({
+  required Pointer<git_index> indexPointer,
+  required int caps,
+}) {
+  final error = libgit2.git_index_set_caps(indexPointer, caps);
+
+  if (error < 0) {
+    throw LibGit2Error(libgit2.git_error_last());
+  }
+}
+
+/// Get the full path to the index file on disk.
+String path(Pointer<git_index> index) {
+  return libgit2.git_index_path(index).cast<Utf8>().toDartString();
+}
+
 /// Update the contents of an existing index object in memory by reading from
 /// the hard disk.
 ///
@@ -133,6 +159,10 @@ Pointer<git_index_entry> getByPath({
   }
 }
 
+/// Return the stage number from a git index entry.
+int entryStage(Pointer<git_index_entry> entry) =>
+    libgit2.git_index_entry_stage(entry);
+
 /// Clear the contents (all the entries) of an index object.
 ///
 /// This clears the index object in memory; changes must be explicitly written
@@ -194,6 +224,41 @@ void addByPath({
   }
 }
 
+/// Add or update an index entry from a buffer in memory.
+///
+/// This method will create a blob in the repository that owns the index and
+/// then add the index entry to the index. The path of the entry represents the
+/// position of the blob relative to the repository's root folder.
+///
+/// If a previous index entry exists that has the same path as the given
+/// 'entry', it will be replaced. Otherwise, the 'entry' will be added.
+///
+/// This forces the file to be added to the index, not looking at gitignore
+/// rules.
+///
+/// If this file currently is the result of a merge conflict, this file will no
+/// longer be marked as conflicting. The data about the conflict will be moved
+/// to the "resolve undo" (REUC) section.
+///
+/// Throws a [LibGit2Error] if error occured.
+void addFromBuffer({
+  required Pointer<git_index> indexPointer,
+  required Pointer<git_index_entry> entryPointer,
+  required String buffer,
+}) {
+  final bufferC = buffer.toNativeUtf8().cast<Int8>();
+  final error = libgit2.git_index_add_from_buffer(
+    indexPointer,
+    entryPointer,
+    bufferC.cast(),
+    buffer.length,
+  );
+
+  if (error < 0) {
+    throw LibGit2Error(libgit2.git_error_last());
+  }
+}
+
 /// Add or update index entries matching files in the working directory.
 ///
 /// This method will fail in bare index instances.
@@ -239,6 +304,50 @@ void addAll({
   }
 }
 
+/// Update all index entries to match the working directory.
+///
+/// This method will fail in bare index instances.
+///
+/// This scans the existing index entries and synchronizes them with the
+/// working directory, deleting them if the corresponding working directory
+/// file no longer exists otherwise updating the information (including adding
+/// the latest version of file to the ODB if needed).
+///
+/// Throws a [LibGit2Error] if error occured.
+void updateAll({
+  required Pointer<git_index> indexPointer,
+  required List<String> pathspec,
+}) {
+  final pathspecC = calloc<git_strarray>();
+  final pathPointers =
+      pathspec.map((e) => e.toNativeUtf8().cast<Int8>()).toList();
+  final strArray = calloc<Pointer<Int8>>(pathspec.length);
+
+  for (var i = 0; i < pathspec.length; i++) {
+    strArray[i] = pathPointers[i];
+  }
+
+  pathspecC.ref.strings = strArray;
+  pathspecC.ref.count = pathspec.length;
+
+  final error = libgit2.git_index_update_all(
+    indexPointer,
+    pathspecC,
+    nullptr,
+    nullptr,
+  );
+
+  calloc.free(pathspecC);
+  for (final p in pathPointers) {
+    calloc.free(p);
+  }
+  calloc.free(strArray);
+
+  if (error < 0) {
+    throw LibGit2Error(libgit2.git_error_last());
+  }
+}
+
 /// Write an existing index object from memory back to disk using an atomic
 /// file lock.
 void write(Pointer<git_index> index) => libgit2.git_index_write(index);
@@ -259,6 +368,17 @@ void remove({
   if (error < 0) {
     throw LibGit2Error(libgit2.git_error_last());
   }
+}
+
+/// Remove all entries from the index under a given directory.
+void removeDirectory({
+  required Pointer<git_index> indexPointer,
+  required String dir,
+  required int stage,
+}) {
+  final dirC = dir.toNativeUtf8().cast<Int8>();
+  libgit2.git_index_remove_directory(indexPointer, dirC, stage);
+  calloc.free(dirC);
 }
 
 /// Remove all matching index entries.
@@ -332,6 +452,39 @@ List<Map<String, Pointer<git_index_entry>>> conflictList(
   return result;
 }
 
+/// Return whether the given index entry is a conflict (has a high stage entry).
+/// This is simply shorthand for [entryStage] > 0.
+bool entryIsConflict(Pointer<git_index_entry> entry) {
+  return libgit2.git_index_entry_is_conflict(entry) == 1 || false;
+}
+
+/// Add or update index entries to represent a conflict. Any staged entries
+/// that exist at the given paths will be removed.
+///
+/// The entries are the entries from the tree included in the merge. Any entry
+/// may be null to indicate that that file was not present in the trees during
+/// the merge. For example, [ancestorEntryPointer] may be null to indicate that
+/// a file was added in both branches and must be resolved.
+///
+/// Throws a [LibGit2Error] if error occured.
+void conflictAdd({
+  required Pointer<git_index> indexPointer,
+  Pointer<git_index_entry>? ancestorEntryPointer,
+  Pointer<git_index_entry>? ourEntryPointer,
+  Pointer<git_index_entry>? theirEntryPointer,
+}) {
+  final error = libgit2.git_index_conflict_add(
+    indexPointer,
+    ancestorEntryPointer ?? nullptr,
+    ourEntryPointer ?? nullptr,
+    theirEntryPointer ?? nullptr,
+  );
+
+  if (error < 0) {
+    throw LibGit2Error(libgit2.git_error_last());
+  }
+}
+
 /// Removes the index entries that represent a conflict of a single file.
 ///
 /// Throws a [LibGit2Error] if error occured.
@@ -343,6 +496,17 @@ void conflictRemove({
   final error = libgit2.git_index_conflict_remove(indexPointer, pathC);
 
   calloc.free(pathC);
+
+  if (error < 0) {
+    throw LibGit2Error(libgit2.git_error_last());
+  }
+}
+
+/// Remove all conflicts in the index (entries with a stage greater than 0).
+///
+/// Throws a [LibGit2Error] if error occured.
+void conflictCleanup(Pointer<git_index> index) {
+  final error = libgit2.git_index_conflict_cleanup(index);
 
   if (error < 0) {
     throw LibGit2Error(libgit2.git_error_last());
