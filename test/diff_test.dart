@@ -242,45 +242,156 @@ index e69de29..c217c63 100644
       diff.free();
     });
 
-    test('checks if diff can be applied to repository', () {
-      final diff1 = repo.diff();
-      expect(repo.applies(diff: diff1, location: GitApplyLocation.both), false);
+    group('apply', () {
+      test('checks if diff can be applied to repository', () {
+        final diff1 = repo.diff();
+        expect(
+          repo.applies(diff: diff1, location: GitApplyLocation.both),
+          false,
+        );
 
-      final diff2 = Diff.parse(patchText);
-      repo.checkout(refName: 'HEAD', strategy: {GitCheckout.force});
-      expect(repo.applies(diff: diff2, location: GitApplyLocation.both), true);
+        final diff2 = Diff.parse(patchText);
+        repo.checkout(refName: 'HEAD', strategy: {GitCheckout.force});
+        expect(
+          repo.applies(diff: diff2, location: GitApplyLocation.both),
+          true,
+        );
 
-      diff1.free();
-      diff2.free();
-    });
+        diff1.free();
+        diff2.free();
+      });
 
-    test('successfully applies diff to repository', () {
-      final diff = Diff.parse(patchText);
-      final file = File('${tmpDir.path}/subdir/modified_file');
+      test('checks if hunk with provided index can be applied to repository',
+          () {
+        final diff1 = repo.diff();
+        expect(
+          repo.applies(diff: diff1, location: GitApplyLocation.both),
+          false,
+        );
 
-      repo.checkout(refName: 'HEAD', strategy: {GitCheckout.force});
-      expect(file.readAsStringSync(), '');
+        final diff2 = Diff.parse(patchText);
+        final hunk = diff2.patches.first.hunks.first;
+        repo.checkout(refName: 'HEAD', strategy: {GitCheckout.force});
+        expect(
+          repo.applies(
+            diff: diff2,
+            hunkIndex: hunk.index,
+            location: GitApplyLocation.both,
+          ),
+          true,
+        );
 
-      repo.apply(diff: diff);
-      expect(file.readAsStringSync(), 'Modified content\n');
+        diff1.free();
+        diff2.free();
+      });
 
-      diff.free();
-    });
+      test('successfully applies diff to repository', () {
+        final diff = Diff.parse(patchText);
+        final file = File('${tmpDir.path}/subdir/modified_file');
 
-    test('throws when trying to apply diff and error occurs', () {
-      final nullDiff = Diff(nullptr);
-      expect(() => repo.apply(diff: nullDiff), throwsA(isA<LibGit2Error>()));
-    });
+        repo.checkout(refName: 'HEAD', strategy: {GitCheckout.force});
+        expect(file.readAsStringSync(), '');
 
-    test('successfully creates patch from entry index in diff', () {
-      final diff = Diff.parse(patchText);
-      final patch = Patch.fromDiff(diff: diff, index: 0);
+        repo.apply(diff: diff);
+        expect(file.readAsStringSync(), 'Modified content\n');
 
-      expect(diff.length, 1);
-      expect(patch.text, patchText);
+        diff.free();
+      });
 
-      patch.free();
-      diff.free();
+      test('throws when trying to apply diff and error occurs', () {
+        final nullDiff = Diff(nullptr);
+        expect(() => repo.apply(diff: nullDiff), throwsA(isA<LibGit2Error>()));
+      });
+
+      test('successfully creates patch from entry index in diff', () {
+        final diff = Diff.parse(patchText);
+        final patch = Patch.fromDiff(diff: diff, index: 0);
+
+        expect(diff.length, 1);
+        expect(patch.text, patchText);
+
+        patch.free();
+        diff.free();
+      });
+
+      test('successfully applies hunk with provided index to repository', () {
+        final diff = Diff.parse(patchText);
+        final hunk = diff.patches.first.hunks.first;
+        final file = File('${tmpDir.path}/subdir/modified_file');
+
+        repo.checkout(refName: 'HEAD', strategy: {GitCheckout.force});
+        expect(file.readAsStringSync(), '');
+
+        repo.apply(diff: diff, hunkIndex: hunk.index);
+        expect(file.readAsStringSync(), 'Modified content\n');
+
+        diff.free();
+      });
+
+      test('successfully applies diff to tree', () {
+        final diff = Diff.parse(patchText);
+
+        repo.checkout(refName: 'HEAD', strategy: {GitCheckout.force});
+        final head = repo.head;
+        final commit = repo.lookupCommit(head.target);
+        final tree = commit.tree;
+
+        final oldIndex = repo.index;
+        final oldBlob = repo.lookupBlob(oldIndex['subdir/modified_file'].oid);
+        expect(oldBlob.content, '');
+
+        final newIndex = repo.applyToTree(diff: diff, tree: tree);
+        final newBlob = repo.lookupBlob(newIndex['subdir/modified_file'].oid);
+        expect(newBlob.content, 'Modified content\n');
+
+        oldBlob.free();
+        newBlob.free();
+        oldIndex.free();
+        newIndex.free();
+        tree.free();
+        commit.free();
+        head.free();
+        diff.free();
+      });
+
+      test('successfully applies hunk with provided index to tree', () {
+        final diff = Diff.parse(patchText);
+        final hunk = diff.patches.first.hunks.first;
+
+        repo.checkout(refName: 'HEAD', strategy: {GitCheckout.force});
+        final head = repo.head;
+        final commit = repo.lookupCommit(head.target);
+        final tree = commit.tree;
+
+        final oldIndex = repo.index;
+        final oldBlob = repo.lookupBlob(oldIndex['subdir/modified_file'].oid);
+        expect(oldBlob.content, '');
+
+        final newIndex = repo.applyToTree(
+          diff: diff,
+          tree: tree,
+          hunkIndex: hunk.index,
+        );
+        final newBlob = repo.lookupBlob(newIndex['subdir/modified_file'].oid);
+        expect(newBlob.content, 'Modified content\n');
+
+        oldBlob.free();
+        newBlob.free();
+        oldIndex.free();
+        newIndex.free();
+        tree.free();
+        commit.free();
+        head.free();
+        diff.free();
+      });
+
+      test('throws when trying to apply diff to tree and error occurs', () {
+        final diff = Diff.parse(patchText);
+        expect(
+          () => repo.applyToTree(diff: diff, tree: Tree(nullptr)),
+          throwsA(isA<LibGit2Error>()),
+        );
+      });
     });
 
     test('successfully finds similar entries', () {

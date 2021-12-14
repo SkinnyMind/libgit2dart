@@ -298,6 +298,24 @@ Pointer<git_buf> addToBuf({
   return bufferPointer;
 }
 
+/// Counter for hunk number being applied.
+///
+/// **IMPORTANT**: make sure to reset it to 0 before using since it's a global
+/// variable.
+int _counter = 0;
+
+/// When applying a patch, callback that will be made per hunk.
+int _hunkCb(Pointer<git_diff_hunk> hunk, Pointer<Void> payload) {
+  final index = payload.cast<Int32>().value;
+  if (_counter == index) {
+    _counter++;
+    return 0;
+  } else {
+    _counter++;
+    return 1;
+  }
+}
+
 /// Apply a diff to the given repository, making changes directly in the
 /// working directory, the index, or both.
 ///
@@ -305,6 +323,7 @@ Pointer<git_buf> addToBuf({
 bool apply({
   required Pointer<git_repository> repoPointer,
   required Pointer<git_diff> diffPointer,
+  int? hunkIndex,
   required int location,
   bool check = false,
 }) {
@@ -313,14 +332,64 @@ bool apply({
   if (check) {
     opts.ref.flags |= git_apply_flags_t.GIT_APPLY_CHECK;
   }
+  Pointer<Int32> payload = nullptr;
+  if (hunkIndex != null) {
+    _counter = 0;
+    const except = -1;
+    final git_apply_hunk_cb callback = Pointer.fromFunction(_hunkCb, except);
+    payload = calloc<Int32>()..value = hunkIndex;
+    opts.ref.payload = payload.cast();
+    opts.ref.hunk_cb = callback;
+  }
   final error = libgit2.git_apply(repoPointer, diffPointer, location, opts);
 
+  calloc.free(payload);
   calloc.free(opts);
 
   if (error < 0) {
     return check ? false : throw LibGit2Error(libgit2.git_error_last());
   } else {
     return true;
+  }
+}
+
+/// Apply a diff to a tree, and return the resulting image as an index.
+///
+/// Throws a [LibGit2Error] if error occured.
+Pointer<git_index> applyToTree({
+  required Pointer<git_repository> repoPointer,
+  required Pointer<git_tree> treePointer,
+  required Pointer<git_diff> diffPointer,
+  int? hunkIndex,
+}) {
+  final out = calloc<Pointer<git_index>>();
+  final opts = calloc<git_apply_options>();
+  libgit2.git_apply_options_init(opts, GIT_APPLY_OPTIONS_VERSION);
+  Pointer<Int32> payload = nullptr;
+  if (hunkIndex != null) {
+    _counter = 0;
+    const except = -1;
+    final git_apply_hunk_cb callback = Pointer.fromFunction(_hunkCb, except);
+    payload = calloc<Int32>()..value = hunkIndex;
+    opts.ref.payload = payload.cast();
+    opts.ref.hunk_cb = callback;
+  }
+  final error = libgit2.git_apply_to_tree(
+    out,
+    repoPointer,
+    treePointer,
+    diffPointer,
+    opts,
+  );
+
+  calloc.free(payload);
+  calloc.free(opts);
+
+  if (error < 0) {
+    calloc.free(out);
+    throw LibGit2Error(libgit2.git_error_last());
+  } else {
+    return out.value;
   }
 }
 
