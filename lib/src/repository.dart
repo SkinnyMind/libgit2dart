@@ -1362,27 +1362,56 @@ class Repository {
   /// [location] (directly in the working directory (default), the index or
   /// both).
   ///
+  /// [hunkIndex] is optional index of the hunk to apply.
+  ///
   /// Throws a [LibGit2Error] if error occured.
   void apply({
     required Diff diff,
+    int? hunkIndex,
     GitApplyLocation location = GitApplyLocation.workdir,
   }) {
     diff_bindings.apply(
       repoPointer: _repoPointer,
       diffPointer: diff.pointer,
+      hunkIndex: hunkIndex,
       location: location.value,
+    );
+  }
+
+  /// Applies the [diff] to the [tree], and returns the resulting image as an
+  /// index.
+  ///
+  /// [hunkIndex] is optional index of the hunk to apply.
+  ///
+  /// Throws a [LibGit2Error] if error occured.
+  Index applyToTree({
+    required Diff diff,
+    required Tree tree,
+    int? hunkIndex,
+  }) {
+    return Index(
+      diff_bindings.applyToTree(
+        repoPointer: _repoPointer,
+        diffPointer: diff.pointer,
+        treePointer: tree.pointer,
+        hunkIndex: hunkIndex,
+      ),
     );
   }
 
   /// Checks if the [diff] will apply to provided [location] (the working
   /// directory (default), the index or both).
+  ///
+  /// [hunkIndex] is optional index of the hunk to apply.
   bool applies({
     required Diff diff,
+    int? hunkIndex,
     GitApplyLocation location = GitApplyLocation.workdir,
   }) {
     return diff_bindings.apply(
       repoPointer: _repoPointer,
       diffPointer: diff.pointer,
+      hunkIndex: hunkIndex,
       location: location.value,
       check: true,
     );
