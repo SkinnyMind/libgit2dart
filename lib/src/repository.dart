@@ -70,7 +70,7 @@ class Repository {
   }) {
     libgit2.git_libgit2_init();
 
-    int flagsInt = flags.fold(0, (acc, e) => acc | e.value);
+    var flagsInt = flags.fold(0, (int acc, e) => acc | e.value);
 
     if (bare) {
       flagsInt |= GitRepositoryInit.bare.value;
@@ -1162,7 +1162,7 @@ class Repository {
     String? directory,
     List<String>? paths,
   }) {
-    final int strat = strategy.fold(0, (acc, e) => acc | e.value);
+    final strat = strategy.fold(0, (int acc, e) => acc | e.value);
 
     if (refName == null) {
       checkout_bindings.index(
@@ -1274,7 +1274,7 @@ class Repository {
     int contextLines = 3,
     int interhunkLines = 0,
   }) {
-    final int flagsInt = flags.fold(0, (acc, e) => acc | e.value);
+    final flagsInt = flags.fold(0, (int acc, e) => acc | e.value);
 
     if (a is Tree && b is Tree) {
       return Diff(

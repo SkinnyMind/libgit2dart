@@ -160,6 +160,7 @@ int _stashCb(
 /// Loop over all the stashed states.
 List<Stash> list(Pointer<git_repository> repo) {
   const except = -1;
+  // ignore: omit_local_variable_types
   final git_stash_cb callBack = Pointer.fromFunction(_stashCb, except);
   libgit2.git_stash_foreach(repo, callBack, nullptr);
 

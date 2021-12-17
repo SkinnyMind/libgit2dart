@@ -41,7 +41,7 @@ class Patch {
   }) {
     libgit2.git_libgit2_init();
 
-    final int flagsInt = flags.fold(0, (acc, e) => acc | e.value);
+    final flagsInt = flags.fold(0, (int acc, e) => acc | e.value);
 
     if (a is Blob?) {
       if (b is Blob?) {

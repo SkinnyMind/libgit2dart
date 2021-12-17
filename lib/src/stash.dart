@@ -40,7 +40,7 @@ class Stash {
     String? message,
     Set<GitStash> flags = const {GitStash.defaults},
   }) {
-    final int flagsInt = flags.fold(0, (acc, e) => acc | e.value);
+    final flagsInt = flags.fold(0, (int acc, e) => acc | e.value);
 
     return Oid(
       bindings.save(

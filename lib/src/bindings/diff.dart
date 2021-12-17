@@ -336,6 +336,7 @@ bool apply({
   if (hunkIndex != null) {
     _counter = 0;
     const except = -1;
+    // ignore: omit_local_variable_types
     final git_apply_hunk_cb callback = Pointer.fromFunction(_hunkCb, except);
     payload = calloc<Int32>()..value = hunkIndex;
     opts.ref.payload = payload.cast();
@@ -369,6 +370,7 @@ Pointer<git_index> applyToTree({
   if (hunkIndex != null) {
     _counter = 0;
     const except = -1;
+    // ignore: omit_local_variable_types
     final git_apply_hunk_cb callback = Pointer.fromFunction(_hunkCb, except);
     payload = calloc<Int32>()..value = hunkIndex;
     opts.ref.payload = payload.cast();

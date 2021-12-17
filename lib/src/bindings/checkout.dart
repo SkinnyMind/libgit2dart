@@ -132,7 +132,7 @@ List<Object> initOptions({
     optsC.ref.target_directory = directory.toNativeUtf8().cast<Int8>();
   }
 
-  List<Pointer<Int8>> pathPointers = [];
+  var pathPointers = <Pointer<Int8>>[];
   Pointer<Pointer<Int8>> strArray = nullptr;
   if (paths != null) {
     pathPointers = paths.map((e) => e.toNativeUtf8().cast<Int8>()).toList();

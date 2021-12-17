@@ -302,7 +302,7 @@ void main() {
       expect(repo.getAttribute(path: 'invalid', name: 'not-there'), null);
 
       final attrFile = await File('${repo.workdir}.gitattributes').create();
-      attrFile.writeAsString('*.dart text\n*.jpg -text\n*.sh eol=lf\n');
+      await attrFile.writeAsString('*.dart text\n*.jpg -text\n*.sh eol=lf\n');
 
       await File('${repo.workdir}file.dart').create();
       await File('${repo.workdir}file.sh').create();
