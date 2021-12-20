@@ -88,6 +88,31 @@ void main() {
       expect(() => repo.blame(path: 'invalid'), throwsA(isA<LibGit2Error>()));
     });
 
+    test('returns blame for buffer', () {
+      final blame = repo.blame(path: 'feature_file');
+      expect(blame.length, 2);
+
+      final bufferBlame = Blame.buffer(reference: blame, buffer: ' ');
+      final blameHunk = bufferBlame.first;
+      expect(bufferBlame.length, 1);
+      expect(blameHunk.originCommitOid.sha, '0' * 40);
+      expect(blameHunk.originCommitter, null);
+      expect(blameHunk.finalCommitOid.sha, '0' * 40);
+      expect(blameHunk.finalCommitter, null);
+
+      bufferBlame.free();
+      blame.free();
+    });
+
+    test('throws when trying to get blame for empty buffer', () {
+      final blame = repo.blame(path: 'feature_file');
+      expect(
+        () => Blame.buffer(reference: blame, buffer: ''),
+        throwsA(isA<LibGit2Error>()),
+      );
+      blame.free();
+    });
+
     test(
         'successfully gets the blame for provided file with '
         'minMatchCharacters set', () {

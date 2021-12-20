@@ -59,6 +59,23 @@ class Blame with IterableMixin<BlameHunk> {
     );
   }
 
+  /// Returns blame data for a file that has been modified in memory. The
+  /// [reference] parameter is a pre-calculated blame for the in-odb history of
+  /// the file.
+  /// This means that once a file blame is completed (which can be expensive),
+  /// updating the buffer blame is very fast.
+  ///
+  /// Lines that differ between the buffer and the committed version are marked
+  /// as having a zero Oid for their finalCommitOid.
+  ///
+  /// Throws a [LibGit2Error] if error occured.
+  Blame.buffer({required Blame reference, required String buffer}) {
+    _blamePointer = bindings.buffer(
+      reference: reference._blamePointer,
+      buffer: buffer,
+    );
+  }
+
   /// Pointer to memory address for allocated blame object.
   late final Pointer<git_blame> _blamePointer;
 
@@ -117,8 +134,11 @@ class BlameHunk {
 
   /// Author of [finalCommitOid]. If [GitBlameFlag.useMailmap] has been
   /// specified, it will contain the canonical real name and email address.
-  Signature get finalCommitter =>
-      Signature(_blameHunkPointer.ref.final_signature);
+  Signature? get finalCommitter {
+    return _blameHunkPointer.ref.final_signature == nullptr
+        ? null
+        : Signature(_blameHunkPointer.ref.final_signature);
+  }
 
   /// [Oid] of the commit where this line was last changed.
   Oid get finalCommitOid => Oid.fromRaw(_blameHunkPointer.ref.final_commit_id);
@@ -129,8 +149,11 @@ class BlameHunk {
 
   /// Author of [originCommitOid]. If [GitBlameFlag.useMailmap] has been
   /// specified, it will contain the canonical real name and email address.
-  Signature get originCommitter =>
-      Signature(_blameHunkPointer.ref.orig_signature);
+  Signature? get originCommitter {
+    return _blameHunkPointer.ref.orig_signature == nullptr
+        ? null
+        : Signature(_blameHunkPointer.ref.orig_signature);
+  }
 
   /// [Oid] of the commit where this hunk was found. This will usually be the
   /// same as [finalCommitOid], except when
