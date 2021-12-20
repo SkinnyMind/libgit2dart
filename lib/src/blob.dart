@@ -80,6 +80,11 @@ class Blob {
   /// Size in bytes of the contents of a blob.
   int get size => bindings.size(_blobPointer);
 
+  /// Creates an in-memory copy of a blob.
+  ///
+  /// **IMPORTANT**: Should be freed to release allocated memory.
+  Blob duplicate() => Blob(bindings.duplicate(_blobPointer));
+
   /// Directly generates a [Patch] from the difference between two blobs.
   ///
   /// [newBlob] is the blob for new side of diff, or null for empty blob.
@@ -158,6 +163,35 @@ class Blob {
         contextLines: contextLines,
         interhunkLines: interhunkLines,
       ),
+    );
+  }
+
+  /// Returns filtered content of a blob.
+  ///
+  /// This applies filters as if the blob was being checked out to the working
+  /// directory under the specified filename. This may apply CRLF filtering or
+  /// other types of changes depending on the file attributes set for the blob
+  /// and the content detected in it.
+  ///
+  /// [asPath] is path used for file attribute lookups, etc.
+  ///
+  /// [flags] is a combination of [GitBlobFilter] flags to use for filtering
+  /// the blob. Defaults to none.
+  ///
+  /// [attributesCommit] is the commit to load attributes from, when
+  /// [GitBlobFilter.attributesFromCommit] is provided in [flags].
+  ///
+  /// Throws a [LibGit2Error] if error occured.
+  String filterContent({
+    required String asPath,
+    Set<GitBlobFilter> flags = const {},
+    Commit? attributesCommit,
+  }) {
+    return bindings.filterContent(
+      blobPointer: _blobPointer,
+      asPath: asPath,
+      flags: flags.fold(0, (acc, e) => acc | e.value),
+      attributesCommit: attributesCommit?.oid.pointer.ref,
     );
   }
 

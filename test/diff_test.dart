@@ -78,7 +78,7 @@ index e69de29..c217c63 100644
 """;
 
   setUp(() {
-    tmpDir = setupRepo(Directory('test/assets/dirtyrepo/'));
+    tmpDir = setupRepo(Directory('test/assets/dirty_repo/'));
     repo = Repository.open(tmpDir.path);
   });
 

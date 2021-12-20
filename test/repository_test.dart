@@ -13,7 +13,7 @@ void main() {
   const featureCommit = '5aecfa0fb97eadaac050ccb99f03c3fb65460ad4';
 
   setUp(() {
-    tmpDir = setupRepo(Directory('test/assets/testrepo/'));
+    tmpDir = setupRepo(Directory('test/assets/test_repo/'));
     repo = Repository.open(tmpDir.path);
   });
 

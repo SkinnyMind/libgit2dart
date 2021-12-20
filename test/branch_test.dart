@@ -13,7 +13,7 @@ void main() {
   late Oid featureCommit;
 
   setUp(() {
-    tmpDir = setupRepo(Directory('test/assets/testrepo/'));
+    tmpDir = setupRepo(Directory('test/assets/test_repo/'));
     repo = Repository.open(tmpDir.path);
     lastCommit = repo['821ed6e80627b8769d170a293862f9fc60825226'];
     featureCommit = repo['5aecfa0fb97eadaac050ccb99f03c3fb65460ad4'];

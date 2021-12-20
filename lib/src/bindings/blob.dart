@@ -123,5 +123,51 @@ Pointer<git_oid> createFromDisk({
   }
 }
 
+/// Create an in-memory copy of a blob. The copy must be explicitly free'd or
+/// it will leak.
+Pointer<git_blob> duplicate(Pointer<git_blob> source) {
+  final out = calloc<Pointer<git_blob>>();
+  libgit2.git_blob_dup(out, source);
+  return out.value;
+}
+
+/// Get a buffer with the filtered content of a blob.
+///
+/// This applies filters as if the blob was being checked out to the working
+/// directory under the specified filename. This may apply CRLF filtering or
+/// other types of changes depending on the file attributes set for the blob
+/// and the content detected in it.
+///
+/// Throws a [LibGit2Error] if error occured.
+String filterContent({
+  required Pointer<git_blob> blobPointer,
+  required String asPath,
+  required int flags,
+  git_oid? attributesCommit,
+}) {
+  final out = calloc<git_buf>();
+  final asPathC = asPath.toNativeUtf8().cast<Int8>();
+  final opts = calloc<git_blob_filter_options>();
+  libgit2.git_blob_filter_options_init(opts, GIT_BLOB_FILTER_OPTIONS_VERSION);
+  opts.ref.flags = flags;
+  if (attributesCommit != null) {
+    opts.ref.attr_commit_id = attributesCommit;
+  }
+
+  final error = libgit2.git_blob_filter(out, blobPointer, asPathC, opts);
+
+  calloc.free(asPathC);
+  calloc.free(opts);
+
+  if (error < 0) {
+    calloc.free(out);
+    throw LibGit2Error(libgit2.git_error_last());
+  } else {
+    final result = out.ref.ptr.cast<Utf8>().toDartString(length: out.ref.size);
+    calloc.free(out);
+    return result;
+  }
+}
+
 /// Close an open blob to release memory.
 void free(Pointer<git_blob> blob) => libgit2.git_blob_free(blob);

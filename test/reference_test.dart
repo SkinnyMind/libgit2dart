@@ -13,7 +13,7 @@ void main() {
   const newCommit = 'c68ff54aabf660fcdd9a2838d401583fe31249e3';
 
   setUp(() {
-    tmpDir = setupRepo(Directory('test/assets/testrepo/'));
+    tmpDir = setupRepo(Directory('test/assets/test_repo/'));
     repo = Repository.open(tmpDir.path);
   });
 

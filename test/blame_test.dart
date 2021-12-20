@@ -13,7 +13,7 @@ void main() {
   var hunks = <Map<String, Object>>[];
 
   setUp(() {
-    tmpDir = setupRepo(Directory('test/assets/blamerepo/'));
+    tmpDir = setupRepo(Directory('test/assets/blame_repo/'));
     repo = Repository.open(tmpDir.path);
     sig1 = Signature.create(
       name: 'Aleksey Kulikov',

@@ -14,7 +14,7 @@ void main() {
   const newBlobContent = 'New blob\n';
 
   setUp(() {
-    tmpDir = setupRepo(Directory('test/assets/testrepo/'));
+    tmpDir = setupRepo(Directory('test/assets/attributes_repo/'));
     repo = Repository.open(tmpDir.path);
   });
 
@@ -103,6 +103,55 @@ void main() {
     test('throws when trying to create from invalid path', () {
       expect(
         () => repo.createBlobFromDisk('invalid.file'),
+        throwsA(isA<LibGit2Error>()),
+      );
+    });
+
+    test('duplicates blob', () {
+      final blob = repo.lookupBlob(repo[blobSHA]);
+      final dupBlob = blob.duplicate();
+
+      expect(blob.oid.sha, dupBlob.oid.sha);
+
+      dupBlob.free();
+      blob.free();
+    });
+
+    test('filters content of a blob', () {
+      final blobOid = repo.createBlob('clrf\nclrf\n');
+      final blob = repo.lookupBlob(blobOid);
+
+      expect(blob.filterContent(asPath: 'file.crlf'), 'clrf\r\nclrf\r\n');
+
+      blob.free();
+    });
+
+    test('filters content of a blob with provided commit for attributes', () {
+      repo.checkout(refName: 'refs/tags/v0.2');
+
+      final blobOid = repo.createBlob('clrf\nclrf\n');
+      final blob = repo.lookupBlob(blobOid);
+
+      final commit = repo.lookupCommit(
+        repo['d2f3abc9324a22a9f80fec2c131ec43c93430618'],
+      );
+
+      expect(
+        blob.filterContent(
+          asPath: 'file.crlf',
+          flags: {GitBlobFilter.attributesFromCommit},
+          attributesCommit: commit,
+        ),
+        'clrf\r\nclrf\r\n',
+      );
+
+      commit.free();
+      blob.free();
+    });
+
+    test('throws when trying to filter content of a blob and error occurs', () {
+      expect(
+        () => Blob(nullptr).filterContent(asPath: ''),
         throwsA(isA<LibGit2Error>()),
       );
     });

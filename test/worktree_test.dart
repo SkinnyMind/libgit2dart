@@ -16,7 +16,7 @@ void main() {
     if (worktreeDir.existsSync()) {
       worktreeDir.deleteSync(recursive: true);
     }
-    tmpDir = setupRepo(Directory('test/assets/testrepo/'));
+    tmpDir = setupRepo(Directory('test/assets/test_repo/'));
     repo = Repository.open(tmpDir.path);
   });
 

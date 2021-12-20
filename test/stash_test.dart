@@ -12,7 +12,7 @@ void main() {
   late Signature stasher;
 
   setUp(() {
-    tmpDir = setupRepo(Directory('test/assets/testrepo/'));
+    tmpDir = setupRepo(Directory('test/assets/test_repo/'));
     repo = Repository.open(tmpDir.path);
     stasher = Signature.create(
       name: 'Stasher',

@@ -25,6 +25,8 @@ void copyRepo({required Directory from, required Directory to}) {
     } else if (entity is File) {
       if (p.basename(entity.path) == 'gitignore') {
         entity.copySync(p.join(to.path, '.gitignore'));
+      } else if (p.basename(entity.path) == 'gitattributes') {
+        entity.copySync(p.join(to.path, '.gitattributes'));
       } else {
         entity.copySync(p.join(to.path, p.basename(entity.path)));
       }

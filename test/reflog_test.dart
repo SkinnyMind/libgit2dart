@@ -12,7 +12,7 @@ void main() {
   late Directory tmpDir;
 
   setUp(() {
-    tmpDir = setupRepo(Directory('test/assets/testrepo/'));
+    tmpDir = setupRepo(Directory('test/assets/test_repo/'));
     repo = Repository.open(tmpDir.path);
     head = repo.head;
     reflog = RefLog(head);

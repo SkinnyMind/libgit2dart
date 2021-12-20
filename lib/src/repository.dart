@@ -1142,7 +1142,7 @@ class Repository {
   }
 
   /// Checkouts the provided reference [refName] using the given strategy, and
-  /// update the HEAD.
+  /// updates the HEAD.
   ///
   /// If no reference [refName] is given, checkouts from the index.
   ///

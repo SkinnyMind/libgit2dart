@@ -12,7 +12,7 @@ void main() {
   const parentSHA = '78b8bf123e3952c970ae5c1ce0a3ea1d1336f6e8';
 
   setUp(() {
-    tmpDir = setupRepo(Directory('test/assets/testrepo/'));
+    tmpDir = setupRepo(Directory('test/assets/test_repo/'));
     repo = Repository.open(tmpDir.path);
   });
 

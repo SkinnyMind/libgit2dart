@@ -13,7 +13,7 @@ void main() {
   late Directory tmpDir;
 
   setUp(() {
-    tmpDir = setupRepo(Directory('test/assets/mergerepo/'));
+    tmpDir = setupRepo(Directory('test/assets/merge_repo/'));
     repo = Repository.open(tmpDir.path);
   });
 

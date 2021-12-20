@@ -130,7 +130,7 @@ Santa Claus <santa.claus@northpole.xx> <me@company.xx>
   late Directory tmpDir;
 
   setUp(() {
-    tmpDir = setupRepo(Directory('test/assets/mailmaprepo/'));
+    tmpDir = setupRepo(Directory('test/assets/mailmap_repo/'));
     repo = Repository.open(tmpDir.path);
   });
 
