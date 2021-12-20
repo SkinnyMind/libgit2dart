@@ -58,6 +58,38 @@ Pointer<git_blame> file({
   }
 }
 
+/// Get blame data for a file that has been modified in memory. The [reference]
+/// parameter is a pre-calculated blame for the in-odb history of the file.
+/// This means that once a file blame is completed (which can be expensive),
+/// updating the buffer blame is very fast.
+///
+/// Lines that differ between the buffer and the committed version are marked
+/// as having a zero OID for their finalCommitOid.
+///
+/// Throws a [LibGit2Error] if error occured.
+Pointer<git_blame> buffer({
+  required Pointer<git_blame> reference,
+  required String buffer,
+}) {
+  final out = calloc<Pointer<git_blame>>();
+  final bufferC = buffer.toNativeUtf8().cast<Int8>();
+  final error = libgit2.git_blame_buffer(
+    out,
+    reference,
+    bufferC,
+    buffer.length,
+  );
+
+  calloc.free(bufferC);
+
+  if (error < 0) {
+    calloc.free(out);
+    throw LibGit2Error(libgit2.git_error_last());
+  } else {
+    return out.value;
+  }
+}
+
 /// Gets the number of hunks that exist in the blame structure.
 int hunkCount(Pointer<git_blame> blame) {
   return libgit2.git_blame_get_hunk_count(blame);
