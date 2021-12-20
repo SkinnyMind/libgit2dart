@@ -12,7 +12,7 @@ void main() {
   const remoteUrl = 'git://github.com/SkinnyMind/libgit2dart.git';
 
   setUp(() {
-    tmpDir = setupRepo(Directory('test/assets/testrepo/'));
+    tmpDir = setupRepo(Directory('test/assets/test_repo/'));
     repo = Repository.open(tmpDir.path);
   });
 

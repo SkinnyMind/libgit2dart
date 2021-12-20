@@ -1728,3 +1728,40 @@ class GitIndexCapability {
   @override
   String toString() => 'GitIndexCapability.$_name';
 }
+
+/// Flags to control the functionality of blob content filtering.
+class GitBlobFilter {
+  const GitBlobFilter._(this._value, this._name);
+  final int _value;
+  final String _name;
+
+  /// When set, filters will not be applied to binary files.
+  static const checkForBinary = GitBlobFilter._(1, 'checkForBinary');
+
+  /// When set, filters will not load configuration from the
+  /// system-wide `gitattributes` in `/etc` (or system equivalent).
+  static const noSystemAttributes = GitBlobFilter._(2, 'noSystemAttributes');
+
+  /// When set, filters will be loaded from a `.gitattributes` file
+  /// in the HEAD commit.
+  static const attributesFromHead = GitBlobFilter._(4, 'attributesFromHead');
+
+  /// When set, filters will be loaded from a `.gitattributes` file
+  /// in the specified commit.
+  static const attributesFromCommit = GitBlobFilter._(
+    8,
+    'attributesFromCommit',
+  );
+
+  static const List<GitBlobFilter> values = [
+    checkForBinary,
+    noSystemAttributes,
+    attributesFromHead,
+    attributesFromCommit,
+  ];
+
+  int get value => _value;
+
+  @override
+  String toString() => 'GitBlobFilter.$_name';
+}

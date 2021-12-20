@@ -12,7 +12,7 @@ void main() {
   const fileSHA = '1377554ebea6f98a2c748183bc5a96852af12ac2';
 
   setUp(() {
-    tmpDir = setupRepo(Directory('test/assets/testrepo/'));
+    tmpDir = setupRepo(Directory('test/assets/test_repo/'));
     repo = Repository.open(tmpDir.path);
     tree = repo.lookupTree(
       repo['a8ae3dd59e6e1802c6f78e05e301bfd57c9f334f'],

@@ -12,7 +12,7 @@ void main() {
   const sha = '6cbc22e509d72758ab4c8d9f287ea846b90c448b';
 
   setUp(() {
-    tmpDir = setupRepo(Directory('test/assets/testrepo/'));
+    tmpDir = setupRepo(Directory('test/assets/test_repo/'));
     file = File('${tmpDir.path}/feature_file');
     repo = Repository.open(tmpDir.path);
   });

@@ -12,7 +12,7 @@ void main() {
   late Directory tmpDir;
 
   setUp(() {
-    tmpDir = setupRepo(Directory('test/assets/testrepo/'));
+    tmpDir = setupRepo(Directory('test/assets/test_repo/'));
     repo = Repository.open(tmpDir.path);
     index = repo.index;
   });
@@ -306,7 +306,7 @@ void main() {
     });
 
     test('throws when trying to write tree while index have conflicts', () {
-      final tmpDir = setupRepo(Directory('test/assets/mergerepo/'));
+      final tmpDir = setupRepo(Directory('test/assets/merge_repo/'));
       final repo = Repository.open(tmpDir.path);
 
       final conflictBranch = repo.lookupBranch(name: 'conflict-branch');
@@ -335,7 +335,7 @@ void main() {
     });
 
     test('returns conflicts with ancestor, our and their present', () {
-      final repoDir = setupRepo(Directory('test/assets/mergerepo/'));
+      final repoDir = setupRepo(Directory('test/assets/merge_repo/'));
       final conflictRepo = Repository.open(repoDir.path);
 
       final conflictBranch = conflictRepo.lookupBranch(
@@ -360,7 +360,7 @@ void main() {
     });
 
     test('returns conflicts with our and their present and null ancestor', () {
-      final repoDir = setupRepo(Directory('test/assets/mergerepo/'));
+      final repoDir = setupRepo(Directory('test/assets/merge_repo/'));
       final conflictRepo = Repository.open(repoDir.path);
 
       final conflictBranch = conflictRepo.lookupBranch(name: 'conflict-branch');
@@ -381,7 +381,7 @@ void main() {
     });
 
     test('returns conflicts with ancestor and their present and null our', () {
-      final repoDir = setupRepo(Directory('test/assets/mergerepo/'));
+      final repoDir = setupRepo(Directory('test/assets/merge_repo/'));
       final conflictRepo = Repository.open(repoDir.path);
 
       final conflictBranch = conflictRepo.lookupBranch(
@@ -406,7 +406,7 @@ void main() {
     });
 
     test('returns conflicts with ancestor and our present and null their', () {
-      final repoDir = setupRepo(Directory('test/assets/mergerepo/'));
+      final repoDir = setupRepo(Directory('test/assets/merge_repo/'));
       final conflictRepo = Repository.open(repoDir.path);
 
       final conflictBranch = conflictRepo.lookupBranch(name: 'their-conflict');
@@ -429,7 +429,7 @@ void main() {
     });
 
     test('successfully removes conflict', () {
-      final repoDir = setupRepo(Directory('test/assets/mergerepo/'));
+      final repoDir = setupRepo(Directory('test/assets/merge_repo/'));
       final conflictRepo = Repository.open(repoDir.path);
 
       final conflictBranch = conflictRepo.lookupBranch(name: 'conflict-branch');
@@ -462,7 +462,7 @@ void main() {
     });
 
     test('successfully removes all conflicts', () {
-      final repoDir = setupRepo(Directory('test/assets/mergerepo/'));
+      final repoDir = setupRepo(Directory('test/assets/merge_repo/'));
       final conflictRepo = Repository.open(repoDir.path);
 
       final conflictBranch = conflictRepo.lookupBranch(name: 'conflict-branch');

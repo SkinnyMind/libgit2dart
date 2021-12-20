@@ -42,7 +42,7 @@ index e69de29..0000000
 """;
 
   setUp(() {
-    tmpDir = setupRepo(Directory('test/assets/testrepo/'));
+    tmpDir = setupRepo(Directory('test/assets/test_repo/'));
     repo = Repository.open(tmpDir.path);
     oldBlobOid = repo['e69de29bb2d1d6434b8b29ae775ad8c2e48c5391'];
     newBlobOid = repo['9c78c21d6680a7ffebc76f7ac68cacc11d8f48bc'];

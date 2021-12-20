@@ -14,7 +14,7 @@ void main() {
   const submoduleHeadSha = '49322bb17d3acc9146f98c97d078513228bbf3c0';
 
   setUp(() {
-    tmpDir = setupRepo(Directory('test/assets/submodulerepo/'));
+    tmpDir = setupRepo(Directory('test/assets/submodule_repo/'));
     repo = Repository.open(tmpDir.path);
   });
 

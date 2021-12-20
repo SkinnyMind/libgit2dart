@@ -576,5 +576,20 @@ void main() {
         );
       });
     });
+
+    group('GitBlobFilter', () {
+      test('returns correct values', () {
+        const expected = [1, 2, 4, 8];
+        final actual = GitBlobFilter.values.map((e) => e.value).toList();
+        expect(actual, expected);
+      });
+
+      test('returns string representation of object', () {
+        expect(
+          GitBlobFilter.checkForBinary.toString(),
+          'GitBlobFilter.checkForBinary',
+        );
+      });
+    });
   });
 }

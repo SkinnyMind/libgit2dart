@@ -13,7 +13,7 @@ void main() {
   final cloneDir = Directory('${Directory.systemTemp.path}/cloned');
 
   setUp(() {
-    tmpDir = setupRepo(Directory('test/assets/testrepo/'));
+    tmpDir = setupRepo(Directory('test/assets/test_repo/'));
     if (cloneDir.existsSync()) {
       cloneDir.deleteSync(recursive: true);
     }
