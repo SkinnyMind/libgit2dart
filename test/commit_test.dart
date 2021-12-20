@@ -10,7 +10,7 @@ void main() {
   late Repository repo;
   late Directory tmpDir;
   late Signature author;
-  late Signature commiter;
+  late Signature committer;
   late Tree tree;
   late Oid tip;
   const message = "Commit message.\n\nSome description.\n";
@@ -23,7 +23,7 @@ void main() {
       email: 'author@email.com',
       time: 123,
     );
-    commiter = Signature.create(
+    committer = Signature.create(
       name: 'Commiter',
       email: 'commiter@email.com',
       time: 124,
@@ -37,7 +37,7 @@ void main() {
 
   tearDown(() {
     author.free();
-    commiter.free();
+    committer.free();
     tree.free();
     repo.free();
     tmpDir.deleteSync(recursive: true);
@@ -68,6 +68,12 @@ void main() {
         () => AnnotatedCommit.lookup(repo: repo, oid: repo['0' * 40]),
         throwsA(isA<LibGit2Error>()),
       );
+    });
+
+    test(
+        'throws when trying to get the summary of the commit message and error '
+        'occurs', () {
+      expect(() => Commit(nullptr).summary, throwsA(isA<LibGit2Error>()));
     });
 
     test('successfully reverts commit', () {
@@ -106,7 +112,7 @@ void main() {
         updateRef: 'HEAD',
         message: message,
         author: author,
-        commiter: commiter,
+        committer: committer,
         tree: tree,
         parents: [parent],
       );
@@ -116,14 +122,46 @@ void main() {
       expect(commit.oid, oid);
       expect(commit.message, message);
       expect(commit.messageEncoding, 'utf-8');
+      expect(commit.summary, 'Commit message.');
+      expect(commit.body, 'Some description.');
       expect(commit.author, author);
-      expect(commit.committer, commiter);
+      expect(commit.committer, committer);
       expect(commit.time, 124);
+      expect(commit.timeOffset, 0);
       expect(commit.tree.oid, tree.oid);
+      expect(commit.treeOid, tree.oid);
       expect(commit.parents.length, 1);
       expect(commit.parents[0], tip);
 
       commit.free();
+      parent.free();
+    });
+
+    test('writes commit into the buffer', () {
+      final parent = repo.lookupCommit(tip);
+      final commit = Commit.createBuffer(
+        repo: repo,
+        updateRef: 'HEAD',
+        message: message,
+        author: author,
+        committer: committer,
+        tree: tree,
+        parents: [parent],
+      );
+
+      const expected = """
+tree a8ae3dd59e6e1802c6f78e05e301bfd57c9f334f
+parent 821ed6e80627b8769d170a293862f9fc60825226
+author Author Name <author@email.com> 123 +0000
+committer Commiter <commiter@email.com> 124 +0000
+
+Commit message.
+
+Some description.
+""";
+
+      expect(commit, expected);
+
       parent.free();
     });
 
@@ -132,7 +170,7 @@ void main() {
         updateRef: 'refs/heads/new',
         message: message,
         author: author,
-        commiter: commiter,
+        committer: committer,
         tree: tree,
         parents: [],
       );
@@ -143,9 +181,9 @@ void main() {
       expect(commit.message, message);
       expect(commit.messageEncoding, 'utf-8');
       expect(commit.author, author);
-      expect(commit.committer, commiter);
+      expect(commit.committer, committer);
       expect(commit.time, 124);
-      expect(commit.tree.oid, tree.oid);
+      expect(commit.treeOid, tree.oid);
       expect(commit.parents.length, 0);
 
       commit.free();
@@ -162,7 +200,7 @@ void main() {
         repo: repo,
         message: message,
         author: author,
-        committer: commiter,
+        committer: committer,
         tree: tree,
         parents: [parent1, parent2],
       );
@@ -173,9 +211,9 @@ void main() {
       expect(commit.message, message);
       expect(commit.messageEncoding, 'utf-8');
       expect(commit.author, author);
-      expect(commit.committer, commiter);
+      expect(commit.committer, committer);
       expect(commit.time, 124);
-      expect(commit.tree.oid, tree.oid);
+      expect(commit.treeOid, tree.oid);
       expect(commit.parents.length, 2);
       expect(commit.parents[0], tip);
       expect(commit.parents[1], parent2.oid);
@@ -194,7 +232,28 @@ void main() {
           updateRef: 'HEAD',
           message: message,
           author: author,
-          commiter: commiter,
+          committer: committer,
+          tree: tree,
+          parents: [parent],
+        ),
+        throwsA(isA<LibGit2Error>()),
+      );
+
+      parent.free();
+    });
+
+    test('throws when trying to write commit into a buffer and error occurs',
+        () {
+      final parent = repo.lookupCommit(tip);
+      final nullRepo = Repository(nullptr);
+
+      expect(
+        () => Commit.createBuffer(
+          repo: nullRepo,
+          updateRef: 'HEAD',
+          message: message,
+          author: author,
+          committer: committer,
           tree: tree,
           parents: [parent],
         ),
@@ -221,7 +280,7 @@ void main() {
       expect(amendedCommit.message, 'amended commit\n');
       expect(amendedCommit.author, commit.author);
       expect(amendedCommit.committer, commit.committer);
-      expect(amendedCommit.tree.oid, commit.tree.oid);
+      expect(amendedCommit.treeOid, commit.treeOid);
       expect(amendedCommit.parents, commit.parents);
 
       amendedCommit.free();
@@ -240,7 +299,7 @@ void main() {
         message: 'amended commit\n',
         updateRef: 'HEAD',
         author: author,
-        committer: commiter,
+        committer: committer,
         tree: tree,
       );
       final amendedCommit = repo.lookupCommit(amendedOid);
@@ -249,8 +308,8 @@ void main() {
       expect(amendedCommit.oid, newHead.target);
       expect(amendedCommit.message, 'amended commit\n');
       expect(amendedCommit.author, author);
-      expect(amendedCommit.committer, commiter);
-      expect(amendedCommit.tree.oid, tree.oid);
+      expect(amendedCommit.committer, committer);
+      expect(amendedCommit.treeOid, tree.oid);
       expect(amendedCommit.parents, commit.parents);
 
       amendedCommit.free();
@@ -295,6 +354,72 @@ void main() {
 
       commit.free();
       head.free();
+    });
+
+    test('creates an in-memory copy of a commit', () {
+      final commit = repo.lookupCommit(tip);
+      final dupCommit = commit.duplicate();
+
+      expect(dupCommit.oid, commit.oid);
+
+      dupCommit.free();
+      commit.free();
+    });
+
+    test('returns header field', () {
+      final commit = repo.lookupCommit(tip);
+      expect(
+        commit.headerField('parent'),
+        '78b8bf123e3952c970ae5c1ce0a3ea1d1336f6e8',
+      );
+      commit.free();
+    });
+
+    test('throws when header field not found', () {
+      final commit = repo.lookupCommit(tip);
+      expect(
+        () => commit.headerField('not-there'),
+        throwsA(isA<LibGit2Error>()),
+      );
+      commit.free();
+    });
+
+    test('returns nth generation ancestor commit', () {
+      final commit = repo.lookupCommit(tip);
+      final ancestor = commit.nthGenAncestor(3);
+
+      expect(ancestor.oid.sha, 'f17d0d48eae3aa08cecf29128a35e310c97b3521');
+
+      ancestor.free();
+      commit.free();
+    });
+
+    test('throws when trying to get nth generation ancestor and none exists',
+        () {
+      final commit = repo.lookupCommit(tip);
+      expect(() => commit.nthGenAncestor(10), throwsA(isA<LibGit2Error>()));
+      commit.free();
+    });
+
+    test('returns parent at specified position', () {
+      final commit = repo.lookupCommit(
+        repo['78b8bf123e3952c970ae5c1ce0a3ea1d1336f6e8'],
+      );
+      final firstParent = commit.parent(0);
+      final secondParent = commit.parent(1);
+
+      expect(firstParent.oid.sha, 'c68ff54aabf660fcdd9a2838d401583fe31249e3');
+      expect(secondParent.oid.sha, 'fc38877b2552ab554752d9a77e1f48f738cca79b');
+
+      secondParent.free();
+      firstParent.free();
+      commit.free();
+    });
+
+    test('throws when trying to get the parent at invalid position', () {
+      final commit = repo.lookupCommit(tip);
+      expect(() => commit.parent(10), throwsA(isA<LibGit2Error>()));
+      commit.free();
     });
 
     test('returns string representation of Commit object', () {
