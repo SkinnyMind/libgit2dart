@@ -24,6 +24,66 @@ Pointer<git_oid> mergeBase({
   }
 }
 
+/// Find a merge base given a list of commits.
+///
+/// Throws a [LibGit2Error] if error occured.
+Pointer<git_oid> mergeBaseMany({
+  required Pointer<git_repository> repoPointer,
+  required List<git_oid> commits,
+}) {
+  final out = calloc<git_oid>();
+  final commitsC = calloc<git_oid>(commits.length * 20);
+  for (var i = 0; i < commits.length; i++) {
+    commitsC[i].id = commits[i].id;
+  }
+
+  final error = libgit2.git_merge_base_many(
+    out,
+    repoPointer,
+    commits.length,
+    commitsC,
+  );
+
+  calloc.free(commitsC);
+
+  if (error < 0) {
+    calloc.free(out);
+    throw LibGit2Error(libgit2.git_error_last());
+  } else {
+    return out;
+  }
+}
+
+/// Find a merge base in preparation for an octopus merge.
+///
+/// Throws a [LibGit2Error] if error occured.
+Pointer<git_oid> mergeBaseOctopus({
+  required Pointer<git_repository> repoPointer,
+  required List<git_oid> commits,
+}) {
+  final out = calloc<git_oid>();
+  final commitsC = calloc<git_oid>(commits.length * 20);
+  for (var i = 0; i < commits.length; i++) {
+    commitsC[i].id = commits[i].id;
+  }
+
+  final error = libgit2.git_merge_base_octopus(
+    out,
+    repoPointer,
+    commits.length,
+    commitsC,
+  );
+
+  calloc.free(commitsC);
+
+  if (error < 0) {
+    calloc.free(out);
+    throw LibGit2Error(libgit2.git_error_last());
+  } else {
+    return out;
+  }
+}
+
 /// Analyzes the given branch(es) and determines the opportunities for merging
 /// them into a reference.
 List<int> analysis({
@@ -59,9 +119,15 @@ void merge({
   required Pointer<git_repository> repoPointer,
   required Pointer<Pointer<git_annotated_commit>> theirHeadsPointer,
   required int theirHeadsLen,
+  required int favor,
+  required int mergeFlags,
+  required int fileFlags,
 }) {
-  final mergeOpts = calloc<git_merge_options>();
-  libgit2.git_merge_options_init(mergeOpts, GIT_MERGE_OPTIONS_VERSION);
+  final mergeOpts = _initMergeOptions(
+    favor: favor,
+    mergeFlags: mergeFlags,
+    fileFlags: fileFlags,
+  );
 
   final checkoutOpts = calloc<git_checkout_options>();
   libgit2.git_checkout_options_init(checkoutOpts, GIT_CHECKOUT_OPTIONS_VERSION);
@@ -80,6 +146,63 @@ void merge({
 
   calloc.free(mergeOpts);
   calloc.free(checkoutOpts);
+}
+
+/// Merge two files as they exist in the in-memory data structures, using the
+/// given common ancestor as the baseline, producing a string that reflects the
+/// merge result.
+///
+/// Note that this function does not reference a repository and any
+/// configuration must be passed.
+String mergeFile({
+  required String ancestor,
+  required String ancestorLabel,
+  required String ours,
+  required String oursLabel,
+  required String theirs,
+  required String theirsLabel,
+  required int favor,
+  required int flags,
+}) {
+  final out = calloc<git_merge_file_result>();
+  final ancestorC = calloc<git_merge_file_input>();
+  final oursC = calloc<git_merge_file_input>();
+  final theirsC = calloc<git_merge_file_input>();
+  libgit2.git_merge_file_input_init(ancestorC, GIT_MERGE_FILE_INPUT_VERSION);
+  libgit2.git_merge_file_input_init(oursC, GIT_MERGE_FILE_INPUT_VERSION);
+  libgit2.git_merge_file_input_init(theirsC, GIT_MERGE_FILE_INPUT_VERSION);
+  ancestorC.ref.ptr = ancestor.toNativeUtf8().cast<Int8>();
+  ancestorC.ref.size = ancestor.length;
+  oursC.ref.ptr = ours.toNativeUtf8().cast<Int8>();
+  oursC.ref.size = ours.length;
+  theirsC.ref.ptr = theirs.toNativeUtf8().cast<Int8>();
+  theirsC.ref.size = theirs.length;
+
+  final opts = calloc<git_merge_file_options>();
+  libgit2.git_merge_file_options_init(opts, GIT_MERGE_FILE_OPTIONS_VERSION);
+  opts.ref.favor = favor;
+  opts.ref.flags = flags;
+  if (ancestorLabel.isNotEmpty) {
+    opts.ref.ancestor_label = ancestorLabel.toNativeUtf8().cast<Int8>();
+  }
+  if (oursLabel.isNotEmpty) {
+    opts.ref.our_label = oursLabel.toNativeUtf8().cast<Int8>();
+  }
+  if (theirsLabel.isNotEmpty) {
+    opts.ref.their_label = theirsLabel.toNativeUtf8().cast<Int8>();
+  }
+
+  libgit2.git_merge_file(out, ancestorC, oursC, theirsC, opts);
+
+  calloc.free(ancestorC);
+  calloc.free(oursC);
+  calloc.free(theirsC);
+  calloc.free(opts);
+
+  final result = out.ref.ptr.cast<Utf8>().toDartString(length: out.ref.len);
+  calloc.free(out);
+
+  return result;
 }
 
 /// Merge two files as they exist in the index, using the given common ancestor

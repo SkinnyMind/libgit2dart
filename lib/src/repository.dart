@@ -949,15 +949,34 @@ class Repository {
     }
   }
 
-  /// Finds a merge base between two commits [a] and [b].
+  /// Finds a merge base between [commits].
   ///
   /// Throws a [LibGit2Error] if error occured.
-  Oid mergeBase({required Oid a, required Oid b}) {
+  Oid mergeBase(List<Oid> commits) {
+    return commits.length == 2
+        ? Oid(
+            merge_bindings.mergeBase(
+              repoPointer: _repoPointer,
+              aPointer: commits[0].pointer,
+              bPointer: commits[1].pointer,
+            ),
+          )
+        : Oid(
+            merge_bindings.mergeBaseMany(
+              repoPointer: _repoPointer,
+              commits: commits.map((e) => e.pointer.ref).toList(),
+            ),
+          );
+  }
+
+  /// Finds a merge base in preparation for an octopus merge.
+  ///
+  /// Throws a [LibGit2Error] if error occured.
+  Oid mergeBaseOctopus(List<Oid> commits) {
     return Oid(
-      merge_bindings.mergeBase(
+      merge_bindings.mergeBaseOctopus(
         repoPointer: _repoPointer,
-        aPointer: a.pointer,
-        bPointer: b.pointer,
+        commits: commits.map((e) => e.pointer.ref).toList(),
       ),
     );
   }
@@ -1004,8 +1023,24 @@ class Repository {
   /// are written to the index. Callers should inspect the repository's index
   /// after this completes, resolve any conflicts and prepare a commit.
   ///
+  /// [favor] is one of the [GitMergeFileFavor] flags for handling conflicting
+  /// content. Defaults to [GitMergeFileFavor.normal], recording conflict to t
+  /// he index.
+  ///
+  /// [mergeFlags] is a combination of [GitMergeFlag] flags. Defaults to
+  /// [GitMergeFlag.findRenames] enabling the ability to merge between a
+  /// modified and renamed file.
+  ///
+  /// [fileFlags] is a combination of [GitMergeFileFlag] flags. Defaults to
+  /// [GitMergeFileFlag.defaults].
+  ///
   /// Throws a [LibGit2Error] if error occured.
-  void merge(Oid oid) {
+  void merge({
+    required Oid oid,
+    GitMergeFileFavor favor = GitMergeFileFavor.normal,
+    Set<GitMergeFlag> mergeFlags = const {GitMergeFlag.findRenames},
+    Set<GitMergeFileFlag> fileFlags = const {GitMergeFileFlag.defaults},
+  }) {
     final theirHead = AnnotatedCommit.lookup(
       repo: this,
       oid: oid,
@@ -1015,9 +1050,62 @@ class Repository {
       repoPointer: _repoPointer,
       theirHeadsPointer: theirHead.pointer,
       theirHeadsLen: 1,
+      favor: favor.value,
+      mergeFlags: mergeFlags.fold(0, (acc, e) => acc | e.value),
+      fileFlags: fileFlags.fold(0, (acc, e) => acc | e.value),
     );
 
     theirHead.free();
+  }
+
+  /// Merges two files as they exist in the in-memory data structures, using the
+  /// given common ancestor as the baseline, producing a string that reflects
+  /// the merge result.
+  ///
+  /// Note that this function does not reference a repository and configuration
+  /// must be passed as [favor] and [flags].
+  ///
+  /// [ancestor] is the contents of the ancestor file.
+  ///
+  /// [ancestorLabel] is optional label for the ancestor file side of the
+  /// conflict which will be prepended to labels in diff3-format merge files.
+  /// Defaults to "file.txt".
+  ///
+  /// [ours] is the contents of the file in "our" side.
+  ///
+  /// [oursLabel] is optional label for our file side of the conflict which
+  /// will be prepended to labels in merge files. Defaults to "file.txt".
+  ///
+  /// [theirs] is the contents of the file in "their" side.
+  ///
+  /// [theirsLabel] is optional label for their file side of the conflict which
+  /// will be prepended to labels in merge files.  Defaults to "file.txt".
+  ///
+  /// [favor] is one of the [GitMergeFileFavor] flags for handling conflicting
+  /// content. Defaults to [GitMergeFileFavor.normal].
+  ///
+  /// [flags] is a combination of [GitMergeFileFlag] flags. Defaults to
+  /// [GitMergeFileFlag.defaults].
+  String mergeFile({
+    required String ancestor,
+    String ancestorLabel = '',
+    required String ours,
+    String oursLabel = '',
+    required String theirs,
+    String theirsLabel = '',
+    GitMergeFileFavor favor = GitMergeFileFavor.normal,
+    Set<GitMergeFileFlag> flags = const {GitMergeFileFlag.defaults},
+  }) {
+    return merge_bindings.mergeFile(
+      ancestor: ancestor,
+      ancestorLabel: ancestorLabel,
+      ours: ours,
+      oursLabel: oursLabel,
+      theirs: theirs,
+      theirsLabel: theirsLabel,
+      favor: favor.value,
+      flags: flags.fold(0, (acc, e) => acc | e.value),
+    );
   }
 
   /// Merges two files [ours] and [theirs] as they exist in the index, using the

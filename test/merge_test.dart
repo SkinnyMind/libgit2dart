@@ -77,7 +77,7 @@ void main() {
       final result = repo.mergeAnalysis(theirHead: conflictBranch.target);
       expect(result[0], {GitMergeAnalysis.normal});
 
-      repo.merge(conflictBranch.target);
+      repo.merge(oid: conflictBranch.target);
       expect(index.hasConflicts, true);
       expect(index.conflicts.length, 1);
       expect(repo.state, GitRepositoryState.merge);
@@ -109,7 +109,7 @@ void main() {
     });
 
     group('merge file from index', () {
-      test('successfully merges without ancestor', () {
+      test('merges without ancestor', () {
         const diffExpected = """
 \<<<<<<< conflict_file
 master conflict edit
@@ -119,7 +119,7 @@ conflict branch edit
 """;
         final conflictBranch = repo.lookupBranch(name: 'conflict-branch');
         final index = repo.index;
-        repo.merge(conflictBranch.target);
+        repo.merge(oid: conflictBranch.target);
 
         final conflictedFile = index.conflicts['conflict_file']!;
         final diff = repo.mergeFileFromIndex(
@@ -128,16 +128,13 @@ conflict branch edit
           theirs: conflictedFile.their!,
         );
 
-        expect(
-          diff,
-          diffExpected,
-        );
+        expect(diff, diffExpected);
 
         index.free();
         conflictBranch.free();
       });
 
-      test('successfully merges with ancestor', () {
+      test('merges with ancestor', () {
         const diffExpected = """
 \<<<<<<< feature_file
 Feature edit on feature branch
@@ -148,7 +145,7 @@ Another feature edit
         final conflictBranch = repo.lookupBranch(name: 'ancestor-conflict');
         repo.checkout(refName: 'refs/heads/feature');
         final index = repo.index;
-        repo.merge(conflictBranch.target);
+        repo.merge(oid: conflictBranch.target);
 
         final conflictedFile = index.conflicts['feature_file']!;
         final diff = repo.mergeFileFromIndex(
@@ -157,9 +154,50 @@ Another feature edit
           theirs: conflictedFile.their!,
         );
 
+        expect(diff, diffExpected);
+
+        index.free();
+        conflictBranch.free();
+      });
+
+      test('merges with provided merge flags and file flags', () {
+        const diffExpected = """
+\<<<<<<< conflict_file
+master conflict edit
+=======
+conflict branch edit
+>>>>>>> conflict_file
+""";
+        final conflictBranch = repo.lookupBranch(name: 'conflict-branch');
+        final index = repo.index;
+        repo.merge(
+          oid: conflictBranch.target,
+          mergeFlags: {GitMergeFlag.noRecursive},
+          fileFlags: {GitMergeFileFlag.ignoreWhitespaceEOL},
+        );
+
+        final conflictedFile = index.conflicts['conflict_file']!;
+        final diff = repo.mergeFileFromIndex(
+          ancestor: null,
+          ours: conflictedFile.our!,
+          theirs: conflictedFile.their!,
+        );
+
+        expect(diff, diffExpected);
+
+        index.free();
+        conflictBranch.free();
+      });
+
+      test('merges with provided merge favor', () {
+        final conflictBranch = repo.lookupBranch(name: 'conflict-branch');
+        final index = repo.index;
+
+        repo.merge(oid: conflictBranch.target, favor: GitMergeFileFavor.ours);
+        expect(index.conflicts, isEmpty);
         expect(
-          diff,
-          diffExpected,
+          File('${repo.workdir}conflict_file').readAsStringSync(),
+          'master conflict edit\n',
         );
 
         index.free();
@@ -178,6 +216,61 @@ Another feature edit
       });
     });
 
+    group('merge file', () {
+      test('merges file with default values', () {
+        const diffExpected = """
+\<<<<<<< file.txt
+ours content
+=======
+theirs content
+>>>>>>> file.txt
+""";
+        final diff = repo.mergeFile(
+          ancestor: '',
+          ours: 'ours content',
+          theirs: 'theirs content',
+        );
+
+        expect(diff, diffExpected);
+      });
+
+      test('merges file with provided values', () {
+        const diffExpected = """
+\<<<<<<< ours.txt
+ours content
+||||||| ancestor.txt
+ancestor content
+=======
+theirs content
+>>>>>>> theirs.txt
+""";
+        final diff = repo.mergeFile(
+          ancestor: 'ancestor content',
+          ancestorLabel: 'ancestor.txt',
+          ours: 'ours content',
+          oursLabel: 'ours.txt',
+          theirs: 'theirs content',
+          theirsLabel: 'theirs.txt',
+          flags: {GitMergeFileFlag.styleDiff3},
+        );
+
+        expect(diff, diffExpected);
+      });
+
+      test('merges file with provided favor', () {
+        const diffExpected = 'ours content';
+
+        final diff = repo.mergeFile(
+          ancestor: 'ancestor content',
+          ours: 'ours content',
+          theirs: 'theirs content',
+          favor: GitMergeFileFavor.ours,
+        );
+
+        expect(diff, diffExpected);
+      });
+    });
+
     group('merge commits', () {
       test('successfully merges with default values', () {
         final theirCommit = repo.lookupCommit(repo['5aecfa0']);
@@ -190,7 +283,7 @@ Another feature edit
         expect(mergeIndex.conflicts, isEmpty);
         final mergeCommitsTree = mergeIndex.writeTree(repo);
 
-        repo.merge(theirCommit.oid);
+        repo.merge(oid: theirCommit.oid);
         final index = repo.index;
         expect(index.conflicts, isEmpty);
         final mergeTree = index.writeTree();
@@ -254,17 +347,72 @@ Another feature edit
       });
     });
 
-    test('successfully finds merge base', () {
-      var base = repo.mergeBase(a: repo['1490545'], b: repo['5aecfa0']);
+    test('finds merge base for two commits', () {
+      var base = repo.mergeBase([repo['1490545'], repo['5aecfa0']]);
       expect(base.sha, 'fc38877b2552ab554752d9a77e1f48f738cca79b');
 
-      base = repo.mergeBase(a: repo['f17d0d4'], b: repo['5aecfa0']);
+      base = repo.mergeBase([repo['f17d0d4'], repo['5aecfa0']]);
+      expect(base.sha, 'f17d0d48eae3aa08cecf29128a35e310c97b3521');
+    });
+
+    test('finds merge base for many commits', () {
+      var base = repo.mergeBase(
+        [
+          repo['1490545'],
+          repo['0e409d6'],
+          repo['5aecfa0'],
+        ],
+      );
+      expect(base.sha, 'fc38877b2552ab554752d9a77e1f48f738cca79b');
+
+      base = repo.mergeBase(
+        [
+          repo['f17d0d4'],
+          repo['5aecfa0'],
+          repo['0e409d6'],
+        ],
+      );
       expect(base.sha, 'f17d0d48eae3aa08cecf29128a35e310c97b3521');
     });
 
     test('throws when trying to find merge base for invalid oid', () {
       expect(
-        () => repo.mergeBase(a: repo['0' * 40], b: repo['5aecfa0']),
+        () => repo.mergeBase([repo['0' * 40], repo['5aecfa0']]),
+        throwsA(isA<LibGit2Error>()),
+      );
+
+      expect(
+        () => repo.mergeBase(
+          [
+            repo['0' * 40],
+            repo['5aecfa0'],
+            repo['0e409d6'],
+          ],
+        ),
+        throwsA(isA<LibGit2Error>()),
+      );
+    });
+
+    test('finds octopus merge base', () {
+      final base = repo.mergeBaseOctopus(
+        [
+          repo['1490545'],
+          repo['0e409d6'],
+          repo['5aecfa0'],
+        ],
+      );
+      expect(base.sha, 'fc38877b2552ab554752d9a77e1f48f738cca79b');
+    });
+
+    test('throws when trying to find octopus merge base for invalid oid', () {
+      expect(
+        () => repo.mergeBaseOctopus(
+          [
+            repo['0' * 40],
+            repo['5aecfa0'],
+            repo['0e409d6'],
+          ],
+        ),
         throwsA(isA<LibGit2Error>()),
       );
     });
@@ -274,10 +422,7 @@ Another feature edit
         final theirCommit = repo.lookupCommit(repo['5aecfa0']);
         final ourCommit = repo.lookupCommit(repo['1490545']);
         final baseCommit = repo.lookupCommit(
-          repo.mergeBase(
-            a: ourCommit.oid,
-            b: theirCommit.oid,
-          ),
+          repo.mergeBase([ourCommit.oid, theirCommit.oid]),
         );
         final theirTree = theirCommit.tree;
         final ourTree = ourCommit.tree;
@@ -292,7 +437,7 @@ Another feature edit
         final mergeTreesTree = mergeIndex.writeTree(repo);
 
         repo.setHead(ourCommit.oid);
-        repo.merge(theirCommit.oid);
+        repo.merge(oid: theirCommit.oid);
         final index = repo.index;
         expect(index.conflicts, isEmpty);
         final mergeTree = index.writeTree();
@@ -313,10 +458,7 @@ Another feature edit
         final theirCommit = repo.lookupCommit(repo['5aecfa0']);
         final ourCommit = repo.lookupCommit(repo['1490545']);
         final baseCommit = repo.lookupCommit(
-          repo.mergeBase(
-            a: ourCommit.oid,
-            b: theirCommit.oid,
-          ),
+          repo.mergeBase([ourCommit.oid, theirCommit.oid]),
         );
         final theirTree = theirCommit.tree;
         final ourTree = ourCommit.tree;
