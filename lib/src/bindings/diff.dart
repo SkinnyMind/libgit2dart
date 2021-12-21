@@ -89,6 +89,44 @@ Pointer<git_diff> treeToWorkdir({
   return out.value;
 }
 
+/// Create a diff between a tree and the working directory using index data to
+/// account for staged deletes, tracked files, etc.
+///
+/// This emulates `git diff <tree>` by diffing the tree to the index and the
+/// index to the working directory and blending the results into a single diff
+/// that includes staged deleted, etc.
+///
+/// Throws a [LibGit2Error] if error occured.
+Pointer<git_diff> treeToWorkdirWithIndex({
+  required Pointer<git_repository> repoPointer,
+  required Pointer<git_tree>? treePointer,
+  required int flags,
+  required int contextLines,
+  required int interhunkLines,
+}) {
+  final out = calloc<Pointer<git_diff>>();
+  final opts = _diffOptionsInit(
+    flags: flags,
+    contextLines: contextLines,
+    interhunkLines: interhunkLines,
+  );
+
+  final error = libgit2.git_diff_tree_to_workdir_with_index(
+    out,
+    repoPointer,
+    treePointer ?? nullptr,
+    opts,
+  );
+
+  if (error < 0) {
+    throw LibGit2Error(libgit2.git_error_last());
+  }
+
+  calloc.free(opts);
+
+  return out.value;
+}
+
 /// Create a diff with the difference between two tree objects.
 ///
 /// Throws a [LibGit2Error] if error occured.
