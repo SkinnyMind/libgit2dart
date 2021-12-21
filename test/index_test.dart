@@ -311,7 +311,7 @@ void main() {
 
       final conflictBranch = repo.lookupBranch(name: 'conflict-branch');
       final index = repo.index;
-      repo.merge(conflictBranch.target);
+      repo.merge(oid: conflictBranch.target);
 
       expect(() => index.writeTree(), throwsA(isA<LibGit2Error>()));
 
@@ -344,7 +344,7 @@ void main() {
 
       conflictRepo.checkout(refName: 'refs/heads/feature');
 
-      conflictRepo.merge(conflictBranch.target);
+      conflictRepo.merge(oid: conflictBranch.target);
 
       final index = conflictRepo.index;
       final conflictedFile = index.conflicts['feature_file']!;
@@ -365,7 +365,7 @@ void main() {
 
       final conflictBranch = conflictRepo.lookupBranch(name: 'conflict-branch');
 
-      conflictRepo.merge(conflictBranch.target);
+      conflictRepo.merge(oid: conflictBranch.target);
 
       final index = conflictRepo.index;
       final conflictedFile = index.conflicts['conflict_file']!;
@@ -390,7 +390,7 @@ void main() {
 
       conflictRepo.checkout(refName: 'refs/heads/our-conflict');
 
-      conflictRepo.merge(conflictBranch.target);
+      conflictRepo.merge(oid: conflictBranch.target);
 
       final index = conflictRepo.index;
       final conflictedFile = index.conflicts['feature_file']!;
@@ -413,7 +413,7 @@ void main() {
 
       conflictRepo.checkout(refName: 'refs/heads/feature');
 
-      conflictRepo.merge(conflictBranch.target);
+      conflictRepo.merge(oid: conflictBranch.target);
 
       final index = conflictRepo.index;
       final conflictedFile = index.conflicts['feature_file']!;
@@ -435,7 +435,7 @@ void main() {
       final conflictBranch = conflictRepo.lookupBranch(name: 'conflict-branch');
       final index = conflictRepo.index;
 
-      conflictRepo.merge(conflictBranch.target);
+      conflictRepo.merge(oid: conflictBranch.target);
       expect(index.hasConflicts, true);
       expect(index['.gitignore'].isConflict, false);
       expect(index.conflicts['conflict_file']!.our!.isConflict, true);
@@ -468,7 +468,7 @@ void main() {
       final conflictBranch = conflictRepo.lookupBranch(name: 'conflict-branch');
       final index = conflictRepo.index;
 
-      conflictRepo.merge(conflictBranch.target);
+      conflictRepo.merge(oid: conflictBranch.target);
       expect(index.hasConflicts, true);
       expect(index.conflicts.length, 1);
 
