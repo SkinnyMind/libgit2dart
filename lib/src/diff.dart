@@ -14,6 +14,44 @@ class Diff {
   /// **IMPORTANT**: Should be freed to release allocated memory.
   Diff(this._diffPointer);
 
+  /// Creates a diff between a [tree] and the working directory using index
+  /// data to account for staged deletes, tracked files, etc.
+  ///
+  /// This emulates `git diff <tree>` by diffing the tree to the index and the
+  /// index to the working directory and blending the results into a single diff
+  /// that includes staged deleted, etc.
+  ///
+  /// [repo] is the repository containing the tree.
+  ///
+  /// [tree] is a [Tree] object to diff from, or null for empty tree.
+  ///
+  /// [flags] is a combination of [GitDiff] flags. Defaults to [GitDiff.normal].
+  ///
+  /// [contextLines] is the number of unchanged lines that define the boundary
+  /// of a hunk (and to display before and after). Defaults to 3.
+  ///
+  /// [interhunkLines] is the maximum number of unchanged lines between hunk
+  /// boundaries before the hunks will be merged into one. Defaults to 0.
+  ///
+  /// **IMPORTANT**: Should be freed to release allocated memory.
+  ///
+  /// Throws a [LibGit2Error] if error occured.
+  Diff.treeToWorkdirWithIndex({
+    required Repository repo,
+    required Tree? tree,
+    Set<GitDiff> flags = const {GitDiff.normal},
+    int contextLines = 3,
+    int interhunkLines = 0,
+  }) {
+    _diffPointer = bindings.treeToWorkdirWithIndex(
+      repoPointer: repo.pointer,
+      treePointer: tree?.pointer,
+      flags: flags.fold(0, (acc, e) => acc | e.value),
+      contextLines: contextLines,
+      interhunkLines: interhunkLines,
+    );
+  }
+
   /// Reads the [content]s of a git patch file into a git diff object.
   ///
   /// The diff object produced is similar to the one that would be produced if

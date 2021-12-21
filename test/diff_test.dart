@@ -56,6 +56,20 @@ void main() {
     'subdir/modified_file',
   ];
 
+  const treeToWorkdirWithIndex = [
+    'file_deleted',
+    'modified_file',
+    'staged_changes',
+    'staged_changes_file_deleted',
+    'staged_changes_file_modified',
+    'staged_delete',
+    'staged_delete_file_modified',
+    'staged_new',
+    'staged_new_file_modified',
+    'subdir/deleted_file',
+    'subdir/modified_file',
+  ];
+
   const patchText = """
 diff --git a/subdir/modified_file b/subdir/modified_file
 index e69de29..c217c63 100644
@@ -203,6 +217,23 @@ index e69de29..c217c63 100644
       final tree = repo.lookupTree(repo['b85d53c']);
       expect(() => repo.diff(b: tree), throwsA(isA<ArgumentError>()));
       tree.free();
+    });
+
+    test('returns diff between tree and workdir with index', () {
+      final head = repo.head;
+      final commit = repo.lookupCommit(head.target);
+      final tree = commit.tree;
+
+      final diff = Diff.treeToWorkdirWithIndex(repo: repo, tree: tree);
+      expect(diff.length, 11);
+      for (var i = 0; i < diff.deltas.length; i++) {
+        expect(diff.deltas[i].newFile.path, treeToWorkdirWithIndex[i]);
+      }
+
+      diff.free();
+      tree.free();
+      commit.free();
+      head.free();
     });
 
     test('successfully merges diffs', () {
