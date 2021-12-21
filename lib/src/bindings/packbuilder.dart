@@ -61,6 +61,55 @@ void addRecursively({
   }
 }
 
+/// Insert a commit object.
+///
+/// This will add a commit as well as the completed referenced tree.
+///
+/// Throws a [LibGit2Error] if error occured.
+void addCommit({
+  required Pointer<git_packbuilder> packbuilderPointer,
+  required Pointer<git_oid> oidPointer,
+}) {
+  final error = libgit2.git_packbuilder_insert_commit(
+    packbuilderPointer,
+    oidPointer,
+  );
+
+  if (error < 0) {
+    throw LibGit2Error(libgit2.git_error_last());
+  }
+}
+
+/// Insert a root tree object.
+///
+/// This will add the tree as well as all referenced trees and blobs.
+///
+/// Throws a [LibGit2Error] if error occured.
+void addTree({
+  required Pointer<git_packbuilder> packbuilderPointer,
+  required Pointer<git_oid> oidPointer,
+}) {
+  final error = libgit2.git_packbuilder_insert_tree(
+    packbuilderPointer,
+    oidPointer,
+  );
+
+  if (error < 0) {
+    throw LibGit2Error(libgit2.git_error_last());
+  }
+}
+
+/// Insert objects as given by the walk.
+///
+/// Those commits and all objects they reference will be inserted into the
+/// packbuilder.
+void addWalk({
+  required Pointer<git_packbuilder> packbuilderPointer,
+  required Pointer<git_revwalk> walkerPointer,
+}) {
+  libgit2.git_packbuilder_insert_walk(packbuilderPointer, walkerPointer);
+}
+
 /// Write the new pack and corresponding index file to path.
 ///
 /// Throws a [LibGit2Error] if error occured.
@@ -92,6 +141,14 @@ int length(Pointer<git_packbuilder> pb) {
 /// Get the number of objects the packbuilder has already written out.
 int writtenCount(Pointer<git_packbuilder> pb) {
   return libgit2.git_packbuilder_written(pb);
+}
+
+/// Get the packfile's hash.
+///
+/// A packfile's name is derived from the sorted hashing of all object names.
+/// This is only correct after the packfile has been written.
+Pointer<git_oid> hash(Pointer<git_packbuilder> pb) {
+  return libgit2.git_packbuilder_hash(pb);
 }
 
 /// Set number of threads to spawn.

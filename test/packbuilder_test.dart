@@ -37,7 +37,7 @@ void main() {
       );
     });
 
-    test('successfully adds objects', () {
+    test('adds objects', () {
       final packbuilder = PackBuilder(repo);
       final odb = repo.odb;
 
@@ -62,7 +62,7 @@ void main() {
       packbuilder.free();
     });
 
-    test('successfully adds object recursively', () {
+    test('adds object recursively', () {
       final packbuilder = PackBuilder(repo);
       final oid = Oid.fromSHA(repo: repo, sha: 'f17d0d48');
 
@@ -83,7 +83,59 @@ void main() {
       packbuilder.free();
     });
 
-    test('successfully sets number of threads', () {
+    test('adds commit', () {
+      final packbuilder = PackBuilder(repo);
+      final oid = repo['f17d0d4'];
+
+      packbuilder.addCommit(oid);
+      expect(packbuilder.length, 3);
+
+      packbuilder.free();
+    });
+
+    test('throws when trying to add commit with invalid oid', () {
+      final packbuilder = PackBuilder(repo);
+      final oid = Oid.fromSHA(repo: repo, sha: '0' * 40);
+
+      expect(() => packbuilder.addCommit(oid), throwsA(isA<LibGit2Error>()));
+
+      packbuilder.free();
+    });
+
+    test('adds tree', () {
+      final packbuilder = PackBuilder(repo);
+      final oid = repo['df2b8fc'];
+
+      packbuilder.addTree(oid);
+      expect(packbuilder.length, 2);
+
+      packbuilder.free();
+    });
+
+    test('throws when trying to add tree with invalid oid', () {
+      final packbuilder = PackBuilder(repo);
+      final oid = Oid.fromSHA(repo: repo, sha: '0' * 40);
+
+      expect(() => packbuilder.addTree(oid), throwsA(isA<LibGit2Error>()));
+
+      packbuilder.free();
+    });
+
+    test('adds objects with walker', () {
+      final oid = repo['f17d0d4'];
+      final packbuilder = PackBuilder(repo);
+      final walker = RevWalk(repo);
+      walker.sorting({GitSort.none});
+      walker.push(oid);
+
+      packbuilder.addWalk(walker);
+      expect(packbuilder.length, 3);
+
+      walker.free();
+      packbuilder.free();
+    });
+
+    test('sets number of threads', () {
       final packbuilder = PackBuilder(repo);
 
       expect(packbuilder.setThreads(1), 1);
@@ -91,7 +143,21 @@ void main() {
       packbuilder.free();
     });
 
-    test('successfully packs with default arguments', () {
+    test('returns hash of packfile', () {
+      final packbuilder = PackBuilder(repo);
+      final odb = repo.odb;
+
+      packbuilder.add(odb.objects[0]);
+      Directory('${repo.workdir}.git/objects/pack/').createSync();
+
+      expect(packbuilder.hash.sha, '0' * 40);
+      packbuilder.write(null);
+      expect(packbuilder.hash.sha, 'f80c3d05f7dc8755f90258d1e4c445efd7134f98');
+
+      packbuilder.free();
+    });
+
+    test('packs with default arguments', () {
       final odb = repo.odb;
       final objectsCount = odb.objects.length;
       Directory('${repo.workdir}.git/objects/pack/').createSync();
@@ -102,7 +168,7 @@ void main() {
       odb.free();
     });
 
-    test('successfully packs into provided path with threads set', () {
+    test('packs into provided path with threads set', () {
       final odb = repo.odb;
       final objectsCount = odb.objects.length;
       Directory('${repo.workdir}test-pack').createSync();
@@ -120,7 +186,7 @@ void main() {
       odb.free();
     });
 
-    test('successfully packs with provided packDelegate', () {
+    test('packs with provided packDelegate', () {
       Directory('${repo.workdir}.git/objects/pack/').createSync();
       void packDelegate(PackBuilder packBuilder) {
         final branches = repo.branchesLocal;

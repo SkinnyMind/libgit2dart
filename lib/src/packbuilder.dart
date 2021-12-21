@@ -41,6 +41,41 @@ class PackBuilder {
     );
   }
 
+  /// Adds a commit object.
+  ///
+  /// This will add a commit as well as the completed referenced tree.
+  ///
+  /// Throws a [LibGit2Error] if error occured.
+  void addCommit(Oid oid) {
+    bindings.addCommit(
+      packbuilderPointer: _packbuilderPointer,
+      oidPointer: oid.pointer,
+    );
+  }
+
+  /// Adds a root tree object.
+  ///
+  /// This will add the tree as well as all referenced trees and blobs.
+  ///
+  /// Throws a [LibGit2Error] if error occured.
+  void addTree(Oid oid) {
+    bindings.addTree(
+      packbuilderPointer: _packbuilderPointer,
+      oidPointer: oid.pointer,
+    );
+  }
+
+  /// Adds objects as given by the walker.
+  ///
+  /// Those commits and all objects they reference will be inserted into the
+  /// packbuilder.
+  void addWalk(RevWalk walker) {
+    bindings.addWalk(
+      packbuilderPointer: _packbuilderPointer,
+      walkerPointer: walker.pointer,
+    );
+  }
+
   /// Writes the new pack and corresponding index file to [path] if provided
   /// or default location.
   ///
@@ -54,6 +89,12 @@ class PackBuilder {
 
   /// Number of objects the packbuilder has already written out.
   int get writtenLength => bindings.writtenCount(_packbuilderPointer);
+
+  /// Packfile's hash.
+  ///
+  /// A packfile's name is derived from the sorted hashing of all object names.
+  /// This is only correct after the packfile has been written.
+  Oid get hash => Oid(bindings.hash(_packbuilderPointer));
 
   /// Sets and returns the number of threads to spawn.
   ///
