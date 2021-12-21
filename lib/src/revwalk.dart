@@ -11,8 +11,10 @@ class RevWalk {
     _revWalkPointer = bindings.create(repo.pointer);
   }
 
-  /// Pointer to memory address for allocated [RevWalk] object.
   late final Pointer<git_revwalk> _revWalkPointer;
+
+  /// Pointer to memory address for allocated [RevWalk] object.
+  Pointer<git_revwalk> get pointer => _revWalkPointer;
 
   /// Returns the list of commits from the revision walk.
   ///
