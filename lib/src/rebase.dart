@@ -34,12 +34,62 @@ class Rebase {
     );
   }
 
+  /// Opens an existing rebase that was previously started by either an
+  /// invocation of [Rebase.init] or by another client.
+  ///
+  /// **IMPORTANT**: Should be freed to release allocated memory.
+  ///
+  /// Throws a [LibGit2Error] if error occured.
+  Rebase.open(Repository repo) {
+    _rebasePointer = bindings.open(repo.pointer);
+  }
+
   /// Pointer to memory address for allocated rebase object.
   late final Pointer<git_rebase> _rebasePointer;
 
-  /// Number of rebase operations that are to be applied.
-  int get operationsCount {
-    return bindings.operationsCount(_rebasePointer);
+  /// List of operations that are to be applied.
+  List<RebaseOperation> get operations {
+    final result = <RebaseOperation>[];
+    final operationsCount = bindings.operationsCount(_rebasePointer);
+
+    for (var i = 0; i < operationsCount; i++) {
+      final operation = bindings.getOperationByIndex(
+        rebase: _rebasePointer,
+        index: i,
+      );
+      result.add(RebaseOperation(operation));
+    }
+
+    return result;
+  }
+
+  /// Index of the rebase operation that is currently being applied. If the
+  /// first operation has not yet been applied (because you have called
+  /// [Rebase.init] but not yet [next]) then this returns `-1`.
+  int get currentOperation {
+    return bindings.currentOperation(_rebasePointer);
+  }
+
+  /// Original HEAD oid for merge rebases.
+  Oid get origHeadOid {
+    return Oid.fromRaw(bindings.origHeadOid(_rebasePointer).ref);
+  }
+
+  /// Original HEAD ref name for merge rebases.
+  ///
+  /// Returns empty string if no information available.
+  String get origHeadName {
+    return bindings.origHeadName(_rebasePointer);
+  }
+
+  /// Onto oid for merge rebases.
+  Oid get ontoOid {
+    return Oid.fromRaw(bindings.ontoOid(_rebasePointer).ref);
+  }
+
+  /// Onto ref name for merge rebases.
+  String get ontoName {
+    return bindings.ontoName(_rebasePointer);
   }
 
   /// Performs the next rebase operation and returns the information about it.

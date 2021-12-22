@@ -32,9 +32,15 @@ void main() {
         time: 1234,
       );
       final master = repo.lookupReference('refs/heads/master');
-      final branchHead = AnnotatedCommit.lookup(repo: repo, oid: master.target);
+      final branchHead = AnnotatedCommit.fromReference(
+        repo: repo,
+        reference: master,
+      );
       final feature = repo.lookupReference('refs/heads/feature');
-      final ontoHead = AnnotatedCommit.lookup(repo: repo, oid: feature.target);
+      final ontoHead = AnnotatedCommit.fromReference(
+        repo: repo,
+        reference: feature,
+      );
 
       repo.checkout(refName: feature.name);
       expect(() => repo.index['.gitignore'], throwsA(isA<ArgumentError>()));
@@ -45,10 +51,15 @@ void main() {
         onto: ontoHead,
       );
 
-      final operationsCount = rebase.operationsCount;
-      expect(operationsCount, 3);
+      expect(rebase.origHeadOid, master.target);
+      expect(rebase.origHeadName, 'refs/heads/master');
+      expect(rebase.ontoOid, feature.target);
+      expect(rebase.ontoName, 'feature');
 
-      for (var i = 0; i < operationsCount; i++) {
+      final operations = rebase.operations;
+      expect(operations.length, 3);
+
+      for (var i = 0; i < operations.length; i++) {
         final operation = rebase.next();
         expect(operation.type, GitRebaseOperation.pick);
         expect(operation.oid.sha, shas[i]);
@@ -86,10 +97,18 @@ void main() {
         onto: ontoHead,
       );
 
-      final operationsCount = rebase.operationsCount;
-      expect(operationsCount, 3);
+      expect(
+        rebase.origHeadOid.sha,
+        '14905459d775f3f56a39ebc2ff081163f7da3529',
+      );
+      expect(rebase.origHeadName, 'refs/heads/master');
+      expect(rebase.ontoOid, feature.target);
+      expect(rebase.ontoName, '2ee89b2f7124b8e4632bc6a20774a90b795245e4');
 
-      for (var i = 0; i < operationsCount; i++) {
+      final operations = rebase.operations;
+      expect(operations.length, 3);
+
+      for (var i = 0; i < operations.length; i++) {
         final operation = rebase.next();
         expect(operation.type, GitRebaseOperation.pick);
         expect(operation.oid.sha, shas[i]);
@@ -130,11 +149,19 @@ void main() {
         upstream: upstream,
       );
 
-      final operationsCount = rebase.operationsCount;
-      expect(operationsCount, 1);
+      expect(rebase.origHeadOid, master.target);
+      expect(rebase.origHeadName, '');
+      expect(rebase.ontoOid.sha, shas[1]);
+      expect(rebase.ontoName, '821ed6e80627b8769d170a293862f9fc60825226');
 
-      for (var i = 0; i < operationsCount; i++) {
+      final operations = rebase.operations;
+      expect(operations.length, 1);
+
+      for (final operation in operations) {
+        expect(rebase.currentOperation, -1);
+        expect(operation.type, GitRebaseOperation.pick);
         rebase.next();
+        expect(rebase.currentOperation, 0);
         rebase.commit(committer: signature);
       }
 
@@ -173,7 +200,7 @@ void main() {
         branch: branchHead,
         onto: ontoHead,
       );
-      expect(rebase.operationsCount, 1);
+      expect(rebase.operations.length, 1);
 
       rebase.next();
       expect(repo.status['conflict_file'], {GitStatus.conflicted});
@@ -210,7 +237,7 @@ void main() {
         branch: branchHead,
         onto: ontoHead,
       );
-      expect(rebase.operationsCount, 1);
+      expect(rebase.operations.length, 1);
 
       rebase.next(); // repo now have conflicts
       expect(() => rebase.next(), throwsA(isA<LibGit2Error>()));
@@ -236,7 +263,7 @@ void main() {
         branch: branchHead,
         onto: ontoHead,
       );
-      expect(rebase.operationsCount, 1);
+      expect(rebase.operations.length, 1);
 
       rebase.next();
       expect(repo.status['conflict_file'], {GitStatus.conflicted});
@@ -251,6 +278,29 @@ void main() {
       branchHead.free();
       conflict.free();
       master.free();
+    });
+
+    test('opens an existing rebase', () {
+      final feature = repo.lookupReference('refs/heads/feature');
+      final ontoHead = AnnotatedCommit.lookup(repo: repo, oid: feature.target);
+
+      final rebase = Rebase.init(
+        repo: repo,
+        onto: ontoHead,
+      );
+      expect(rebase.operations.length, 3);
+
+      final openRebase = Rebase.open(repo);
+      expect(openRebase.operations.length, 3);
+
+      openRebase.free();
+      rebase.free();
+      ontoHead.free();
+      feature.free();
+    });
+
+    test('throws when trying to open an existing rebase but there is none', () {
+      expect(() => Rebase.open(repo), throwsA(isA<LibGit2Error>()));
     });
   });
 }

@@ -50,9 +50,43 @@ Pointer<git_rebase> init({
   }
 }
 
+/// Opens an existing rebase that was previously started by either an
+/// invocation of [init] or by another client.
+///
+/// Throws a [LibGit2Error] if error occured.
+Pointer<git_rebase> open(Pointer<git_repository> repo) {
+  final out = calloc<Pointer<git_rebase>>();
+  final opts = calloc<git_rebase_options>();
+  libgit2.git_rebase_options_init(opts, GIT_REBASE_OPTIONS_VERSION);
+
+  final error = libgit2.git_rebase_open(out, repo, opts);
+
+  if (error < 0) {
+    calloc.free(out);
+    throw LibGit2Error(libgit2.git_error_last());
+  } else {
+    return out.value;
+  }
+}
+
 /// Gets the count of rebase operations that are to be applied.
 int operationsCount(Pointer<git_rebase> rebase) {
   return libgit2.git_rebase_operation_entrycount(rebase);
+}
+
+/// Gets the rebase operation specified by the given index.
+Pointer<git_rebase_operation> getOperationByIndex({
+  required Pointer<git_rebase> rebase,
+  required int index,
+}) {
+  return libgit2.git_rebase_operation_byindex(rebase, index);
+}
+
+/// Gets the index of the rebase operation that is currently being applied. If
+/// the first operation has not yet been applied (because you have called [init]
+/// but not yet [next]) then this returns `-1`.
+int currentOperation(Pointer<git_rebase> rebase) {
+  return libgit2.git_rebase_operation_current(rebase);
 }
 
 /// Performs the next rebase operation and returns the information about it.
@@ -75,7 +109,7 @@ Pointer<git_rebase_operation> next(Pointer<git_rebase> rebase) {
 }
 
 /// Commits the current patch. You must have resolved any conflicts that were
-/// introduced during the patch application from the `next()` invocation.
+/// introduced during the patch application from the [next] invocation.
 ///
 /// Throws a [LibGit2Error] if error occured.
 void commit({
@@ -112,6 +146,25 @@ void finish(Pointer<git_rebase> rebase) =>
 /// Aborts a rebase that is currently in progress, resetting the repository and
 /// working directory to their state before rebase began.
 void abort(Pointer<git_rebase> rebase) => libgit2.git_rebase_abort(rebase);
+
+/// Gets the original HEAD id for merge rebases.
+Pointer<git_oid> origHeadOid(Pointer<git_rebase> rebase) =>
+    libgit2.git_rebase_orig_head_id(rebase);
+
+/// Gets the original HEAD ref name for merge rebases.
+String origHeadName(Pointer<git_rebase> rebase) {
+  final result = libgit2.git_rebase_orig_head_name(rebase);
+  return result == nullptr ? '' : result.cast<Utf8>().toDartString();
+}
+
+/// Gets the onto id for merge rebases.
+Pointer<git_oid> ontoOid(Pointer<git_rebase> rebase) =>
+    libgit2.git_rebase_onto_id(rebase);
+
+/// Gets the onto ref name for merge rebases.
+String ontoName(Pointer<git_rebase> rebase) {
+  return libgit2.git_rebase_onto_name(rebase).cast<Utf8>().toDartString();
+}
 
 /// Free memory allocated for rebase object.
 void free(Pointer<git_rebase> rebase) => libgit2.git_rebase_free(rebase);
