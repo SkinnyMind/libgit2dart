@@ -89,17 +89,20 @@ Pointer<git_oid> mergeBaseOctopus({
 List<int> analysis({
   required Pointer<git_repository> repoPointer,
   required Pointer<git_reference> ourRefPointer,
-  required Pointer<Pointer<git_annotated_commit>> theirHeadPointer,
+  required Pointer<git_annotated_commit> theirHeadPointer,
   required int theirHeadsLen,
 }) {
   final analysisOut = calloc<Int32>();
   final preferenceOut = calloc<Int32>();
+  final theirHead = calloc<Pointer<git_annotated_commit>>();
+  theirHead[0] = theirHeadPointer;
+
   libgit2.git_merge_analysis_for_ref(
     analysisOut,
     preferenceOut,
     repoPointer,
     ourRefPointer,
-    theirHeadPointer,
+    theirHead,
     theirHeadsLen,
   );
 
@@ -107,6 +110,7 @@ List<int> analysis({
 
   calloc.free(analysisOut);
   calloc.free(preferenceOut);
+  calloc.free(theirHead);
 
   return result;
 }
@@ -117,12 +121,15 @@ List<int> analysis({
 /// completes, resolve any conflicts and prepare a commit.
 void merge({
   required Pointer<git_repository> repoPointer,
-  required Pointer<Pointer<git_annotated_commit>> theirHeadsPointer,
+  required Pointer<git_annotated_commit> theirHeadPointer,
   required int theirHeadsLen,
   required int favor,
   required int mergeFlags,
   required int fileFlags,
 }) {
+  final theirHead = calloc<Pointer<git_annotated_commit>>();
+  theirHead[0] = theirHeadPointer;
+
   final mergeOpts = _initMergeOptions(
     favor: favor,
     mergeFlags: mergeFlags,
@@ -138,7 +145,7 @@ void merge({
 
   libgit2.git_merge(
     repoPointer,
-    theirHeadsPointer,
+    theirHead,
     theirHeadsLen,
     mergeOpts,
     checkoutOpts,
@@ -146,6 +153,7 @@ void merge({
 
   calloc.free(mergeOpts);
   calloc.free(checkoutOpts);
+  calloc.free(theirHead);
 }
 
 /// Merge two files as they exist in the in-memory data structures, using the

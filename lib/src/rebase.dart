@@ -15,44 +15,23 @@ class Rebase {
   /// reachable commits.
   ///
   /// [onto] is the branch to rebase onto, default is to rebase onto the given
-  /// [upstream] (throws if [upstream] is not provided).
+  /// [upstream].
   ///
   /// **IMPORTANT**: Should be freed to release allocated memory.
   ///
   /// Throws a [LibGit2Error] if error occured.
   Rebase.init({
     required Repository repo,
-    Oid? branch,
-    Oid? upstream,
-    Oid? onto,
+    AnnotatedCommit? branch,
+    AnnotatedCommit? upstream,
+    AnnotatedCommit? onto,
   }) {
-    AnnotatedCommit? _branch, _upstream, _onto;
-    if (branch != null) {
-      _branch = AnnotatedCommit.lookup(repo: repo, oid: branch);
-    }
-    if (upstream != null) {
-      _upstream = AnnotatedCommit.lookup(repo: repo, oid: upstream);
-    }
-    if (onto != null) {
-      _onto = AnnotatedCommit.lookup(repo: repo, oid: onto);
-    }
-
     _rebasePointer = bindings.init(
       repoPointer: repo.pointer,
-      branchPointer: _branch?.pointer.value,
-      upstreamPointer: _upstream?.pointer.value,
-      ontoPointer: _onto?.pointer.value,
+      branchPointer: branch?.pointer,
+      upstreamPointer: upstream?.pointer,
+      ontoPointer: onto?.pointer,
     );
-
-    if (branch != null) {
-      _branch!.free();
-    }
-    if (upstream != null) {
-      _upstream!.free();
-    }
-    if (onto != null) {
-      _onto!.free();
-    }
   }
 
   /// Pointer to memory address for allocated rebase object.

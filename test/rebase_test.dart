@@ -32,15 +32,17 @@ void main() {
         time: 1234,
       );
       final master = repo.lookupReference('refs/heads/master');
+      final branchHead = AnnotatedCommit.lookup(repo: repo, oid: master.target);
       final feature = repo.lookupReference('refs/heads/feature');
+      final ontoHead = AnnotatedCommit.lookup(repo: repo, oid: feature.target);
 
       repo.checkout(refName: feature.name);
       expect(() => repo.index['.gitignore'], throwsA(isA<ArgumentError>()));
 
       final rebase = Rebase.init(
         repo: repo,
-        branch: master.target,
-        onto: feature.target,
+        branch: branchHead,
+        onto: ontoHead,
       );
 
       final operationsCount = rebase.operationsCount;
@@ -63,6 +65,8 @@ void main() {
       expect(repo.index['.gitignore'], isA<IndexEntry>());
 
       rebase.free();
+      ontoHead.free();
+      branchHead.free();
       feature.free();
       master.free();
       signature.free();
@@ -75,10 +79,11 @@ void main() {
         time: 1234,
       );
       final feature = repo.lookupReference('refs/heads/feature');
+      final ontoHead = AnnotatedCommit.lookup(repo: repo, oid: feature.target);
 
       final rebase = Rebase.init(
         repo: repo,
-        onto: feature.target,
+        onto: ontoHead,
       );
 
       final operationsCount = rebase.operationsCount;
@@ -100,6 +105,7 @@ void main() {
       rebase.finish();
 
       rebase.free();
+      ontoHead.free();
       feature.free();
       signature.free();
     });
@@ -111,16 +117,17 @@ void main() {
         time: 1234,
       );
       final master = repo.lookupReference('refs/heads/master');
+      final branchHead = AnnotatedCommit.lookup(repo: repo, oid: master.target);
       final feature = repo.lookupReference('refs/heads/feature');
-      final startCommit = repo.lookupCommit(repo[shas[1]]);
+      final upstream = AnnotatedCommit.lookup(repo: repo, oid: repo[shas[1]]);
 
       repo.checkout(refName: feature.name);
       expect(() => repo.index['conflict_file'], throwsA(isA<ArgumentError>()));
 
       final rebase = Rebase.init(
         repo: repo,
-        branch: master.target,
-        upstream: startCommit.oid,
+        branch: branchHead,
+        upstream: upstream,
       );
 
       final operationsCount = rebase.operationsCount;
@@ -135,7 +142,8 @@ void main() {
       expect(repo.index['conflict_file'], isA<IndexEntry>());
 
       rebase.free();
-      startCommit.free();
+      upstream.free();
+      branchHead.free();
       feature.free();
       master.free();
       signature.free();
@@ -154,14 +162,16 @@ void main() {
         time: 1234,
       );
       final master = repo.lookupReference('refs/heads/master');
+      final branchHead = AnnotatedCommit.lookup(repo: repo, oid: master.target);
       final conflict = repo.lookupReference('refs/heads/conflict-branch');
+      final ontoHead = AnnotatedCommit.lookup(repo: repo, oid: conflict.target);
 
       repo.checkout(refName: conflict.name);
 
       final rebase = Rebase.init(
         repo: repo,
-        branch: master.target,
-        onto: conflict.target,
+        branch: branchHead,
+        onto: ontoHead,
       );
       expect(rebase.operationsCount, 1);
 
@@ -174,6 +184,8 @@ void main() {
       );
 
       rebase.free();
+      ontoHead.free();
+      branchHead.free();
       conflict.free();
       master.free();
       signature.free();
@@ -187,14 +199,16 @@ void main() {
         time: 1234,
       );
       final master = repo.lookupReference('refs/heads/master');
+      final branchHead = AnnotatedCommit.lookup(repo: repo, oid: master.target);
       final conflict = repo.lookupReference('refs/heads/conflict-branch');
+      final ontoHead = AnnotatedCommit.lookup(repo: repo, oid: conflict.target);
 
       repo.checkout(refName: conflict.name);
 
       final rebase = Rebase.init(
         repo: repo,
-        branch: master.target,
-        onto: conflict.target,
+        branch: branchHead,
+        onto: ontoHead,
       );
       expect(rebase.operationsCount, 1);
 
@@ -202,6 +216,8 @@ void main() {
       expect(() => rebase.next(), throwsA(isA<LibGit2Error>()));
 
       rebase.free();
+      ontoHead.free();
+      branchHead.free();
       conflict.free();
       master.free();
       signature.free();
@@ -209,14 +225,16 @@ void main() {
 
     test('successfully aborts rebase in progress', () {
       final master = repo.lookupReference('refs/heads/master');
+      final branchHead = AnnotatedCommit.lookup(repo: repo, oid: master.target);
       final conflict = repo.lookupReference('refs/heads/conflict-branch');
+      final ontoHead = AnnotatedCommit.lookup(repo: repo, oid: conflict.target);
 
       repo.checkout(refName: conflict.name);
 
       final rebase = Rebase.init(
         repo: repo,
-        branch: master.target,
-        onto: conflict.target,
+        branch: branchHead,
+        onto: ontoHead,
       );
       expect(rebase.operationsCount, 1);
 
@@ -229,6 +247,8 @@ void main() {
       expect(repo.state, GitRepositoryState.none);
 
       rebase.free();
+      ontoHead.free();
+      branchHead.free();
       conflict.free();
       master.free();
     });
