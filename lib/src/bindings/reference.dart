@@ -157,6 +157,25 @@ bool hasLog({
   return result == 1 || false;
 }
 
+/// Ensure there is a reflog for a particular reference.
+///
+/// Make sure that successive updates to the reference will append to its log.
+///
+/// Throws a [LibGit2Error] if error occured.
+void ensureLog({
+  required Pointer<git_repository> repoPointer,
+  required String refName,
+}) {
+  final refNameC = refName.toNativeUtf8().cast<Int8>();
+  final error = libgit2.git_reference_ensure_log(repoPointer, refNameC);
+
+  calloc.free(refNameC);
+
+  if (error < 0) {
+    throw LibGit2Error(libgit2.git_error_last());
+  }
+}
+
 /// Check if a reference is a local branch.
 bool isBranch(Pointer<git_reference> ref) {
   return libgit2.git_reference_is_branch(ref) == 1 || false;
@@ -408,6 +427,13 @@ Pointer<git_object> peel({
   } else {
     return out.value;
   }
+}
+
+/// Create a copy of an existing reference.
+Pointer<git_reference> duplicate(Pointer<git_reference> source) {
+  final out = calloc<Pointer<git_reference>>();
+  libgit2.git_reference_dup(out, source);
+  return out.value;
 }
 
 /// Free the given reference.
