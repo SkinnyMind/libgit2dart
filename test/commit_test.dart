@@ -57,19 +57,6 @@ void main() {
       );
     });
 
-    test('successfully lookups annotated commit for provided oid', () {
-      final annotated = AnnotatedCommit.lookup(repo: repo, oid: tip);
-      expect(annotated, isA<AnnotatedCommit>());
-      annotated.free();
-    });
-
-    test('throws when trying to lookup annotated commit with invalid oid', () {
-      expect(
-        () => AnnotatedCommit.lookup(repo: repo, oid: repo['0' * 40]),
-        throwsA(isA<LibGit2Error>()),
-      );
-    });
-
     test(
         'throws when trying to get the summary of the commit message and error '
         'occurs', () {

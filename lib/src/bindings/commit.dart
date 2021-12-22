@@ -25,41 +25,6 @@ Pointer<git_commit> lookup({
   }
 }
 
-/// Creates an annotated commit from the given commit id. The resulting
-/// annotated commit must be freed with [annotatedFree].
-///
-/// An annotated commit contains information about how it was looked up, which
-/// may be useful for functions like merge or rebase to provide context to the
-/// operation. For example, conflict files will include the name of the source
-/// or target branches being merged. It is therefore preferable to use the most
-/// specific function (eg git_annotated_commit_from_ref) instead of this one
-/// when that data is known.
-///
-/// Throws a [LibGit2Error] if error occured.
-Pointer<Pointer<git_annotated_commit>> annotatedLookup({
-  required Pointer<git_repository> repoPointer,
-  required Pointer<git_oid> oidPointer,
-}) {
-  final out = calloc<Pointer<git_annotated_commit>>();
-  final error = libgit2.git_annotated_commit_lookup(
-    out,
-    repoPointer,
-    oidPointer,
-  );
-
-  if (error < 0) {
-    calloc.free(out);
-    throw LibGit2Error(libgit2.git_error_last());
-  } else {
-    return out;
-  }
-}
-
-/// Frees an annotated commit.
-void annotatedFree(Pointer<git_annotated_commit> commit) {
-  libgit2.git_annotated_commit_free(commit);
-}
-
 /// Create new commit in the repository.
 ///
 /// Throws a [LibGit2Error] if error occured.

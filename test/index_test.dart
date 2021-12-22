@@ -311,10 +311,16 @@ void main() {
 
       final conflictBranch = repo.lookupBranch(name: 'conflict-branch');
       final index = repo.index;
-      repo.merge(oid: conflictBranch.target);
+      final commit = AnnotatedCommit.lookup(
+        repo: repo,
+        oid: conflictBranch.target,
+      );
+
+      repo.merge(commit: commit);
 
       expect(() => index.writeTree(), throwsA(isA<LibGit2Error>()));
 
+      commit.free();
       conflictBranch.free();
       index.free();
       repo.free();
@@ -341,10 +347,14 @@ void main() {
       final conflictBranch = conflictRepo.lookupBranch(
         name: 'ancestor-conflict',
       );
+      final commit = AnnotatedCommit.lookup(
+        repo: conflictRepo,
+        oid: conflictBranch.target,
+      );
 
       conflictRepo.checkout(refName: 'refs/heads/feature');
 
-      conflictRepo.merge(oid: conflictBranch.target);
+      conflictRepo.merge(commit: commit);
 
       final index = conflictRepo.index;
       final conflictedFile = index.conflicts['feature_file']!;
@@ -354,6 +364,7 @@ void main() {
       expect(conflictedFile.toString(), contains('ConflictEntry{'));
 
       index.free();
+      commit.free();
       conflictBranch.free();
       conflictRepo.free();
       repoDir.deleteSync(recursive: true);
@@ -364,8 +375,12 @@ void main() {
       final conflictRepo = Repository.open(repoDir.path);
 
       final conflictBranch = conflictRepo.lookupBranch(name: 'conflict-branch');
+      final commit = AnnotatedCommit.lookup(
+        repo: conflictRepo,
+        oid: conflictBranch.target,
+      );
 
-      conflictRepo.merge(oid: conflictBranch.target);
+      conflictRepo.merge(commit: commit);
 
       final index = conflictRepo.index;
       final conflictedFile = index.conflicts['conflict_file']!;
@@ -375,6 +390,7 @@ void main() {
       expect(conflictedFile.toString(), contains('ConflictEntry{'));
 
       index.free();
+      commit.free();
       conflictBranch.free();
       conflictRepo.free();
       repoDir.deleteSync(recursive: true);
@@ -387,10 +403,14 @@ void main() {
       final conflictBranch = conflictRepo.lookupBranch(
         name: 'ancestor-conflict',
       );
+      final commit = AnnotatedCommit.lookup(
+        repo: conflictRepo,
+        oid: conflictBranch.target,
+      );
 
       conflictRepo.checkout(refName: 'refs/heads/our-conflict');
 
-      conflictRepo.merge(oid: conflictBranch.target);
+      conflictRepo.merge(commit: commit);
 
       final index = conflictRepo.index;
       final conflictedFile = index.conflicts['feature_file']!;
@@ -400,6 +420,7 @@ void main() {
       expect(conflictedFile.toString(), contains('ConflictEntry{'));
 
       index.free();
+      commit.free();
       conflictBranch.free();
       conflictRepo.free();
       repoDir.deleteSync(recursive: true);
@@ -410,10 +431,14 @@ void main() {
       final conflictRepo = Repository.open(repoDir.path);
 
       final conflictBranch = conflictRepo.lookupBranch(name: 'their-conflict');
+      final commit = AnnotatedCommit.lookup(
+        repo: conflictRepo,
+        oid: conflictBranch.target,
+      );
 
       conflictRepo.checkout(refName: 'refs/heads/feature');
 
-      conflictRepo.merge(oid: conflictBranch.target);
+      conflictRepo.merge(commit: commit);
 
       final index = conflictRepo.index;
       final conflictedFile = index.conflicts['feature_file']!;
@@ -423,6 +448,7 @@ void main() {
       expect(conflictedFile.toString(), contains('ConflictEntry{'));
 
       index.free();
+      commit.free();
       conflictBranch.free();
       conflictRepo.free();
       repoDir.deleteSync(recursive: true);
@@ -433,9 +459,13 @@ void main() {
       final conflictRepo = Repository.open(repoDir.path);
 
       final conflictBranch = conflictRepo.lookupBranch(name: 'conflict-branch');
+      final commit = AnnotatedCommit.lookup(
+        repo: conflictRepo,
+        oid: conflictBranch.target,
+      );
       final index = conflictRepo.index;
 
-      conflictRepo.merge(oid: conflictBranch.target);
+      conflictRepo.merge(commit: commit);
       expect(index.hasConflicts, true);
       expect(index['.gitignore'].isConflict, false);
       expect(index.conflicts['conflict_file']!.our!.isConflict, true);
@@ -448,6 +478,7 @@ void main() {
       expect(index.conflicts['conflict_file'], null);
 
       index.free();
+      commit.free();
       conflictBranch.free();
       conflictRepo.free();
       repoDir.deleteSync(recursive: true);
@@ -466,9 +497,13 @@ void main() {
       final conflictRepo = Repository.open(repoDir.path);
 
       final conflictBranch = conflictRepo.lookupBranch(name: 'conflict-branch');
+      final commit = AnnotatedCommit.lookup(
+        repo: conflictRepo,
+        oid: conflictBranch.target,
+      );
       final index = conflictRepo.index;
 
-      conflictRepo.merge(oid: conflictBranch.target);
+      conflictRepo.merge(commit: commit);
       expect(index.hasConflicts, true);
       expect(index.conflicts.length, 1);
 
@@ -477,6 +512,7 @@ void main() {
       expect(index.conflicts, isEmpty);
 
       index.free();
+      commit.free();
       conflictBranch.free();
       conflictRepo.free();
       repoDir.deleteSync(recursive: true);

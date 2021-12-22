@@ -1,3 +1,4 @@
+export 'src/annotated.dart';
 export 'src/blame.dart';
 export 'src/blob.dart';
 export 'src/branch.dart';

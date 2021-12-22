@@ -1018,7 +1018,7 @@ class Repository {
     return <Object>[analysisSet, mergePreference];
   }
 
-  /// Merges the given commit [oid] into HEAD, writing the results into the
+  /// Merges the given [commit] into HEAD, writing the results into the
   /// working directory. Any changes are staged for commit and any conflicts
   /// are written to the index. Callers should inspect the repository's index
   /// after this completes, resolve any conflicts and prepare a commit.
@@ -1036,26 +1036,19 @@ class Repository {
   ///
   /// Throws a [LibGit2Error] if error occured.
   void merge({
-    required Oid oid,
+    required AnnotatedCommit commit,
     GitMergeFileFavor favor = GitMergeFileFavor.normal,
     Set<GitMergeFlag> mergeFlags = const {GitMergeFlag.findRenames},
     Set<GitMergeFileFlag> fileFlags = const {GitMergeFileFlag.defaults},
   }) {
-    final theirHead = AnnotatedCommit.lookup(
-      repo: this,
-      oid: oid,
-    );
-
     merge_bindings.merge(
       repoPointer: _repoPointer,
-      theirHeadsPointer: theirHead.pointer,
+      theirHeadPointer: commit.pointer,
       theirHeadsLen: 1,
       favor: favor.value,
       mergeFlags: mergeFlags.fold(0, (acc, e) => acc | e.value),
       fileFlags: fileFlags.fold(0, (acc, e) => acc | e.value),
     );
-
-    theirHead.free();
   }
 
   /// Merges two files as they exist in the in-memory data structures, using the
