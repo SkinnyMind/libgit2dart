@@ -32,7 +32,7 @@ Pointer<git_oid> mergeBaseMany({
   required List<git_oid> commits,
 }) {
   final out = calloc<git_oid>();
-  final commitsC = calloc<git_oid>(commits.length * 20);
+  final commitsC = calloc<git_oid>(commits.length);
   for (var i = 0; i < commits.length; i++) {
     commitsC[i].id = commits[i].id;
   }
@@ -62,7 +62,7 @@ Pointer<git_oid> mergeBaseOctopus({
   required List<git_oid> commits,
 }) {
   final out = calloc<git_oid>();
-  final commitsC = calloc<git_oid>(commits.length * 20);
+  final commitsC = calloc<git_oid>(commits.length);
   for (var i = 0; i < commits.length; i++) {
     commitsC[i].id = commits[i].id;
   }
