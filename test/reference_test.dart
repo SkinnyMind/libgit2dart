@@ -128,6 +128,19 @@ void main() {
       ref.free();
     });
 
+    test('duplicates existing reference', () {
+      expect(repo.references.length, 6);
+
+      final ref = repo.lookupReference('refs/heads/master');
+      final duplicate = ref.duplicate();
+
+      expect(repo.references.length, 6);
+      expect(duplicate, equals(ref));
+
+      duplicate.free();
+      ref.free();
+    });
+
     group('create direct', () {
       test('successfully creates with Oid as target', () {
         final ref = repo.lookupReference('refs/heads/master');
