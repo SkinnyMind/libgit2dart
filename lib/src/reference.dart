@@ -139,6 +139,19 @@ class Reference {
     refdb_bindings.free(refdb);
   }
 
+  /// Ensures there is a reflog for a particular reference.
+  ///
+  /// Makes sure that successive updates to the reference will append to its
+  /// log.
+  ///
+  /// Throws a [LibGit2Error] if error occured.
+  static void ensureLog({
+    required Repository repo,
+    required String refName,
+  }) {
+    bindings.ensureLog(repoPointer: repo.pointer, refName: refName);
+  }
+
   /// Creates a copy of an existing reference.
   ///
   /// **IMPORTANT**: Should be freed to release allocated memory.
@@ -245,17 +258,6 @@ class Reference {
       repoPointer: bindings.owner(_refPointer),
       name: name,
     );
-  }
-
-  /// Ensures there is a reflog for a particular reference.
-  ///
-  /// Makes sure that successive updates to the reference will append to its
-  /// log.
-  ///
-  /// Throws a [LibGit2Error] if error occured.
-  void ensureLog() {
-    final owner = bindings.owner(_refPointer);
-    bindings.ensureLog(repoPointer: owner, refName: name);
   }
 
   /// [RefLog] object.

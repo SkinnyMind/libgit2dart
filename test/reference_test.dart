@@ -128,6 +128,31 @@ void main() {
       ref.free();
     });
 
+    test('ensures updates to the reference will append to its log', () {
+      Reference.ensureLog(repo: repo, refName: 'refs/tags/tag');
+
+      final ref = repo.createReference(
+        name: 'refs/tags/tag',
+        target: repo[lastCommit],
+      );
+      final reflog = ref.log;
+
+      expect(reflog.length, 1);
+
+      reflog.free();
+      ref.free();
+    });
+
+    test('throws when trying to ensure there is a reflog and error occurs', () {
+      expect(
+        () => Reference.ensureLog(
+          repo: Repository(nullptr),
+          refName: 'refs/tags/tag',
+        ),
+        throwsA(isA<LibGit2Error>()),
+      );
+    });
+
     test('duplicates existing reference', () {
       expect(repo.references.length, 6);
 
