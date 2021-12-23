@@ -23,7 +23,7 @@ void main() {
   });
 
   group('Reset', () {
-    test('successfully resets with hard', () {
+    test('resets with hard', () {
       var contents = file.readAsStringSync();
       expect(contents, 'Feature edit\n');
 
@@ -32,7 +32,7 @@ void main() {
       expect(contents, isEmpty);
     });
 
-    test('successfully resets with soft', () {
+    test('resets with soft', () {
       var contents = file.readAsStringSync();
       expect(contents, 'Feature edit\n');
 
@@ -47,7 +47,7 @@ void main() {
       index.free();
     });
 
-    test('successfully resets with mixed', () {
+    test('resets with mixed', () {
       var contents = file.readAsStringSync();
       expect(contents, 'Feature edit\n');
 
@@ -63,7 +63,7 @@ void main() {
     });
 
     group('resetDefault', () {
-      test('successfully updates entry in the index', () {
+      test('updates entry in the index', () {
         file.writeAsStringSync('new edit');
 
         final index = repo.index;

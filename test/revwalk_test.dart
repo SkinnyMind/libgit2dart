@@ -28,7 +28,7 @@ void main() {
   });
 
   group('RevWalk', () {
-    test('successfully initializes', () {
+    test('initializes walker', () {
       final walker = RevWalk(repo);
       expect(walker, isA<RevWalk>());
       walker.free();
@@ -72,7 +72,7 @@ void main() {
       walker.free();
     });
 
-    test('successfully changes sorting', () {
+    test('changes sorting', () {
       final walker = RevWalk(repo);
       final start = Oid.fromSHA(repo: repo, sha: log.first);
 
@@ -169,7 +169,7 @@ void main() {
       walker.free();
     });
 
-    test('successfully hides commit and its ancestors', () {
+    test('hides commit and its ancestors', () {
       final walker = RevWalk(repo);
 
       walker.push(repo[log.first]);
@@ -265,7 +265,7 @@ void main() {
       walker.free();
     });
 
-    test('successfully resets walker', () {
+    test('resets walker', () {
       final walker = RevWalk(repo);
       final start = Oid.fromSHA(repo: repo, sha: log.first);
 

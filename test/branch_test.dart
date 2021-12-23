@@ -157,7 +157,7 @@ void main() {
       branch.free();
     });
 
-    test('successfully sets upstream of a branch', () {
+    test('sets upstream of a branch', () {
       final branch = repo.lookupBranch(name: 'master');
       var upstream = branch.upstream;
       expect(upstream.name, 'refs/remotes/origin/master');
@@ -176,7 +176,7 @@ void main() {
       branch.free();
     });
 
-    test('successfully unsets upstream of a branch', () {
+    test('unsets upstream of a branch', () {
       final branch = repo.lookupBranch(name: 'master');
       final upstream = branch.upstream;
       expect(upstream.name, 'refs/remotes/origin/master');
@@ -235,7 +235,7 @@ void main() {
     });
 
     group('create()', () {
-      test('successfully creates', () {
+      test('creates branch', () {
         final commit = repo.lookupCommit(lastCommit);
 
         final branch = repo.createBranch(name: 'testing', target: commit);
@@ -262,7 +262,7 @@ void main() {
         commit.free();
       });
 
-      test('successfully creates with force flag when name already exists', () {
+      test('creates branch with force flag when name already exists', () {
         final commit = repo.lookupCommit(lastCommit);
 
         final branch = repo.createBranch(
@@ -284,7 +284,7 @@ void main() {
     });
 
     group('delete()', () {
-      test('successfully deletes', () {
+      test('deletes branch', () {
         repo.deleteBranch('feature');
 
         expect(
@@ -302,7 +302,7 @@ void main() {
     });
 
     group('rename()', () {
-      test('successfully renames', () {
+      test('renames branch', () {
         repo.renameBranch(oldName: 'feature', newName: 'renamed');
         final branch = repo.lookupBranch(name: 'renamed');
         final branches = repo.branches;
@@ -327,7 +327,7 @@ void main() {
         );
       });
 
-      test('successfully renames with force flag when name already exists', () {
+      test('renames branch with force flag when name already exists', () {
         repo.renameBranch(
           oldName: 'master',
           newName: 'feature',

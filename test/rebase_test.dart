@@ -25,7 +25,7 @@ void main() {
   });
 
   group('Rebase', () {
-    test('successfully performs rebase when there is no conflicts', () {
+    test('performs rebase when there is no conflicts', () {
       final signature = Signature.create(
         name: 'Author',
         email: 'author@email.com',
@@ -83,7 +83,7 @@ void main() {
       signature.free();
     });
 
-    test('successfully performs rebase without branch provided', () {
+    test('performs rebase without branch provided', () {
       final signature = Signature.create(
         name: 'Author',
         email: 'author@email.com',
@@ -129,7 +129,7 @@ void main() {
       signature.free();
     });
 
-    test('successfully performs rebase with provided upstream', () {
+    test('performs rebase with provided upstream', () {
       final signature = Signature.create(
         name: 'Author',
         email: 'author@email.com',
@@ -250,7 +250,7 @@ void main() {
       signature.free();
     });
 
-    test('successfully aborts rebase in progress', () {
+    test('aborts rebase in progress', () {
       final master = repo.lookupReference('refs/heads/master');
       final branchHead = AnnotatedCommit.lookup(repo: repo, oid: master.target);
       final conflict = repo.lookupReference('refs/heads/conflict-branch');

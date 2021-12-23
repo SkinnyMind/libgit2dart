@@ -20,7 +20,7 @@ void main() {
   });
 
   group('Checkout', () {
-    test('successfully checkouts head', () {
+    test('checkouts head', () {
       repo.reset(oid: repo['821ed6e'], resetType: GitReset.hard);
       expect(repo.status, isEmpty);
       File('${tmpDir.path}/feature_file').writeAsStringSync('edit');
@@ -46,7 +46,7 @@ void main() {
       );
     });
 
-    test('successfully checkouts index', () {
+    test('checkouts index', () {
       File('${repo.workdir}feature_file').writeAsStringSync('edit');
       expect(repo.status, contains('feature_file'));
 
@@ -69,7 +69,7 @@ void main() {
       );
     });
 
-    test('successfully checkouts tree', () {
+    test('checkouts tree', () {
       final masterHead = repo.lookupCommit(
         repo['821ed6e80627b8769d170a293862f9fc60825226'],
       );
@@ -111,7 +111,7 @@ void main() {
       );
     });
 
-    test('successfully checkouts with alrenative directory', () {
+    test('checkouts with alrenative directory', () {
       final altDir = Directory('${Directory.systemTemp.path}/alt_dir');
       // making sure there is no directory
       if (altDir.existsSync()) {
@@ -126,7 +126,7 @@ void main() {
       altDir.deleteSync(recursive: true);
     });
 
-    test('successfully checkouts file with provided path', () {
+    test('checkouts file with provided path', () {
       expect(repo.status, isEmpty);
       repo.checkout(
         refName: 'refs/heads/feature',
@@ -140,7 +140,7 @@ void main() {
       );
     });
 
-    test('successfully performs dry run checkout', () {
+    test('performs dry run checkout', () {
       final index = repo.index;
       expect(index.length, 4);
       expect(File('${repo.workdir}/another_feature_file').existsSync(), false);

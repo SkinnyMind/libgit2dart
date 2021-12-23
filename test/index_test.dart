@@ -36,7 +36,7 @@ void main() {
         expect(index.capabilities, isEmpty);
       });
 
-      test('successfully sets index capabilities', () {
+      test('sets index capabilities', () {
         expect(index.capabilities, isEmpty);
 
         index.capabilities = {
@@ -90,7 +90,7 @@ void main() {
       expect(() => index[10], throwsA(isA<ArgumentError>()));
     });
 
-    test('successfully changes attributes', () {
+    test('changes attributes', () {
       final entry = index['file'];
       final otherEntry = index['feature_file'];
 
@@ -117,7 +117,7 @@ void main() {
     });
 
     group('add()', () {
-      test('successfully adds with provided IndexEntry', () {
+      test('adds with provided IndexEntry', () {
         final entry = index['file'];
 
         index.add(entry);
@@ -125,7 +125,7 @@ void main() {
         expect(index.length, 4);
       });
 
-      test('successfully adds with provided path string', () {
+      test('adds with provided path string', () {
         index.add('file');
         expect(index['file'].oid.sha, fileSha);
         expect(index.length, 4);
@@ -154,7 +154,7 @@ void main() {
     });
 
     group('addFromBuffer()', () {
-      test('successfully updates index entry from a buffer', () {
+      test('updates index entry from a buffer', () {
         final entry = index['file'];
         expect(repo.status, isEmpty);
 
@@ -174,7 +174,7 @@ void main() {
     });
 
     group('addAll()', () {
-      test('successfully adds with provided pathspec', () {
+      test('adds with provided pathspec', () {
         index.clear();
         index.addAll(['file', 'feature_file']);
 
@@ -208,7 +208,7 @@ void main() {
     });
 
     group('updateAll()', () {
-      test('successfully updates all entries to match working directory', () {
+      test('updates all entries to match working directory', () {
         expect(repo.status, isEmpty);
         File('${repo.workdir}file').deleteSync();
         File('${repo.workdir}feature_file').deleteSync();
@@ -279,7 +279,7 @@ void main() {
       expect(index.length, 4);
     });
 
-    test('successfully reads tree with provided SHA hex', () {
+    test('reads tree with provided SHA hex', () {
       final tree = repo.lookupTree(
         repo['df2b8fc99e1c1d4dbc0a854d9f72157f1d6ea078'],
       );
@@ -293,7 +293,7 @@ void main() {
       expect(index.length, 4);
     });
 
-    test('successfully writes tree', () {
+    test('writes tree', () {
       final oid = index.writeTree();
       expect(oid.sha, 'a8ae3dd59e6e1802c6f78e05e301bfd57c9f334f');
     });
@@ -327,7 +327,7 @@ void main() {
       tmpDir.deleteSync(recursive: true);
     });
 
-    test('successfully adds conflict entry', () {
+    test('adds conflict entry', () {
       expect(index.conflicts, isEmpty);
       index.addConflict(
         ourEntry: index['file'],
@@ -454,7 +454,7 @@ void main() {
       repoDir.deleteSync(recursive: true);
     });
 
-    test('successfully removes conflict', () {
+    test('removes conflict', () {
       final repoDir = setupRepo(Directory('test/assets/merge_repo/'));
       final conflictRepo = Repository.open(repoDir.path);
 
@@ -492,7 +492,7 @@ void main() {
       );
     });
 
-    test('successfully removes all conflicts', () {
+    test('removes all conflicts', () {
       final repoDir = setupRepo(Directory('test/assets/merge_repo/'));
       final conflictRepo = Repository.open(repoDir.path);
 

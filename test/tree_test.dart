@@ -26,7 +26,7 @@ void main() {
   });
 
   group('Tree', () {
-    test('successfully initializes tree from provided Oid', () {
+    test('initializes tree from provided Oid', () {
       expect(tree, isA<Tree>());
       expect(tree.toString(), contains('Tree{'));
     });
@@ -77,7 +77,7 @@ void main() {
       expect(() => tree[true], throwsA(isA<ArgumentError>()));
     });
 
-    test('successfully creates tree', () {
+    test('creates tree', () {
       final fileOid = repo.createBlob('blob content');
       final builder = TreeBuilder(repo: repo);
 

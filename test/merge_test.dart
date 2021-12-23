@@ -301,7 +301,7 @@ theirs content
     });
 
     group('merge commits', () {
-      test('successfully merges with default values', () {
+      test('merges with default values', () {
         final theirCommit = repo.lookupCommit(repo['5aecfa0']);
         final theirCommitAnnotated = AnnotatedCommit.lookup(
           repo: repo,
@@ -330,7 +330,7 @@ theirs content
         theirCommit.free();
       });
 
-      test('successfully merges with provided favor', () {
+      test('merges with provided favor', () {
         final theirCommit = repo.lookupCommit(repo['5aecfa0']);
         final ourCommit = repo.lookupCommit(repo['1490545']);
 
@@ -346,7 +346,7 @@ theirs content
         theirCommit.free();
       });
 
-      test('successfully merges with provided merge and file flags', () {
+      test('merges with provided merge and file flags', () {
         final theirCommit = repo.lookupCommit(repo['5aecfa0']);
         final ourCommit = repo.lookupCommit(repo['1490545']);
 
@@ -452,7 +452,7 @@ theirs content
     });
 
     group('merge trees', () {
-      test('successfully merges with default values', () {
+      test('merges with default values', () {
         final theirCommit = repo.lookupCommit(repo['5aecfa0']);
         final theirCommitAnnotated = AnnotatedCommit.lookup(
           repo: repo,
@@ -493,7 +493,7 @@ theirs content
         theirCommit.free();
       });
 
-      test('successfully merges with provided favor', () {
+      test('merges with provided favor', () {
         final theirCommit = repo.lookupCommit(repo['5aecfa0']);
         final ourCommit = repo.lookupCommit(repo['1490545']);
         final baseCommit = repo.lookupCommit(
@@ -532,7 +532,7 @@ theirs content
       });
     });
 
-    test('successfully cherry-picks commit', () {
+    test('cherry-picks commit', () {
       final cherry = repo.lookupCommit(repo['5aecfa0']);
       repo.cherryPick(cherry);
       expect(repo.state, GitRepositoryState.cherrypick);

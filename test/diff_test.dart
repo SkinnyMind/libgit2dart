@@ -102,7 +102,7 @@ index e69de29..c217c63 100644
   });
 
   group('Diff', () {
-    test('successfully returns diff between index and workdir', () {
+    test('returns diff between index and workdir', () {
       final index = repo.index;
       final diff = repo.diff();
 
@@ -115,7 +115,7 @@ index e69de29..c217c63 100644
       index.free();
     });
 
-    test('successfully returns diff between index and tree', () {
+    test('returns diff between index and tree', () {
       final index = repo.index;
       final head = repo.head;
       final commit = repo.lookupCommit(head.target);
@@ -141,7 +141,7 @@ index e69de29..c217c63 100644
       index.free();
     });
 
-    test('successfully returns diff between tree and workdir', () {
+    test('returns diff between tree and workdir', () {
       final head = repo.head;
       final commit = repo.lookupCommit(head.target);
       final tree = commit.tree;
@@ -165,7 +165,7 @@ index e69de29..c217c63 100644
       expect(() => nullRepo.diff(a: nullTree), throwsA(isA<LibGit2Error>()));
     });
 
-    test('successfully returns diff between tree and index', () {
+    test('returns diff between tree and index', () {
       final index = repo.index;
       final head = repo.head;
       final commit = repo.lookupCommit(head.target);
@@ -184,7 +184,7 @@ index e69de29..c217c63 100644
       index.free();
     });
 
-    test('successfully returns diff between tree and tree', () {
+    test('returns diff between tree and tree', () {
       final head = repo.head;
       final commit = repo.lookupCommit(head.target);
       final tree1 = commit.tree;
@@ -236,7 +236,7 @@ index e69de29..c217c63 100644
       head.free();
     });
 
-    test('successfully merges diffs', () {
+    test('merges diffs', () {
       final head = repo.head;
       final commit = repo.lookupCommit(head.target);
       final tree1 = commit.tree;
@@ -260,7 +260,7 @@ index e69de29..c217c63 100644
       diff2.free();
     });
 
-    test('successfully parses provided diff', () {
+    test('parses provided diff', () {
       final diff = Diff.parse(patchText);
       final stats = diff.stats;
 
@@ -316,7 +316,7 @@ index e69de29..c217c63 100644
         diff2.free();
       });
 
-      test('successfully applies diff to repository', () {
+      test('applies diff to repository', () {
         final diff = Diff.parse(patchText);
         final file = File('${tmpDir.path}/subdir/modified_file');
 
@@ -334,7 +334,7 @@ index e69de29..c217c63 100644
         expect(() => repo.apply(diff: nullDiff), throwsA(isA<LibGit2Error>()));
       });
 
-      test('successfully creates patch from entry index in diff', () {
+      test('creates patch from entry index in diff', () {
         final diff = Diff.parse(patchText);
         final patch = Patch.fromDiff(diff: diff, index: 0);
 
@@ -345,7 +345,7 @@ index e69de29..c217c63 100644
         diff.free();
       });
 
-      test('successfully applies hunk with provided index to repository', () {
+      test('applies hunk with provided index to repository', () {
         final diff = Diff.parse(patchText);
         final hunk = diff.patches.first.hunks.first;
         final file = File('${tmpDir.path}/subdir/modified_file');
@@ -359,7 +359,7 @@ index e69de29..c217c63 100644
         diff.free();
       });
 
-      test('successfully applies diff to tree', () {
+      test('applies diff to tree', () {
         final diff = Diff.parse(patchText);
 
         repo.checkout(refName: 'HEAD', strategy: {GitCheckout.force});
@@ -385,7 +385,7 @@ index e69de29..c217c63 100644
         diff.free();
       });
 
-      test('successfully applies hunk with provided index to tree', () {
+      test('applies hunk with provided index to tree', () {
         final diff = Diff.parse(patchText);
         final hunk = diff.patches.first.hunks.first;
 
@@ -425,7 +425,7 @@ index e69de29..c217c63 100644
       });
     });
 
-    test('successfully finds similar entries', () {
+    test('finds similar entries', () {
       final index = repo.index;
       final head = repo.head;
       final commit = repo.lookupCommit(head.target);

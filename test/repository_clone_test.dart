@@ -29,7 +29,7 @@ void main() {
   });
 
   group('Repository.clone', () {
-    test('successfully clones repository', () {
+    test('clones repository', () {
       final clonedRepo = Repository.clone(
         url: tmpDir.path,
         localPath: cloneDir.path,
@@ -41,7 +41,7 @@ void main() {
       clonedRepo.free();
     });
 
-    test('successfully clones repository as bare', () {
+    test('clones repository as bare', () {
       final clonedRepo = Repository.clone(
         url: tmpDir.path,
         localPath: cloneDir.path,
@@ -54,8 +54,7 @@ void main() {
       clonedRepo.free();
     });
 
-    test('successfully clones repository with provided checkout branch name',
-        () {
+    test('clones repository with provided checkout branch name', () {
       final clonedRepo = Repository.clone(
         url: tmpDir.path,
         localPath: cloneDir.path,
@@ -70,7 +69,7 @@ void main() {
       clonedRepo.free();
     });
 
-    test('successfully clones repository with provided remote callback', () {
+    test('clones repository with provided remote callback', () {
       Remote remote(Repository repo, String name, String url) =>
           repo.createRemote(name: 'test', url: tmpDir.path);
 
@@ -102,8 +101,7 @@ void main() {
       );
     });
 
-    test('successfully clones repository with provided repository callback',
-        () {
+    test('clones repository with provided repository callback', () {
       final callbackPath =
           Directory('${Directory.systemTemp.path}/callbackRepo');
       if (callbackPath.existsSync()) {

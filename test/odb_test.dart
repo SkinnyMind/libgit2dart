@@ -34,13 +34,13 @@ void main() {
       expect(() => Repository((nullptr)).odb, throwsA(isA<LibGit2Error>()));
     });
 
-    test('successfully creates new odb with no backends', () {
+    test('creates new odb with no backends', () {
       final odb = Odb.create();
       expect(odb, isA<Odb>());
       odb.free();
     });
 
-    test('successfully adds disk alternate', () {
+    test('adds disk alternate', () {
       final odb = Odb.create();
       odb.addDiskAlternate('${repo.workdir}.git/objects/');
 
@@ -49,7 +49,7 @@ void main() {
       odb.free();
     });
 
-    test('successfully reads object', () {
+    test('reads object', () {
       final oid = repo[blobSha];
       final odb = repo.odb;
       final object = odb.read(oid);
@@ -95,7 +95,7 @@ void main() {
       odb.free();
     });
 
-    test('successfully writes data', () {
+    test('writes data', () {
       final odb = repo.odb;
       final oid = odb.write(type: GitObject.blob, data: 'testing');
       final object = odb.read(oid);

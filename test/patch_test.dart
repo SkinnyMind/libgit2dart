@@ -54,7 +54,7 @@ index e69de29..0000000
   });
 
   group('Patch', () {
-    test('successfully creates from buffers', () {
+    test('creates from buffers', () {
       final patch = Patch.create(
         a: oldBlob,
         b: newBlob,
@@ -68,7 +68,7 @@ index e69de29..0000000
       patch.free();
     });
 
-    test('successfully creates from one buffer (add)', () {
+    test('creates from one buffer (add)', () {
       final patch = Patch.create(
         a: null,
         b: newBlob,
@@ -81,7 +81,7 @@ index e69de29..0000000
       patch.free();
     });
 
-    test('successfully creates from one buffer (delete)', () {
+    test('creates from one buffer (delete)', () {
       final patch = Patch.create(
         a: oldBlob,
         b: null,
@@ -94,7 +94,7 @@ index e69de29..0000000
       patch.free();
     });
 
-    test('successfully creates from blobs', () {
+    test('creates from blobs', () {
       final a = repo.lookupBlob(oldBlobOid);
       final b = repo.lookupBlob(newBlobOid);
       final patch = Patch.create(
@@ -109,7 +109,7 @@ index e69de29..0000000
       patch.free();
     });
 
-    test('successfully creates from one blob (add)', () {
+    test('creates from one blob (add)', () {
       final b = repo.lookupBlob(newBlobOid);
       final patch = Patch.create(
         a: null,
@@ -123,7 +123,7 @@ index e69de29..0000000
       patch.free();
     });
 
-    test('successfully creates from one blob (delete)', () {
+    test('creates from one blob (delete)', () {
       final a = repo.lookupBlob(oldBlobOid);
       final patch = Patch.create(
         a: a,
@@ -137,7 +137,7 @@ index e69de29..0000000
       patch.free();
     });
 
-    test('successfully creates from blob and buffer', () {
+    test('creates from blob and buffer', () {
       final a = repo.lookupBlob(oldBlobOid);
       final patch = Patch.create(
         a: a,

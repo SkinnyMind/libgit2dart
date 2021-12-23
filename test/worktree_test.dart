@@ -29,7 +29,7 @@ void main() {
   });
 
   group('Worktree', () {
-    test('successfully creates worktree at provided path', () {
+    test('creates worktree at provided path', () {
       expect(repo.worktrees, <String>[]);
 
       final worktree = repo.createWorktree(
@@ -52,9 +52,7 @@ void main() {
       worktree.free();
     });
 
-    test(
-        'successfully creates worktree at provided path from '
-        'provided reference', () {
+    test('creates worktree at provided path from provided reference', () {
       final head = repo.revParseSingle('HEAD');
       final worktreeBranch = repo.createBranch(name: 'v1', target: head);
       final ref = repo.lookupReference('refs/heads/v1');
@@ -105,7 +103,7 @@ void main() {
       );
     });
 
-    test('successfully lookups worktree', () {
+    test('lookups worktree', () {
       final worktree = repo.createWorktree(
         name: worktreeName,
         path: worktreeDir.path,
@@ -127,7 +125,7 @@ void main() {
       );
     });
 
-    test('successfully locks and unlocks worktree', () {
+    test('locks and unlocks worktree', () {
       final worktree = repo.createWorktree(
         name: worktreeName,
         path: worktreeDir.path,
@@ -143,7 +141,7 @@ void main() {
       worktree.free();
     });
 
-    test('successfully prunes worktree', () {
+    test('prunes worktree', () {
       expect(repo.worktrees, <String>[]);
 
       final worktree = repo.createWorktree(

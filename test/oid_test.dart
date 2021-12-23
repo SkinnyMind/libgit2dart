@@ -25,13 +25,13 @@ void main() {
 
   group('Oid', () {
     group('fromSHA()', () {
-      test('successfully initializes', () {
+      test('initializes from 40-char hex string', () {
         final oid = Oid.fromSHA(repo: repo, sha: sha);
         expect(oid, isA<Oid>());
         expect(oid.sha, sha);
       });
 
-      test('successfully initializes from short hex string', () {
+      test('initializes from short hex string', () {
         final oid = Oid.fromSHA(repo: repo, sha: sha.substring(0, 5));
 
         expect(oid, isA<Oid>());

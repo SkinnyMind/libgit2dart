@@ -58,7 +58,7 @@ void main() {
   });
 
   group('Blame', () {
-    test('successfully gets the blame for provided file', () {
+    test('returns the blame for provided file', () {
       final blame = repo.blame(
         path: 'feature_file',
         oldestCommit: repo['f17d0d4'],
@@ -113,9 +113,7 @@ void main() {
       blame.free();
     });
 
-    test(
-        'successfully gets the blame for provided file with '
-        'minMatchCharacters set', () {
+    test('returns the blame for provided file with minMatchCharacters set', () {
       final blame = repo.blame(
         path: 'feature_file',
         minMatchCharacters: 1,
@@ -127,7 +125,7 @@ void main() {
       blame.free();
     });
 
-    test('successfully gets the blame for provided line', () {
+    test('returns the blame for provided line', () {
       final blame = repo.blame(path: 'feature_file');
 
       final hunk = blame.forLine(1);
@@ -162,9 +160,7 @@ void main() {
       blame.free();
     });
 
-    test(
-        'successfully gets the blame for provided file with '
-        'newestCommit argument', () {
+    test('returns the blame for provided file with newestCommit argument', () {
       final blame = repo.blame(
         path: 'feature_file',
         newestCommit: repo['fc38877'],
@@ -191,9 +187,8 @@ void main() {
       blame.free();
     });
 
-    test(
-        'successfully gets the blame for provided file with minLine and '
-        'maxLine set', () {
+    test('returns the blame for provided file with minLine and maxLine set',
+        () {
       final blame = repo.blame(
         path: 'feature_file',
         minLine: 1,

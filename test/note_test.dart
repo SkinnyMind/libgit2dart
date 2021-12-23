@@ -51,7 +51,7 @@ void main() {
       expect(() => repo.notes, throwsA(isA<LibGit2Error>()));
     });
 
-    test('successfully lookups note', () {
+    test('lookups note', () {
       final head = repo.head;
       final note = repo.lookupNote(annotatedOid: head.target);
 
@@ -63,7 +63,7 @@ void main() {
       head.free();
     });
 
-    test('successfully creates note', () {
+    test('creates note', () {
       final signature = Signature.create(
         name: 'Author',
         email: 'author@email.com',
@@ -99,7 +99,7 @@ void main() {
       );
     });
 
-    test('successfully deletes note', () {
+    test('deletes note', () {
       final signature = Signature.create(
         name: 'Author',
         email: 'author@email.com',

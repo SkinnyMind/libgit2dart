@@ -33,7 +33,7 @@ void main() {
       expect(repo.submodules.first, testSubmodule);
     });
 
-    test('successfully finds submodule with provided name/path', () {
+    test('finds submodule with provided name/path', () {
       final submodule = repo.lookupSubmodule(testSubmodule);
 
       expect(submodule.name, testSubmodule);
@@ -57,7 +57,7 @@ void main() {
       );
     });
 
-    test('successfully inits and updates', () {
+    test('inits and updates', () {
       final submoduleFilePath = '${repo.workdir}$testSubmodule/master.txt';
       expect(File(submoduleFilePath).existsSync(), false);
 
@@ -67,7 +67,7 @@ void main() {
       expect(File(submoduleFilePath).existsSync(), true);
     });
 
-    test('successfully updates with provided init flag', () {
+    test('updates with provided init flag', () {
       final submoduleFilePath = '${repo.workdir}$testSubmodule/master.txt';
       expect(File(submoduleFilePath).existsSync(), false);
 
@@ -83,7 +83,7 @@ void main() {
       );
     });
 
-    test('successfully opens repository for a submodule', () {
+    test('opens repository for a submodule', () {
       final submodule = repo.lookupSubmodule(testSubmodule);
       repo.initSubmodule(submodule: testSubmodule);
       repo.updateSubmodule(submodule: testSubmodule);
@@ -109,7 +109,7 @@ void main() {
       submodule.free();
     });
 
-    test('successfully adds submodule', () {
+    test('adds submodule', () {
       final submodule = repo.addSubmodule(
         url: submoduleUrl,
         path: 'test',
@@ -144,7 +144,7 @@ void main() {
       );
     });
 
-    test('successfully sets configuration values', () {
+    test('sets configuration values', () {
       final submodule = repo.lookupSubmodule(testSubmodule);
       expect(submodule.url, submoduleUrl);
       expect(submodule.branch, '');
@@ -166,7 +166,7 @@ void main() {
       submodule.free();
     });
 
-    test('successfully syncs', () {
+    test('syncs', () {
       repo.updateSubmodule(submodule: testSubmodule, init: true);
       final submodule = repo.lookupSubmodule(testSubmodule);
       final submRepo = submodule.open();
@@ -202,7 +202,7 @@ void main() {
       submodule.free();
     });
 
-    test('successfully reloads info', () {
+    test('reloads info', () {
       final submodule = repo.lookupSubmodule(testSubmodule);
       expect(submodule.url, submoduleUrl);
 

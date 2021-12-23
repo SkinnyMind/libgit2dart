@@ -84,12 +84,12 @@ void main() {
         expect(repo.isBranchUnborn, true);
       });
 
-      test('successfully sets identity ', () {
+      test('sets identity ', () {
         repo.setIdentity(name: 'name', email: 'email@email.com');
         expect(repo.identity, {'name': 'email@email.com'});
       });
 
-      test('successfully unsets identity', () {
+      test('unsets identity', () {
         repo.setIdentity(name: null, email: null);
         expect(repo.identity, isEmpty);
       });

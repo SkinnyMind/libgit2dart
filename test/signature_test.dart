@@ -20,7 +20,7 @@ void main() {
     signature.free();
   });
   group('Signature', () {
-    test('successfully creates with provided time and offset', () {
+    test('creates with provided time and offset', () {
       expect(signature, isA<Signature>());
     });
 
@@ -40,7 +40,7 @@ void main() {
       );
     });
 
-    test('successfully creates without provided time and offset', () {
+    test('creates without provided time and offset', () {
       final sig = Signature.create(name: 'Name', email: 'email@example.com');
       expect(sig, isA<Signature>());
       expect(sig.name, 'Name');

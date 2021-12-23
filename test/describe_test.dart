@@ -21,7 +21,7 @@ void main() {
   });
 
   group('Describe', () {
-    test('successfully describes with default arguments', () {
+    test('describes worktree with default arguments', () {
       expect(repo.describe(), 'v0.2');
     });
 
@@ -30,7 +30,7 @@ void main() {
       expect(() => nullRepo.describe(), throwsA(isA<LibGit2Error>()));
     });
 
-    test('successfully describes commit', () {
+    test('describes commit', () {
       repo.deleteTag('v0.2');
 
       expect(
@@ -54,7 +54,7 @@ void main() {
       commit.free();
     });
 
-    test('successfully describes with provided strategy', () {
+    test('describes with provided strategy', () {
       final commit = repo.lookupCommit(repo['5aecfa0']);
       expect(
         repo.describe(
@@ -66,7 +66,7 @@ void main() {
       commit.free();
     });
 
-    test('successfully describes with provided pattern', () {
+    test('describes with provided pattern', () {
       final signature = Signature.create(
         name: 'Author',
         email: 'author@email.com',
@@ -90,7 +90,7 @@ void main() {
       signature.free();
     });
 
-    test('successfully describes and follows first parent only', () {
+    test('describes and follows first parent only', () {
       final commit = repo.lookupCommit(repo['821ed6e']);
       repo.deleteTag('v0.2');
 
@@ -106,7 +106,7 @@ void main() {
       commit.free();
     });
 
-    test('successfully describes with provided abbreviated size', () {
+    test('describes with provided abbreviated size', () {
       final commit = repo.lookupCommit(repo['821ed6e']);
       repo.deleteTag('v0.2');
 
@@ -131,11 +131,11 @@ void main() {
       commit.free();
     });
 
-    test('successfully describes with long format', () {
+    test('describes with long format', () {
       expect(repo.describe(alwaysUseLongFormat: true), 'v0.2-0-g821ed6e');
     });
 
-    test('successfully describes and appends dirty suffix', () {
+    test('describes and appends dirty suffix', () {
       final index = repo.index;
       index.clear();
 
@@ -144,7 +144,7 @@ void main() {
       index.free();
     });
 
-    test('successfully describes with max candidates tags flag set', () {
+    test('describes with max candidates tags flag set', () {
       final index = repo.index;
       index.clear();
 

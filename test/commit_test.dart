@@ -44,7 +44,7 @@ void main() {
   });
 
   group('Commit', () {
-    test('successfully lookups for provided oid', () {
+    test('lookups commit for provided oid', () {
       final commit = repo.lookupCommit(tip);
       expect(commit, isA<Commit>());
       commit.free();
@@ -63,7 +63,7 @@ void main() {
       expect(() => Commit(nullptr).summary, throwsA(isA<LibGit2Error>()));
     });
 
-    test('successfully reverts commit', () {
+    test('reverts commit affecting index and workdir', () {
       final commit = repo.lookupCommit(
         repo['821ed6e80627b8769d170a293862f9fc60825226'],
       );
@@ -83,7 +83,7 @@ void main() {
       expect(() => repo.revert(Commit(nullptr)), throwsA(isA<LibGit2Error>()));
     });
 
-    test('successfully reverts commit to provided commit', () {
+    test('reverts commit to provided commit', () {
       final to = repo.lookupCommit(
         repo['78b8bf123e3952c970ae5c1ce0a3ea1d1336f6e8'],
       );
@@ -115,7 +115,7 @@ void main() {
       );
     });
 
-    test('successfully creates commit', () {
+    test('creates commit', () {
       final parent = repo.lookupCommit(tip);
       final oid = repo.createCommit(
         updateRef: 'HEAD',
@@ -174,7 +174,7 @@ Some description.
       parent.free();
     });
 
-    test('successfully creates commit without parents', () {
+    test('creates commit without parents', () {
       final oid = repo.createCommit(
         updateRef: 'refs/heads/new',
         message: message,
@@ -198,7 +198,7 @@ Some description.
       commit.free();
     });
 
-    test('successfully creates commit with 2 parents', () {
+    test('creates commit with 2 parents', () {
       final parent1 = repo.lookupCommit(tip);
       final parent2 = repo.lookupCommit(
         repo['fc38877b2552ab554752d9a77e1f48f738cca79b'],
@@ -272,7 +272,7 @@ Some description.
       parent.free();
     });
 
-    test('successfully amends commit with default arguments', () {
+    test('amends commit with default arguments', () {
       final oldHead = repo.head;
       final commit = repo.lookupCommit(repo['821ed6e']);
       expect(commit.oid, oldHead.target);
@@ -298,7 +298,7 @@ Some description.
       oldHead.free();
     });
 
-    test('successfully amends commit with provided arguments', () {
+    test('amends commit with provided arguments', () {
       final oldHead = repo.head;
       final commit = repo.lookupCommit(repo['821ed6e']);
       expect(commit.oid, oldHead.target);
@@ -327,7 +327,7 @@ Some description.
       oldHead.free();
     });
 
-    test('successfully amends commit that is not the tip of the branch', () {
+    test('amends commit that is not the tip of the branch', () {
       final head = repo.head;
       final commit = repo.lookupCommit(repo['78b8bf1']);
       expect(commit.oid, isNot(head.target));

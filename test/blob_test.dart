@@ -24,7 +24,7 @@ void main() {
   });
 
   group('Blob', () {
-    test('successfully initializes blob from provided Oid', () {
+    test('lookups blob with provided oid', () {
       final blob = repo.lookupBlob(repo[blobSHA]);
       expect(blob, isA<Blob>());
       blob.free();
@@ -48,7 +48,7 @@ void main() {
       blob.free();
     });
 
-    test('successfully creates new blob', () {
+    test('creates new blob with provided content', () {
       final oid = repo.createBlob(newBlobContent);
       final newBlob = repo.lookupBlob(oid);
 
@@ -68,8 +68,7 @@ void main() {
       );
     });
 
-    test('successfully creates new blob from file at provided relative path',
-        () {
+    test('creates new blob from file at provided relative path', () {
       final oid = repo.createBlobFromWorkdir('feature_file');
       final newBlob = repo.lookupBlob(oid);
 
@@ -88,7 +87,7 @@ void main() {
       );
     });
 
-    test('successfully creates new blob from file at provided path', () {
+    test('creates new blob from file at provided path', () {
       final outsideFile =
           File('${Directory.current.absolute.path}/test/blob_test.dart');
       final oid = repo.createBlobFromDisk(outsideFile.path);
@@ -156,7 +155,7 @@ void main() {
       );
     });
 
-    group('diff', () {
+    group('patch', () {
       const path = 'feature_file';
       const blobPatch = """
 diff --git a/feature_file b/feature_file
@@ -174,7 +173,7 @@ index e69de29..0000000
 --- a/feature_file
 +++ /dev/null
 """;
-      test('successfully creates from blobs', () {
+      test('creates patch with changes between blobs', () {
         final a = repo.lookupBlob(
           repo['e69de29bb2d1d6434b8b29ae775ad8c2e48c5391'],
         );
@@ -195,7 +194,8 @@ index e69de29..0000000
         b.free();
       });
 
-      test('successfully creates from one blob (delete)', () {
+      test('creates patch with changes between blobs from one blob (delete)',
+          () {
         final blob = repo.lookupBlob(
           repo['e69de29bb2d1d6434b8b29ae775ad8c2e48c5391'],
         );
@@ -211,7 +211,7 @@ index e69de29..0000000
         patch.free();
       });
 
-      test('successfully creates from blob and buffer', () {
+      test('creates patch with changes between blob and buffer', () {
         final blob = repo.lookupBlob(
           repo['e69de29bb2d1d6434b8b29ae775ad8c2e48c5391'],
         );
@@ -226,7 +226,7 @@ index e69de29..0000000
         blob.free();
       });
 
-      test('successfully creates from blob and buffer (delete)', () {
+      test('creates patch with changes between blob and buffer (delete)', () {
         final a = repo.lookupBlob(
           repo['e69de29bb2d1d6434b8b29ae775ad8c2e48c5391'],
         );

@@ -24,14 +24,14 @@ void main() {
   });
 
   group('TreeBuilder', () {
-    test('successfully initializes tree builder when no tree is provided', () {
+    test('initializes tree builder when no tree is provided', () {
       final builder = TreeBuilder(repo: repo);
       expect(builder, isA<TreeBuilder>());
       expect(builder.toString(), contains('TreeBuilder{'));
       builder.free();
     });
 
-    test('successfully initializes tree builder with provided tree', () {
+    test('initializes tree builder with provided tree', () {
       final builder = TreeBuilder(repo: repo, tree: tree);
       final oid = builder.write();
 
@@ -59,7 +59,7 @@ void main() {
       builder.free();
     });
 
-    test('successfully builds the tree builder from entry of tree', () {
+    test('builds the tree builder from entry of tree', () {
       final builder = TreeBuilder(repo: repo);
       final entry = tree.entries[0];
 
@@ -99,7 +99,7 @@ void main() {
       builder.free();
     });
 
-    test('successfully removes an entry', () {
+    test('removes an entry', () {
       final builder = TreeBuilder(repo: repo, tree: tree);
 
       expect(builder.length, tree.length);

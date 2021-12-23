@@ -47,7 +47,7 @@ void main() {
       }
     });
 
-    test('fetch() successfully prunes branch with provided flag', () {
+    test('fetch() prunes branch with provided flag', () {
       remote.fetch(prune: GitFetchPrune.prune);
 
       final branches = clonedRepo.branches;
@@ -69,7 +69,7 @@ void main() {
       }
     });
 
-    test('prune() successfully prunes branches', () {
+    test('prune() prunes branches', () {
       final pruned = <String>[];
       void updateTips(String refname, Oid oldOid, Oid newOid) {
         pruned.add(refname);

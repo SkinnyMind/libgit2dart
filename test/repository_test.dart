@@ -78,7 +78,7 @@ void main() {
       expect(repo.namespace, isEmpty);
     });
 
-    test('successfully sets and unsets the namespace', () {
+    test('sets and unsets the namespace', () {
       expect(repo.namespace, '');
       repo.setNamespace('some');
       expect(repo.namespace, 'some');
@@ -86,7 +86,7 @@ void main() {
       expect(repo.namespace, '');
     });
 
-    test('successfully sets working directory', () {
+    test('sets working directory', () {
       final tmpWorkDir = Directory('${Directory.systemTemp.path}/tmp_work_dir');
       tmpWorkDir.createSync();
 
@@ -121,7 +121,7 @@ void main() {
       setUp(() => head = repo.head);
       tearDown(() => head.free());
 
-      test('successfully sets head when target is reference', () {
+      test('sets head when target is reference', () {
         expect(repo.head.name, 'refs/heads/master');
         expect(repo.head.target.sha, lastCommit);
         repo.setHead('refs/heads/feature');
@@ -129,14 +129,14 @@ void main() {
         expect(repo.head.target.sha, featureCommit);
       });
 
-      test('successfully sets head when target is sha hex', () {
+      test('sets head when target is sha hex', () {
         expect(repo.head.target.sha, lastCommit);
         repo.setHead(repo[featureCommit]);
         expect(repo.head.target.sha, featureCommit);
         expect(repo.isHeadDetached, true);
       });
 
-      test('successfully attaches to an unborn branch', () {
+      test('attaches to an unborn branch', () {
         expect(repo.head.name, 'refs/heads/master');
         expect(repo.isBranchUnborn, false);
         repo.setHead('refs/heads/not.there');
@@ -162,7 +162,7 @@ void main() {
     group('createBlob', () {
       const newBlobContent = 'New blob\n';
 
-      test('successfully creates new blob', () {
+      test('creates new blob', () {
         final oid = repo.createBlob(newBlobContent);
         final newBlob = repo.lookupBlob(oid);
 
@@ -171,8 +171,7 @@ void main() {
         newBlob.free();
       });
 
-      test('successfully creates new blob from file at provided relative path',
-          () {
+      test('creates new blob from file at provided relative path', () {
         final oid = repo.createBlobFromWorkdir('feature_file');
         final newBlob = repo.lookupBlob(oid);
 
@@ -181,7 +180,7 @@ void main() {
         newBlob.free();
       });
 
-      test('successfully creates new blob from file at provided path', () {
+      test('creates new blob from file at provided path', () {
         final outsideFile =
             File('${Directory.current.absolute.path}/test/blob_test.dart');
         final oid = repo.createBlobFromDisk(outsideFile.path);
@@ -193,7 +192,7 @@ void main() {
       });
     });
 
-    test('successfully creates tag with provided sha', () {
+    test('creates tag with provided sha', () {
       final signature = Signature.create(
         name: 'Author',
         email: 'author@email.com',

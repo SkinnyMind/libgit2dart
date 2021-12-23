@@ -27,7 +27,7 @@ void main() {
   });
 
   group('Stash', () {
-    test('successfully saves changes to stash', () {
+    test('saves changes to stash', () {
       File('${tmpDir.path}/file').writeAsStringSync(
         'edit',
         mode: FileMode.append,
@@ -44,7 +44,7 @@ void main() {
       );
     });
 
-    test('successfully saves changes to stash including ignored', () {
+    test('saves changes to stash including ignored', () {
       final swpPath = File('${tmpDir.path}/some.swp');
       swpPath.writeAsStringSync('ignored');
 
@@ -74,7 +74,7 @@ void main() {
       index.free();
     });
 
-    test('successfully applies changes from stash', () {
+    test('applies changes from stash', () {
       File('${tmpDir.path}/file').writeAsStringSync(
         'edit',
         mode: FileMode.append,
@@ -87,7 +87,7 @@ void main() {
       expect(repo.status, contains('file'));
     });
 
-    test('successfully applies changes from stash with paths provided', () {
+    test('applies changes from stash with paths provided', () {
       File('${tmpDir.path}/file').writeAsStringSync(
         'edit',
         mode: FileMode.append,
@@ -100,7 +100,7 @@ void main() {
       expect(repo.status, contains('file'));
     });
 
-    test('successfully applies changes from stash including index changes', () {
+    test('applies changes from stash including index changes', () {
       File('${tmpDir.path}/stash.this').writeAsStringSync('stash');
       final index = repo.index;
       index.add('stash.this');
@@ -128,7 +128,7 @@ void main() {
       expect(() => repo.applyStash(index: 10), throwsA(isA<LibGit2Error>()));
     });
 
-    test('successfully drops stash', () {
+    test('drops stash', () {
       File('${tmpDir.path}/file').writeAsStringSync(
         'edit',
         mode: FileMode.append,
@@ -151,7 +151,7 @@ void main() {
       expect(() => repo.dropStash(index: 10), throwsA(isA<LibGit2Error>()));
     });
 
-    test('successfully pops from stash', () {
+    test('pops from stash', () {
       File('${tmpDir.path}/file').writeAsStringSync(
         'edit',
         mode: FileMode.append,
@@ -163,7 +163,7 @@ void main() {
       expect(() => repo.applyStash(), throwsA(isA<LibGit2Error>()));
     });
 
-    test('successfully pops from stash with provided path', () {
+    test('pops from stash with provided path', () {
       File('${tmpDir.path}/file').writeAsStringSync(
         'edit',
         mode: FileMode.append,
@@ -175,7 +175,7 @@ void main() {
       expect(() => repo.applyStash(), throwsA(isA<LibGit2Error>()));
     });
 
-    test('successfully pops from stash including index changes', () {
+    test('pops from stash including index changes', () {
       File('${tmpDir.path}/stash.this').writeAsStringSync('stash');
       final index = repo.index;
       index.add('stash.this');

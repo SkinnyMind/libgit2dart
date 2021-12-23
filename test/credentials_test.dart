@@ -18,7 +18,7 @@ void main() {
     }
   });
   group('Credentials', () {
-    test('successfully initializes username/password credentials', () {
+    test('initializes username/password credentials', () {
       final credentials = const UserPass(
         username: 'user',
         password: 'password',
@@ -31,7 +31,7 @@ void main() {
       expect(credentials.toString(), contains('UserPass{'));
     });
 
-    test('successfully initializes keypair credentials', () {
+    test('initializes keypair credentials', () {
       final credentials = const Keypair(
         username: 'user',
         pubKey: 'id_rsa.pub',
@@ -48,7 +48,7 @@ void main() {
       expect(credentials.toString(), contains('Keypair{'));
     });
 
-    test('successfully initializes keypair from memory credentials', () {
+    test('initializes keypair from memory credentials', () {
       final credentials = const KeypairFromMemory(
         username: 'user',
         pubKey: 'pubkey data',
@@ -65,7 +65,7 @@ void main() {
       expect(credentials.toString(), contains('KeypairFromMemory{'));
     });
 
-    test('successfully initializes keypair from agent credentials', () {
+    test('initializes keypair from agent credentials', () {
       final credentials = const KeypairFromAgent('user');
 
       expect(credentials, isA<Credentials>());
@@ -92,7 +92,7 @@ void main() {
       );
     });
 
-    test('sucessfully clones repository with provided keypair', () {
+    test('clones repository with provided keypair', () {
       final keypair = const Keypair(
         username: 'git',
         pubKey: 'test/assets/keys/id_rsa.pub',
@@ -178,7 +178,7 @@ void main() {
       );
     });
 
-    test('sucessfully clones repository with provided keypair from memory', () {
+    test('clones repository with provided keypair from memory', () {
       final pubKey = File('test/assets/keys/id_rsa.pub').readAsStringSync();
       final privateKey = File('test/assets/keys/id_rsa').readAsStringSync();
       final keypair = KeypairFromMemory(

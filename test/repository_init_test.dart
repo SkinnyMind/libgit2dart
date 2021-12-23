@@ -20,14 +20,14 @@ void main() {
     initDir.deleteSync(recursive: true);
   });
   group('Repository.init', () {
-    test('successfully creates new bare repo at provided path', () {
+    test('creates new bare repo at provided path', () {
       repo = Repository.init(path: initDir.path, bare: true);
 
       expect(repo.path, contains('init_repo/'));
       expect(repo.isBare, true);
     });
 
-    test('successfully creates new standard repo at provided path', () {
+    test('creates new standard repo at provided path', () {
       repo = Repository.init(path: initDir.path);
 
       expect(repo.path, contains('init_repo/.git/'));
@@ -35,7 +35,7 @@ void main() {
       expect(repo.isEmpty, true);
     });
 
-    test('successfully creates new standard repo with provided options', () {
+    test('creates new standard repo with provided options', () {
       repo = Repository.init(
         path: initDir.path,
         description: 'test repo',

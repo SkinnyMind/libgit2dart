@@ -167,7 +167,7 @@ void main() {
     });
 
     group('create direct', () {
-      test('successfully creates with Oid as target', () {
+      test('creates with oid as target', () {
         final ref = repo.lookupReference('refs/heads/master');
         final refFromOid = repo.createReference(
           name: 'refs/tags/from.oid',
@@ -180,7 +180,7 @@ void main() {
         ref.free();
       });
 
-      test('successfully creates with log message', () {
+      test('creates with log message', () {
         repo.setIdentity(name: 'name', email: 'email');
         final ref = repo.createReference(
           name: 'refs/heads/log.message',
@@ -227,7 +227,7 @@ void main() {
         );
       });
 
-      test('successfully creates with force flag if name already exists', () {
+      test('creates with force flag if name already exists', () {
         final ref = repo.createReference(
           name: 'refs/tags/test',
           target: repo[lastCommit],
@@ -264,7 +264,7 @@ void main() {
     });
 
     group('create symbolic', () {
-      test('successfully creates with valid target', () {
+      test('creates with valid target', () {
         final ref = repo.createReference(
           name: 'refs/tags/symbolic',
           target: 'refs/heads/master',
@@ -276,7 +276,7 @@ void main() {
         ref.free();
       });
 
-      test('successfully creates with force flag if name already exists', () {
+      test('creates with force flag if name already exists', () {
         final ref = repo.createReference(
           name: 'refs/tags/test',
           target: 'refs/heads/master',
@@ -322,7 +322,7 @@ void main() {
         );
       });
 
-      test('successfully creates with log message', () {
+      test('creates with log message', () {
         repo.setIdentity(name: 'name', email: 'email');
         final ref = repo.createReference(
           name: 'HEAD',
@@ -343,7 +343,7 @@ void main() {
       });
     });
 
-    test('successfully deletes reference', () {
+    test('deletes reference', () {
       expect(repo.references, contains('refs/tags/v0.1'));
 
       repo.deleteReference('refs/tags/v0.1');
@@ -375,7 +375,7 @@ void main() {
     });
 
     group('set target', () {
-      test('successfully sets direct reference with provided Oid target', () {
+      test('sets direct reference with provided oid target', () {
         final ref = repo.lookupReference('refs/heads/master');
         ref.setTarget(target: repo[newCommit]);
         expect(ref.target.sha, newCommit);
@@ -383,8 +383,7 @@ void main() {
         ref.free();
       });
 
-      test('successfully sets symbolic target with provided reference name',
-          () {
+      test('sets symbolic target with provided reference name', () {
         final ref = repo.lookupReference('HEAD');
         expect(ref.target.sha, lastCommit);
 
@@ -394,7 +393,7 @@ void main() {
         ref.free();
       });
 
-      test('successfully sets target with log message', () {
+      test('sets target with log message', () {
         final ref = repo.lookupReference('HEAD');
         expect(ref.target.sha, lastCommit);
 
@@ -429,7 +428,7 @@ void main() {
     });
 
     group('rename', () {
-      test('successfully renames reference', () {
+      test('renames reference', () {
         repo.renameReference(
           oldName: 'refs/tags/v0.1',
           newName: 'refs/tags/renamed',
@@ -459,7 +458,7 @@ void main() {
         );
       });
 
-      test('successfully renames with force flag set to true', () {
+      test('renames with force flag set to true', () {
         final ref1 = repo.lookupReference('refs/tags/v0.1');
         final ref2 = repo.lookupReference('refs/tags/v0.2');
 
@@ -501,7 +500,7 @@ void main() {
       ref3.free();
     });
 
-    test('successfully peels to non-tag object when no type is provided', () {
+    test('peels to non-tag object when no type is provided', () {
       final ref = repo.lookupReference('refs/heads/master');
       final commit = repo.lookupCommit(ref.target);
       final peeled = ref.peel() as Commit;
@@ -513,7 +512,7 @@ void main() {
       ref.free();
     });
 
-    test('successfully peels to object of provided type', () {
+    test('peels to object of provided type', () {
       final ref = repo.lookupReference('refs/heads/master');
       final blob = repo.lookupBlob(repo['9c78c21']);
       final blobRef = repo.createReference(
@@ -550,7 +549,7 @@ void main() {
       expect(() => Reference(nullptr).peel(), throwsA(isA<LibGit2Error>()));
     });
 
-    test('successfully compresses references', () {
+    test('compresses references', () {
       final packedRefsFile = File('${tmpDir.path}/.git/packed-refs');
       expect(packedRefsFile.existsSync(), false);
       final oldRefs = repo.references;

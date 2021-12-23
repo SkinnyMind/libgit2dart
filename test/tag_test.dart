@@ -26,7 +26,7 @@ void main() {
   });
 
   group('Tag', () {
-    test('successfully initializes tag from provided sha', () {
+    test('initializes tag from provided sha', () {
       expect(tag, isA<Tag>());
     });
 
@@ -62,7 +62,7 @@ void main() {
       target.free();
     });
 
-    test('successfully creates new tag with commit as target', () {
+    test('creates new tag with commit as target', () {
       final signature = Signature.create(
         name: 'Author',
         email: 'author@email.com',
@@ -95,7 +95,7 @@ void main() {
       signature.free();
     });
 
-    test('successfully creates new tag with tree as target', () {
+    test('creates new tag with tree as target', () {
       final signature = Signature.create(
         name: 'Author',
         email: 'author@email.com',
@@ -128,7 +128,7 @@ void main() {
       signature.free();
     });
 
-    test('successfully creates new tag with blob as target', () {
+    test('creates new tag with blob as target', () {
       final signature = Signature.create(
         name: 'Author',
         email: 'author@email.com',
@@ -161,7 +161,7 @@ void main() {
       signature.free();
     });
 
-    test('successfully creates new tag with tag as target', () {
+    test('creates new tag with tag as target', () {
       final signature = Signature.create(
         name: 'Author',
         email: 'author@email.com',
@@ -227,7 +227,7 @@ void main() {
       expect(() => Repository(nullptr).tags, throwsA(isA<LibGit2Error>()));
     });
 
-    test('successfully deletes tag', () {
+    test('deletes tag', () {
       expect(repo.tags, ['v0.1', 'v0.2']);
 
       repo.deleteTag('v0.2');

@@ -26,7 +26,7 @@ void main() {
       expect(repo.remotes, ['origin']);
     });
 
-    test('successfully looks up remote for provided name', () {
+    test('lookups remote for provided name', () {
       final remote = repo.lookupRemote('origin');
 
       expect(remote.name, remoteName);
@@ -41,7 +41,7 @@ void main() {
       expect(() => repo.lookupRemote('upstream'), throwsA(isA<LibGit2Error>()));
     });
 
-    test('successfully creates without fetchspec', () {
+    test('creates without fetchspec', () {
       final remote = repo.createRemote(name: 'upstream', url: remoteUrl);
 
       expect(repo.remotes.length, 2);
@@ -52,7 +52,7 @@ void main() {
       remote.free();
     });
 
-    test('successfully creates with provided fetchspec', () {
+    test('creates with provided fetchspec', () {
       const spec = '+refs/*:refs/*';
       final remote = repo.createRemote(
         name: 'upstream',
@@ -81,7 +81,7 @@ void main() {
       );
     });
 
-    test('successfully deletes', () {
+    test('deletes remote', () {
       final remote = repo.createRemote(name: 'upstream', url: remoteUrl);
       expect(repo.remotes.length, 2);
 
@@ -98,7 +98,7 @@ void main() {
       );
     });
 
-    test('successfully renames', () {
+    test('renames remote', () {
       final remote = repo.lookupRemote(remoteName);
 
       final problems = repo.renameRemote(oldName: remoteName, newName: 'new');
@@ -134,7 +134,7 @@ void main() {
       );
     });
 
-    test('successfully sets url', () {
+    test('sets url', () {
       final remote = repo.lookupRemote(remoteName);
       expect(remote.url, remoteUrl);
 
@@ -155,7 +155,7 @@ void main() {
       );
     });
 
-    test('successfully sets url for pushing', () {
+    test('sets url for pushing', () {
       const newUrl = 'git://new/url.git';
       Remote.setPushUrl(repo: repo, remote: remoteName, url: newUrl);
 
@@ -218,7 +218,7 @@ void main() {
       remote.free();
     });
 
-    test('successfully adds fetch refspec', () {
+    test('adds fetch refspec', () {
       Remote.addFetch(
         repo: repo,
         remote: 'origin',
@@ -248,7 +248,7 @@ void main() {
       );
     });
 
-    test('successfully adds push refspec', () {
+    test('adds push refspec', () {
       Remote.addPush(
         repo: repo,
         remote: 'origin',
@@ -272,7 +272,7 @@ void main() {
       );
     });
 
-    test("successfully returns remote repo's reference list", () {
+    test("returns remote repo's reference list", () {
       Remote.setUrl(
         repo: repo,
         remote: 'libgit2',
@@ -305,7 +305,7 @@ void main() {
     });
 
     test(
-      'successfully fetches data',
+      'fetches data',
       () {
         Remote.setUrl(
           repo: repo,
@@ -338,7 +338,7 @@ void main() {
     );
 
     test(
-      'successfully fetches data with proxy set to auto',
+      'fetches data with proxy set to auto',
       () {
         Remote.setUrl(
           repo: repo,
@@ -412,7 +412,7 @@ void main() {
     });
 
     test(
-      'successfully fetches data with provided transfer progress callback',
+      'fetches data with provided transfer progress callback',
       () {
         Remote.setUrl(
           repo: repo,
@@ -441,7 +441,7 @@ void main() {
     );
 
     test(
-      'successfully fetches data with provided sideband progress callback',
+      'fetches data with provided sideband progress callback',
       () {
         const sidebandMessage = """
 Enumerating objects: 69, done.
@@ -471,7 +471,7 @@ Total 69 (delta 0), reused 1 (delta 0), pack-reused 68
     );
 
     test(
-      'successfully fetches data with provided update tips callback',
+      'fetches data with provided update tips callback',
       () {
         Remote.setUrl(
           repo: repo,
@@ -516,7 +516,7 @@ Total 69 (delta 0), reused 1 (delta 0), pack-reused 68
       tags: 'remote_fetch',
     );
 
-    test('successfully pushes with update reference callback', () {
+    test('pushes with update reference callback', () {
       final originDir =
           Directory('${Directory.systemTemp.path}/origin_testrepo');
 

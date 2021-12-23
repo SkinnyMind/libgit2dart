@@ -140,14 +140,14 @@ Santa Claus <santa.claus@northpole.xx> <me@company.xx>
   });
 
   group('Mailmap', () {
-    test('successfully initializes', () {
+    test('initializes empty mailmap object', () {
       final empty = Mailmap.empty();
       expect(empty, isA<Mailmap>());
 
       empty.free();
     });
 
-    test('successfully initializes from provided buffer', () {
+    test('initializes from provided buffer', () {
       final mailmap = Mailmap.fromBuffer(testMailmap);
       expect(mailmap, isA<Mailmap>());
 
@@ -161,7 +161,7 @@ Santa Claus <santa.claus@northpole.xx> <me@company.xx>
       mailmap.free();
     });
 
-    test('successfully initializes from repository', () {
+    test('initializes from repository', () {
       final mailmap = Mailmap.fromRepository(repo);
       expect(mailmap, isA<Mailmap>());
 
@@ -182,7 +182,7 @@ Santa Claus <santa.claus@northpole.xx> <me@company.xx>
       );
     });
 
-    test('successfully resolves names and emails when mailmap is empty', () {
+    test('resolves names and emails when mailmap is empty', () {
       final mailmap = Mailmap.empty();
 
       for (final entry in testResolve) {
@@ -195,7 +195,7 @@ Santa Claus <santa.claus@northpole.xx> <me@company.xx>
       mailmap.free();
     });
 
-    test('successfully adds entries and resolves them', () {
+    test('adds entries and resolves them', () {
       final mailmap = Mailmap.empty();
 
       for (final entry in testEntries) {
@@ -230,7 +230,7 @@ Santa Claus <santa.claus@northpole.xx> <me@company.xx>
       mailmap.free();
     });
 
-    test('successfully resolves signature', () {
+    test('resolves signature', () {
       final signature = Signature.create(
         name: 'nick1',
         email: 'bugs@company.xx',

@@ -37,7 +37,7 @@ void main() {
   });
 
   group('Config', () {
-    test('successfully opens file with provided path', () {
+    test('opens file with provided path', () {
       expect(config, isA<Config>());
     });
 
@@ -57,7 +57,7 @@ void main() {
       expect(() => Config.open('not.there'), throwsA(isA<Exception>()));
     });
 
-    test('successfully opens system file or throws is there is none', () {
+    test('opens system file or throws is there is none', () {
       try {
         final config = Config.system();
         expect(config, isA<Config>());
@@ -67,7 +67,7 @@ void main() {
       }
     });
 
-    test('successfully opens global file or throws is there is none', () {
+    test('opens global file or throws is there is none', () {
       try {
         final config = Config.global();
         expect(config, isA<Config>());
@@ -77,7 +77,7 @@ void main() {
       }
     });
 
-    test('successfully opens xdg file or throws is there is none', () {
+    test('opens xdg file or throws is there is none', () {
       try {
         final config = Config.xdg();
         expect(config, isA<Config>());
@@ -141,7 +141,7 @@ void main() {
     });
 
     group('delete', () {
-      test('successfully deletes entry', () {
+      test('deletes entry', () {
         expect(config['core.bare'].value, 'false');
         config.delete('core.bare');
         expect(() => config['core.bare'], throwsA(isA<LibGit2Error>()));
@@ -195,7 +195,7 @@ void main() {
     });
 
     group('deleteMultivar()', () {
-      test('successfully deletes value of a multivar', () {
+      test('deletes value of a multivar', () {
         expect(
           config.multivar(
             variable: 'core.gitproxy',
