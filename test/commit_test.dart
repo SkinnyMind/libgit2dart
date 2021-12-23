@@ -64,6 +64,26 @@ void main() {
     });
 
     test('successfully reverts commit', () {
+      final commit = repo.lookupCommit(
+        repo['821ed6e80627b8769d170a293862f9fc60825226'],
+      );
+      final index = repo.index;
+      expect(index.find('dir/dir_file.txt'), true);
+      expect(File('${repo.workdir}dir/dir_file.txt').existsSync(), true);
+
+      repo.revert(commit);
+      expect(index.find('dir/dir_file.txt'), false);
+      expect(File('${repo.workdir}dir/dir_file.txt').existsSync(), false);
+
+      index.free();
+      commit.free();
+    });
+
+    test('throws when trying to revert and error occurs', () {
+      expect(() => repo.revert(Commit(nullptr)), throwsA(isA<LibGit2Error>()));
+    });
+
+    test('successfully reverts commit to provided commit', () {
       final to = repo.lookupCommit(
         repo['78b8bf123e3952c970ae5c1ce0a3ea1d1336f6e8'],
       );
@@ -72,9 +92,11 @@ void main() {
       );
       final index = repo.index;
       expect(index.find('dir/dir_file.txt'), true);
+      expect(File('${repo.workdir}dir/dir_file.txt').existsSync(), true);
 
       final revertIndex = repo.revertCommit(revertCommit: from, ourCommit: to);
       expect(revertIndex.find('dir/dir_file.txt'), false);
+      expect(File('${repo.workdir}dir/dir_file.txt').existsSync(), true);
 
       revertIndex.free();
       index.free();

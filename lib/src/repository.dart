@@ -665,6 +665,17 @@ class Repository {
     );
   }
 
+  /// Reverts the given [commit], producing changes in the index and working
+  /// directory.
+  ///
+  /// Throws a [LibGit2Error] if error occured.
+  void revert(Commit commit) {
+    commit_bindings.revert(
+      repoPointer: _repoPointer,
+      commitPointer: commit.pointer,
+    );
+  }
+
   /// Finds a single object and intermediate reference (if there is one) by a
   /// [spec] revision string.
   ///
