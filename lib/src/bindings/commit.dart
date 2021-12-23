@@ -361,6 +361,21 @@ Pointer<git_tree> tree(Pointer<git_commit> commit) {
   }
 }
 
+/// Reverts the given commit, producing changes in the index and working
+/// directory.
+///
+/// Throws a [LibGit2Error] if error occured.
+void revert({
+  required Pointer<git_repository> repoPointer,
+  required Pointer<git_commit> commitPointer,
+}) {
+  final error = libgit2.git_revert(repoPointer, commitPointer, nullptr);
+
+  if (error < 0) {
+    throw LibGit2Error(libgit2.git_error_last());
+  }
+}
+
 /// Reverts the given commit against the given "our" commit, producing an index
 /// that reflects the result of the revert.
 ///
