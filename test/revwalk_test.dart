@@ -94,6 +94,81 @@ void main() {
       walker.free();
     });
 
+    test('adds matching references for traversal with provided glob', () {
+      final walker = RevWalk(repo);
+
+      walker.pushGlob('heads');
+      final commits = walker.walk();
+      expect(commits.length, 7);
+
+      for (final c in commits) {
+        c.free();
+      }
+      walker.free();
+    });
+
+    test("adds repository's head for traversal", () {
+      final walker = RevWalk(repo);
+
+      walker.pushHead();
+      final commits = walker.walk();
+      expect(commits.length, 6);
+
+      for (final c in commits) {
+        c.free();
+      }
+      walker.free();
+    });
+
+    test('adds reference for traversal with provided name', () {
+      final walker = RevWalk(repo);
+
+      walker.pushReference('refs/heads/master');
+      final commits = walker.walk();
+      expect(commits.length, 6);
+
+      for (final c in commits) {
+        c.free();
+      }
+      walker.free();
+    });
+
+    test('throws when trying to add reference for traversal with invalid name',
+        () {
+      final walker = RevWalk(repo);
+
+      expect(
+        () => walker.pushReference('invalid'),
+        throwsA(isA<LibGit2Error>()),
+      );
+
+      walker.free();
+    });
+
+    test('adds range for traversal', () {
+      final walker = RevWalk(repo);
+
+      walker.pushRange('HEAD..@{-1}');
+      final commits = walker.walk();
+      expect(commits.length, 1);
+
+      for (final c in commits) {
+        c.free();
+      }
+      walker.free();
+    });
+
+    test('throws when trying to add invalid range for traversal', () {
+      final walker = RevWalk(repo);
+
+      expect(
+        () => walker.pushRange('HEAD..invalid'),
+        throwsA(isA<LibGit2Error>()),
+      );
+
+      walker.free();
+    });
+
     test('successfully hides commit and its ancestors', () {
       final walker = RevWalk(repo);
 
@@ -114,6 +189,76 @@ void main() {
 
       expect(
         () => walker.hide(repo['0' * 40]),
+        throwsA(isA<LibGit2Error>()),
+      );
+
+      walker.free();
+    });
+
+    test('hides oids of references for provided glob pattern', () {
+      final walker = RevWalk(repo);
+
+      walker.pushGlob('heads');
+      final commits = walker.walk();
+      expect(commits.length, 7);
+
+      walker.pushGlob('heads');
+      walker.hideGlob('*master');
+      final hiddenCommits = walker.walk();
+      expect(hiddenCommits.length, 1);
+
+      hiddenCommits[0].free();
+      for (final c in commits) {
+        c.free();
+      }
+      walker.free();
+    });
+
+    test('hides head', () {
+      final head = repo.head;
+      final walker = RevWalk(repo);
+
+      walker.push(head.target);
+      final commits = walker.walk();
+      expect(commits.length, 6);
+
+      walker.push(head.target);
+      walker.hideHead();
+      final hiddenCommits = walker.walk();
+      expect(hiddenCommits.length, 0);
+
+      for (final c in commits) {
+        c.free();
+      }
+      head.free();
+      walker.free();
+    });
+
+    test('hides oids of reference with provided name', () {
+      final head = repo.head;
+      final walker = RevWalk(repo);
+
+      walker.push(head.target);
+      final commits = walker.walk();
+      expect(commits.length, 6);
+
+      walker.push(head.target);
+      walker.hideReference('refs/heads/master');
+      final hiddenCommits = walker.walk();
+      expect(hiddenCommits.length, 0);
+
+      for (final c in commits) {
+        c.free();
+      }
+      head.free();
+      walker.free();
+    });
+
+    test('throws when trying to hide oids of reference with invalid name', () {
+      final walker = RevWalk(repo);
+
+      expect(
+        () => walker.hideReference('invalid'),
         throwsA(isA<LibGit2Error>()),
       );
 

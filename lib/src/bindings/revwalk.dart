@@ -63,6 +63,68 @@ void push({
   }
 }
 
+/// Push matching references.
+///
+/// The OIDs pointed to by the references that match the given glob pattern
+/// will be pushed to the revision walker.
+///
+/// A leading 'refs/' is implied if not present as well as a trailing '/\*'
+/// if the glob lacks '?', '*' or '['.
+///
+/// Any references matching this glob which do not point to a committish will
+/// be ignored.
+void pushGlob({
+  required Pointer<git_revwalk> walkerPointer,
+  required String glob,
+}) {
+  final globC = glob.toNativeUtf8().cast<Int8>();
+  libgit2.git_revwalk_push_glob(walkerPointer, globC);
+  calloc.free(globC);
+}
+
+/// Push the repository's HEAD.
+void pushHead(Pointer<git_revwalk> walker) =>
+    libgit2.git_revwalk_push_head(walker);
+
+/// Push the OID pointed to by a reference.
+///
+/// The reference must point to a committish.
+///
+/// Throws a [LibGit2Error] if error occured.
+void pushRef({
+  required Pointer<git_revwalk> walkerPointer,
+  required String refName,
+}) {
+  final refNameC = refName.toNativeUtf8().cast<Int8>();
+  final error = libgit2.git_revwalk_push_ref(walkerPointer, refNameC);
+
+  calloc.free(refNameC);
+
+  if (error < 0) {
+    throw LibGit2Error(libgit2.git_error_last());
+  }
+}
+
+/// Push and hide the respective endpoints of the given range.
+///
+/// The range should be of the form `..` The left-hand commit will be hidden
+/// and the right-hand commit pushed.
+///
+/// Throws a [LibGit2Error] if error occured.
+void pushRange({
+  required Pointer<git_revwalk> walkerPointer,
+  required String range,
+}) {
+  final rangeC = range.toNativeUtf8().cast<Int8>();
+  final error = libgit2.git_revwalk_push_range(walkerPointer, rangeC);
+
+  calloc.free(rangeC);
+
+  if (error < 0) {
+    throw LibGit2Error(libgit2.git_error_last());
+  }
+}
+
 /// Get the list of commits from the revision walk.
 ///
 /// The initial call to this method is not blocking when iterating through a
@@ -112,6 +174,48 @@ void hide({
   required Pointer<git_oid> oidPointer,
 }) {
   final error = libgit2.git_revwalk_hide(walkerPointer, oidPointer);
+
+  if (error < 0) {
+    throw LibGit2Error(libgit2.git_error_last());
+  }
+}
+
+/// Hide matching references.
+///
+/// The OIDs pointed to by the references that match the given glob pattern and
+/// their ancestors will be hidden from the output on the revision walk.
+///
+/// A leading 'refs/' is implied if not present as well as a trailing '/\*' if
+/// the glob lacks '?', '*' or '['.
+///
+/// Any references matching this glob which do not point to a committish will
+/// be ignored.
+void hideGlob({
+  required Pointer<git_revwalk> walkerPointer,
+  required String glob,
+}) {
+  final globC = glob.toNativeUtf8().cast<Int8>();
+  libgit2.git_revwalk_hide_glob(walkerPointer, globC);
+  calloc.free(globC);
+}
+
+/// Hide the repository's HEAD.
+void hideHead(Pointer<git_revwalk> walker) =>
+    libgit2.git_revwalk_hide_head(walker);
+
+/// Hide the OID pointed to by a reference.
+///
+/// The reference must point to a committish.
+///
+/// Throws a [LibGit2Error] if error occured.
+void hideRef({
+  required Pointer<git_revwalk> walkerPointer,
+  required String refName,
+}) {
+  final refNameC = refName.toNativeUtf8().cast<Int8>();
+  final error = libgit2.git_revwalk_hide_ref(walkerPointer, refNameC);
+
+  calloc.free(refNameC);
 
   if (error < 0) {
     throw LibGit2Error(libgit2.git_error_last());
