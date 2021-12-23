@@ -57,6 +57,43 @@ class RevWalk {
     );
   }
 
+  /// Adds matching references for the traversal.
+  ///
+  /// The OIDs pointed to by the references that match the given [glob] pattern
+  /// will be pushed to the revision walker.
+  ///
+  /// A leading "refs/" is implied if not present as well as a trailing "/\*"
+  /// if the glob lacks "?", "*" or "[".
+  ///
+  /// Any references matching this glob which do not point to a committish will
+  /// be ignored.
+  void pushGlob(String glob) {
+    bindings.pushGlob(walkerPointer: _revWalkPointer, glob: glob);
+  }
+
+  /// Adds the repository's HEAD for the traversal.
+  void pushHead() => bindings.pushHead(_revWalkPointer);
+
+  /// Adds the oid pointed to by a [reference] for the traversal.
+  ///
+  /// The reference must point to a committish.
+  ///
+  /// Throws a [LibGit2Error] if error occured.
+  void pushReference(String reference) {
+    bindings.pushRef(walkerPointer: _revWalkPointer, refName: reference);
+  }
+
+  /// Adds and hide the respective endpoints of the given [range] for the
+  /// traversal.
+  ///
+  /// The range should be of the form `..` The left-hand commit will be hidden
+  /// and the right-hand commit pushed.
+  ///
+  /// Throws a [LibGit2Error] if error occured.
+  void pushRange(String range) {
+    bindings.pushRange(walkerPointer: _revWalkPointer, range: range);
+  }
+
   /// Marks a commit [oid] (and its ancestors) uninteresting for the output.
   ///
   /// The given id must belong to a committish on the walked repository.
@@ -70,6 +107,32 @@ class RevWalk {
       walkerPointer: _revWalkPointer,
       oidPointer: oid.pointer,
     );
+  }
+
+  /// Hides matching references.
+  ///
+  /// The OIDs pointed to by the references that match the given [glob] pattern
+  /// and their ancestors will be hidden from the output on the revision walk.
+  ///
+  /// A leading "refs/" is implied if not present as well as a trailing "/\*" if
+  /// the glob lacks "?", "*" or "[".
+  ///
+  /// Any references matching this glob which do not point to a committish will
+  /// be ignored.
+  void hideGlob(String glob) {
+    bindings.hideGlob(walkerPointer: _revWalkPointer, glob: glob);
+  }
+
+  /// Hides the repository's HEAD and it's ancestors.
+  void hideHead() => bindings.hideHead(_revWalkPointer);
+
+  /// Hides the oid pointed to by a [reference].
+  ///
+  /// The reference must point to a committish.
+  ///
+  /// Throws a [LibGit2Error] if error occured.
+  void hideReference(String reference) {
+    bindings.hideRef(walkerPointer: _revWalkPointer, refName: reference);
   }
 
   /// Resets the revision walker for reuse.
