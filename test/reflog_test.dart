@@ -1,3 +1,4 @@
+import 'dart:ffi';
 import 'dart:io';
 
 import 'package:libgit2dart/libgit2dart.dart';
@@ -42,6 +43,110 @@ void main() {
       expect(reflog[0].committer.name, 'Aleksey Kulikov');
       expect(reflog[0].committer.email, 'skinny.mind@gmail.com');
       expect(reflog[0].committer.time, 1630568461);
+    });
+
+    test('returns new and old oids of entry', () {
+      expect(reflog[0].newOid.sha, '821ed6e80627b8769d170a293862f9fc60825226');
+      expect(reflog.last.oldOid.sha, '0' * 40);
+    });
+
+    test('deletes the reflog of provided reference', () {
+      expect(head.hasLog, true);
+      RefLog.delete(head);
+      expect(head.hasLog, false);
+    });
+
+    test('renames existing reflog', () {
+      expect(
+        File('${repo.workdir}.git/logs/refs/heads/master').existsSync(),
+        true,
+      );
+      expect(
+        File('${repo.workdir}.git/logs/refs/heads/renamed').existsSync(),
+        false,
+      );
+
+      RefLog.rename(
+        repo: repo,
+        oldName: 'refs/heads/master',
+        newName: 'refs/heads/renamed',
+      );
+
+      expect(
+        File('${repo.workdir}.git/logs/refs/heads/master').existsSync(),
+        false,
+      );
+      expect(
+        File('${repo.workdir}.git/logs/refs/heads/renamed').existsSync(),
+        true,
+      );
+    });
+
+    test('throws when trying to rename reflog and provided new name is invalid',
+        () {
+      expect(
+        () => RefLog.rename(
+          repo: repo,
+          oldName: 'refs/heads/master',
+          newName: '',
+        ),
+        throwsA(isA<LibGit2Error>()),
+      );
+    });
+
+    test('adds a new entry to the in-memory reflog', () {
+      final committer = Signature.create(
+        name: 'Commiter',
+        email: 'commiter@email.com',
+        time: 124,
+      );
+
+      expect(reflog.length, 4);
+      reflog.add(oid: head.target, committer: committer);
+      expect(reflog.length, 5);
+
+      reflog.add(oid: head.target, committer: committer, message: 'new entry');
+      expect(reflog.length, 6);
+      expect(reflog[0].message, 'new entry');
+
+      committer.free();
+    });
+
+    test('throws when trying to add new entry', () {
+      expect(
+        () => reflog.add(oid: head.target, committer: Signature(nullptr)),
+        throwsA(isA<LibGit2Error>()),
+      );
+    });
+
+    test('removes entry from reflog with provided index', () {
+      expect(reflog.length, 4);
+      expect(reflog[0].message, 'commit: add subdirectory file');
+
+      reflog.remove(0);
+      expect(reflog.length, 3);
+      expect(
+        reflog[0].message,
+        "merge feature: Merge made by the 'recursive' strategy.",
+      );
+    });
+
+    test('throws when trying to remove entry from reflog at invalid index', () {
+      expect(() => reflog.remove(-1), throwsA(isA<LibGit2Error>()));
+    });
+
+    test('writes in-memory reflog to disk', () {
+      expect(reflog.length, 4);
+      reflog.remove(0);
+
+      // making sure change is only in memory
+      final oldReflog = RefLog(head);
+      expect(oldReflog.length, 4);
+
+      reflog.write();
+
+      final newReflog = RefLog(head);
+      expect(newReflog.length, 3);
     });
 
     test('returns string representation of RefLogEntry object', () {
