@@ -133,7 +133,7 @@ repo.createCommit(
   updateRef: 'refs/heads/master',
   message: 'initial commit\n',
   author: repo.defaultSignature,
-  commiter: repo.defaultSignature,
+  committer: repo.defaultSignature,
   tree: tree,
   parents: [],
 );
