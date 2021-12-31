@@ -2,6 +2,7 @@ import 'dart:ffi';
 import 'dart:io';
 
 import 'package:libgit2dart/libgit2dart.dart';
+import 'package:path/path.dart' as p;
 import 'package:test/test.dart';
 
 import 'helpers/util.dart';
@@ -10,9 +11,10 @@ void main() {
   late Repository repo;
   late Index index;
   late Directory tmpDir;
+  final mergeRepoPath = p.join('test', 'assets', 'merge_repo');
 
   setUp(() {
-    tmpDir = setupRepo(Directory('test/assets/test_repo/'));
+    tmpDir = setupRepo(Directory(p.join('test', 'assets', 'test_repo')));
     repo = Repository.open(tmpDir.path);
     index = repo.index;
   });
@@ -28,7 +30,7 @@ void main() {
     const featureFileSha = '9c78c21d6680a7ffebc76f7ac68cacc11d8f48bc';
 
     test('returns full path to the index file on disk', () {
-      expect(index.path, '${repo.path}index');
+      expect(index.path, p.join(repo.path, 'index'));
     });
 
     group('capabilities', () {
@@ -143,7 +145,9 @@ void main() {
       });
 
       test('throws if index of bare repository', () {
-        final bare = Repository.open('test/assets/empty_bare.git');
+        final bare = Repository.open(
+          p.join('test', 'assets', 'empty_bare.git'),
+        );
         final bareIndex = bare.index;
 
         expect(() => bareIndex.add('config'), throwsA(isA<LibGit2Error>()));
@@ -197,7 +201,9 @@ void main() {
       });
 
       test('throws when trying to addAll in bare repository', () {
-        final bare = Repository.open('test/assets/empty_bare.git');
+        final bare = Repository.open(
+          p.join('test', 'assets', 'empty_bare.git'),
+        );
         final bareIndex = bare.index;
 
         expect(() => bareIndex.addAll([]), throwsA(isA<LibGit2Error>()));
@@ -210,8 +216,8 @@ void main() {
     group('updateAll()', () {
       test('updates all entries to match working directory', () {
         expect(repo.status, isEmpty);
-        File('${repo.workdir}file').deleteSync();
-        File('${repo.workdir}feature_file').deleteSync();
+        File(p.join(repo.workdir, 'file')).deleteSync();
+        File(p.join(repo.workdir, 'feature_file')).deleteSync();
 
         index.updateAll(['file', 'feature_file']);
         expect(repo.status, {
@@ -221,7 +227,9 @@ void main() {
       });
 
       test('throws when trying to update all entries in bare repository', () {
-        final bare = Repository.open('test/assets/empty_bare.git');
+        final bare = Repository.open(
+          p.join('test', 'assets', 'empty_bare.git'),
+        );
         final bareIndex = bare.index;
 
         expect(
@@ -237,7 +245,7 @@ void main() {
     test('writes to disk', () {
       expect(index.length, 4);
 
-      File('${tmpDir.path}/new_file').createSync();
+      File(p.join(tmpDir.path, 'new_file')).createSync();
 
       index.add('new_file');
       index.write();
@@ -269,8 +277,9 @@ void main() {
     });
 
     test('removes all entries from a directory', () {
-      Directory('${repo.workdir}subdir/').createSync();
-      File('${repo.workdir}subdir/subfile').createSync();
+      final subdirPath = p.join(repo.workdir, 'subdir');
+      Directory(subdirPath).createSync();
+      File(p.join(subdirPath, 'subfile')).createSync();
 
       index.add('subdir/subfile');
       expect(index.length, 5);
@@ -306,7 +315,7 @@ void main() {
     });
 
     test('throws when trying to write tree while index have conflicts', () {
-      final tmpDir = setupRepo(Directory('test/assets/merge_repo/'));
+      final tmpDir = setupRepo(Directory(mergeRepoPath));
       final repo = Repository.open(tmpDir.path);
 
       final conflictBranch = repo.lookupBranch(name: 'conflict-branch');
@@ -341,7 +350,7 @@ void main() {
     });
 
     test('returns conflicts with ancestor, our and their present', () {
-      final repoDir = setupRepo(Directory('test/assets/merge_repo/'));
+      final repoDir = setupRepo(Directory(mergeRepoPath));
       final conflictRepo = Repository.open(repoDir.path);
 
       final conflictBranch = conflictRepo.lookupBranch(
@@ -371,7 +380,7 @@ void main() {
     });
 
     test('returns conflicts with our and their present and null ancestor', () {
-      final repoDir = setupRepo(Directory('test/assets/merge_repo/'));
+      final repoDir = setupRepo(Directory(mergeRepoPath));
       final conflictRepo = Repository.open(repoDir.path);
 
       final conflictBranch = conflictRepo.lookupBranch(name: 'conflict-branch');
@@ -397,7 +406,7 @@ void main() {
     });
 
     test('returns conflicts with ancestor and their present and null our', () {
-      final repoDir = setupRepo(Directory('test/assets/merge_repo/'));
+      final repoDir = setupRepo(Directory(mergeRepoPath));
       final conflictRepo = Repository.open(repoDir.path);
 
       final conflictBranch = conflictRepo.lookupBranch(
@@ -427,7 +436,7 @@ void main() {
     });
 
     test('returns conflicts with ancestor and our present and null their', () {
-      final repoDir = setupRepo(Directory('test/assets/merge_repo/'));
+      final repoDir = setupRepo(Directory(mergeRepoPath));
       final conflictRepo = Repository.open(repoDir.path);
 
       final conflictBranch = conflictRepo.lookupBranch(name: 'their-conflict');
@@ -455,7 +464,7 @@ void main() {
     });
 
     test('removes conflict', () {
-      final repoDir = setupRepo(Directory('test/assets/merge_repo/'));
+      final repoDir = setupRepo(Directory(mergeRepoPath));
       final conflictRepo = Repository.open(repoDir.path);
 
       final conflictBranch = conflictRepo.lookupBranch(name: 'conflict-branch');
@@ -493,7 +502,7 @@ void main() {
     });
 
     test('removes all conflicts', () {
-      final repoDir = setupRepo(Directory('test/assets/merge_repo/'));
+      final repoDir = setupRepo(Directory(mergeRepoPath));
       final conflictRepo = Repository.open(repoDir.path);
 
       final conflictBranch = conflictRepo.lookupBranch(name: 'conflict-branch');

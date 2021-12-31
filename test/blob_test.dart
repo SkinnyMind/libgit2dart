@@ -2,6 +2,7 @@ import 'dart:ffi';
 import 'dart:io';
 
 import 'package:libgit2dart/libgit2dart.dart';
+import 'package:path/path.dart' as p;
 import 'package:test/test.dart';
 
 import 'helpers/util.dart';
@@ -14,7 +15,7 @@ void main() {
   const newBlobContent = 'New blob\n';
 
   setUp(() {
-    tmpDir = setupRepo(Directory('test/assets/attributes_repo/'));
+    tmpDir = setupRepo(Directory(p.join('test', 'assets', 'attributes_repo')));
     repo = Repository.open(tmpDir.path);
   });
 
@@ -88,8 +89,9 @@ void main() {
     });
 
     test('creates new blob from file at provided path', () {
-      final outsideFile =
-          File('${Directory.current.absolute.path}/test/blob_test.dart');
+      final outsideFile = File(
+        p.join(Directory.current.absolute.path, 'test', 'blob_test.dart'),
+      );
       final oid = repo.createBlobFromDisk(outsideFile.path);
       final newBlob = repo.lookupBlob(oid);
 

@@ -1,6 +1,7 @@
 import 'dart:io';
 
 import 'package:libgit2dart/libgit2dart.dart';
+import 'package:path/path.dart' as p;
 import 'package:test/test.dart';
 
 import 'helpers/util.dart';
@@ -12,7 +13,7 @@ void main() {
   const remoteUrl = 'git://github.com/SkinnyMind/libgit2dart.git';
 
   setUp(() {
-    tmpDir = setupRepo(Directory('test/assets/test_repo/'));
+    tmpDir = setupRepo(Directory(p.join('test', 'assets', 'test_repo')));
     repo = Repository.open(tmpDir.path);
   });
 
@@ -518,14 +519,14 @@ Total 69 (delta 0), reused 1 (delta 0), pack-reused 68
 
     test('pushes with update reference callback', () {
       final originDir =
-          Directory('${Directory.systemTemp.path}/origin_testrepo');
+          Directory(p.join(Directory.systemTemp.path, 'origin_testrepo'));
 
       if (originDir.existsSync()) {
         originDir.deleteSync(recursive: true);
       }
       originDir.createSync();
       copyRepo(
-        from: Directory('test/assets/empty_bare.git/'),
+        from: Directory(p.join('test', 'assets', 'empty_bare.git')),
         to: originDir,
       );
       final originRepo = Repository.open(originDir.path);

@@ -2,6 +2,7 @@ import 'dart:ffi';
 import 'dart:io';
 
 import 'package:libgit2dart/libgit2dart.dart';
+import 'package:path/path.dart' as p;
 import 'package:test/test.dart';
 
 import 'helpers/util.dart';
@@ -13,7 +14,7 @@ void main() {
   late Directory tmpDir;
 
   setUp(() {
-    tmpDir = setupRepo(Directory('test/assets/test_repo/'));
+    tmpDir = setupRepo(Directory(p.join('test', 'assets', 'test_repo')));
     repo = Repository.open(tmpDir.path);
     head = repo.head;
     reflog = RefLog(head);
@@ -57,14 +58,11 @@ void main() {
     });
 
     test('renames existing reflog', () {
-      expect(
-        File('${repo.workdir}.git/logs/refs/heads/master').existsSync(),
-        true,
-      );
-      expect(
-        File('${repo.workdir}.git/logs/refs/heads/renamed').existsSync(),
-        false,
-      );
+      final masterPath = p.join(repo.path, 'logs', 'refs', 'heads', 'master');
+      final renamedPath = p.join(repo.path, 'logs', 'refs', 'heads', 'renamed');
+
+      expect(File(masterPath).existsSync(), true);
+      expect(File(renamedPath).existsSync(), false);
 
       RefLog.rename(
         repo: repo,
@@ -72,14 +70,8 @@ void main() {
         newName: 'refs/heads/renamed',
       );
 
-      expect(
-        File('${repo.workdir}.git/logs/refs/heads/master').existsSync(),
-        false,
-      );
-      expect(
-        File('${repo.workdir}.git/logs/refs/heads/renamed').existsSync(),
-        true,
-      );
+      expect(File(masterPath).existsSync(), false);
+      expect(File(renamedPath).existsSync(), true);
     });
 
     test('throws when trying to rename reflog and provided new name is invalid',

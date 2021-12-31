@@ -2,6 +2,7 @@ import 'dart:ffi';
 import 'dart:io';
 
 import 'package:libgit2dart/libgit2dart.dart';
+import 'package:path/path.dart' as p;
 import 'package:test/test.dart';
 
 import 'helpers/util.dart';
@@ -14,7 +15,7 @@ void main() {
   const submoduleHeadSha = '49322bb17d3acc9146f98c97d078513228bbf3c0';
 
   setUp(() {
-    tmpDir = setupRepo(Directory('test/assets/submodule_repo/'));
+    tmpDir = setupRepo(Directory(p.join('test', 'assets', 'submodule_repo')));
     repo = Repository.open(tmpDir.path);
   });
 
@@ -58,7 +59,8 @@ void main() {
     });
 
     test('inits and updates', () {
-      final submoduleFilePath = '${repo.workdir}$testSubmodule/master.txt';
+      final submoduleFilePath =
+          p.join(repo.workdir, testSubmodule, 'master.txt');
       expect(File(submoduleFilePath).existsSync(), false);
 
       repo.initSubmodule(submodule: testSubmodule);
@@ -68,7 +70,8 @@ void main() {
     });
 
     test('updates with provided init flag', () {
-      final submoduleFilePath = '${repo.workdir}$testSubmodule/master.txt';
+      final submoduleFilePath =
+          p.join(repo.workdir, testSubmodule, 'master.txt');
       expect(File(submoduleFilePath).existsSync(), false);
 
       repo.updateSubmodule(submodule: testSubmodule, init: true);

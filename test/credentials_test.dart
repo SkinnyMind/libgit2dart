@@ -1,10 +1,13 @@
 import 'dart:io';
 
 import 'package:libgit2dart/libgit2dart.dart';
+import 'package:path/path.dart' as p;
 import 'package:test/test.dart';
 
 void main() {
-  final cloneDir = Directory('${Directory.systemTemp.path}/credentials_cloned');
+  final cloneDir = Directory(
+    p.join(Directory.systemTemp.path, 'credentials_cloned'),
+  );
 
   setUp(() {
     if (cloneDir.existsSync()) {
@@ -93,10 +96,10 @@ void main() {
     });
 
     test('clones repository with provided keypair', () {
-      final keypair = const Keypair(
+      final keypair = Keypair(
         username: 'git',
-        pubKey: 'test/assets/keys/id_rsa.pub',
-        privateKey: 'test/assets/keys/id_rsa',
+        pubKey: p.join('test', 'assets', 'keys', 'id_rsa.pub'),
+        privateKey: p.join('test', 'assets', 'keys', 'id_rsa'),
         passPhrase: 'empty',
       );
       final callbacks = Callbacks(credentials: keypair);
@@ -142,9 +145,9 @@ void main() {
     });
 
     test('throws when provided keypair is incorrect', () {
-      final keypair = const Keypair(
+      final keypair = Keypair(
         username: 'git',
-        pubKey: 'test/assets/keys/id_rsa.pub',
+        pubKey: p.join('test', 'assets', 'keys', 'id_rsa.pub'),
         privateKey: 'incorrect',
         passPhrase: 'empty',
       );
@@ -179,8 +182,10 @@ void main() {
     });
 
     test('clones repository with provided keypair from memory', () {
-      final pubKey = File('test/assets/keys/id_rsa.pub').readAsStringSync();
-      final privateKey = File('test/assets/keys/id_rsa').readAsStringSync();
+      final pubKey = File(p.join('test', 'assets', 'keys', 'id_rsa.pub'))
+          .readAsStringSync();
+      final privateKey =
+          File(p.join('test', 'assets', 'keys', 'id_rsa')).readAsStringSync();
       final keypair = KeypairFromMemory(
         username: 'git',
         pubKey: pubKey,
@@ -201,7 +206,8 @@ void main() {
     });
 
     test('throws when provided keypair from memory is incorrect', () {
-      final pubKey = File('test/assets/keys/id_rsa.pub').readAsStringSync();
+      final pubKey = File(p.join('test', 'assets', 'keys', 'id_rsa.pub'))
+          .readAsStringSync();
       final keypair = KeypairFromMemory(
         username: 'git',
         pubKey: pubKey,

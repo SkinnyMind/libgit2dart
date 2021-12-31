@@ -2,6 +2,7 @@ import 'dart:ffi';
 import 'dart:io';
 
 import 'package:libgit2dart/libgit2dart.dart';
+import 'package:path/path.dart' as p;
 import 'package:test/test.dart';
 
 import 'helpers/util.dart';
@@ -23,7 +24,7 @@ void main() {
   ];
 
   setUp(() {
-    tmpDir = setupRepo(Directory('test/assets/test_repo/'));
+    tmpDir = setupRepo(Directory(p.join('test', 'assets', 'test_repo')));
     repo = Repository.open(tmpDir.path);
   });
 
@@ -47,7 +48,7 @@ void main() {
     });
 
     test('throws when trying to get list of notes and error occurs', () {
-      Directory('${repo.workdir}.git/refs/notes').deleteSync(recursive: true);
+      Directory(p.join(repo.path, 'refs', 'notes')).deleteSync(recursive: true);
       expect(() => repo.notes, throwsA(isA<LibGit2Error>()));
     });
 

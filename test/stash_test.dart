@@ -2,6 +2,7 @@ import 'dart:ffi';
 import 'dart:io';
 
 import 'package:libgit2dart/libgit2dart.dart';
+import 'package:path/path.dart' as p;
 import 'package:test/test.dart';
 
 import 'helpers/util.dart';
@@ -10,10 +11,12 @@ void main() {
   late Repository repo;
   late Directory tmpDir;
   late Signature stasher;
+  late String filePath;
 
   setUp(() {
-    tmpDir = setupRepo(Directory('test/assets/test_repo/'));
+    tmpDir = setupRepo(Directory(p.join('test', 'assets', 'test_repo')));
     repo = Repository.open(tmpDir.path);
+    filePath = p.join(repo.workdir, 'file');
     stasher = Signature.create(
       name: 'Stasher',
       email: 'stasher@email.com',
@@ -28,10 +31,7 @@ void main() {
 
   group('Stash', () {
     test('saves changes to stash', () {
-      File('${tmpDir.path}/file').writeAsStringSync(
-        'edit',
-        mode: FileMode.append,
-      );
+      File(filePath).writeAsStringSync('edit', mode: FileMode.append);
 
       repo.createStash(stasher: stasher);
       expect(repo.status.isEmpty, true);
@@ -45,7 +45,7 @@ void main() {
     });
 
     test('saves changes to stash including ignored', () {
-      final swpPath = File('${tmpDir.path}/some.swp');
+      final swpPath = File(p.join(repo.workdir, 'some.swp'));
       swpPath.writeAsStringSync('ignored');
 
       repo.createStash(
@@ -60,10 +60,7 @@ void main() {
     });
 
     test('leaves changes added to index intact', () {
-      File('${tmpDir.path}/file').writeAsStringSync(
-        'edit',
-        mode: FileMode.append,
-      );
+      File(filePath).writeAsStringSync('edit', mode: FileMode.append);
       final index = repo.index;
       index.add('file');
 
@@ -75,10 +72,7 @@ void main() {
     });
 
     test('applies changes from stash', () {
-      File('${tmpDir.path}/file').writeAsStringSync(
-        'edit',
-        mode: FileMode.append,
-      );
+      File(filePath).writeAsStringSync('edit', mode: FileMode.append);
 
       repo.createStash(stasher: stasher);
       expect(repo.status.isEmpty, true);
@@ -88,10 +82,7 @@ void main() {
     });
 
     test('applies changes from stash with paths provided', () {
-      File('${tmpDir.path}/file').writeAsStringSync(
-        'edit',
-        mode: FileMode.append,
-      );
+      File(filePath).writeAsStringSync('edit', mode: FileMode.append);
 
       repo.createStash(stasher: stasher);
       expect(repo.status.isEmpty, true);
@@ -101,7 +92,7 @@ void main() {
     });
 
     test('applies changes from stash including index changes', () {
-      File('${tmpDir.path}/stash.this').writeAsStringSync('stash');
+      File(p.join(repo.workdir, 'stash.this')).writeAsStringSync('stash');
       final index = repo.index;
       index.add('stash.this');
       expect(index.find('stash.this'), true);
@@ -118,10 +109,7 @@ void main() {
     });
 
     test('throws when trying to apply with wrong index', () {
-      File('${tmpDir.path}/file').writeAsStringSync(
-        'edit',
-        mode: FileMode.append,
-      );
+      File(filePath).writeAsStringSync('edit', mode: FileMode.append);
 
       repo.createStash(stasher: stasher);
 
@@ -129,22 +117,17 @@ void main() {
     });
 
     test('drops stash', () {
-      File('${tmpDir.path}/file').writeAsStringSync(
-        'edit',
-        mode: FileMode.append,
-      );
+      File(filePath).writeAsStringSync('edit', mode: FileMode.append);
 
       repo.createStash(stasher: stasher);
       final stash = repo.stashes.first;
       repo.dropStash(index: stash.index);
+
       expect(() => repo.applyStash(), throwsA(isA<LibGit2Error>()));
     });
 
     test('throws when trying to drop with wrong index', () {
-      File('${tmpDir.path}/file').writeAsStringSync(
-        'edit',
-        mode: FileMode.append,
-      );
+      File(filePath).writeAsStringSync('edit', mode: FileMode.append);
 
       repo.createStash(stasher: stasher);
 
@@ -152,31 +135,27 @@ void main() {
     });
 
     test('pops from stash', () {
-      File('${tmpDir.path}/file').writeAsStringSync(
-        'edit',
-        mode: FileMode.append,
-      );
+      File(filePath).writeAsStringSync('edit', mode: FileMode.append);
 
       repo.createStash(stasher: stasher);
       repo.popStash();
+
       expect(repo.status, contains('file'));
       expect(() => repo.applyStash(), throwsA(isA<LibGit2Error>()));
     });
 
     test('pops from stash with provided path', () {
-      File('${tmpDir.path}/file').writeAsStringSync(
-        'edit',
-        mode: FileMode.append,
-      );
+      File(filePath).writeAsStringSync('edit', mode: FileMode.append);
 
       repo.createStash(stasher: stasher);
       repo.popStash(paths: ['file']);
+
       expect(repo.status, contains('file'));
       expect(() => repo.applyStash(), throwsA(isA<LibGit2Error>()));
     });
 
     test('pops from stash including index changes', () {
-      File('${tmpDir.path}/stash.this').writeAsStringSync('stash');
+      File(p.join(repo.workdir, 'stash.this')).writeAsStringSync('stash');
       final index = repo.index;
       index.add('stash.this');
       expect(index.find('stash.this'), true);
@@ -193,10 +172,7 @@ void main() {
     });
 
     test('throws when trying to pop with wrong index', () {
-      File('${tmpDir.path}/file').writeAsStringSync(
-        'edit',
-        mode: FileMode.append,
-      );
+      File(filePath).writeAsStringSync('edit', mode: FileMode.append);
 
       repo.createStash(stasher: stasher);
 
@@ -204,10 +180,7 @@ void main() {
     });
 
     test('returns list of stashes', () {
-      File('${tmpDir.path}/file').writeAsStringSync(
-        'edit',
-        mode: FileMode.append,
-      );
+      File(filePath).writeAsStringSync('edit', mode: FileMode.append);
 
       repo.createStash(stasher: stasher, message: 'WIP');
 
@@ -219,8 +192,10 @@ void main() {
     });
 
     test('returns string representation of Stash object', () {
-      File('${tmpDir.path}/stash.this').writeAsStringSync('stash');
+      File(p.join(repo.workdir, 'stash.this')).writeAsStringSync('stash');
+
       repo.createStash(stasher: stasher, flags: {GitStash.includeUntracked});
+
       expect(repo.stashes[0].toString(), contains('Stash{'));
     });
   });

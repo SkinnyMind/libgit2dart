@@ -4,6 +4,7 @@ import 'dart:ffi';
 import 'dart:io';
 
 import 'package:libgit2dart/libgit2dart.dart';
+import 'package:path/path.dart' as p;
 import 'package:test/test.dart';
 
 import 'helpers/util.dart';
@@ -13,7 +14,7 @@ void main() {
   late Directory tmpDir;
 
   setUp(() {
-    tmpDir = setupRepo(Directory('test/assets/merge_repo/'));
+    tmpDir = setupRepo(Directory(p.join('test', 'assets', 'merge_repo')));
     repo = Repository.open(tmpDir.path);
   });
 
@@ -224,7 +225,7 @@ conflict branch edit
 
         expect(index.conflicts, isEmpty);
         expect(
-          File('${repo.workdir}conflict_file').readAsStringSync(),
+          File(p.join(repo.workdir, 'conflict_file')).readAsStringSync(),
           'master conflict edit\n',
         );
 

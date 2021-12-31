@@ -2,6 +2,7 @@ import 'dart:ffi';
 import 'dart:io';
 
 import 'package:libgit2dart/libgit2dart.dart';
+import 'package:path/path.dart' as p;
 import 'package:test/test.dart';
 
 import 'helpers/util.dart';
@@ -9,14 +10,14 @@ import 'helpers/util.dart';
 void main() {
   late Repository repo;
   late Directory tmpDir;
-  final worktreeDir = Directory('${Directory.systemTemp.path}/worktree');
+  final worktreeDir = Directory(p.join(Directory.systemTemp.path, 'worktree'));
   const worktreeName = 'worktree';
 
   setUp(() {
     if (worktreeDir.existsSync()) {
       worktreeDir.deleteSync(recursive: true);
     }
-    tmpDir = setupRepo(Directory('test/assets/test_repo/'));
+    tmpDir = setupRepo(Directory(p.join('test', 'assets', 'test_repo')));
     repo = Repository.open(tmpDir.path);
   });
 
@@ -41,10 +42,10 @@ void main() {
       expect(repo.worktrees, [worktreeName]);
       expect(branches.any((branch) => branch.name == worktreeName), true);
       expect(worktree.name, worktreeName);
-      expect(worktree.path, contains('/worktree'));
+      expect(worktree.path, contains('worktree'));
       expect(worktree.isLocked, false);
       expect(worktree.toString(), contains('Worktree{'));
-      expect(File('${worktreeDir.path}/.git').existsSync(), true);
+      expect(File(p.join(worktreeDir.path, '.git')).existsSync(), true);
 
       for (final branch in branches) {
         branch.free();
@@ -111,7 +112,7 @@ void main() {
       final lookedupWorktree = repo.lookupWorktree(worktreeName);
 
       expect(lookedupWorktree.name, worktreeName);
-      expect(lookedupWorktree.path, contains('/worktree'));
+      expect(lookedupWorktree.path, contains('worktree'));
       expect(lookedupWorktree.isLocked, false);
 
       lookedupWorktree.free();

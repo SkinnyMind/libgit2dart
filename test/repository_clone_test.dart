@@ -3,6 +3,7 @@
 import 'dart:io';
 
 import 'package:libgit2dart/libgit2dart.dart';
+import 'package:path/path.dart' as p;
 import 'package:test/test.dart';
 
 import 'helpers/util.dart';
@@ -10,10 +11,10 @@ import 'helpers/util.dart';
 void main() {
   late Repository repo;
   late Directory tmpDir;
-  final cloneDir = Directory('${Directory.systemTemp.path}/cloned');
+  final cloneDir = Directory(p.join(Directory.systemTemp.path, 'cloned'));
 
   setUp(() {
-    tmpDir = setupRepo(Directory('test/assets/test_repo/'));
+    tmpDir = setupRepo(Directory(p.join('test', 'assets', 'test_repo')));
     repo = Repository.open(tmpDir.path);
     if (cloneDir.existsSync()) {
       cloneDir.delete(recursive: true);
@@ -102,8 +103,9 @@ void main() {
     });
 
     test('clones repository with provided repository callback', () {
-      final callbackPath =
-          Directory('${Directory.systemTemp.path}/callbackRepo');
+      final callbackPath = Directory(
+        p.join(Directory.systemTemp.path, 'callbackRepo'),
+      );
       if (callbackPath.existsSync()) {
         callbackPath.deleteSync(recursive: true);
       }
@@ -120,7 +122,7 @@ void main() {
 
       expect(clonedRepo.isEmpty, false);
       expect(clonedRepo.isBare, false);
-      expect(clonedRepo.path, contains('/callbackRepo/.git/'));
+      expect(clonedRepo.path, contains(p.join('callbackRepo', '.git')));
 
       clonedRepo.free();
       callbackPath.deleteSync(recursive: true);

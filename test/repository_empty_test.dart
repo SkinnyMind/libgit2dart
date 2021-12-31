@@ -1,10 +1,13 @@
 import 'dart:ffi';
 
 import 'package:libgit2dart/libgit2dart.dart';
+import 'package:path/path.dart' as p;
 import 'package:test/test.dart';
 
 void main() {
   late Repository repo;
+  final barePath = p.join('test', 'assets', 'empty_bare.git');
+  final standardPath = p.join('test', 'assets', 'empty_standard', '.gitdir');
 
   group('Repository.open', () {
     test("throws when repository isn't found at provided path", () {
@@ -16,7 +19,7 @@ void main() {
 
     group('empty bare', () {
       setUp(() {
-        repo = Repository.open('test/assets/empty_bare.git');
+        repo = Repository.open(barePath);
       });
 
       tearDown(() {
@@ -32,11 +35,11 @@ void main() {
       });
 
       test('returns path to the repository', () {
-        expect(repo.path, contains('/test/assets/empty_bare.git/'));
+        expect(repo.path, contains(barePath));
       });
 
       test('returns path to root directory for the repository', () {
-        expect(repo.commonDir, contains('/test/assets/empty_bare.git/'));
+        expect(repo.commonDir, contains(barePath));
       });
 
       test('returns empty string as path of the working directory', () {
@@ -46,7 +49,7 @@ void main() {
 
     group('empty standard', () {
       setUp(() {
-        repo = Repository.open('test/assets/empty_standard/.gitdir/');
+        repo = Repository.open(standardPath);
       });
 
       tearDown(() {
@@ -58,14 +61,11 @@ void main() {
       });
 
       test('returns path to the repository', () {
-        expect(repo.path, contains('/test/assets/empty_standard/.gitdir/'));
+        expect(repo.path, contains(standardPath));
       });
 
       test("returns path to parent repo's .git folder for the repository", () {
-        expect(
-          repo.commonDir,
-          contains('/test/assets/empty_standard/.gitdir/'),
-        );
+        expect(repo.commonDir, contains(standardPath));
       });
 
       test('checks if it is empty', () {
@@ -103,7 +103,10 @@ void main() {
       });
 
       test('returns path to working directory', () {
-        expect(repo.workdir, contains('/test/assets/empty_standard/'));
+        expect(
+          repo.workdir,
+          contains(p.join('test', 'assets', 'empty_standard')),
+        );
       });
     });
   });

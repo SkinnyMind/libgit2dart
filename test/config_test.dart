@@ -1,11 +1,11 @@
 import 'dart:io';
 
 import 'package:libgit2dart/libgit2dart.dart';
+import 'package:path/path.dart' as p;
 import 'package:test/test.dart';
 
 void main() {
-  final tmpDir = Directory.systemTemp.path;
-  const configFileName = 'test_config';
+  final filePath = p.join(Directory.systemTemp.path, 'test_config');
   const contents = '''
 [core]
 \trepositoryformatversion = 0
@@ -27,13 +27,13 @@ void main() {
   late Config config;
 
   setUp(() {
-    File('$tmpDir/$configFileName').writeAsStringSync(contents);
-    config = Config.open('$tmpDir/$configFileName');
+    File(filePath).writeAsStringSync(contents);
+    config = Config.open(filePath);
   });
 
   tearDown(() {
     config.free();
-    File('$tmpDir/$configFileName').deleteSync();
+    File(filePath).deleteSync();
   });
 
   group('Config', () {

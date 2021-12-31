@@ -1,6 +1,7 @@
 import 'dart:io';
 
 import 'package:libgit2dart/libgit2dart.dart';
+import 'package:path/path.dart' as p;
 import 'package:test/test.dart';
 
 import 'helpers/util.dart';
@@ -10,7 +11,7 @@ void main() {
   late Directory tmpDir;
 
   setUp(() {
-    tmpDir = setupRepo(Directory('test/assets/test_repo/'));
+    tmpDir = setupRepo(Directory(p.join('test', 'assets', 'test_repo')));
     repo = Repository.open(tmpDir.path);
   });
 
@@ -23,7 +24,7 @@ void main() {
     test('checkouts head', () {
       repo.reset(oid: repo['821ed6e'], resetType: GitReset.hard);
       expect(repo.status, isEmpty);
-      File('${tmpDir.path}/feature_file').writeAsStringSync('edit');
+      File(p.join(tmpDir.path, 'feature_file')).writeAsStringSync('edit');
       expect(repo.status, contains('feature_file'));
 
       repo.checkout(
@@ -47,7 +48,7 @@ void main() {
     });
 
     test('checkouts index', () {
-      File('${repo.workdir}feature_file').writeAsStringSync('edit');
+      File(p.join(repo.workdir, 'feature_file')).writeAsStringSync('edit');
       expect(repo.status, contains('feature_file'));
 
       repo.checkout(
@@ -112,7 +113,7 @@ void main() {
     });
 
     test('checkouts with alrenative directory', () {
-      final altDir = Directory('${Directory.systemTemp.path}/alt_dir');
+      final altDir = Directory(p.join(Directory.systemTemp.path, 'alt_dir'));
       // making sure there is no directory
       if (altDir.existsSync()) {
         altDir.deleteSync(recursive: true);
@@ -143,14 +144,15 @@ void main() {
     test('performs dry run checkout', () {
       final index = repo.index;
       expect(index.length, 4);
-      expect(File('${repo.workdir}/another_feature_file').existsSync(), false);
+      final file = File(p.join(repo.workdir, 'another_feature_file'));
+      expect(file.existsSync(), false);
 
       repo.checkout(
         refName: 'refs/heads/feature',
         strategy: {GitCheckout.dryRun},
       );
       expect(index.length, 4);
-      expect(File('${repo.workdir}/another_feature_file').existsSync(), false);
+      expect(file.existsSync(), false);
 
       index.free();
     });

@@ -2,6 +2,7 @@ import 'dart:ffi';
 import 'dart:io';
 
 import 'package:libgit2dart/libgit2dart.dart';
+import 'package:path/path.dart' as p;
 import 'package:test/test.dart';
 
 import 'helpers/util.dart';
@@ -42,7 +43,7 @@ index e69de29..0000000
 """;
 
   setUp(() {
-    tmpDir = setupRepo(Directory('test/assets/test_repo/'));
+    tmpDir = setupRepo(Directory(p.join('test', 'assets', 'test_repo')));
     repo = Repository.open(tmpDir.path);
     oldBlobOid = repo['e69de29bb2d1d6434b8b29ae775ad8c2e48c5391'];
     newBlobOid = repo['9c78c21d6680a7ffebc76f7ac68cacc11d8f48bc'];

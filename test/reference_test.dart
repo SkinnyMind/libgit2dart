@@ -2,6 +2,7 @@ import 'dart:ffi';
 import 'dart:io';
 
 import 'package:libgit2dart/libgit2dart.dart';
+import 'package:path/path.dart' as p;
 import 'package:test/test.dart';
 
 import 'helpers/util.dart';
@@ -13,7 +14,7 @@ void main() {
   const newCommit = 'c68ff54aabf660fcdd9a2838d401583fe31249e3';
 
   setUp(() {
-    tmpDir = setupRepo(Directory('test/assets/test_repo/'));
+    tmpDir = setupRepo(Directory(p.join('test', 'assets', 'test_repo')));
     repo = Repository.open(tmpDir.path);
   });
 
@@ -550,7 +551,7 @@ void main() {
     });
 
     test('compresses references', () {
-      final packedRefsFile = File('${tmpDir.path}/.git/packed-refs');
+      final packedRefsFile = File(p.join(tmpDir.path, '.git', 'packed-refs'));
       expect(packedRefsFile.existsSync(), false);
       final oldRefs = repo.references;
 

@@ -1,6 +1,7 @@
 import 'dart:io';
 
 import 'package:libgit2dart/libgit2dart.dart';
+import 'package:path/path.dart' as p;
 import 'package:test/test.dart';
 
 import 'helpers/util.dart';
@@ -10,10 +11,10 @@ void main() {
   late Repository clonedRepo;
   late Directory tmpDir;
   late Remote remote;
-  final cloneDir = Directory('${Directory.systemTemp.path}/cloned');
+  final cloneDir = Directory(p.join(Directory.systemTemp.path, 'cloned'));
 
   setUp(() {
-    tmpDir = setupRepo(Directory('test/assets/test_repo/'));
+    tmpDir = setupRepo(Directory(p.join('test', 'assets', 'test_repo')));
     if (cloneDir.existsSync()) {
       cloneDir.deleteSync(recursive: true);
     }

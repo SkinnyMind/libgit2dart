@@ -2,6 +2,7 @@ import 'dart:ffi';
 import 'dart:io';
 
 import 'package:libgit2dart/libgit2dart.dart';
+import 'package:path/path.dart' as p;
 import 'package:test/test.dart';
 
 import 'helpers/util.dart';
@@ -13,7 +14,7 @@ void main() {
   const featureCommit = '5aecfa0fb97eadaac050ccb99f03c3fb65460ad4';
 
   setUp(() {
-    tmpDir = setupRepo(Directory('test/assets/test_repo/'));
+    tmpDir = setupRepo(Directory(p.join('test', 'assets', 'test_repo')));
     repo = Repository.open(tmpDir.path);
   });
 
@@ -64,7 +65,7 @@ void main() {
 
     group('.discover()', () {
       test('discovers repository', () async {
-        final subDir = '${tmpDir.path}/subdir1/subdir2/';
+        final subDir = p.join(tmpDir.path, 'subdir1', 'subdir2');
         await Directory(subDir).create(recursive: true);
         expect(Repository.discover(startPath: subDir), repo.path);
       });
@@ -87,11 +88,13 @@ void main() {
     });
 
     test('sets working directory', () {
-      final tmpWorkDir = Directory('${Directory.systemTemp.path}/tmp_work_dir');
+      final tmpWorkDir = Directory(
+        p.join(Directory.systemTemp.path, 'tmp_work_dir'),
+      );
       tmpWorkDir.createSync();
 
       repo.setWorkdir(path: tmpWorkDir.path);
-      expect(repo.workdir, contains('/tmp_work_dir/'));
+      expect(repo.workdir, contains('tmp_work_dir'));
 
       tmpWorkDir.deleteSync();
     });
@@ -104,14 +107,14 @@ void main() {
     });
 
     test('throws when trying to get head and error occurs', () {
-      File('${repo.workdir}.git/HEAD').deleteSync();
+      File(p.join(repo.path, 'HEAD')).deleteSync();
       expect(() => repo.head, throwsA(isA<LibGit2Error>()));
       expect(() => repo.isHeadDetached, throwsA(isA<LibGit2Error>()));
     });
 
     test('throws when trying to check if branch is unborn and error occurs',
         () {
-      File('${repo.workdir}.git/HEAD').deleteSync();
+      File(p.join(repo.path, 'HEAD')).deleteSync();
       expect(() => repo.isBranchUnborn, throwsA(isA<LibGit2Error>()));
     });
 
@@ -181,8 +184,9 @@ void main() {
       });
 
       test('creates new blob from file at provided path', () {
-        final outsideFile =
-            File('${Directory.current.absolute.path}/test/blob_test.dart');
+        final outsideFile = File(
+          p.join(Directory.current.absolute.path, 'test', 'blob_test.dart'),
+        );
         final oid = repo.createBlobFromDisk(outsideFile.path);
         final newBlob = repo.lookupBlob(oid);
 
@@ -226,7 +230,7 @@ void main() {
     });
 
     test('returns status of a repository', () {
-      File('${tmpDir.path}/new_file.txt').createSync();
+      File(p.join(tmpDir.path, 'new_file.txt')).createSync();
       final index = repo.index;
       index.remove('file');
       index.add('new_file.txt');
@@ -242,7 +246,7 @@ void main() {
     });
 
     test('throws when trying to get status of bare repository', () {
-      final bare = Repository.open('test/assets/empty_bare.git');
+      final bare = Repository.open(p.join('test', 'assets', 'empty_bare.git'));
 
       expect(() => bare.status, throwsA(isA<LibGit2Error>()));
 
@@ -297,14 +301,14 @@ void main() {
       config.free();
     });
 
-    test('returns attribute value', () async {
+    test('returns attribute value', () {
       expect(repo.getAttribute(path: 'invalid', name: 'not-there'), null);
 
-      final attrFile = await File('${repo.workdir}.gitattributes').create();
-      await attrFile.writeAsString('*.dart text\n*.jpg -text\n*.sh eol=lf\n');
+      File(p.join(repo.workdir, '.gitattributes'))
+          .writeAsStringSync('*.dart text\n*.jpg -text\n*.sh eol=lf\n');
 
-      await File('${repo.workdir}file.dart').create();
-      await File('${repo.workdir}file.sh').create();
+      File(p.join(repo.workdir, 'file.dart')).createSync();
+      File(p.join(repo.workdir, 'file.sh')).createSync();
 
       expect(repo.getAttribute(path: 'file.dart', name: 'not-there'), null);
       expect(repo.getAttribute(path: 'file.dart', name: 'text'), true);

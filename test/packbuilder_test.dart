@@ -2,6 +2,7 @@ import 'dart:ffi';
 import 'dart:io';
 
 import 'package:libgit2dart/libgit2dart.dart';
+import 'package:path/path.dart' as p;
 import 'package:test/test.dart';
 
 import 'helpers/util.dart';
@@ -9,10 +10,12 @@ import 'helpers/util.dart';
 void main() {
   late Repository repo;
   late Directory tmpDir;
+  late String packDirPath;
 
   setUp(() {
-    tmpDir = setupRepo(Directory('test/assets/test_repo/'));
+    tmpDir = setupRepo(Directory(p.join('test', 'assets', 'test_repo')));
     repo = Repository.open(tmpDir.path);
+    packDirPath = p.join(repo.path, 'objects', 'pack');
   });
 
   tearDown(() {
@@ -148,7 +151,7 @@ void main() {
       final odb = repo.odb;
 
       packbuilder.add(odb.objects[0]);
-      Directory('${repo.workdir}.git/objects/pack/').createSync();
+      Directory(packDirPath).createSync();
 
       expect(packbuilder.hash.sha, '0' * 40);
       packbuilder.write(null);
@@ -160,7 +163,8 @@ void main() {
     test('packs with default arguments', () {
       final odb = repo.odb;
       final objectsCount = odb.objects.length;
-      Directory('${repo.workdir}.git/objects/pack/').createSync();
+      Directory(packDirPath).createSync();
+
       final writtenCount = repo.pack();
 
       expect(writtenCount, objectsCount);
@@ -171,23 +175,19 @@ void main() {
     test('packs into provided path with threads set', () {
       final odb = repo.odb;
       final objectsCount = odb.objects.length;
-      Directory('${repo.workdir}test-pack').createSync();
+      final testPackPath = p.join(repo.workdir, 'test-pack');
+      Directory(testPackPath).createSync();
 
-      final writtenCount = repo.pack(
-        path: '${repo.workdir}test-pack',
-        threads: 1,
-      );
+      final writtenCount = repo.pack(path: testPackPath, threads: 1);
+
       expect(writtenCount, objectsCount);
-      expect(
-        Directory('${repo.workdir}test-pack').listSync().isNotEmpty,
-        true,
-      );
+      expect(Directory(testPackPath).listSync().isNotEmpty, true);
 
       odb.free();
     });
 
     test('packs with provided packDelegate', () {
-      Directory('${repo.workdir}.git/objects/pack/').createSync();
+      Directory(packDirPath).createSync();
       void packDelegate(PackBuilder packBuilder) {
         final branches = repo.branchesLocal;
         for (final branch in branches) {

@@ -2,6 +2,7 @@ import 'dart:ffi';
 import 'dart:io';
 
 import 'package:libgit2dart/libgit2dart.dart';
+import 'package:path/path.dart' as p;
 import 'package:test/test.dart';
 
 import 'helpers/util.dart';
@@ -14,7 +15,7 @@ void main() {
   const blobContent = 'Feature edit\n';
 
   setUp(() {
-    tmpDir = setupRepo(Directory('test/assets/test_repo/'));
+    tmpDir = setupRepo(Directory(p.join('test', 'assets', 'test_repo')));
     repo = Repository.open(tmpDir.path);
   });
 
@@ -42,7 +43,7 @@ void main() {
 
     test('adds disk alternate', () {
       final odb = Odb.create();
-      odb.addDiskAlternate('${repo.workdir}.git/objects/');
+      odb.addDiskAlternate(p.join(repo.path, 'objects'));
 
       expect(odb.contains(repo[blobSha]), true);
 
@@ -85,7 +86,7 @@ void main() {
 
     test('throws when trying to get list of all objects and error occurs', () {
       final odb = repo.odb;
-      Directory('${repo.workdir}.git/objects').deleteSync(recursive: true);
+      Directory(p.join(repo.path, 'objects')).deleteSync(recursive: true);
 
       expect(
         () => odb.objects,
@@ -117,9 +118,9 @@ void main() {
       odb.free();
     });
 
-    test('throws when trying to write to disk alternate odb', () {
+    test('throws when trying to write alternate odb to disk', () {
       final odb = Odb.create();
-      odb.addDiskAlternate('${repo.workdir}.git/objects/');
+      odb.addDiskAlternate(p.join(repo.path, 'objects'));
 
       expect(
         () => odb.write(type: GitObject.blob, data: ''),

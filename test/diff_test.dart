@@ -2,6 +2,7 @@ import 'dart:ffi';
 import 'dart:io';
 
 import 'package:libgit2dart/libgit2dart.dart';
+import 'package:path/path.dart' as p;
 import 'package:test/test.dart';
 
 import 'helpers/util.dart';
@@ -92,7 +93,7 @@ index e69de29..c217c63 100644
 """;
 
   setUp(() {
-    tmpDir = setupRepo(Directory('test/assets/dirty_repo/'));
+    tmpDir = setupRepo(Directory(p.join('test', 'assets', 'dirty_repo')));
     repo = Repository.open(tmpDir.path);
   });
 
@@ -318,7 +319,7 @@ index e69de29..c217c63 100644
 
       test('applies diff to repository', () {
         final diff = Diff.parse(patchText);
-        final file = File('${tmpDir.path}/subdir/modified_file');
+        final file = File(p.join(tmpDir.path, 'subdir', 'modified_file'));
 
         repo.checkout(refName: 'HEAD', strategy: {GitCheckout.force});
         expect(file.readAsStringSync(), '');
@@ -348,7 +349,7 @@ index e69de29..c217c63 100644
       test('applies hunk with provided index to repository', () {
         final diff = Diff.parse(patchText);
         final hunk = diff.patches.first.hunks.first;
-        final file = File('${tmpDir.path}/subdir/modified_file');
+        final file = File(p.join(tmpDir.path, 'subdir', 'modified_file'));
 
         repo.checkout(refName: 'HEAD', strategy: {GitCheckout.force});
         expect(file.readAsStringSync(), '');

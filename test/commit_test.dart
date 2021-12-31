@@ -2,6 +2,7 @@ import 'dart:ffi';
 import 'dart:io';
 
 import 'package:libgit2dart/libgit2dart.dart';
+import 'package:path/path.dart' as p;
 import 'package:test/test.dart';
 
 import 'helpers/util.dart';
@@ -16,7 +17,7 @@ void main() {
   const message = "Commit message.\n\nSome description.\n";
 
   setUp(() {
-    tmpDir = setupRepo(Directory('test/assets/test_repo/'));
+    tmpDir = setupRepo(Directory(p.join('test', 'assets', 'test_repo')));
     repo = Repository.open(tmpDir.path);
     author = Signature.create(
       name: 'Author Name',
@@ -68,12 +69,13 @@ void main() {
         repo['821ed6e80627b8769d170a293862f9fc60825226'],
       );
       final index = repo.index;
+      final file = File(p.join(repo.workdir, 'dir', 'dir_file.txt'));
       expect(index.find('dir/dir_file.txt'), true);
-      expect(File('${repo.workdir}dir/dir_file.txt').existsSync(), true);
+      expect(file.existsSync(), true);
 
       repo.revert(commit);
       expect(index.find('dir/dir_file.txt'), false);
-      expect(File('${repo.workdir}dir/dir_file.txt').existsSync(), false);
+      expect(file.existsSync(), false);
 
       index.free();
       commit.free();
@@ -91,12 +93,13 @@ void main() {
         repo['821ed6e80627b8769d170a293862f9fc60825226'],
       );
       final index = repo.index;
+      final file = File(p.join(repo.workdir, 'dir', 'dir_file.txt'));
       expect(index.find('dir/dir_file.txt'), true);
-      expect(File('${repo.workdir}dir/dir_file.txt').existsSync(), true);
+      expect(file.existsSync(), true);
 
       final revertIndex = repo.revertCommit(revertCommit: from, ourCommit: to);
       expect(revertIndex.find('dir/dir_file.txt'), false);
-      expect(File('${repo.workdir}dir/dir_file.txt').existsSync(), true);
+      expect(file.existsSync(), true);
 
       revertIndex.free();
       index.free();

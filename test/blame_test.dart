@@ -1,6 +1,7 @@
 import 'dart:io';
 
 import 'package:libgit2dart/libgit2dart.dart';
+import 'package:path/path.dart' as p;
 import 'package:test/test.dart';
 
 import 'helpers/util.dart';
@@ -13,7 +14,7 @@ void main() {
   var hunks = <Map<String, Object>>[];
 
   setUp(() {
-    tmpDir = setupRepo(Directory('test/assets/blame_repo/'));
+    tmpDir = setupRepo(Directory(p.join('test', 'assets', 'blame_repo')));
     repo = Repository.open(tmpDir.path);
     sig1 = Signature.create(
       name: 'Aleksey Kulikov',

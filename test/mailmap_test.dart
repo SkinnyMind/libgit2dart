@@ -2,6 +2,7 @@ import 'dart:ffi';
 import 'dart:io';
 
 import 'package:libgit2dart/libgit2dart.dart';
+import 'package:path/path.dart' as p;
 import 'package:test/test.dart';
 
 import 'helpers/util.dart';
@@ -130,7 +131,7 @@ Santa Claus <santa.claus@northpole.xx> <me@company.xx>
   late Directory tmpDir;
 
   setUp(() {
-    tmpDir = setupRepo(Directory('test/assets/mailmap_repo/'));
+    tmpDir = setupRepo(Directory(p.join('test', 'assets', 'mailmap_repo')));
     repo = Repository.open(tmpDir.path);
   });
 
