@@ -41,4 +41,5 @@ Object? getAttribute({
     calloc.free(out);
     return result;
   }
+  return null;
 }

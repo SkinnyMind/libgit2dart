@@ -3,10 +3,6 @@ import 'package:path/path.dart' as p;
 
 Directory setupRepo(Directory repoDir) {
   final tmpDir = Directory.systemTemp.createTempSync('testrepo');
-  if (tmpDir.existsSync()) {
-    tmpDir.deleteSync(recursive: true);
-  }
-  tmpDir.createSync();
   copyRepo(from: repoDir, to: tmpDir);
   return tmpDir;
 }
