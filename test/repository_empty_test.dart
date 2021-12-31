@@ -6,8 +6,6 @@ import 'package:test/test.dart';
 
 void main() {
   late Repository repo;
-  final barePath = p.join('test', 'assets', 'empty_bare.git');
-  final standardPath = p.join('test', 'assets', 'empty_standard', '.gitdir');
 
   group('Repository.open', () {
     test("throws when repository isn't found at provided path", () {
@@ -19,7 +17,7 @@ void main() {
 
     group('empty bare', () {
       setUp(() {
-        repo = Repository.open(barePath);
+        repo = Repository.open(p.join('test', 'assets', 'empty_bare.git'));
       });
 
       tearDown(() {
@@ -35,11 +33,11 @@ void main() {
       });
 
       test('returns path to the repository', () {
-        expect(repo.path, contains(barePath));
+        expect(repo.path, contains('/test/assets/empty_bare.git/'));
       });
 
       test('returns path to root directory for the repository', () {
-        expect(repo.commonDir, contains(barePath));
+        expect(repo.commonDir, contains('/test/assets/empty_bare.git/'));
       });
 
       test('returns empty string as path of the working directory', () {
@@ -49,7 +47,9 @@ void main() {
 
     group('empty standard', () {
       setUp(() {
-        repo = Repository.open(standardPath);
+        repo = Repository.open(
+          p.join('test', 'assets', 'empty_standard', '.gitdir'),
+        );
       });
 
       tearDown(() {
@@ -61,11 +61,14 @@ void main() {
       });
 
       test('returns path to the repository', () {
-        expect(repo.path, contains(standardPath));
+        expect(repo.path, contains('/test/assets/empty_standard/.gitdir/'));
       });
 
       test("returns path to parent repo's .git folder for the repository", () {
-        expect(repo.commonDir, contains(standardPath));
+        expect(
+          repo.commonDir,
+          contains('/test/assets/empty_standard/.gitdir/'),
+        );
       });
 
       test('checks if it is empty', () {
@@ -105,7 +108,7 @@ void main() {
       test('returns path to working directory', () {
         expect(
           repo.workdir,
-          contains(p.join('test', 'assets', 'empty_standard')),
+          contains('/test/assets/empty_standard/'),
         );
       });
     });

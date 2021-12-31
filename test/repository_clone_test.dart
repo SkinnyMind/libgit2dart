@@ -122,7 +122,7 @@ void main() {
 
       expect(clonedRepo.isEmpty, false);
       expect(clonedRepo.isBare, false);
-      expect(clonedRepo.path, contains(p.join('callbackRepo', '.git')));
+      expect(clonedRepo.path, contains('/callbackRepo/.git/'));
 
       clonedRepo.free();
       callbackPath.deleteSync(recursive: true);

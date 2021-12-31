@@ -31,7 +31,7 @@ void main() {
     test('creates new standard repo at provided path', () {
       repo = Repository.init(path: initDir.path);
 
-      expect(repo.path, contains(p.join('init_repo', '.git')));
+      expect(repo.path, contains('init_repo/.git/'));
       expect(repo.isBare, false);
       expect(repo.isEmpty, true);
     });
@@ -44,7 +44,7 @@ void main() {
         flags: {GitRepositoryInit.mkdir, GitRepositoryInit.mkpath},
       );
 
-      expect(repo.path, contains(p.join('init_repo', '.git')));
+      expect(repo.path, contains('init_repo/.git/'));
       expect(repo.isBare, false);
       expect(repo.isEmpty, true);
       expect(
