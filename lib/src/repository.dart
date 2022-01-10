@@ -1000,7 +1000,7 @@ class Repository {
   /// values respectively.
   ///
   /// Throws a [LibGit2Error] if error occured.
-  List mergeAnalysis({
+  List<Object> mergeAnalysis({
     required Oid theirHead,
     String ourRef = 'HEAD',
   }) {
