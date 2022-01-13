@@ -70,7 +70,8 @@ void main() {
         time: 1234,
       );
       const tagName = 'tag';
-      final target = repo['f17d0d48eae3aa08cecf29128a35e310c97b3521'];
+      const targetSHA = 'f17d0d48eae3aa08cecf29128a35e310c97b3521';
+      final target = repo[targetSHA];
       const message = 'init tag\n';
 
       final oid = repo.createTag(
@@ -88,6 +89,7 @@ void main() {
       expect(newTag.oid.sha, '131a5eb6b7a880b5096c550ee7351aeae7b95a42');
       expect(newTag.name, tagName);
       expect(newTag.message, message);
+      expect(newTag.targetOid.sha, targetSHA);
       expect(tagger, signature);
       expect(newTagTarget.oid, target);
 

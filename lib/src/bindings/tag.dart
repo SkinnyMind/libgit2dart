@@ -65,6 +65,10 @@ Pointer<git_object> target(Pointer<git_tag> tag) {
 /// Get the type of a tag's tagged object.
 int targetType(Pointer<git_tag> tag) => libgit2.git_tag_target_type(tag);
 
+/// Get the OID of the tagged object of a tag.
+Pointer<git_oid> targetOid(Pointer<git_tag> tag) =>
+    libgit2.git_tag_target_id(tag);
+
 /// Get the id of a tag.
 Pointer<git_oid> id(Pointer<git_tag> tag) => libgit2.git_tag_id(tag);
 
