@@ -137,6 +137,9 @@ class Tag {
     }
   }
 
+  /// [Oid] of the tagged object of a tag.
+  Oid get targetOid => Oid(bindings.targetOid(_tagPointer));
+
   /// [Oid] of a tag.
   Oid get oid => Oid(bindings.id(_tagPointer));
 
