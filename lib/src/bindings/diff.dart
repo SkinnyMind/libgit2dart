@@ -5,6 +5,42 @@ import 'package:libgit2dart/src/bindings/libgit2_bindings.dart';
 import 'package:libgit2dart/src/error.dart';
 import 'package:libgit2dart/src/util.dart';
 
+/// Create a diff with the difference between two index objects.
+///
+/// Throws a [LibGit2Error] if error occured.
+Pointer<git_diff> indexToIndex({
+  required Pointer<git_repository> repoPointer,
+  required Pointer<git_index> oldIndexPointer,
+  required Pointer<git_index> newIndexPointer,
+  required int flags,
+  required int contextLines,
+  required int interhunkLines,
+}) {
+  final out = calloc<Pointer<git_diff>>();
+  final opts = _diffOptionsInit(
+    flags: flags,
+    contextLines: contextLines,
+    interhunkLines: interhunkLines,
+  );
+
+  final error = libgit2.git_diff_index_to_index(
+    out,
+    repoPointer,
+    oldIndexPointer,
+    newIndexPointer,
+    opts,
+  );
+
+  calloc.free(opts);
+
+  if (error < 0) {
+    calloc.free(out);
+    throw LibGit2Error(libgit2.git_error_last());
+  } else {
+    return out.value;
+  }
+}
+
 /// Create a diff between the repository index and the workdir directory.
 Pointer<git_diff> indexToWorkdir({
   required Pointer<git_repository> repoPointer,
@@ -80,13 +116,14 @@ Pointer<git_diff> treeToWorkdir({
     opts,
   );
 
-  if (error < 0) {
-    throw LibGit2Error(libgit2.git_error_last());
-  }
-
   calloc.free(opts);
 
-  return out.value;
+  if (error < 0) {
+    calloc.free(out);
+    throw LibGit2Error(libgit2.git_error_last());
+  } else {
+    return out.value;
+  }
 }
 
 /// Create a diff between a tree and the working directory using index data to
@@ -118,13 +155,14 @@ Pointer<git_diff> treeToWorkdirWithIndex({
     opts,
   );
 
-  if (error < 0) {
-    throw LibGit2Error(libgit2.git_error_last());
-  }
-
   calloc.free(opts);
 
-  return out.value;
+  if (error < 0) {
+    calloc.free(out);
+    throw LibGit2Error(libgit2.git_error_last());
+  } else {
+    return out.value;
+  }
 }
 
 /// Create a diff with the difference between two tree objects.
@@ -153,13 +191,14 @@ Pointer<git_diff> treeToTree({
     opts,
   );
 
-  if (error < 0) {
-    throw LibGit2Error(libgit2.git_error_last());
-  }
-
   calloc.free(opts);
 
-  return out.value;
+  if (error < 0) {
+    calloc.free(out);
+    throw LibGit2Error(libgit2.git_error_last());
+  } else {
+    return out.value;
+  }
 }
 
 /// Query how many diff records are there in a diff.

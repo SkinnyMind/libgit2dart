@@ -300,6 +300,37 @@ class Index with IterableMixin<IndexEntry> {
   void removeAll(List<String> path) =>
       bindings.removeAll(indexPointer: _indexPointer, pathspec: path);
 
+  /// Creates a diff with the difference between two index objects.
+  ///
+  /// [index] is the [Index] object to diff to.
+  ///
+  /// [flags] is a combination of [GitDiff] flags. Defaults to [GitDiff.normal].
+  ///
+  /// [contextLines] is the number of unchanged lines that define the boundary
+  /// of a hunk (and to display before and after). Defaults to 3.
+  ///
+  /// [interhunkLines] is the maximum number of unchanged lines between hunk
+  /// boundaries before the hunks will be merged into one. Defaults to 0.
+  ///
+  /// Throws a [LibGit2Error] if error occured.
+  Diff diffToIndex({
+    required Index index,
+    Set<GitDiff> flags = const {GitDiff.normal},
+    int contextLines = 3,
+    int interhunkLines = 0,
+  }) {
+    return Diff(
+      diff_bindings.indexToIndex(
+        repoPointer: bindings.owner(_indexPointer),
+        oldIndexPointer: _indexPointer,
+        newIndexPointer: index.pointer,
+        flags: flags.fold(0, (acc, e) => acc | e.value),
+        contextLines: contextLines,
+        interhunkLines: interhunkLines,
+      ),
+    );
+  }
+
   /// Creates a diff between the repository index and the workdir directory.
   ///
   /// [flags] is a combination of [GitDiff] flags. Defaults to [GitDiff.normal].

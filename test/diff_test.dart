@@ -71,6 +71,21 @@ void main() {
     'subdir/modified_file',
   ];
 
+  const indexToIndex = [
+    'current_file',
+    'file_deleted',
+    'modified_file',
+    'staged_changes',
+    'staged_changes_file_deleted',
+    'staged_changes_file_modified',
+    'staged_new',
+    'staged_new_file_deleted',
+    'staged_new_file_modified',
+    'subdir/current_file',
+    'subdir/deleted_file',
+    'subdir/modified_file',
+  ];
+
   const patchText = """
 diff --git a/subdir/modified_file b/subdir/modified_file
 index e69de29..c217c63 100644
@@ -235,6 +250,45 @@ index e69de29..c217c63 100644
       tree.free();
       commit.free();
       head.free();
+    });
+
+    test(
+        'throws when trying to diff between tree and workdir with index and '
+        'error occurs', () {
+      expect(
+        () => Diff.treeToWorkdirWithIndex(
+          repo: Repository(nullptr),
+          tree: null,
+        ),
+        throwsA(isA<LibGit2Error>()),
+      );
+    });
+
+    test('returns diff between index and index', () {
+      final index = repo.index;
+      final emptyIndex = Index.newInMemory();
+
+      final diff = index.diffToIndex(index: emptyIndex);
+
+      expect(diff.length, 12);
+      for (var i = 0; i < diff.deltas.length; i++) {
+        expect(diff.deltas[i].newFile.path, indexToIndex[i]);
+      }
+
+      index.free();
+      emptyIndex.free();
+    });
+
+    test('throws when trying to diff between index and index and error occurs',
+        () {
+      final index = repo.index;
+
+      expect(
+        () => index.diffToIndex(index: Index(nullptr)),
+        throwsA(isA<LibGit2Error>()),
+      );
+
+      index.free();
     });
 
     test('merges diffs', () {
