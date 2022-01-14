@@ -29,6 +29,10 @@ void main() {
     const fileSha = 'e69de29bb2d1d6434b8b29ae775ad8c2e48c5391';
     const featureFileSha = '9c78c21d6680a7ffebc76f7ac68cacc11d8f48bc';
 
+    test('creates new in memory index object', () {
+      expect(Index.newInMemory(), isA<Index>());
+    });
+
     test('returns full path to the index file on disk', () {
       expect(index.path, p.join(repo.path, 'index'));
     });
