@@ -5,6 +5,18 @@ import 'package:libgit2dart/src/bindings/libgit2_bindings.dart';
 import 'package:libgit2dart/src/error.dart';
 import 'package:libgit2dart/src/util.dart';
 
+/// Create an in-memory index object.
+///
+/// This index object cannot be read/written to the filesystem, but may be
+/// used to perform in-memory index operations.
+///
+/// The index must be freed once it's no longer in use.
+Pointer<git_index> newInMemory() {
+  final out = calloc<Pointer<git_index>>();
+  libgit2.git_index_new(out);
+  return out.value;
+}
+
 /// Read index capabilities flags.
 int capabilities(Pointer<git_index> index) => libgit2.git_index_caps(index);
 

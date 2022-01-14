@@ -14,6 +14,14 @@ class Index with IterableMixin<IndexEntry> {
   /// **IMPORTANT**: Should be freed to release allocated memory.
   const Index(this._indexPointer);
 
+  /// Creates an in-memory index object.
+  ///
+  /// This index object cannot be read/written to the filesystem, but may be
+  /// used to perform in-memory index operations.
+  ///
+  /// **IMPORTANT**: Should be freed to release allocated memory.
+  Index.newInMemory() : _indexPointer = bindings.newInMemory();
+
   final Pointer<git_index> _indexPointer;
 
   /// Pointer to memory address for allocated index object.
