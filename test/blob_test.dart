@@ -128,7 +128,7 @@ void main() {
     });
 
     test('filters content of a blob with provided commit for attributes', () {
-      repo.checkout(refName: 'refs/tags/v0.2');
+      repo.checkout(target: 'refs/tags/v0.2');
 
       final blobOid = repo.createBlob('clrf\nclrf\n');
       final blob = repo.lookupBlob(blobOid);
