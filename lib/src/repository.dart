@@ -1233,20 +1233,34 @@ class Repository {
     );
   }
 
-  /// Checkouts the provided reference [refName] using the given strategy, and
-  /// updates the HEAD.
+  /// Checkouts the provided [target] using the given strategy, and updates the
+  /// HEAD.
   ///
-  /// If no reference [refName] is given, checkouts from the index.
+  /// [target] can be null, 'HEAD', reference name or commit [Oid].
+  ///
+  /// If no [target] is given, updates files in the working tree to match the
+  /// content of the index.
+  ///
+  /// If [target] is 'HEAD' string, updates files in the index and the working
+  /// tree to match the content of the commit pointed at by HEAD.
+  ///
+  /// If [target] is reference name, updates files in the index and working
+  /// tree to match the content of the tree pointed at by the reference.
+  ///
+  /// If [target] is commit oid, updates files in the index and working
+  /// tree to match the content of the tree pointed at by the commit.
   ///
   /// Default checkout strategy is combination of [GitCheckout.safe] and
   /// [GitCheckout.recreateMissing].
   ///
   /// [directory] is alternative checkout path to workdir.
   ///
-  /// [paths] is list of files to checkout from provided reference [refName].
-  /// If paths are provided HEAD will not be set to the reference [refName].
+  /// [paths] is list of files to checkout from provided [target].
+  /// If paths are provided, HEAD will not be set to the [target].
+  ///
+  /// Throws [ArgumentError] if provided [target] is not String or [Oid].
   void checkout({
-    String? refName,
+    Object? target,
     Set<GitCheckout> strategy = const {
       GitCheckout.safe,
       GitCheckout.recreateMissing
@@ -1256,22 +1270,22 @@ class Repository {
   }) {
     final strat = strategy.fold(0, (int acc, e) => acc | e.value);
 
-    if (refName == null) {
+    if (target == null) {
       checkout_bindings.index(
         repoPointer: _repoPointer,
         strategy: strat,
         directory: directory,
         paths: paths,
       );
-    } else if (refName == 'HEAD') {
+    } else if (target == 'HEAD') {
       checkout_bindings.head(
         repoPointer: _repoPointer,
         strategy: strat,
         directory: directory,
         paths: paths,
       );
-    } else {
-      final ref = lookupReference(refName);
+    } else if (target is String) {
+      final ref = lookupReference(target);
       final treeish = object_bindings.lookup(
         repoPointer: _repoPointer,
         oidPointer: ref.target.pointer,
@@ -1285,11 +1299,27 @@ class Repository {
         paths: paths,
       );
       if (paths == null) {
-        setHead(refName);
+        setHead(target);
       }
-
-      object_bindings.free(treeish);
       ref.free();
+    } else if (target is Oid) {
+      final treeish = object_bindings.lookup(
+        repoPointer: _repoPointer,
+        oidPointer: target.pointer,
+        type: GitObject.any.value,
+      );
+      checkout_bindings.tree(
+        repoPointer: _repoPointer,
+        treeishPointer: treeish,
+        strategy: strat,
+        directory: directory,
+        paths: paths,
+      );
+      if (paths == null) {
+        setHead(target);
+      }
+    } else {
+      throw ArgumentError.value('$target must be either String or Oid');
     }
   }
 

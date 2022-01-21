@@ -159,7 +159,7 @@ Another feature edit
           repo: repo,
           oid: conflictBranch.target,
         );
-        repo.checkout(refName: 'refs/heads/feature');
+        repo.checkout(target: 'refs/heads/feature');
         final index = repo.index;
 
         repo.merge(commit: commit);

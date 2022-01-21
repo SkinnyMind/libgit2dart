@@ -365,7 +365,7 @@ void main() {
         oid: conflictBranch.target,
       );
 
-      conflictRepo.checkout(refName: 'refs/heads/feature');
+      conflictRepo.checkout(target: 'refs/heads/feature');
 
       conflictRepo.merge(commit: commit);
 
@@ -421,7 +421,7 @@ void main() {
         oid: conflictBranch.target,
       );
 
-      conflictRepo.checkout(refName: 'refs/heads/our-conflict');
+      conflictRepo.checkout(target: 'refs/heads/our-conflict');
 
       conflictRepo.merge(commit: commit);
 
@@ -449,7 +449,7 @@ void main() {
         oid: conflictBranch.target,
       );
 
-      conflictRepo.checkout(refName: 'refs/heads/feature');
+      conflictRepo.checkout(target: 'refs/heads/feature');
 
       conflictRepo.merge(commit: commit);
 
