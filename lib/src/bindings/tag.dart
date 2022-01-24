@@ -84,7 +84,7 @@ String message(Pointer<git_tag> tag) =>
 Pointer<git_signature> tagger(Pointer<git_tag> tag) =>
     libgit2.git_tag_tagger(tag);
 
-/// Create a new tag in the repository from an object.
+/// Create a new annotated tag in the repository from an object.
 ///
 /// A new reference will also be created pointing to this tag object. If force
 /// is true and a reference already exists with the given name, it'll be
@@ -97,7 +97,7 @@ Pointer<git_signature> tagger(Pointer<git_tag> tag) =>
 /// special meaning to revparse.
 ///
 /// Throws a [LibGit2Error] if error occured.
-Pointer<git_oid> create({
+Pointer<git_oid> createAnnotated({
   required Pointer<git_repository> repoPointer,
   required String tagName,
   required Pointer<git_object> targetPointer,
@@ -108,7 +108,6 @@ Pointer<git_oid> create({
   final out = calloc<git_oid>();
   final tagNameC = tagName.toNativeUtf8().cast<Int8>();
   final messageC = message.toNativeUtf8().cast<Int8>();
-  final forceC = force ? 1 : 0;
   final error = libgit2.git_tag_create(
     out,
     repoPointer,
@@ -116,11 +115,47 @@ Pointer<git_oid> create({
     targetPointer,
     taggerPointer,
     messageC,
-    forceC,
+    force ? 1 : 0,
   );
 
   calloc.free(tagNameC);
   calloc.free(messageC);
+
+  if (error < 0) {
+    calloc.free(out);
+    throw LibGit2Error(libgit2.git_error_last());
+  } else {
+    return out;
+  }
+}
+
+/// Create a new lightweight tag pointing at a target object.
+///
+/// A new direct reference will be created pointing to this target object. If
+/// force is true and a reference already exists with the given name, it'll be
+/// replaced.
+///
+/// The tag name will be checked for validity. See [createAnnotated] for rules
+/// about valid names.
+///
+/// Throws a [LibGit2Error] if error occured.
+Pointer<git_oid> createLightweight({
+  required Pointer<git_repository> repoPointer,
+  required String tagName,
+  required Pointer<git_object> targetPointer,
+  required bool force,
+}) {
+  final out = calloc<git_oid>();
+  final tagNameC = tagName.toNativeUtf8().cast<Int8>();
+  final error = libgit2.git_tag_create_lightweight(
+    out,
+    repoPointer,
+    tagNameC,
+    targetPointer,
+    force ? 1 : 0,
+  );
+
+  calloc.free(tagNameC);
 
   if (error < 0) {
     calloc.free(out);

@@ -196,7 +196,7 @@ void main() {
       });
     });
 
-    test('creates tag with provided sha', () {
+    test('creates annotated tag with provided sha', () {
       final signature = Signature.create(
         name: 'Author',
         email: 'author@email.com',
@@ -206,7 +206,7 @@ void main() {
       final target = repo['f17d0d48eae3aa08cecf29128a35e310c97b3521'];
       const message = 'init tag\n';
 
-      final oid = repo.createTag(
+      final oid = repo.createAnnotatedTag(
         tagName: tagName,
         target: target,
         targetType: GitObject.commit,
@@ -218,7 +218,7 @@ void main() {
       final tagger = newTag.tagger;
       final newTagTarget = newTag.target as Commit;
 
-      expect(newTag.oid.sha, '131a5eb6b7a880b5096c550ee7351aeae7b95a42');
+      expect(newTag.oid, oid);
       expect(newTag.name, tagName);
       expect(newTag.message, message);
       expect(tagger, signature);
@@ -227,6 +227,24 @@ void main() {
       newTag.free();
       newTagTarget.free();
       signature.free();
+    });
+
+    test('creates lightweight tag with provided sha', () {
+      const tagName = 'tag';
+      final target = repo['f17d0d48eae3aa08cecf29128a35e310c97b3521'];
+
+      repo.createLightweightTag(
+        tagName: tagName,
+        target: target,
+        targetType: GitObject.commit,
+      );
+
+      final newTag = repo.lookupReference('refs/tags/$tagName');
+
+      expect(newTag.shorthand, tagName);
+      expect(newTag.target, target);
+
+      newTag.free();
     });
 
     test('returns status of a repository', () {

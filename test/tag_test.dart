@@ -55,6 +55,7 @@ void main() {
       expect(tag.oid, tagOid);
       expect(tag.name, 'v0.2');
       expect(tag.message, 'annotated tag\n');
+      expect(tag.targetType, GitObject.commit);
       expect(target.message, 'add subdirectory file\n');
       expect(tagger, signature);
       expect(tag.toString(), contains('Tag{'));
@@ -63,7 +64,7 @@ void main() {
       target.free();
     });
 
-    test('creates new tag with commit as target', () {
+    test('creates new annotated tag with commit as target', () {
       final signature = Signature.create(
         name: 'Author',
         email: 'author@email.com',
@@ -74,7 +75,8 @@ void main() {
       final target = repo[targetSHA];
       const message = 'init tag\n';
 
-      final oid = repo.createTag(
+      final oid = Tag.createAnnotated(
+        repo: repo,
         tagName: tagName,
         target: target,
         targetType: GitObject.commit,
@@ -86,7 +88,7 @@ void main() {
       final tagger = newTag.tagger;
       final newTagTarget = newTag.target as Commit;
 
-      expect(newTag.oid.sha, '131a5eb6b7a880b5096c550ee7351aeae7b95a42');
+      expect(newTag.oid, oid);
       expect(newTag.name, tagName);
       expect(newTag.message, message);
       expect(newTag.targetOid.sha, targetSHA);
@@ -98,7 +100,26 @@ void main() {
       signature.free();
     });
 
-    test('creates new tag with tree as target', () {
+    test('creates new lightweight tag with commit as target', () {
+      const tagName = 'tag';
+      final target = repo['f17d0d48eae3aa08cecf29128a35e310c97b3521'];
+
+      Tag.createLightweight(
+        repo: repo,
+        tagName: tagName,
+        target: target,
+        targetType: GitObject.commit,
+      );
+
+      final newTag = repo.lookupReference('refs/tags/$tagName');
+
+      expect(newTag.shorthand, tagName);
+      expect(newTag.target, target);
+
+      newTag.free();
+    });
+
+    test('creates new annotated tag with tree as target', () {
       final signature = Signature.create(
         name: 'Author',
         email: 'author@email.com',
@@ -108,7 +129,8 @@ void main() {
       final target = repo['a8ae3dd59e6e1802c6f78e05e301bfd57c9f334f'];
       const message = 'init tag\n';
 
-      final oid = repo.createTag(
+      final oid = Tag.createAnnotated(
+        repo: repo,
         tagName: tagName,
         target: target,
         targetType: GitObject.tree,
@@ -120,7 +142,7 @@ void main() {
       final tagger = newTag.tagger;
       final newTagTarget = newTag.target as Tree;
 
-      expect(newTag.oid.sha, 'ca715c0bafad5d39d568675aad69f71a82178416');
+      expect(newTag.oid, oid);
       expect(newTag.name, tagName);
       expect(newTag.message, message);
       expect(tagger, signature);
@@ -131,7 +153,26 @@ void main() {
       signature.free();
     });
 
-    test('creates new tag with blob as target', () {
+    test('creates new lightweight tag with tree as target', () {
+      const tagName = 'tag';
+      final target = repo['a8ae3dd59e6e1802c6f78e05e301bfd57c9f334f'];
+
+      Tag.createLightweight(
+        repo: repo,
+        tagName: tagName,
+        target: target,
+        targetType: GitObject.tree,
+      );
+
+      final newTag = repo.lookupReference('refs/tags/$tagName');
+
+      expect(newTag.shorthand, tagName);
+      expect(newTag.target, target);
+
+      newTag.free();
+    });
+
+    test('creates new annotated tag with blob as target', () {
       final signature = Signature.create(
         name: 'Author',
         email: 'author@email.com',
@@ -141,7 +182,8 @@ void main() {
       final target = repo['9c78c21d6680a7ffebc76f7ac68cacc11d8f48bc'];
       const message = 'init tag\n';
 
-      final oid = repo.createTag(
+      final oid = Tag.createAnnotated(
+        repo: repo,
         tagName: tagName,
         target: target,
         targetType: GitObject.blob,
@@ -153,7 +195,7 @@ void main() {
       final tagger = newTag.tagger;
       final newTagTarget = newTag.target as Blob;
 
-      expect(newTag.oid.sha, '8b1edabda95e934d2252e563219315b08e38dce5');
+      expect(newTag.oid, oid);
       expect(newTag.name, tagName);
       expect(newTag.message, message);
       expect(tagger, signature);
@@ -164,7 +206,26 @@ void main() {
       signature.free();
     });
 
-    test('creates new tag with tag as target', () {
+    test('creates new lightweight tag with blob as target', () {
+      const tagName = 'tag';
+      final target = repo['9c78c21d6680a7ffebc76f7ac68cacc11d8f48bc'];
+
+      Tag.createLightweight(
+        repo: repo,
+        tagName: tagName,
+        target: target,
+        targetType: GitObject.blob,
+      );
+
+      final newTag = repo.lookupReference('refs/tags/$tagName');
+
+      expect(newTag.shorthand, tagName);
+      expect(newTag.target, target);
+
+      newTag.free();
+    });
+
+    test('creates new annotated tag with tag as target', () {
       final signature = Signature.create(
         name: 'Author',
         email: 'author@email.com',
@@ -173,7 +234,8 @@ void main() {
       const tagName = 'tag';
       const message = 'init tag\n';
 
-      final oid = repo.createTag(
+      final oid = Tag.createAnnotated(
+        repo: repo,
         tagName: tagName,
         target: tag.oid,
         targetType: GitObject.tag,
@@ -185,7 +247,7 @@ void main() {
       final tagger = newTag.tagger;
       final newTagTarget = newTag.target as Tag;
 
-      expect(newTag.oid.sha, '20286cf6c3b150b58b6c419814b0931d9b17c2ba');
+      expect(newTag.oid, oid);
       expect(newTag.name, tagName);
       expect(newTag.message, message);
       expect(tagger, signature);
@@ -196,12 +258,101 @@ void main() {
       signature.free();
     });
 
-    test('throws when trying to create tag with invalid name', () {
+    test('creates new lightweight tag with tag as target', () {
+      const tagName = 'tag';
+
+      Tag.createLightweight(
+        repo: repo,
+        tagName: tagName,
+        target: tag.oid,
+        targetType: GitObject.tag,
+      );
+
+      final newTag = repo.lookupReference('refs/tags/$tagName');
+
+      expect(newTag.shorthand, tagName);
+      expect(newTag.target, tag.oid);
+
+      newTag.free();
+    });
+
+    test(
+        'creates new annotated tag with already existing name '
+        'when force is set to true', () {
+      final signature = Signature.create(
+        name: 'Author',
+        email: 'author@email.com',
+        time: 1234,
+      );
+      final tagName = tag.name;
+      const targetSHA = 'f17d0d48eae3aa08cecf29128a35e310c97b3521';
+      final target = repo[targetSHA];
+      const message = 'init tag\n';
+
+      expect(tag.targetOid.sha, isNot(targetSHA));
+      expect(repo.tags.length, equals(2));
+
+      final oid = Tag.createAnnotated(
+        repo: repo,
+        tagName: tagName,
+        target: target,
+        targetType: GitObject.commit,
+        tagger: signature,
+        message: message,
+        force: true,
+      );
+
+      final newTag = repo.lookupTag(oid);
+      final tagger = newTag.tagger;
+      final newTagTarget = newTag.target as Commit;
+
+      expect(newTag.oid, oid);
+      expect(newTag.name, tagName);
+      expect(newTag.message, message);
+      expect(newTag.targetOid.sha, targetSHA);
+      expect(tagger, signature);
+      expect(newTagTarget.oid, target);
+      expect(repo.tags.length, equals(2));
+
+      newTag.free();
+      newTagTarget.free();
+      signature.free();
+    });
+
+    test(
+        'creates new lightweight tag with already existing name '
+        'when force is set to true', () {
+      final tagName = tag.name;
+      const targetSHA = 'f17d0d48eae3aa08cecf29128a35e310c97b3521';
+      final target = repo[targetSHA];
+
+      expect(tag.targetOid.sha, isNot(targetSHA));
+      expect(repo.tags.length, equals(2));
+
+      Tag.createLightweight(
+        repo: repo,
+        tagName: tagName,
+        target: target,
+        targetType: GitObject.commit,
+        force: true,
+      );
+
+      final newTag = repo.lookupReference('refs/tags/$tagName');
+
+      expect(newTag.shorthand, tagName);
+      expect(newTag.target, target);
+      expect(repo.tags.length, equals(2));
+
+      newTag.free();
+    });
+
+    test('throws when trying to create annotated tag with invalid name', () {
       expect(
-        () => repo.createTag(
+        () => Tag.createAnnotated(
+          repo: repo,
           tagName: '',
           target: repo['9c78c21'],
-          targetType: GitObject.any,
+          targetType: GitObject.commit,
           tagger: Signature(nullptr),
           message: '',
         ),
@@ -209,14 +360,40 @@ void main() {
       );
     });
 
-    test('throws when trying to create tag with invalid target', () {
+    test('throws when trying to create lightweight tag with invalid name', () {
       expect(
-        () => repo.createTag(
+        () => Tag.createLightweight(
+          repo: repo,
+          tagName: '',
+          target: repo['9c78c21'],
+          targetType: GitObject.commit,
+        ),
+        throwsA(isA<LibGit2Error>()),
+      );
+    });
+
+    test('throws when trying to create annotated tag with invalid target', () {
+      expect(
+        () => Tag.createAnnotated(
+          repo: repo,
           tagName: '',
           target: repo['0' * 40],
-          targetType: GitObject.any,
+          targetType: GitObject.commit,
           tagger: Signature(nullptr),
           message: '',
+        ),
+        throwsA(isA<LibGit2Error>()),
+      );
+    });
+
+    test('throws when trying to create lightweight tag with invalid target',
+        () {
+      expect(
+        () => Tag.createLightweight(
+          repo: repo,
+          tagName: '',
+          target: repo['0' * 40],
+          targetType: GitObject.commit,
         ),
         throwsA(isA<LibGit2Error>()),
       );

@@ -25,13 +25,12 @@ class Tag {
   /// Pointer to memory address for allocated tag object.
   late final Pointer<git_tag> _tagPointer;
 
-  /// Creates a new tag in the repository for provided [target] object.
+  /// Creates a new annotated tag in the repository for provided [target]
+  /// object.
   ///
-  /// A new reference will also be created pointing to this tag object. If
-  /// [force] is true and a reference already exists with the given name, it'll
-  /// be replaced.
-  ///
-  /// The [message] will not be cleaned up.
+  /// A new reference will also be created in the `/refs/tags` folder pointing
+  /// to this tag object. If [force] is true and a reference already exists
+  /// with the given name, it'll be replaced.
   ///
   /// The [tagName] will be checked for validity. You must avoid the characters
   /// '~', '^', ':', '\', '?', '[', and '*', and the sequences ".." and "@{" which have
@@ -58,7 +57,7 @@ class Tag {
   /// should be replaced.
   ///
   /// Throws a [LibGit2Error] if error occured.
-  static Oid create({
+  static Oid createAnnotated({
     required Repository repo,
     required String tagName,
     required Oid target,
@@ -73,7 +72,7 @@ class Tag {
       type: targetType.value,
     );
 
-    final result = bindings.create(
+    final result = bindings.createAnnotated(
       repoPointer: repo.pointer,
       tagName: tagName,
       targetPointer: object,
@@ -85,6 +84,56 @@ class Tag {
     object_bindings.free(object);
 
     return Oid(result);
+  }
+
+  /// Creates a new lightweight tag in the repository for provided [target]
+  /// object.
+  ///
+  /// A new reference will also be created in the `/refs/tags` folder pointing
+  /// to this tag object. If [force] is true and a reference already exists
+  /// with the given name, it'll be replaced.
+  ///
+  /// The [tagName] will be checked for validity. You must avoid the characters
+  /// '~', '^', ':', '\', '?', '[', and '*', and the sequences ".." and "@{" which have
+  /// special meaning to revparse.
+  ///
+  /// [repo] is the repository where to store the tag.
+  ///
+  /// [tagName] is the name for the tag. This name is validated for
+  /// consistency. It should also not conflict with an already existing tag
+  /// name.
+  ///
+  /// [target] is the object to which this tag points. This object must belong
+  /// to the given [repo].
+  ///
+  /// [targetType] is one of the [GitObject] basic types: commit, tree, blob or
+  /// tag.
+  ///
+  /// [force] determines whether existing reference with the same [tagName]
+  /// should be replaced.
+  ///
+  /// Throws a [LibGit2Error] if error occured.
+  static void createLightweight({
+    required Repository repo,
+    required String tagName,
+    required Oid target,
+    required GitObject targetType,
+    bool force = false,
+  }) {
+    final object = object_bindings.lookup(
+      repoPointer: repo.pointer,
+      oidPointer: target.pointer,
+      type: targetType.value,
+    );
+
+    bindings.createLightweight(
+      repoPointer: repo.pointer,
+      tagName: tagName,
+      targetPointer: object,
+      force: force,
+    );
+
+    object_bindings.free(object);
   }
 
   /// Deletes an existing tag reference with provided [name] in a [repo]sitory.
@@ -135,6 +184,12 @@ class Tag {
     } else {
       return Tag(object.cast());
     }
+  }
+
+  /// The type of a tag's tagged object.
+  GitObject get targetType {
+    final type = bindings.targetType(_tagPointer);
+    return GitObject.values.firstWhere((e) => type & e.value == e.value);
   }
 
   /// [Oid] of the tagged object of a tag.
