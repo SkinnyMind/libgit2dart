@@ -74,7 +74,7 @@ void main() {
         time: 1234,
       );
       final commit = repo.lookupCommit(repo['fc38877']);
-      repo.createTag(
+      repo.createAnnotatedTag(
         tagName: 'test/tag1',
         target: repo['f17d0d48'],
         targetType: GitObject.commit,

@@ -746,13 +746,12 @@ class Repository {
   /// **IMPORTANT**: Should be freed to release allocated memory.
   Tag lookupTag(Oid oid) => Tag.lookup(repo: this, oid: oid);
 
-  /// Creates a new tag in the repository for provided [target] object.
+  /// Creates a new annotated tag in the repository for provided [target]
+  /// object.
   ///
-  /// A new reference will also be created pointing to this tag object. If
-  /// [force] is true and a reference already exists with the given name, it'll
-  /// be replaced.
-  ///
-  /// The [message] will not be cleaned up.
+  /// A new reference will also be created in the `/refs/tags` folder pointing
+  /// to this tag object. If [force] is true and a reference already exists
+  /// with the given name, it'll be replaced.
   ///
   /// The [tagName] will be checked for validity. You must avoid the characters
   /// '~', '^', ':', '\', '?', '[', and '*', and the sequences ".." and "@{" which have
@@ -777,7 +776,7 @@ class Repository {
   /// should be replaced.
   ///
   /// Throws a [LibGit2Error] if error occured.
-  Oid createTag({
+  Oid createAnnotatedTag({
     required String tagName,
     required Oid target,
     required GitObject targetType,
@@ -785,13 +784,53 @@ class Repository {
     required String message,
     bool force = false,
   }) {
-    return Tag.create(
+    return Tag.createAnnotated(
       repo: this,
       tagName: tagName,
       target: target,
       targetType: targetType,
       tagger: tagger,
       message: message,
+      force: force,
+    );
+  }
+
+  /// Creates a new lightweight tag in the repository for provided [target]
+  /// object.
+  ///
+  /// A new reference will also be created in the `/refs/tags` folder pointing
+  /// to this tag object. If [force] is true and a reference already exists
+  /// with the given name, it'll be replaced.
+  ///
+  /// The [tagName] will be checked for validity. You must avoid the characters
+  /// '~', '^', ':', '\', '?', '[', and '*', and the sequences ".." and "@{" which have
+  /// special meaning to revparse.
+  ///
+  /// [tagName] is the name for the tag. This name is validated for
+  /// consistency. It should also not conflict with an already existing tag
+  /// name.
+  ///
+  /// [target] is the object to which this tag points. This object must belong
+  /// to the given [repo].
+  ///
+  /// [targetType] is one of the [GitObject] basic types: commit, tree, blob or
+  /// tag.
+  ///
+  /// [force] determines whether existing reference with the same [tagName]
+  /// should be replaced.
+  ///
+  /// Throws a [LibGit2Error] if error occured.
+  void createLightweightTag({
+    required String tagName,
+    required Oid target,
+    required GitObject targetType,
+    bool force = false,
+  }) {
+    Tag.createLightweight(
+      repo: this,
+      tagName: tagName,
+      target: target,
+      targetType: targetType,
       force: force,
     );
   }
