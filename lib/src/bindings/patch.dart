@@ -57,9 +57,9 @@ Pointer<git_patch> fromBuffers({
 /// You can use the standard patch accessor functions to read the patch data,
 /// and you must free the patch when done.
 Pointer<git_patch> fromBlobs({
-  required Pointer<git_blob> oldBlobPointer,
+  required Pointer<git_blob>? oldBlobPointer,
   String? oldAsPath,
-  required Pointer<git_blob> newBlobPointer,
+  required Pointer<git_blob>? newBlobPointer,
   String? newAsPath,
   required int flags,
   required int contextLines,
@@ -76,9 +76,9 @@ Pointer<git_patch> fromBlobs({
 
   libgit2.git_patch_from_blobs(
     out,
-    oldBlobPointer,
+    oldBlobPointer ?? nullptr,
     oldAsPathC,
-    newBlobPointer,
+    newBlobPointer ?? nullptr,
     newAsPathC,
     opts,
   );

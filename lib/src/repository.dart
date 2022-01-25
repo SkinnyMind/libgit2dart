@@ -1409,39 +1409,6 @@ class Repository {
     );
   }
 
-  /// Returns a [Patch] with changes between the blobs.
-  ///
-  /// [a] is the blob for old side of diff.
-  ///
-  /// [b] is the blob for new side of diff.
-  ///
-  /// [aPath] treat [a] blob as if it had this filename, can be null.
-  ///
-  /// [bPath] treat [b] blob as if it had this filename, can be null.
-  ///
-  /// [flags] is a combination of [GitDiff] flags. Defaults to [GitDiff.normal].
-  ///
-  /// [contextLines] is the number of unchanged lines that define the boundary
-  /// of a hunk (and to display before and after). Defaults to 3.
-  ///
-  /// [interhunkLines] is the maximum number of unchanged lines between hunk
-  /// boundaries before the hunks will be merged into one. Defaults to 0.
-  ///
-  /// **IMPORTANT**: Should be freed to release allocated memory.
-  ///
-  /// Throws a [LibGit2Error] if error occured.
-  Patch diffBlobs({
-    required Blob a,
-    required Blob b,
-    String? aPath,
-    String? bPath,
-    Set<GitDiff> flags = const {GitDiff.normal},
-    int contextLines = 3,
-    int interhunkLines = 0,
-  }) {
-    return a.diff(newBlob: b, oldAsPath: aPath, newAsPath: bPath);
-  }
-
   /// Returns list of all the stashed states, first being the most recent.
   List<Stash> get stashes => Stash.list(this);
 

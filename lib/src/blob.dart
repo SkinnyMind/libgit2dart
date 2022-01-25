@@ -3,7 +3,6 @@ import 'dart:ffi';
 import 'package:libgit2dart/libgit2dart.dart';
 import 'package:libgit2dart/src/bindings/blob.dart' as bindings;
 import 'package:libgit2dart/src/bindings/libgit2_bindings.dart';
-import 'package:libgit2dart/src/bindings/patch.dart' as patch_bindings;
 
 class Blob {
   /// Initializes a new instance of [Blob] class from provided pointer to
@@ -84,87 +83,6 @@ class Blob {
   ///
   /// **IMPORTANT**: Should be freed to release allocated memory.
   Blob duplicate() => Blob(bindings.duplicate(_blobPointer));
-
-  /// Directly generates a [Patch] from the difference between two blobs.
-  ///
-  /// [newBlob] is the blob for new side of diff, or null for empty blob.
-  ///
-  /// [oldAsPath] treat old blob as if it had this filename, can be null.
-  ///
-  /// [newAsPath] treat new blob as if it had this filename, can be null.
-  ///
-  /// [flags] is a combination of [GitDiff] flags. Defaults to [GitDiff.normal].
-  ///
-  /// [contextLines] is the number of unchanged lines that define the boundary
-  /// of a hunk (and to display before and after). Defaults to 3.
-  ///
-  /// [interhunkLines] is the maximum number of unchanged lines between hunk
-  /// boundaries before the hunks will be merged into one. Defaults to 0.
-  ///
-  /// **IMPORTANT**: Should be freed to release allocated memory.
-  ///
-  /// Throws a [LibGit2Error] if error occured.
-  Patch diff({
-    required Blob? newBlob,
-    String? oldAsPath,
-    String? newAsPath,
-    Set<GitDiff> flags = const {GitDiff.normal},
-    int contextLines = 3,
-    int interhunkLines = 0,
-  }) {
-    return Patch(
-      patch_bindings.fromBlobs(
-        oldBlobPointer: _blobPointer,
-        oldAsPath: oldAsPath,
-        newBlobPointer: newBlob?.pointer ?? nullptr,
-        newAsPath: newAsPath,
-        flags: flags.fold(0, (acc, e) => acc | e.value),
-        contextLines: contextLines,
-        interhunkLines: interhunkLines,
-      ),
-    );
-  }
-
-  /// Directly generates a [Patch] from the difference between the blob and a
-  /// buffer.
-  ///
-  /// [buffer] is the raw data for new side of diff, or null for empty.
-  ///
-  /// [oldAsPath] treat old blob as if it had this filename, can be null.
-  ///
-  /// [bufferAsPath] treat buffer as if it had this filename, can be null.
-  ///
-  /// [flags] is a combination of [GitDiff] flags. Defaults to [GitDiff.normal].
-  ///
-  /// [contextLines] is the number of unchanged lines that define the boundary
-  /// of a hunk (and to display before and after). Defaults to 3.
-  ///
-  /// [interhunkLines] is the maximum number of unchanged lines between hunk
-  /// boundaries before the hunks will be merged into one. Defaults to 0.
-  ///
-  /// **IMPORTANT**: Should be freed to release allocated memory.
-  ///
-  /// Throws a [LibGit2Error] if error occured.
-  Patch diffToBuffer({
-    required String? buffer,
-    String? oldAsPath,
-    String? bufferAsPath,
-    Set<GitDiff> flags = const {GitDiff.normal},
-    int contextLines = 3,
-    int interhunkLines = 0,
-  }) {
-    return Patch(
-      patch_bindings.fromBlobAndBuffer(
-        oldBlobPointer: _blobPointer,
-        oldAsPath: oldAsPath,
-        buffer: buffer,
-        bufferAsPath: bufferAsPath,
-        flags: flags.fold(0, (acc, e) => acc | e.value),
-        contextLines: contextLines,
-        interhunkLines: interhunkLines,
-      ),
-    );
-  }
 
   /// Returns filtered content of a blob.
   ///
