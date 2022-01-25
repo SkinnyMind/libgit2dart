@@ -41,7 +41,7 @@ void main() {
     });
 
     test('creates annotated commit from provided reference', () {
-      final reference = repo.lookupReference('refs/heads/master');
+      final reference = Reference.lookup(repo: repo, name: 'refs/heads/master');
       final annotated = AnnotatedCommit.fromReference(
         repo: repo,
         reference: reference,
@@ -57,7 +57,7 @@ void main() {
     test(
         'throws when trying to create annotated commit from provided '
         'reference and error occurs', () {
-      final reference = repo.lookupReference('refs/heads/master');
+      final reference = Reference.lookup(repo: repo, name: 'refs/heads/master');
 
       expect(
         () => AnnotatedCommit.fromReference(

@@ -44,8 +44,9 @@ void main() {
       });
 
       test('is fast forward', () {
-        final ffCommit = repo.lookupCommit(repo['f17d0d4']);
-        final ffBranch = repo.createBranch(
+        final ffCommit = Commit.lookup(repo: repo, oid: repo['f17d0d4']);
+        final ffBranch = Branch.create(
+          repo: repo,
           name: 'ff-branch',
           target: ffCommit,
         );
@@ -72,7 +73,7 @@ void main() {
     });
 
     test('writes conflicts to index', () {
-      final conflictBranch = repo.lookupBranch(name: 'conflict-branch');
+      final conflictBranch = Branch.lookup(repo: repo, name: 'conflict-branch');
       final commit = AnnotatedCommit.lookup(
         repo: repo,
         oid: conflictBranch.target,
@@ -123,7 +124,10 @@ master conflict edit
 conflict branch edit
 >>>>>>> conflict_file
 """;
-        final conflictBranch = repo.lookupBranch(name: 'conflict-branch');
+        final conflictBranch = Branch.lookup(
+          repo: repo,
+          name: 'conflict-branch',
+        );
         final commit = AnnotatedCommit.lookup(
           repo: repo,
           oid: conflictBranch.target,
@@ -154,7 +158,10 @@ Feature edit on feature branch
 Another feature edit
 >>>>>>> feature_file
 """;
-        final conflictBranch = repo.lookupBranch(name: 'ancestor-conflict');
+        final conflictBranch = Branch.lookup(
+          repo: repo,
+          name: 'ancestor-conflict',
+        );
         final commit = AnnotatedCommit.lookup(
           repo: repo,
           oid: conflictBranch.target,
@@ -186,7 +193,10 @@ master conflict edit
 conflict branch edit
 >>>>>>> conflict_file
 """;
-        final conflictBranch = repo.lookupBranch(name: 'conflict-branch');
+        final conflictBranch = Branch.lookup(
+          repo: repo,
+          name: 'conflict-branch',
+        );
         final commit = AnnotatedCommit.lookup(
           repo: repo,
           oid: conflictBranch.target,
@@ -214,7 +224,10 @@ conflict branch edit
       });
 
       test('merges with provided merge favor', () {
-        final conflictBranch = repo.lookupBranch(name: 'conflict-branch');
+        final conflictBranch = Branch.lookup(
+          repo: repo,
+          name: 'conflict-branch',
+        );
         final commit = AnnotatedCommit.lookup(
           repo: repo,
           oid: conflictBranch.target,
@@ -303,12 +316,12 @@ theirs content
 
     group('merge commits', () {
       test('merges with default values', () {
-        final theirCommit = repo.lookupCommit(repo['5aecfa0']);
+        final theirCommit = Commit.lookup(repo: repo, oid: repo['5aecfa0']);
         final theirCommitAnnotated = AnnotatedCommit.lookup(
           repo: repo,
           oid: theirCommit.oid,
         );
-        final ourCommit = repo.lookupCommit(repo['1490545']);
+        final ourCommit = Commit.lookup(repo: repo, oid: repo['1490545']);
 
         final mergeIndex = repo.mergeCommits(
           ourCommit: ourCommit,
@@ -332,8 +345,8 @@ theirs content
       });
 
       test('merges with provided favor', () {
-        final theirCommit = repo.lookupCommit(repo['5aecfa0']);
-        final ourCommit = repo.lookupCommit(repo['1490545']);
+        final theirCommit = Commit.lookup(repo: repo, oid: repo['5aecfa0']);
+        final ourCommit = Commit.lookup(repo: repo, oid: repo['1490545']);
 
         final mergeIndex = repo.mergeCommits(
           ourCommit: ourCommit,
@@ -348,8 +361,8 @@ theirs content
       });
 
       test('merges with provided merge and file flags', () {
-        final theirCommit = repo.lookupCommit(repo['5aecfa0']);
-        final ourCommit = repo.lookupCommit(repo['1490545']);
+        final theirCommit = Commit.lookup(repo: repo, oid: repo['5aecfa0']);
+        final ourCommit = Commit.lookup(repo: repo, oid: repo['1490545']);
 
         final mergeIndex = repo.mergeCommits(
           ourCommit: ourCommit,
@@ -454,14 +467,15 @@ theirs content
 
     group('merge trees', () {
       test('merges with default values', () {
-        final theirCommit = repo.lookupCommit(repo['5aecfa0']);
+        final theirCommit = Commit.lookup(repo: repo, oid: repo['5aecfa0']);
         final theirCommitAnnotated = AnnotatedCommit.lookup(
           repo: repo,
           oid: theirCommit.oid,
         );
-        final ourCommit = repo.lookupCommit(repo['1490545']);
-        final baseCommit = repo.lookupCommit(
-          repo.mergeBase([ourCommit.oid, theirCommit.oid]),
+        final ourCommit = Commit.lookup(repo: repo, oid: repo['1490545']);
+        final baseCommit = Commit.lookup(
+          repo: repo,
+          oid: repo.mergeBase([ourCommit.oid, theirCommit.oid]),
         );
         final theirTree = theirCommit.tree;
         final ourTree = ourCommit.tree;
@@ -495,10 +509,11 @@ theirs content
       });
 
       test('merges with provided favor', () {
-        final theirCommit = repo.lookupCommit(repo['5aecfa0']);
-        final ourCommit = repo.lookupCommit(repo['1490545']);
-        final baseCommit = repo.lookupCommit(
-          repo.mergeBase([ourCommit.oid, theirCommit.oid]),
+        final theirCommit = Commit.lookup(repo: repo, oid: repo['5aecfa0']);
+        final ourCommit = Commit.lookup(repo: repo, oid: repo['1490545']);
+        final baseCommit = Commit.lookup(
+          repo: repo,
+          oid: repo.mergeBase([ourCommit.oid, theirCommit.oid]),
         );
         final theirTree = theirCommit.tree;
         final ourTree = ourCommit.tree;
@@ -534,7 +549,7 @@ theirs content
     });
 
     test('cherry-picks commit', () {
-      final cherry = repo.lookupCommit(repo['5aecfa0']);
+      final cherry = Commit.lookup(repo: repo, oid: repo['5aecfa0']);
       repo.cherryPick(cherry);
       expect(repo.state, GitRepositoryState.cherrypick);
       expect(repo.message, 'add another feature file\n');

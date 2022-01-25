@@ -32,7 +32,7 @@ void main() {
     });
 
     test('describes commit', () {
-      repo.deleteTag('v0.2');
+      Tag.delete(repo: repo, name: 'v0.2');
 
       expect(
         repo.describe(describeStrategy: GitDescribeStrategy.tags),
@@ -41,13 +41,13 @@ void main() {
     });
 
     test('throws when trying to describe and no reference found', () {
-      final commit = repo.lookupCommit(repo['f17d0d48']);
+      final commit = Commit.lookup(repo: repo, oid: repo['f17d0d4']);
       expect(() => repo.describe(commit: commit), throwsA(isA<LibGit2Error>()));
       commit.free();
     });
 
     test('returns oid when fallback argument is provided', () {
-      final commit = repo.lookupCommit(repo['f17d0d48']);
+      final commit = Commit.lookup(repo: repo, oid: repo['f17d0d4']);
       expect(
         repo.describe(commit: commit, showCommitOidAsFallback: true),
         'f17d0d4',
@@ -56,7 +56,7 @@ void main() {
     });
 
     test('describes with provided strategy', () {
-      final commit = repo.lookupCommit(repo['5aecfa0']);
+      final commit = Commit.lookup(repo: repo, oid: repo['5aecfa0']);
       expect(
         repo.describe(
           commit: commit,
@@ -73,10 +73,11 @@ void main() {
         email: 'author@email.com',
         time: 1234,
       );
-      final commit = repo.lookupCommit(repo['fc38877']);
-      repo.createAnnotatedTag(
+      final commit = Commit.lookup(repo: repo, oid: repo['fc38877']);
+      Tag.createAnnotated(
+        repo: repo,
         tagName: 'test/tag1',
-        target: repo['f17d0d48'],
+        target: repo['f17d0d4'],
         targetType: GitObject.commit,
         tagger: signature,
         message: 'message',
@@ -92,8 +93,8 @@ void main() {
     });
 
     test('describes and follows first parent only', () {
-      final commit = repo.lookupCommit(repo['821ed6e']);
-      repo.deleteTag('v0.2');
+      final commit = Commit.lookup(repo: repo, oid: repo['821ed6e']);
+      Tag.delete(repo: repo, name: 'v0.2');
 
       expect(
         repo.describe(
@@ -108,8 +109,8 @@ void main() {
     });
 
     test('describes with provided abbreviated size', () {
-      final commit = repo.lookupCommit(repo['821ed6e']);
-      repo.deleteTag('v0.2');
+      final commit = Commit.lookup(repo: repo, oid: repo['821ed6e']);
+      Tag.delete(repo: repo, name: 'v0.2');
 
       expect(
         repo.describe(

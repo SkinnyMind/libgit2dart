@@ -162,91 +162,6 @@ void main() {
       });
     });
 
-    group('createBlob', () {
-      const newBlobContent = 'New blob\n';
-
-      test('creates new blob', () {
-        final oid = repo.createBlob(newBlobContent);
-        final newBlob = repo.lookupBlob(oid);
-
-        expect(newBlob, isA<Blob>());
-
-        newBlob.free();
-      });
-
-      test('creates new blob from file at provided relative path', () {
-        final oid = repo.createBlobFromWorkdir('feature_file');
-        final newBlob = repo.lookupBlob(oid);
-
-        expect(newBlob, isA<Blob>());
-
-        newBlob.free();
-      });
-
-      test('creates new blob from file at provided path', () {
-        final outsideFile = File(
-          p.join(Directory.current.absolute.path, 'test', 'blob_test.dart'),
-        );
-        final oid = repo.createBlobFromDisk(outsideFile.path);
-        final newBlob = repo.lookupBlob(oid);
-
-        expect(newBlob, isA<Blob>());
-
-        newBlob.free();
-      });
-    });
-
-    test('creates annotated tag with provided sha', () {
-      final signature = Signature.create(
-        name: 'Author',
-        email: 'author@email.com',
-        time: 1234,
-      );
-      const tagName = 'tag';
-      final target = repo['f17d0d48eae3aa08cecf29128a35e310c97b3521'];
-      const message = 'init tag\n';
-
-      final oid = repo.createAnnotatedTag(
-        tagName: tagName,
-        target: target,
-        targetType: GitObject.commit,
-        tagger: signature,
-        message: message,
-      );
-
-      final newTag = repo.lookupTag(oid);
-      final tagger = newTag.tagger;
-      final newTagTarget = newTag.target as Commit;
-
-      expect(newTag.oid, oid);
-      expect(newTag.name, tagName);
-      expect(newTag.message, message);
-      expect(tagger, signature);
-      expect(newTagTarget.oid, target);
-
-      newTag.free();
-      newTagTarget.free();
-      signature.free();
-    });
-
-    test('creates lightweight tag with provided sha', () {
-      const tagName = 'tag';
-      final target = repo['f17d0d48eae3aa08cecf29128a35e310c97b3521'];
-
-      repo.createLightweightTag(
-        tagName: tagName,
-        target: target,
-        targetType: GitObject.commit,
-      );
-
-      final newTag = repo.lookupReference('refs/tags/$tagName');
-
-      expect(newTag.shorthand, tagName);
-      expect(newTag.target, target);
-
-      newTag.free();
-    });
-
     test('returns status of a repository', () {
       File(p.join(tmpDir.path, 'new_file.txt')).createSync();
       final index = repo.index;
@@ -273,7 +188,7 @@ void main() {
 
     test('cleans up state', () {
       expect(repo.state, GitRepositoryState.none);
-      final commit = repo.lookupCommit(repo['5aecfa0']);
+      final commit = Commit.lookup(repo: repo, oid: repo['5aecfa0']);
       repo.cherryPick(commit);
 
       expect(repo.state, GitRepositoryState.cherrypick);
@@ -364,8 +279,8 @@ void main() {
     });
 
     test('returns number of ahead behind commits', () {
-      final commit1 = repo.lookupCommit(repo['821ed6e8']);
-      final commit2 = repo.lookupCommit(repo['c68ff54a']);
+      final commit1 = Commit.lookup(repo: repo, oid: repo['821ed6e']);
+      final commit2 = Commit.lookup(repo: repo, oid: repo['c68ff54']);
 
       expect(
         repo.aheadBehind(local: commit1.oid, upstream: commit2.oid),

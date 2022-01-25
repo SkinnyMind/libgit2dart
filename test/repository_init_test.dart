@@ -51,7 +51,7 @@ void main() {
         File(p.join(repo.path, 'description')).readAsStringSync(),
         'test repo',
       );
-      expect(repo.lookupRemote('origin').url, 'test.url');
+      expect(Remote.lookup(repo: repo, name: 'origin').url, 'test.url');
     });
   });
 }

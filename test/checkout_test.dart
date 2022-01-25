@@ -71,9 +71,7 @@ void main() {
     });
 
     test('checkouts reference', () {
-      final masterHead = repo.lookupCommit(
-        repo['821ed6e80627b8769d170a293862f9fc60825226'],
-      );
+      final masterHead = Commit.lookup(repo: repo, oid: repo['821ed6e']);
       final masterTree = masterHead.tree;
       expect(
         masterTree.entries.any((e) => e.name == 'another_feature_file'),
@@ -81,9 +79,7 @@ void main() {
       );
 
       repo.checkout(target: 'refs/heads/feature');
-      final featureHead = repo.lookupCommit(
-        repo['5aecfa0fb97eadaac050ccb99f03c3fb65460ad4'],
-      );
+      final featureHead = Commit.lookup(repo: repo, oid: repo['5aecfa0']);
       final featureTree = featureHead.tree;
       final repoHead = repo.head;
       expect(repoHead.target, featureHead.oid);
@@ -116,9 +112,7 @@ void main() {
       final index = repo.index;
       expect(index.find('another_feature_file'), equals(false));
 
-      final featureHead = repo.lookupCommit(
-        repo['5aecfa0fb97eadaac050ccb99f03c3fb65460ad4'],
-      );
+      final featureHead = Commit.lookup(repo: repo, oid: repo['5aecfa0']);
       repo.checkout(target: featureHead.oid);
 
       final repoHead = repo.head;
@@ -132,9 +126,7 @@ void main() {
     });
 
     test('checkouts commit with provided path', () {
-      final featureHead = repo.lookupCommit(
-        repo['5aecfa0fb97eadaac050ccb99f03c3fb65460ad4'],
-      );
+      final featureHead = Commit.lookup(repo: repo, oid: repo['5aecfa0']);
       repo.checkout(target: featureHead.oid, paths: ['another_feature_file']);
 
       final repoHead = repo.head;
@@ -167,7 +159,10 @@ void main() {
     });
 
     test('checkouts file with provided path', () {
-      final featureTip = repo.lookupReference('refs/heads/feature').target;
+      final featureTip = Reference.lookup(
+        repo: repo,
+        name: 'refs/heads/feature',
+      ).target;
 
       expect(repo.status, isEmpty);
       repo.checkout(

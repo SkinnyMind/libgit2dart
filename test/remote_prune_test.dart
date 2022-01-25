@@ -23,8 +23,8 @@ void main() {
       url: tmpDir.path,
       localPath: cloneDir.path,
     );
-    originRepo.deleteBranch('feature');
-    remote = clonedRepo.lookupRemote('origin');
+    Branch.delete(repo: originRepo, name: 'feature');
+    remote = Remote.lookup(repo: clonedRepo, name: 'origin');
   });
 
   tearDown(() {

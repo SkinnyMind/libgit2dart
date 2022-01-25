@@ -14,7 +14,7 @@ void main() {
   print('Repository references: ${repo.references}');
 
   // Get reference by name.
-  final ref = repo.lookupReference('refs/heads/master');
+  final ref = Reference.lookup(repo: repo, name: 'refs/heads/master');
 
   print('Reference SHA hex: ${ref.target.sha}');
   print('Is reference a local branch: ${ref.isBranch}');
@@ -22,16 +22,17 @@ void main() {
   print('Reference shorthand name: ${ref.shorthand}');
 
   // Create new reference (direct or symbolic).
-  final newRef = repo.createReference(
+  final newRef = Reference.create(
+    repo: repo,
     name: 'refs/tags/v1',
     target: 'refs/heads/master',
   );
 
   // Rename reference.
-  repo.renameReference(oldName: 'v1', newName: 'refs/tags/v1.1');
+  Reference.rename(repo: repo, oldName: 'v1', newName: 'refs/tags/v1.1');
 
   // Delete reference.
-  repo.deleteReference('v1.1');
+  Reference.delete(repo: repo, name: 'v1.1');
 
   // free() should be called on object to free memory when done.
   ref.free();

@@ -293,9 +293,7 @@ void main() {
     });
 
     test('reads tree with provided SHA hex', () {
-      final tree = repo.lookupTree(
-        repo['df2b8fc99e1c1d4dbc0a854d9f72157f1d6ea078'],
-      );
+      final tree = Tree.lookup(repo: repo, oid: repo['df2b8fc']);
       expect(index.length, 4);
       index.readTree(tree);
 
@@ -322,7 +320,7 @@ void main() {
       final tmpDir = setupRepo(Directory(mergeRepoPath));
       final repo = Repository.open(tmpDir.path);
 
-      final conflictBranch = repo.lookupBranch(name: 'conflict-branch');
+      final conflictBranch = Branch.lookup(repo: repo, name: 'conflict-branch');
       final index = repo.index;
       final commit = AnnotatedCommit.lookup(
         repo: repo,
@@ -357,7 +355,8 @@ void main() {
       final repoDir = setupRepo(Directory(mergeRepoPath));
       final conflictRepo = Repository.open(repoDir.path);
 
-      final conflictBranch = conflictRepo.lookupBranch(
+      final conflictBranch = Branch.lookup(
+        repo: conflictRepo,
         name: 'ancestor-conflict',
       );
       final commit = AnnotatedCommit.lookup(
@@ -387,7 +386,10 @@ void main() {
       final repoDir = setupRepo(Directory(mergeRepoPath));
       final conflictRepo = Repository.open(repoDir.path);
 
-      final conflictBranch = conflictRepo.lookupBranch(name: 'conflict-branch');
+      final conflictBranch = Branch.lookup(
+        repo: conflictRepo,
+        name: 'conflict-branch',
+      );
       final commit = AnnotatedCommit.lookup(
         repo: conflictRepo,
         oid: conflictBranch.target,
@@ -413,7 +415,8 @@ void main() {
       final repoDir = setupRepo(Directory(mergeRepoPath));
       final conflictRepo = Repository.open(repoDir.path);
 
-      final conflictBranch = conflictRepo.lookupBranch(
+      final conflictBranch = Branch.lookup(
+        repo: conflictRepo,
         name: 'ancestor-conflict',
       );
       final commit = AnnotatedCommit.lookup(
@@ -443,7 +446,10 @@ void main() {
       final repoDir = setupRepo(Directory(mergeRepoPath));
       final conflictRepo = Repository.open(repoDir.path);
 
-      final conflictBranch = conflictRepo.lookupBranch(name: 'their-conflict');
+      final conflictBranch = Branch.lookup(
+        repo: conflictRepo,
+        name: 'their-conflict',
+      );
       final commit = AnnotatedCommit.lookup(
         repo: conflictRepo,
         oid: conflictBranch.target,
@@ -471,7 +477,10 @@ void main() {
       final repoDir = setupRepo(Directory(mergeRepoPath));
       final conflictRepo = Repository.open(repoDir.path);
 
-      final conflictBranch = conflictRepo.lookupBranch(name: 'conflict-branch');
+      final conflictBranch = Branch.lookup(
+        repo: conflictRepo,
+        name: 'conflict-branch',
+      );
       final commit = AnnotatedCommit.lookup(
         repo: conflictRepo,
         oid: conflictBranch.target,
@@ -509,7 +518,10 @@ void main() {
       final repoDir = setupRepo(Directory(mergeRepoPath));
       final conflictRepo = Repository.open(repoDir.path);
 
-      final conflictBranch = conflictRepo.lookupBranch(name: 'conflict-branch');
+      final conflictBranch = Branch.lookup(
+        repo: conflictRepo,
+        name: 'conflict-branch',
+      );
       final commit = AnnotatedCommit.lookup(
         repo: conflictRepo,
         oid: conflictBranch.target,
