@@ -163,6 +163,23 @@ index e69de29..0000000
       expect(() => Patch(nullptr).text, throwsA(isA<LibGit2Error>()));
     });
 
+    test('returns line counts of each type in a patch', () {
+      final patch = Patch.fromBuffers(
+        oldBuffer: oldBuffer,
+        newBuffer: newBuffer,
+        oldBufferPath: path,
+        newBufferPath: path,
+      );
+
+      final stats = patch.stats;
+      expect(stats.context, equals(0));
+      expect(stats.insertions, equals(1));
+      expect(stats.deletions, equals(0));
+      expect(stats.toString(), contains('PatchStats{'));
+
+      patch.free();
+    });
+
     test('returns string representation of Patch object', () {
       final patch = Patch.fromBuffers(
         oldBuffer: oldBuffer,
