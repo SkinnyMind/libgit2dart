@@ -12,14 +12,15 @@ class Patch {
   /// **IMPORTANT**: Should be freed to release allocated memory.
   Patch(this._patchPointer);
 
-  /// Directly generates a patch from the difference between two blobs, buffers
-  /// or blob and a buffer.
+  /// Directly generates a [Patch] from the difference between two blobs.
   ///
-  /// [a] and [b] can be [Blob], [String] or null.
+  /// [oldBlob] is the blob for old side of diff, or null for empty blob.
   ///
-  /// [aPath] treat [a] as if it had this filename, can be null.
+  /// [newBlob] is the blob for new side of diff, or null for empty blob.
   ///
-  /// [bPath] treat [b] as if it had this filename, can be null.
+  /// [oldBlobPath] treat old blob as if it had this filename, can be null.
+  ///
+  /// [newBlobPath] treat new blob as if it had this filename, can be null.
   ///
   /// [flags] is a combination of [GitDiff] flags. Defaults to [GitDiff.normal].
   ///
@@ -30,56 +31,111 @@ class Patch {
   /// boundaries before the hunks will be merged into one. Defaults to 0.
   ///
   /// **IMPORTANT**: Should be freed to release allocated memory.
-  Patch.create({
-    required Object? a,
-    required Object? b,
-    String? aPath,
-    String? bPath,
+  ///
+  /// Throws a [LibGit2Error] if error occured.
+  Patch.fromBlobs({
+    required Blob? oldBlob,
+    required Blob? newBlob,
+    String? oldBlobPath,
+    String? newBlobPath,
     Set<GitDiff> flags = const {GitDiff.normal},
     int contextLines = 3,
     int interhunkLines = 0,
   }) {
     libgit2.git_libgit2_init();
 
-    final flagsInt = flags.fold(0, (int acc, e) => acc | e.value);
+    _patchPointer = bindings.fromBlobs(
+      oldBlobPointer: oldBlob?.pointer,
+      oldAsPath: oldBlobPath,
+      newBlobPointer: newBlob?.pointer,
+      newAsPath: newBlobPath,
+      flags: flags.fold(0, (int acc, e) => acc | e.value),
+      contextLines: contextLines,
+      interhunkLines: interhunkLines,
+    );
+  }
 
-    if (a is Blob?) {
-      if (b is Blob?) {
-        _patchPointer = bindings.fromBlobs(
-          oldBlobPointer: a?.pointer ?? nullptr,
-          oldAsPath: aPath,
-          newBlobPointer: b?.pointer ?? nullptr,
-          newAsPath: bPath,
-          flags: flagsInt,
-          contextLines: contextLines,
-          interhunkLines: interhunkLines,
-        );
-      } else if (b is String?) {
-        _patchPointer = bindings.fromBlobAndBuffer(
-          oldBlobPointer: a?.pointer,
-          oldAsPath: aPath,
-          buffer: b as String?,
-          bufferAsPath: bPath,
-          flags: flagsInt,
-          contextLines: contextLines,
-          interhunkLines: interhunkLines,
-        );
-      } else {
-        throw ArgumentError('Provided argument(s) is not Blob or String');
-      }
-    } else if ((a is String?) && (b is String?)) {
-      _patchPointer = bindings.fromBuffers(
-        oldBuffer: a as String?,
-        oldAsPath: aPath,
-        newBuffer: b,
-        newAsPath: bPath,
-        flags: flagsInt,
-        contextLines: contextLines,
-        interhunkLines: interhunkLines,
-      );
-    } else {
-      throw ArgumentError('Provided argument(s) is not Blob or String');
-    }
+  /// Directly generates a [Patch] from the difference between the blob and a
+  /// buffer.
+  ///
+  /// [blob] is the blob for old side of diff, or null for empty blob.
+  ///
+  /// [buffer] is the raw data for new side of diff, or null for empty.
+  ///
+  /// [blobPath] treat old blob as if it had this filename, can be null.
+  ///
+  /// [bufferPath] treat buffer as if it had this filename, can be null.
+  ///
+  /// [flags] is a combination of [GitDiff] flags. Defaults to [GitDiff.normal].
+  ///
+  /// [contextLines] is the number of unchanged lines that define the boundary
+  /// of a hunk (and to display before and after). Defaults to 3.
+  ///
+  /// [interhunkLines] is the maximum number of unchanged lines between hunk
+  /// boundaries before the hunks will be merged into one. Defaults to 0.
+  ///
+  /// **IMPORTANT**: Should be freed to release allocated memory.
+  ///
+  /// Throws a [LibGit2Error] if error occured.
+  Patch.fromBlobAndBuffer({
+    required Blob? blob,
+    required String? buffer,
+    String? blobPath,
+    String? bufferPath,
+    Set<GitDiff> flags = const {GitDiff.normal},
+    int contextLines = 3,
+    int interhunkLines = 0,
+  }) {
+    _patchPointer = bindings.fromBlobAndBuffer(
+      oldBlobPointer: blob?.pointer,
+      oldAsPath: blobPath,
+      buffer: buffer,
+      bufferAsPath: bufferPath,
+      flags: flags.fold(0, (int acc, e) => acc | e.value),
+      contextLines: contextLines,
+      interhunkLines: interhunkLines,
+    );
+  }
+
+  /// Directly generates a [Patch] from the difference between two buffers
+  ///
+  /// [oldBuffer] is the raw data for old side of diff, or null for empty.
+  ///
+  /// [newBuffer] is the raw data for new side of diff, or null for empty.
+  ///
+  /// [oldBufferPath] treat old buffer as if it had this filename, can be null.
+  ///
+  /// [newBufferPath] treat new buffer as if it had this filename, can be null.
+  ///
+  /// [flags] is a combination of [GitDiff] flags. Defaults to [GitDiff.normal].
+  ///
+  /// [contextLines] is the number of unchanged lines that define the boundary
+  /// of a hunk (and to display before and after). Defaults to 3.
+  ///
+  /// [interhunkLines] is the maximum number of unchanged lines between hunk
+  /// boundaries before the hunks will be merged into one. Defaults to 0.
+  ///
+  /// **IMPORTANT**: Should be freed to release allocated memory.
+  ///
+  /// Throws a [LibGit2Error] if error occured.
+  Patch.fromBuffers({
+    required String? oldBuffer,
+    required String? newBuffer,
+    String? oldBufferPath,
+    String? newBufferPath,
+    Set<GitDiff> flags = const {GitDiff.normal},
+    int contextLines = 3,
+    int interhunkLines = 0,
+  }) {
+    _patchPointer = bindings.fromBuffers(
+      oldBuffer: oldBuffer,
+      oldAsPath: oldBufferPath,
+      newBuffer: newBuffer,
+      newAsPath: newBufferPath,
+      flags: flags.fold(0, (int acc, e) => acc | e.value),
+      contextLines: contextLines,
+      interhunkLines: interhunkLines,
+    );
   }
 
   /// Creates a patch for an entry in the diff list.

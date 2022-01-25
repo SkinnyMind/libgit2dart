@@ -10,8 +10,8 @@ import 'helpers/util.dart';
 void main() {
   late Repository repo;
   late Directory tmpDir;
-  const oldBlob = '';
-  const newBlob = 'Feature edit\n';
+  const oldBuffer = '';
+  const newBuffer = 'Feature edit\n';
   late Oid oldBlobOid;
   late Oid newBlobOid;
   const path = 'feature_file';
@@ -56,11 +56,11 @@ index e69de29..0000000
 
   group('Patch', () {
     test('creates from buffers', () {
-      final patch = Patch.create(
-        a: oldBlob,
-        b: newBlob,
-        aPath: path,
-        bPath: path,
+      final patch = Patch.fromBuffers(
+        oldBuffer: oldBuffer,
+        newBuffer: newBuffer,
+        oldBufferPath: path,
+        newBufferPath: path,
       );
 
       expect(patch.size(), 14);
@@ -70,11 +70,11 @@ index e69de29..0000000
     });
 
     test('creates from one buffer (add)', () {
-      final patch = Patch.create(
-        a: null,
-        b: newBlob,
-        aPath: path,
-        bPath: path,
+      final patch = Patch.fromBuffers(
+        oldBuffer: null,
+        newBuffer: newBuffer,
+        oldBufferPath: path,
+        newBufferPath: path,
       );
 
       expect(patch.text, blobPatchAdd);
@@ -83,11 +83,11 @@ index e69de29..0000000
     });
 
     test('creates from one buffer (delete)', () {
-      final patch = Patch.create(
-        a: oldBlob,
-        b: null,
-        aPath: path,
-        bPath: path,
+      final patch = Patch.fromBuffers(
+        oldBuffer: oldBuffer,
+        newBuffer: null,
+        oldBufferPath: path,
+        newBufferPath: path,
       );
 
       expect(patch.text, blobPatchDelete);
@@ -96,13 +96,13 @@ index e69de29..0000000
     });
 
     test('creates from blobs', () {
-      final a = Blob.lookup(repo: repo, oid: oldBlobOid);
-      final b = Blob.lookup(repo: repo, oid: newBlobOid);
-      final patch = Patch.create(
-        a: a,
-        b: b,
-        aPath: path,
-        bPath: path,
+      final oldBlob = Blob.lookup(repo: repo, oid: oldBlobOid);
+      final newBlob = Blob.lookup(repo: repo, oid: newBlobOid);
+      final patch = Patch.fromBlobs(
+        oldBlob: oldBlob,
+        newBlob: newBlob,
+        oldBlobPath: path,
+        newBlobPath: path,
       );
 
       expect(patch.text, blobPatch);
@@ -111,12 +111,12 @@ index e69de29..0000000
     });
 
     test('creates from one blob (add)', () {
-      final b = Blob.lookup(repo: repo, oid: newBlobOid);
-      final patch = Patch.create(
-        a: null,
-        b: b,
-        aPath: path,
-        bPath: path,
+      final newBlob = Blob.lookup(repo: repo, oid: newBlobOid);
+      final patch = Patch.fromBlobs(
+        oldBlob: null,
+        newBlob: newBlob,
+        oldBlobPath: path,
+        newBlobPath: path,
       );
 
       expect(patch.text, blobPatchAdd);
@@ -125,12 +125,12 @@ index e69de29..0000000
     });
 
     test('creates from one blob (delete)', () {
-      final a = Blob.lookup(repo: repo, oid: oldBlobOid);
-      final patch = Patch.create(
-        a: a,
-        b: null,
-        aPath: path,
-        bPath: path,
+      final oldBlob = Blob.lookup(repo: repo, oid: oldBlobOid);
+      final patch = Patch.fromBlobs(
+        oldBlob: oldBlob,
+        newBlob: null,
+        oldBlobPath: path,
+        newBlobPath: path,
       );
 
       expect(patch.text, blobPatchDelete);
@@ -139,43 +139,17 @@ index e69de29..0000000
     });
 
     test('creates from blob and buffer', () {
-      final a = Blob.lookup(repo: repo, oid: oldBlobOid);
-      final patch = Patch.create(
-        a: a,
-        b: newBlob,
-        aPath: path,
-        bPath: path,
+      final blob = Blob.lookup(repo: repo, oid: oldBlobOid);
+      final patch = Patch.fromBlobAndBuffer(
+        blob: blob,
+        buffer: newBuffer,
+        blobPath: path,
+        bufferPath: path,
       );
 
       expect(patch.text, blobPatch);
 
       patch.free();
-    });
-
-    test('throws when argument is not Blob or String', () {
-      final commit = Commit.lookup(repo: repo, oid: repo['fc38877']);
-
-      expect(
-        () => Patch.create(
-          a: commit,
-          b: null,
-          aPath: 'file',
-          bPath: 'file',
-        ),
-        throwsA(isA<ArgumentError>()),
-      );
-
-      expect(
-        () => Patch.create(
-          a: null,
-          b: commit,
-          aPath: 'file',
-          bPath: 'file',
-        ),
-        throwsA(isA<ArgumentError>()),
-      );
-
-      commit.free();
     });
 
     test('throws when trying to create from diff and error occurs', () {
@@ -185,16 +159,16 @@ index e69de29..0000000
       );
     });
 
-    test('throws when trying to text of patch and error occurs', () {
+    test('throws when trying to get text of patch and error occurs', () {
       expect(() => Patch(nullptr).text, throwsA(isA<LibGit2Error>()));
     });
 
     test('returns string representation of Patch object', () {
-      final patch = Patch.create(
-        a: oldBlob,
-        b: newBlob,
-        aPath: path,
-        bPath: path,
+      final patch = Patch.fromBuffers(
+        oldBuffer: oldBuffer,
+        newBuffer: newBuffer,
+        oldBufferPath: path,
+        newBufferPath: path,
       );
 
       expect(patch.toString(), contains('Patch{'));
