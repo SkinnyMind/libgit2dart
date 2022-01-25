@@ -42,8 +42,6 @@ class Patch {
     int contextLines = 3,
     int interhunkLines = 0,
   }) {
-    libgit2.git_libgit2_init();
-
     _patchPointer = bindings.fromBlobs(
       oldBlobPointer: oldBlob?.pointer,
       oldAsPath: oldBlobPath,
@@ -127,6 +125,8 @@ class Patch {
     int contextLines = 3,
     int interhunkLines = 0,
   }) {
+    libgit2.git_libgit2_init();
+
     _patchPointer = bindings.fromBuffers(
       oldBuffer: oldBuffer,
       oldAsPath: oldBufferPath,
@@ -148,8 +148,6 @@ class Patch {
   ///
   /// Throws a [LibGit2Error] if error occured.
   Patch.fromDiff({required Diff diff, required int index}) {
-    libgit2.git_libgit2_init();
-
     _patchPointer = bindings.fromDiff(diffPointer: diff.pointer, index: index);
   }
 
@@ -157,6 +155,17 @@ class Patch {
 
   /// Pointer to memory address for allocated patch object.
   Pointer<git_patch> get pointer => _patchPointer;
+
+  /// Line counts of each type in a patch.
+  PatchStats get stats {
+    final result = bindings.lineStats(_patchPointer);
+
+    return PatchStats(
+      context: result['context']!,
+      insertions: result['insertions']!,
+      deletions: result['deletions']!,
+    );
+  }
 
   /// Content of a patch as a single diff text.
   ///
@@ -215,4 +224,28 @@ class Patch {
 
   @override
   String toString() => 'Patch{size: ${size()}, delta: $delta}';
+}
+
+/// Line counts of each type in a patch.
+class PatchStats {
+  const PatchStats({
+    required this.context,
+    required this.insertions,
+    required this.deletions,
+  });
+
+  /// Count of context lines.
+  final int context;
+
+  /// Count of insertion lines.
+  final int insertions;
+
+  /// Count of deletion lines.
+  final int deletions;
+
+  @override
+  String toString() {
+    return 'PatchStats{context: $context, insertions: $insertions, '
+        'deletions: $deletions}';
+  }
 }

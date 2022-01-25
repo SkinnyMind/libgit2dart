@@ -177,6 +177,31 @@ Map<String, Object> hunk({
   return {'hunk': out.value, 'linesN': linesN};
 }
 
+/// Get line counts of each type in a patch.
+Map<String, int> lineStats(Pointer<git_patch> patch) {
+  final context = calloc<Uint64>();
+  final insertions = calloc<Uint64>();
+  final deletions = calloc<Uint64>();
+  libgit2.git_patch_line_stats(
+    context,
+    insertions,
+    deletions,
+    patch,
+  );
+
+  final result = {
+    'context': context.value,
+    'insertions': insertions.value,
+    'deletions': deletions.value,
+  };
+
+  calloc.free(context);
+  calloc.free(insertions);
+  calloc.free(deletions);
+
+  return result;
+}
+
 /// Get data about a line in a hunk of a patch.
 Pointer<git_diff_line> lines({
   required Pointer<git_patch> patchPointer,
