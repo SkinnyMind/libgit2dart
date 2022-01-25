@@ -3,6 +3,7 @@ export 'src/blame.dart';
 export 'src/blob.dart';
 export 'src/branch.dart';
 export 'src/callbacks.dart';
+export 'src/checkout.dart';
 export 'src/commit.dart';
 export 'src/config.dart';
 export 'src/credentials.dart';

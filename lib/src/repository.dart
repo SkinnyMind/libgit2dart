@@ -4,7 +4,6 @@ import 'package:ffi/ffi.dart';
 import 'package:libgit2dart/libgit2dart.dart';
 
 import 'package:libgit2dart/src/bindings/attr.dart' as attr_bindings;
-import 'package:libgit2dart/src/bindings/checkout.dart' as checkout_bindings;
 import 'package:libgit2dart/src/bindings/describe.dart' as describe_bindings;
 import 'package:libgit2dart/src/bindings/graph.dart' as graph_bindings;
 import 'package:libgit2dart/src/bindings/libgit2_bindings.dart';
@@ -549,96 +548,6 @@ class Repository {
           .skip(1)
           .where((e) => statusInt & e.value == e.value)
           .toSet();
-    }
-  }
-
-  /// Checkouts the provided [target] using the given strategy, and updates the
-  /// HEAD.
-  ///
-  /// [target] can be null, 'HEAD', reference name or commit [Oid].
-  ///
-  /// If no [target] is given, updates files in the working tree to match the
-  /// content of the index.
-  ///
-  /// If [target] is 'HEAD' string, updates files in the index and the working
-  /// tree to match the content of the commit pointed at by HEAD.
-  ///
-  /// If [target] is reference name, updates files in the index and working
-  /// tree to match the content of the tree pointed at by the reference.
-  ///
-  /// If [target] is commit oid, updates files in the index and working
-  /// tree to match the content of the tree pointed at by the commit.
-  ///
-  /// Default checkout strategy is combination of [GitCheckout.safe] and
-  /// [GitCheckout.recreateMissing].
-  ///
-  /// [directory] is alternative checkout path to workdir.
-  ///
-  /// [paths] is list of files to checkout from provided [target].
-  /// If paths are provided, HEAD will not be set to the [target].
-  ///
-  /// Throws [ArgumentError] if provided [target] is not String or [Oid].
-  void checkout({
-    Object? target,
-    Set<GitCheckout> strategy = const {
-      GitCheckout.safe,
-      GitCheckout.recreateMissing
-    },
-    String? directory,
-    List<String>? paths,
-  }) {
-    final strat = strategy.fold(0, (int acc, e) => acc | e.value);
-
-    if (target == null) {
-      checkout_bindings.index(
-        repoPointer: _repoPointer,
-        strategy: strat,
-        directory: directory,
-        paths: paths,
-      );
-    } else if (target == 'HEAD') {
-      checkout_bindings.head(
-        repoPointer: _repoPointer,
-        strategy: strat,
-        directory: directory,
-        paths: paths,
-      );
-    } else if (target is String) {
-      final ref = Reference.lookup(repo: this, name: target);
-      final treeish = object_bindings.lookup(
-        repoPointer: _repoPointer,
-        oidPointer: ref.target.pointer,
-        type: GitObject.any.value,
-      );
-      checkout_bindings.tree(
-        repoPointer: _repoPointer,
-        treeishPointer: treeish,
-        strategy: strat,
-        directory: directory,
-        paths: paths,
-      );
-      if (paths == null) {
-        setHead(target);
-      }
-      ref.free();
-    } else if (target is Oid) {
-      final treeish = object_bindings.lookup(
-        repoPointer: _repoPointer,
-        oidPointer: target.pointer,
-        type: GitObject.any.value,
-      );
-      checkout_bindings.tree(
-        repoPointer: _repoPointer,
-        treeishPointer: treeish,
-        strategy: strat,
-        directory: directory,
-        paths: paths,
-      );
-      if (paths == null) {
-        setHead(target);
-      }
-    } else {
-      throw ArgumentError.value('$target must be either String or Oid');
     }
   }
 

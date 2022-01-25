@@ -172,7 +172,8 @@ Another feature edit
           repo: repo,
           oid: conflictBranch.target,
         );
-        repo.checkout(target: 'refs/heads/feature');
+        Checkout.reference(repo: repo, name: 'refs/heads/feature');
+        repo.setHead('refs/heads/feature');
         final index = repo.index;
 
         Merge.commit(repo: repo, commit: commit);

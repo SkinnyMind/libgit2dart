@@ -323,7 +323,7 @@ index e69de29..c217c63 100644
         );
 
         final diff2 = Diff.parse(patchText);
-        repo.checkout(target: 'HEAD', strategy: {GitCheckout.force});
+        Checkout.head(repo: repo, strategy: {GitCheckout.force});
         expect(
           diff2.applies(repo: repo, location: GitApplyLocation.both),
           true,
@@ -345,7 +345,7 @@ index e69de29..c217c63 100644
 
         final diff2 = Diff.parse(patchText);
         final hunk = diff2.patches.first.hunks.first;
-        repo.checkout(target: 'HEAD', strategy: {GitCheckout.force});
+        Checkout.head(repo: repo, strategy: {GitCheckout.force});
         expect(
           diff2.applies(
             repo: repo,
@@ -364,7 +364,7 @@ index e69de29..c217c63 100644
         final diff = Diff.parse(patchText);
         final file = File(p.join(tmpDir.path, 'subdir', 'modified_file'));
 
-        repo.checkout(target: 'HEAD', strategy: {GitCheckout.force});
+        Checkout.head(repo: repo, strategy: {GitCheckout.force});
         expect(file.readAsStringSync(), '');
 
         diff.apply(repo: repo);
@@ -396,7 +396,7 @@ index e69de29..c217c63 100644
         final hunk = diff.patches.first.hunks.first;
         final file = File(p.join(tmpDir.path, 'subdir', 'modified_file'));
 
-        repo.checkout(target: 'HEAD', strategy: {GitCheckout.force});
+        Checkout.head(repo: repo, strategy: {GitCheckout.force});
         expect(file.readAsStringSync(), '');
 
         diff.apply(repo: repo, hunkIndex: hunk.index);
@@ -408,7 +408,7 @@ index e69de29..c217c63 100644
       test('applies diff to tree', () {
         final diff = Diff.parse(patchText);
 
-        repo.checkout(target: 'HEAD', strategy: {GitCheckout.force});
+        Checkout.head(repo: repo, strategy: {GitCheckout.force});
         final head = repo.head;
         final commit = Commit.lookup(repo: repo, oid: head.target);
         final tree = commit.tree;
@@ -441,7 +441,7 @@ index e69de29..c217c63 100644
         final diff = Diff.parse(patchText);
         final hunk = diff.patches.first.hunks.first;
 
-        repo.checkout(target: 'HEAD', strategy: {GitCheckout.force});
+        Checkout.head(repo: repo, strategy: {GitCheckout.force});
         final head = repo.head;
         final commit = Commit.lookup(repo: repo, oid: head.target);
         final tree = commit.tree;
