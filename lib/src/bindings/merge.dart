@@ -115,7 +115,7 @@ List<int> analysis({
   return result;
 }
 
-/// Merges the given commit(s) into HEAD, writing the results into the working
+/// Merges the given commit into HEAD, writing the results into the working
 /// directory. Any changes are staged for commit and any conflicts are written
 /// to the index. Callers should inspect the repository's index after this
 /// completes, resolve any conflicts and prepare a commit.
@@ -285,7 +285,7 @@ Pointer<git_index> mergeCommits({
   }
 }
 
-/// Merge two trees, producing a git_index that reflects the result of the
+/// Merge two trees, producing an index that reflects the result of the
 /// merge. The index may be written as-is to the working directory or checked
 /// out. If the index is to be converted to a tree, the caller should resolve
 /// any conflicts that arose as part of the merge.

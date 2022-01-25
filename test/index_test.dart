@@ -327,7 +327,7 @@ void main() {
         oid: conflictBranch.target,
       );
 
-      repo.merge(commit: commit);
+      Merge.commit(repo: repo, commit: commit);
 
       expect(() => index.writeTree(), throwsA(isA<LibGit2Error>()));
 
@@ -366,7 +366,7 @@ void main() {
 
       conflictRepo.checkout(target: 'refs/heads/feature');
 
-      conflictRepo.merge(commit: commit);
+      Merge.commit(repo: conflictRepo, commit: commit);
 
       final index = conflictRepo.index;
       final conflictedFile = index.conflicts['feature_file']!;
@@ -395,7 +395,7 @@ void main() {
         oid: conflictBranch.target,
       );
 
-      conflictRepo.merge(commit: commit);
+      Merge.commit(repo: conflictRepo, commit: commit);
 
       final index = conflictRepo.index;
       final conflictedFile = index.conflicts['conflict_file']!;
@@ -426,7 +426,7 @@ void main() {
 
       conflictRepo.checkout(target: 'refs/heads/our-conflict');
 
-      conflictRepo.merge(commit: commit);
+      Merge.commit(repo: conflictRepo, commit: commit);
 
       final index = conflictRepo.index;
       final conflictedFile = index.conflicts['feature_file']!;
@@ -457,7 +457,7 @@ void main() {
 
       conflictRepo.checkout(target: 'refs/heads/feature');
 
-      conflictRepo.merge(commit: commit);
+      Merge.commit(repo: conflictRepo, commit: commit);
 
       final index = conflictRepo.index;
       final conflictedFile = index.conflicts['feature_file']!;
@@ -487,7 +487,7 @@ void main() {
       );
       final index = conflictRepo.index;
 
-      conflictRepo.merge(commit: commit);
+      Merge.commit(repo: conflictRepo, commit: commit);
       expect(index.hasConflicts, true);
       expect(index['.gitignore'].isConflict, false);
       expect(index.conflicts['conflict_file']!.our!.isConflict, true);
@@ -528,7 +528,7 @@ void main() {
       );
       final index = conflictRepo.index;
 
-      conflictRepo.merge(commit: commit);
+      Merge.commit(repo: conflictRepo, commit: commit);
       expect(index.hasConflicts, true);
       expect(index.conflicts.length, 1);
 
