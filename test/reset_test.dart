@@ -42,7 +42,7 @@ void main() {
       expect(contents, 'Feature edit\n');
 
       final index = repo.index;
-      final diff = index.diffToWorkdir();
+      final diff = Diff.indexToWorkdir(repo: repo, index: index);
       expect(diff.deltas, isEmpty);
 
       index.free();
@@ -57,7 +57,7 @@ void main() {
       expect(contents, 'Feature edit\n');
 
       final index = repo.index;
-      final diff = index.diffToWorkdir();
+      final diff = Diff.indexToWorkdir(repo: repo, index: index);
       expect(diff.deltas.length, 1);
 
       index.free();

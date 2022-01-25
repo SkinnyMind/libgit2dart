@@ -41,7 +41,8 @@ class Branch {
     );
   }
 
-  /// Lookups a branch by its [name] and [type] in a [repo]sitory.
+  /// Lookups a branch by its [name] and [type] in a [repo]sitory. Lookups in
+  /// local branches by default.
   ///
   /// The branch name will be checked for validity.
   ///

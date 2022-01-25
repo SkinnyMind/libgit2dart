@@ -15,9 +15,7 @@ void main() {
   setUp(() {
     tmpDir = setupRepo(Directory(p.join('test', 'assets', 'test_repo')));
     repo = Repository.open(tmpDir.path);
-    tree = repo.lookupTree(
-      repo['a8ae3dd59e6e1802c6f78e05e301bfd57c9f334f'],
-    );
+    tree = Tree.lookup(repo: repo, oid: repo['a8ae3dd']);
   });
 
   tearDown(() {
@@ -34,7 +32,7 @@ void main() {
 
     test('throws when looking up tree for invalid oid', () {
       expect(
-        () => repo.lookupTree(repo['0' * 40]),
+        () => Tree.lookup(repo: repo, oid: repo['0' * 40]),
         throwsA(isA<LibGit2Error>()),
       );
     });
@@ -79,7 +77,7 @@ void main() {
     });
 
     test('creates tree', () {
-      final fileOid = repo.createBlob('blob content');
+      final fileOid = Blob.create(repo: repo, content: 'blob content');
       final builder = TreeBuilder(repo: repo);
 
       builder.add(
@@ -87,7 +85,7 @@ void main() {
         oid: fileOid,
         filemode: GitFilemode.blob,
       );
-      final newTree = repo.lookupTree(builder.write());
+      final newTree = Tree.lookup(repo: repo, oid: builder.write());
 
       final entry = newTree['filename'];
       expect(newTree.length, 1);

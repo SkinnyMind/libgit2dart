@@ -32,12 +32,12 @@ void main() {
         email: 'author@email.com',
         time: 1234,
       );
-      final master = repo.lookupReference('refs/heads/master');
+      final master = Reference.lookup(repo: repo, name: 'refs/heads/master');
       final branchHead = AnnotatedCommit.fromReference(
         repo: repo,
         reference: master,
       );
-      final feature = repo.lookupReference('refs/heads/feature');
+      final feature = Reference.lookup(repo: repo, name: 'refs/heads/feature');
       final ontoHead = AnnotatedCommit.fromReference(
         repo: repo,
         reference: feature,
@@ -90,7 +90,7 @@ void main() {
         email: 'author@email.com',
         time: 1234,
       );
-      final feature = repo.lookupReference('refs/heads/feature');
+      final feature = Reference.lookup(repo: repo, name: 'refs/heads/feature');
       final ontoHead = AnnotatedCommit.lookup(repo: repo, oid: feature.target);
 
       final rebase = Rebase.init(
@@ -136,9 +136,9 @@ void main() {
         email: 'author@email.com',
         time: 1234,
       );
-      final master = repo.lookupReference('refs/heads/master');
+      final master = Reference.lookup(repo: repo, name: 'refs/heads/master');
       final branchHead = AnnotatedCommit.lookup(repo: repo, oid: master.target);
-      final feature = repo.lookupReference('refs/heads/feature');
+      final feature = Reference.lookup(repo: repo, name: 'refs/heads/feature');
       final upstream = AnnotatedCommit.lookup(repo: repo, oid: repo[shas[1]]);
 
       repo.checkout(target: feature.name);
@@ -189,9 +189,12 @@ void main() {
         email: 'author@email.com',
         time: 1234,
       );
-      final master = repo.lookupReference('refs/heads/master');
+      final master = Reference.lookup(repo: repo, name: 'refs/heads/master');
       final branchHead = AnnotatedCommit.lookup(repo: repo, oid: master.target);
-      final conflict = repo.lookupReference('refs/heads/conflict-branch');
+      final conflict = Reference.lookup(
+        repo: repo,
+        name: 'refs/heads/conflict-branch',
+      );
       final ontoHead = AnnotatedCommit.lookup(repo: repo, oid: conflict.target);
 
       repo.checkout(target: conflict.name);
@@ -226,9 +229,12 @@ void main() {
         email: 'author@email.com',
         time: 1234,
       );
-      final master = repo.lookupReference('refs/heads/master');
+      final master = Reference.lookup(repo: repo, name: 'refs/heads/master');
       final branchHead = AnnotatedCommit.lookup(repo: repo, oid: master.target);
-      final conflict = repo.lookupReference('refs/heads/conflict-branch');
+      final conflict = Reference.lookup(
+        repo: repo,
+        name: 'refs/heads/conflict-branch',
+      );
       final ontoHead = AnnotatedCommit.lookup(repo: repo, oid: conflict.target);
 
       repo.checkout(target: conflict.name);
@@ -252,9 +258,12 @@ void main() {
     });
 
     test('aborts rebase in progress', () {
-      final master = repo.lookupReference('refs/heads/master');
+      final master = Reference.lookup(repo: repo, name: 'refs/heads/master');
       final branchHead = AnnotatedCommit.lookup(repo: repo, oid: master.target);
-      final conflict = repo.lookupReference('refs/heads/conflict-branch');
+      final conflict = Reference.lookup(
+        repo: repo,
+        name: 'refs/heads/conflict-branch',
+      );
       final ontoHead = AnnotatedCommit.lookup(repo: repo, oid: conflict.target);
 
       repo.checkout(target: conflict.name);
@@ -282,7 +291,7 @@ void main() {
     });
 
     test('opens an existing rebase', () {
-      final feature = repo.lookupReference('refs/heads/feature');
+      final feature = Reference.lookup(repo: repo, name: 'refs/heads/feature');
       final ontoHead = AnnotatedCommit.lookup(repo: repo, oid: feature.target);
 
       final rebase = Rebase.init(

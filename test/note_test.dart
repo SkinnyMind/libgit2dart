@@ -35,7 +35,7 @@ void main() {
 
   group('Note', () {
     test('returns list of notes', () {
-      final notes = repo.notes;
+      final notes = Note.list(repo);
 
       expect(notes.length, 2);
 
@@ -49,12 +49,12 @@ void main() {
 
     test('throws when trying to get list of notes and error occurs', () {
       Directory(p.join(repo.path, 'refs', 'notes')).deleteSync(recursive: true);
-      expect(() => repo.notes, throwsA(isA<LibGit2Error>()));
+      expect(() => Note.list(repo), throwsA(isA<LibGit2Error>()));
     });
 
     test('lookups note', () {
       final head = repo.head;
-      final note = repo.lookupNote(annotatedOid: head.target);
+      final note = Note.lookup(repo: repo, annotatedOid: head.target);
 
       expect(note.oid.sha, notesExpected[1]['oid']);
       expect(note.message, notesExpected[1]['message']);
@@ -71,14 +71,15 @@ void main() {
         time: 1234,
       );
       final head = repo.head;
-      final noteOid = repo.createNote(
+      final noteOid = Note.create(
+        repo: repo,
         author: signature,
         committer: signature,
         annotatedOid: head.target,
         note: 'New note for HEAD',
         force: true,
       );
-      final noteBlob = repo.lookupBlob(noteOid);
+      final noteBlob = Blob.lookup(repo: repo, oid: noteOid);
 
       expect(noteOid.sha, 'ffd6e2ceaf91c00ea6d29e2e897f906da720529f');
       expect(noteBlob.content, 'New note for HEAD');
@@ -90,7 +91,8 @@ void main() {
 
     test('throws when trying to create note and error occurs', () {
       expect(
-        () => Repository(nullptr).createNote(
+        () => Note.create(
+          repo: Repository(nullptr),
           author: Signature(nullptr),
           committer: Signature(nullptr),
           annotatedOid: repo['0' * 40],
@@ -108,14 +110,15 @@ void main() {
       );
       final head = repo.head;
 
-      repo.deleteNote(
+      Note.delete(
+        repo: repo,
         annotatedOid: repo.head.target,
         author: signature,
         committer: signature,
       );
 
       expect(
-        () => repo.lookupNote(annotatedOid: head.target),
+        () => Note.lookup(repo: repo, annotatedOid: head.target),
         throwsA(isA<LibGit2Error>()),
       );
 
@@ -125,7 +128,8 @@ void main() {
 
     test('throws when trying to delete note and error occurs', () {
       expect(
-        () => Repository(nullptr).deleteNote(
+        () => Note.delete(
+          repo: Repository(nullptr),
           author: Signature(nullptr),
           committer: Signature(nullptr),
           annotatedOid: repo['0' * 40],
@@ -135,7 +139,7 @@ void main() {
     });
 
     test('returns string representation of Note object', () {
-      final note = repo.lookupNote(annotatedOid: repo['821ed6e']);
+      final note = Note.lookup(repo: repo, annotatedOid: repo['821ed6e']);
       expect(note.toString(), contains('Note{'));
       note.free();
     });

@@ -188,10 +188,14 @@ void main() {
 
     test('packs with provided packDelegate', () {
       Directory(packDirPath).createSync();
+
       void packDelegate(PackBuilder packBuilder) {
         final branches = repo.branchesLocal;
         for (final branch in branches) {
-          final ref = repo.lookupReference('refs/heads/${branch.name}');
+          final ref = Reference.lookup(
+            repo: repo,
+            name: 'refs/heads/${branch.name}',
+          );
           for (final commit in repo.log(oid: ref.target)) {
             packBuilder.addRecursively(commit.oid);
             commit.free();

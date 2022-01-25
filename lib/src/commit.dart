@@ -178,6 +178,38 @@ class Commit {
     );
   }
 
+  /// Reverts commit, producing changes in the index and working directory.
+  ///
+  /// Throws a [LibGit2Error] if error occured.
+  void revert() {
+    bindings.revert(
+      repoPointer: bindings.owner(_commitPointer),
+      commitPointer: _commitPointer,
+    );
+  }
+
+  /// Reverts commit against provided [commit], producing an index that
+  /// reflects the result of the revert.
+  ///
+  /// [mainline] is parent of the commit if it is a merge (i.e. 1, 2).
+  ///
+  /// **IMPORTANT**: produced index should be freed to release allocated memory.
+  ///
+  /// Throws a [LibGit2Error] if error occured.
+  Index revertTo({
+    required Commit commit,
+    int mainline = 0,
+  }) {
+    return Index(
+      bindings.revertCommit(
+        repoPointer: bindings.owner(_commitPointer),
+        revertCommitPointer: _commitPointer,
+        ourCommitPointer: commit.pointer,
+        mainline: mainline,
+      ),
+    );
+  }
+
   /// Wncoding for the message of a commit, as a string representing a standard
   /// encoding name.
   String get messageEncoding => bindings.messageEncoding(_commitPointer);

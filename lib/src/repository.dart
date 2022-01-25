@@ -7,7 +7,6 @@ import 'package:libgit2dart/src/bindings/attr.dart' as attr_bindings;
 import 'package:libgit2dart/src/bindings/checkout.dart' as checkout_bindings;
 import 'package:libgit2dart/src/bindings/commit.dart' as commit_bindings;
 import 'package:libgit2dart/src/bindings/describe.dart' as describe_bindings;
-import 'package:libgit2dart/src/bindings/diff.dart' as diff_bindings;
 import 'package:libgit2dart/src/bindings/graph.dart' as graph_bindings;
 import 'package:libgit2dart/src/bindings/libgit2_bindings.dart';
 import 'package:libgit2dart/src/bindings/merge.dart' as merge_bindings;
@@ -1410,82 +1409,6 @@ class Repository {
     );
   }
 
-  /// Returns a [Diff] with changes between the trees, tree and index, tree and
-  /// workdir or index and workdir.
-  ///
-  /// If [b] is null, by default the [a] tree compared to working directory. If
-  /// [cached] is set to true the [a] tree compared to index/staging area.
-  ///
-  /// [flags] is a combination of [GitDiff] flags. Defaults to [GitDiff.normal].
-  ///
-  /// [contextLines] is the number of unchanged lines that define the boundary
-  /// of a hunk (and to display before and after). Defaults to 3.
-  ///
-  /// [interhunkLines] is the maximum number of unchanged lines between hunk
-  /// boundaries before the hunks will be merged into one. Defaults to 0.
-  ///
-  /// **IMPORTANT**: Should be freed to release allocated memory.
-  ///
-  /// Throws a [LibGit2Error] if error occured.
-  Diff diff({
-    Tree? a,
-    Tree? b,
-    bool cached = false,
-    Set<GitDiff> flags = const {GitDiff.normal},
-    int contextLines = 3,
-    int interhunkLines = 0,
-  }) {
-    final flagsInt = flags.fold(0, (int acc, e) => acc | e.value);
-
-    if (a is Tree && b is Tree) {
-      return Diff(
-        diff_bindings.treeToTree(
-          repoPointer: _repoPointer,
-          oldTreePointer: a.pointer,
-          newTreePointer: b.pointer,
-          flags: flagsInt,
-          contextLines: contextLines,
-          interhunkLines: interhunkLines,
-        ),
-      );
-    } else if (a is Tree && b == null) {
-      if (cached) {
-        return Diff(
-          diff_bindings.treeToIndex(
-            repoPointer: _repoPointer,
-            treePointer: a.pointer,
-            indexPointer: index.pointer,
-            flags: flagsInt,
-            contextLines: contextLines,
-            interhunkLines: interhunkLines,
-          ),
-        );
-      } else {
-        return Diff(
-          diff_bindings.treeToWorkdir(
-            repoPointer: _repoPointer,
-            treePointer: a.pointer,
-            flags: flagsInt,
-            contextLines: contextLines,
-            interhunkLines: interhunkLines,
-          ),
-        );
-      }
-    } else if (a == null && b == null) {
-      return Diff(
-        diff_bindings.indexToWorkdir(
-          repoPointer: _repoPointer,
-          indexPointer: index.pointer,
-          flags: flagsInt,
-          contextLines: contextLines,
-          interhunkLines: interhunkLines,
-        ),
-      );
-    } else {
-      throw ArgumentError.notNull('a');
-    }
-  }
-
   /// Returns a [Patch] with changes between the blobs.
   ///
   /// [a] is the blob for old side of diff.
@@ -1517,65 +1440,6 @@ class Repository {
     int interhunkLines = 0,
   }) {
     return a.diff(newBlob: b, oldAsPath: aPath, newAsPath: bPath);
-  }
-
-  /// Applies the [diff] to the repository, making changes in the provided
-  /// [location] (directly in the working directory (default), the index or
-  /// both).
-  ///
-  /// [hunkIndex] is optional index of the hunk to apply.
-  ///
-  /// Throws a [LibGit2Error] if error occured.
-  void apply({
-    required Diff diff,
-    int? hunkIndex,
-    GitApplyLocation location = GitApplyLocation.workdir,
-  }) {
-    diff_bindings.apply(
-      repoPointer: _repoPointer,
-      diffPointer: diff.pointer,
-      hunkIndex: hunkIndex,
-      location: location.value,
-    );
-  }
-
-  /// Applies the [diff] to the [tree], and returns the resulting image as an
-  /// index.
-  ///
-  /// [hunkIndex] is optional index of the hunk to apply.
-  ///
-  /// Throws a [LibGit2Error] if error occured.
-  Index applyToTree({
-    required Diff diff,
-    required Tree tree,
-    int? hunkIndex,
-  }) {
-    return Index(
-      diff_bindings.applyToTree(
-        repoPointer: _repoPointer,
-        diffPointer: diff.pointer,
-        treePointer: tree.pointer,
-        hunkIndex: hunkIndex,
-      ),
-    );
-  }
-
-  /// Checks if the [diff] will apply to provided [location] (the working
-  /// directory (default), the index or both).
-  ///
-  /// [hunkIndex] is optional index of the hunk to apply.
-  bool applies({
-    required Diff diff,
-    int? hunkIndex,
-    GitApplyLocation location = GitApplyLocation.workdir,
-  }) {
-    return diff_bindings.apply(
-      repoPointer: _repoPointer,
-      diffPointer: diff.pointer,
-      hunkIndex: hunkIndex,
-      location: location.value,
-      check: true,
-    );
   }
 
   /// Returns list of all the stashed states, first being the most recent.
@@ -1811,13 +1675,6 @@ class Repository {
       maxLine: maxLine,
     );
   }
-
-  /// List of notes for repository.
-  ///
-  /// **IMPORTANT**: Notes Should be freed to release allocated memory.
-  ///
-  /// Throws a [LibGit2Error] if error occured.
-  List<Note> get notes => Note.list(this);
 
   /// Lookups the note for an [annotatedOid].
   ///
@@ -2075,7 +1932,7 @@ class Repository {
     required String submodule,
     bool overwrite = false,
   }) {
-    Submodule.init(repo: this, submodule: submodule, overwrite: overwrite);
+    Submodule.init(repo: this, name: submodule, overwrite: overwrite);
   }
 
   /// Updates a submodule. This will clone a missing submodule and checkout the
@@ -2096,7 +1953,7 @@ class Repository {
   }) {
     Submodule.update(
       repo: this,
-      submodule: submodule,
+      name: submodule,
       init: init,
       callbacks: callbacks,
     );

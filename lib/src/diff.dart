@@ -14,6 +14,118 @@ class Diff {
   /// **IMPORTANT**: Should be freed to release allocated memory.
   Diff(this._diffPointer);
 
+  /// Creates a diff between the [repo]sitory [index] and the workdir directory.
+  ///
+  /// This matches the `git diff` command.
+  ///
+  /// [repo] is the repository containing index.
+  ///
+  /// [index] is the index to diff from.
+  ///
+  /// [flags] is a combination of [GitDiff] flags. Defaults to [GitDiff.normal].
+  ///
+  /// [contextLines] is the number of unchanged lines that define the boundary
+  /// of a hunk (and to display before and after). Defaults to 3.
+  ///
+  /// [interhunkLines] is the maximum number of unchanged lines between hunk
+  /// boundaries before the hunks will be merged into one. Defaults to 0.
+  ///
+  /// **IMPORTANT**: Should be freed to release allocated memory.
+  ///
+  /// Throws a [LibGit2Error] if error occured.
+  Diff.indexToWorkdir({
+    required Repository repo,
+    required Index index,
+    Set<GitDiff> flags = const {GitDiff.normal},
+    int contextLines = 3,
+    int interhunkLines = 0,
+  }) {
+    _diffPointer = bindings.indexToWorkdir(
+      repoPointer: repo.pointer,
+      indexPointer: index.pointer,
+      flags: flags.fold(0, (int acc, e) => acc | e.value),
+      contextLines: contextLines,
+      interhunkLines: interhunkLines,
+    );
+  }
+
+  /// Creates a diff between a [tree] and [repo]sitory [index].
+  ///
+  /// This is equivalent to `git diff --cached <treeish>` or if you pass the
+  /// HEAD tree, then like `git diff --cached`.
+  ///
+  /// [repo] is the repository containing the tree and index.
+  ///
+  /// [tree] is the [Tree] object to diff from or null for empty tree.
+  ///
+  /// [index] is the index to diff with.
+  ///
+  /// [flags] is a combination of [GitDiff] flags. Defaults to [GitDiff.normal].
+  ///
+  /// [contextLines] is the number of unchanged lines that define the boundary
+  /// of a hunk (and to display before and after). Defaults to 3.
+  ///
+  /// [interhunkLines] is the maximum number of unchanged lines between hunk
+  /// boundaries before the hunks will be merged into one. Defaults to 0.
+  Diff.treeToIndex({
+    required Repository repo,
+    required Tree? tree,
+    required Index index,
+    Set<GitDiff> flags = const {GitDiff.normal},
+    int contextLines = 3,
+    int interhunkLines = 0,
+  }) {
+    _diffPointer = bindings.treeToIndex(
+      repoPointer: repo.pointer,
+      treePointer: tree?.pointer,
+      indexPointer: index.pointer,
+      flags: flags.fold(0, (acc, e) => acc | e.value),
+      contextLines: contextLines,
+      interhunkLines: interhunkLines,
+    );
+  }
+
+  /// Creates a diff between a [tree] and the working directory.
+  ///
+  /// This is not the same as `git diff <treeish>` or
+  /// `git diff-index <treeish>`. Those commands use information from the
+  /// index, whereas this method strictly returns the differences between the
+  /// tree and the files in the working directory, regardless of the state of
+  /// the index. Use [Diff.treeToWorkdirWithIndex] to emulate those commands.
+  ///
+  /// To see difference between this and [Diff.treeToWorkdirWithIndex],
+  /// consider the example of a staged file deletion where the file has then
+  /// been put back into the working directory and further modified. The
+  /// tree-to-workdir diff for that file is 'modified', but `git diff` would
+  /// show status 'deleted' since there is a staged delete.
+  ///
+  /// [repo] is the repository containing the tree.
+  ///
+  /// [tree] is the [Tree] object to diff from or null for empty tree.
+  ///
+  /// [flags] is a combination of [GitDiff] flags. Defaults to [GitDiff.normal].
+  ///
+  /// [contextLines] is the number of unchanged lines that define the boundary
+  /// of a hunk (and to display before and after). Defaults to 3.
+  ///
+  /// [interhunkLines] is the maximum number of unchanged lines between hunk
+  /// boundaries before the hunks will be merged into one. Defaults to 0.
+  Diff.treeToWorkdir({
+    required Repository repo,
+    required Tree? tree,
+    Set<GitDiff> flags = const {GitDiff.normal},
+    int contextLines = 3,
+    int interhunkLines = 0,
+  }) {
+    _diffPointer = bindings.treeToWorkdir(
+      repoPointer: repo.pointer,
+      treePointer: tree?.pointer,
+      flags: flags.fold(0, (acc, e) => acc | e.value),
+      contextLines: contextLines,
+      interhunkLines: interhunkLines,
+    );
+  }
+
   /// Creates a diff between a [tree] and the working directory using index
   /// data to account for staged deletes, tracked files, etc.
   ///
@@ -46,6 +158,83 @@ class Diff {
     _diffPointer = bindings.treeToWorkdirWithIndex(
       repoPointer: repo.pointer,
       treePointer: tree?.pointer,
+      flags: flags.fold(0, (acc, e) => acc | e.value),
+      contextLines: contextLines,
+      interhunkLines: interhunkLines,
+    );
+  }
+
+  /// Creates a diff with the difference between two [Tree] objects.
+  ///
+  /// This is equivalent to `git diff <old-tree> <new-tree>`.
+  ///
+  /// [repo] is the repository containing the trees.
+  ///
+  /// [oldTree] is the [Tree] object to diff from, or null for empty tree.
+  ///
+  /// [newTree] is the [Tree] object to diff to, or null for empty tree.
+  ///
+  /// [flags] is a combination of [GitDiff] flags. Defaults to [GitDiff.normal].
+  ///
+  /// [contextLines] is the number of unchanged lines that define the boundary
+  /// of a hunk (and to display before and after). Defaults to 3.
+  ///
+  /// [interhunkLines] is the maximum number of unchanged lines between hunk
+  /// boundaries before the hunks will be merged into one. Defaults to 0.
+  ///
+  /// Throws a [LibGit2Error] if error occured or [ArgumentError] if both trees
+  /// are null.
+  Diff.treeToTree({
+    required Repository repo,
+    required Tree? oldTree,
+    required Tree? newTree,
+    Set<GitDiff> flags = const {GitDiff.normal},
+    int contextLines = 3,
+    int interhunkLines = 0,
+  }) {
+    if (oldTree == null && newTree == null) {
+      throw ArgumentError('Both trees cannot be null');
+    }
+
+    _diffPointer = bindings.treeToTree(
+      repoPointer: repo.pointer,
+      oldTreePointer: oldTree?.pointer,
+      newTreePointer: newTree?.pointer,
+      flags: flags.fold(0, (acc, e) => acc | e.value),
+      contextLines: contextLines,
+      interhunkLines: interhunkLines,
+    );
+  }
+
+  /// Creates a diff with the difference between two [Index] objects.
+  ///
+  /// [repo] is the repository containing the indexes.
+  ///
+  /// [oldIndex] is the [Index] object to diff from.
+  ///
+  /// [newIndex] is the [Index] object to diff to.
+  ///
+  /// [flags] is a combination of [GitDiff] flags. Defaults to [GitDiff.normal].
+  ///
+  /// [contextLines] is the number of unchanged lines that define the boundary
+  /// of a hunk (and to display before and after). Defaults to 3.
+  ///
+  /// [interhunkLines] is the maximum number of unchanged lines between hunk
+  /// boundaries before the hunks will be merged into one. Defaults to 0.
+  ///
+  /// Throws a [LibGit2Error] if error occured.
+  Diff.indexToIndex({
+    required Repository repo,
+    required Index oldIndex,
+    required Index newIndex,
+    Set<GitDiff> flags = const {GitDiff.normal},
+    int contextLines = 3,
+    int interhunkLines = 0,
+  }) {
+    _diffPointer = bindings.indexToIndex(
+      repoPointer: repo.pointer,
+      oldIndexPointer: oldIndex.pointer,
+      newIndexPointer: newIndex.pointer,
       flags: flags.fold(0, (acc, e) => acc | e.value),
       contextLines: contextLines,
       interhunkLines: interhunkLines,
@@ -135,6 +324,77 @@ class Diff {
     bindings.merge(
       ontoPointer: _diffPointer,
       fromPointer: diff.pointer,
+    );
+  }
+
+  /// Applies the diff to the [repo]sitory, making changes in the provided
+  /// [location].
+  ///
+  /// [repo] is the repository to apply to.
+  ///
+  /// [hunkIndex] is optional index of the hunk to apply.
+  ///
+  /// [location] is the location to apply (workdir, index or both).
+  /// Defaults to workdir.
+  ///
+  /// Throws a [LibGit2Error] if error occured.
+  void apply({
+    required Repository repo,
+    int? hunkIndex,
+    GitApplyLocation location = GitApplyLocation.workdir,
+  }) {
+    bindings.apply(
+      repoPointer: repo.pointer,
+      diffPointer: _diffPointer,
+      hunkIndex: hunkIndex,
+      location: location.value,
+    );
+  }
+
+  /// Checks if the diff will apply to provided [location].
+  ///
+  /// [repo] is the repository to apply to.
+  ///
+  /// [hunkIndex] is optional index of the hunk to apply.
+  ///
+  /// [location] is the location to apply (workdir, index or both).
+  /// Defaults to workdir.
+  bool applies({
+    required Repository repo,
+    int? hunkIndex,
+    GitApplyLocation location = GitApplyLocation.workdir,
+  }) {
+    return bindings.apply(
+      repoPointer: repo.pointer,
+      diffPointer: _diffPointer,
+      hunkIndex: hunkIndex,
+      location: location.value,
+      check: true,
+    );
+  }
+
+  /// Applies the diff to the [tree], and returns the resulting image as an
+  /// index.
+  ///
+  /// [repo] is the repository to apply to.
+  ///
+  /// [tree] is the tree to apply the diff to.
+  ///
+  /// [hunkIndex] is optional index of the hunk to apply.
+  ///
+  /// Throws a [LibGit2Error] if error occured.
+  Index applyToTree({
+    required Repository repo,
+    required Tree tree,
+    int? hunkIndex,
+  }) {
+    return Index(
+      bindings.applyToTree(
+        repoPointer: repo.pointer,
+        diffPointer: _diffPointer,
+        treePointer: tree.pointer,
+        hunkIndex: hunkIndex,
+      ),
     );
   }
 

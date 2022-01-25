@@ -30,10 +30,7 @@ void main() {
       time: 124,
     );
     tip = repo['821ed6e80627b8769d170a293862f9fc60825226'];
-    tree = Tree.lookup(
-      repo: repo,
-      oid: repo['a8ae3dd59e6e1802c6f78e05e301bfd57c9f334f'],
-    );
+    tree = Tree.lookup(repo: repo, oid: repo['a8ae3dd']);
   });
 
   tearDown(() {
@@ -46,14 +43,14 @@ void main() {
 
   group('Commit', () {
     test('lookups commit for provided oid', () {
-      final commit = repo.lookupCommit(tip);
+      final commit = Commit.lookup(repo: repo, oid: tip);
       expect(commit, isA<Commit>());
       commit.free();
     });
 
     test('throws when trying to lookup with invalid oid', () {
       expect(
-        () => repo.lookupCommit(repo['0' * 40]),
+        () => Commit.lookup(repo: repo, oid: repo['0' * 40]),
         throwsA(isA<LibGit2Error>()),
       );
     });
@@ -65,15 +62,14 @@ void main() {
     });
 
     test('reverts commit affecting index and workdir', () {
-      final commit = repo.lookupCommit(
-        repo['821ed6e80627b8769d170a293862f9fc60825226'],
-      );
+      final commit = Commit.lookup(repo: repo, oid: repo['821ed6e']);
       final index = repo.index;
       final file = File(p.join(repo.workdir, 'dir', 'dir_file.txt'));
       expect(index.find('dir/dir_file.txt'), true);
       expect(file.existsSync(), true);
 
-      repo.revert(commit);
+      commit.revert();
+
       expect(index.find('dir/dir_file.txt'), false);
       expect(file.existsSync(), false);
 
@@ -82,22 +78,18 @@ void main() {
     });
 
     test('throws when trying to revert and error occurs', () {
-      expect(() => repo.revert(Commit(nullptr)), throwsA(isA<LibGit2Error>()));
+      expect(() => Commit(nullptr).revert(), throwsA(isA<LibGit2Error>()));
     });
 
     test('reverts commit to provided commit', () {
-      final to = repo.lookupCommit(
-        repo['78b8bf123e3952c970ae5c1ce0a3ea1d1336f6e8'],
-      );
-      final from = repo.lookupCommit(
-        repo['821ed6e80627b8769d170a293862f9fc60825226'],
-      );
+      final to = Commit.lookup(repo: repo, oid: repo['78b8bf1']);
+      final from = Commit.lookup(repo: repo, oid: repo['821ed6e']);
       final index = repo.index;
       final file = File(p.join(repo.workdir, 'dir', 'dir_file.txt'));
       expect(index.find('dir/dir_file.txt'), true);
       expect(file.existsSync(), true);
 
-      final revertIndex = repo.revertCommit(revertCommit: from, ourCommit: to);
+      final revertIndex = from.revertTo(commit: to);
       expect(revertIndex.find('dir/dir_file.txt'), false);
       expect(file.existsSync(), true);
 
@@ -110,17 +102,15 @@ void main() {
     test('throws when trying to revert commit and error occurs', () {
       final nullCommit = Commit(nullptr);
       expect(
-        () => repo.revertCommit(
-          revertCommit: nullCommit,
-          ourCommit: nullCommit,
-        ),
+        () => nullCommit.revertTo(commit: nullCommit),
         throwsA(isA<LibGit2Error>()),
       );
     });
 
     test('creates commit', () {
-      final parent = repo.lookupCommit(tip);
-      final oid = repo.createCommit(
+      final parent = Commit.lookup(repo: repo, oid: tip);
+      final oid = Commit.create(
+        repo: repo,
         updateRef: 'HEAD',
         message: message,
         author: author,
@@ -129,7 +119,7 @@ void main() {
         parents: [parent],
       );
 
-      final commit = repo.lookupCommit(oid);
+      final commit = Commit.lookup(repo: repo, oid: oid);
 
       expect(commit.oid, oid);
       expect(commit.message, message);
@@ -150,7 +140,7 @@ void main() {
     });
 
     test('writes commit into the buffer', () {
-      final parent = repo.lookupCommit(tip);
+      final parent = Commit.lookup(repo: repo, oid: tip);
       final commit = Commit.createBuffer(
         repo: repo,
         updateRef: 'HEAD',
@@ -178,7 +168,8 @@ Some description.
     });
 
     test('creates commit without parents', () {
-      final oid = repo.createCommit(
+      final oid = Commit.create(
+        repo: repo,
         updateRef: 'refs/heads/new',
         message: message,
         author: author,
@@ -187,7 +178,7 @@ Some description.
         parents: [],
       );
 
-      final commit = repo.lookupCommit(oid);
+      final commit = Commit.lookup(repo: repo, oid: oid);
 
       expect(commit.oid, oid);
       expect(commit.message, message);
@@ -202,10 +193,8 @@ Some description.
     });
 
     test('creates commit with 2 parents', () {
-      final parent1 = repo.lookupCommit(tip);
-      final parent2 = repo.lookupCommit(
-        repo['fc38877b2552ab554752d9a77e1f48f738cca79b'],
-      );
+      final parent1 = Commit.lookup(repo: repo, oid: tip);
+      final parent2 = Commit.lookup(repo: repo, oid: repo['fc38877']);
 
       final oid = Commit.create(
         updateRef: 'HEAD',
@@ -217,7 +206,7 @@ Some description.
         parents: [parent1, parent2],
       );
 
-      final commit = repo.lookupCommit(oid);
+      final commit = Commit.lookup(repo: repo, oid: oid);
 
       expect(commit.oid, oid);
       expect(commit.message, message);
@@ -236,11 +225,12 @@ Some description.
     });
 
     test('throws when trying to create commit and error occurs', () {
-      final parent = repo.lookupCommit(tip);
+      final parent = Commit.lookup(repo: repo, oid: tip);
       final nullRepo = Repository(nullptr);
 
       expect(
-        () => nullRepo.createCommit(
+        () => Commit.create(
+          repo: nullRepo,
           updateRef: 'HEAD',
           message: message,
           author: author,
@@ -256,7 +246,7 @@ Some description.
 
     test('throws when trying to write commit into a buffer and error occurs',
         () {
-      final parent = repo.lookupCommit(tip);
+      final parent = Commit.lookup(repo: repo, oid: tip);
       final nullRepo = Repository(nullptr);
 
       expect(
@@ -277,15 +267,16 @@ Some description.
 
     test('amends commit with default arguments', () {
       final oldHead = repo.head;
-      final commit = repo.lookupCommit(repo['821ed6e']);
+      final commit = Commit.lookup(repo: repo, oid: repo['821ed6e']);
       expect(commit.oid, oldHead.target);
 
-      final amendedOid = repo.amendCommit(
+      final amendedOid = Commit.amend(
+        repo: repo,
         commit: commit,
         message: 'amended commit\n',
         updateRef: 'HEAD',
       );
-      final amendedCommit = repo.lookupCommit(amendedOid);
+      final amendedCommit = Commit.lookup(repo: repo, oid: amendedOid);
       final newHead = repo.head;
 
       expect(amendedCommit.oid, newHead.target);
@@ -303,10 +294,11 @@ Some description.
 
     test('amends commit with provided arguments', () {
       final oldHead = repo.head;
-      final commit = repo.lookupCommit(repo['821ed6e']);
+      final commit = Commit.lookup(repo: repo, oid: repo['821ed6e']);
       expect(commit.oid, oldHead.target);
 
-      final amendedOid = repo.amendCommit(
+      final amendedOid = Commit.amend(
+        repo: repo,
         commit: commit,
         message: 'amended commit\n',
         updateRef: 'HEAD',
@@ -314,7 +306,7 @@ Some description.
         committer: committer,
         tree: tree,
       );
-      final amendedCommit = repo.lookupCommit(amendedOid);
+      final amendedCommit = Commit.lookup(repo: repo, oid: amendedOid);
       final newHead = repo.head;
 
       expect(amendedCommit.oid, newHead.target);
@@ -332,11 +324,12 @@ Some description.
 
     test('amends commit that is not the tip of the branch', () {
       final head = repo.head;
-      final commit = repo.lookupCommit(repo['78b8bf1']);
+      final commit = Commit.lookup(repo: repo, oid: repo['78b8bf1']);
       expect(commit.oid, isNot(head.target));
 
       expect(
-        () => repo.amendCommit(
+        () => Commit.amend(
+          repo: repo,
           updateRef: null,
           commit: commit,
           message: 'amended commit\n',
@@ -352,11 +345,12 @@ Some description.
         'throws when trying to amend commit that is not the tip of the branch '
         'with HEAD provided as update reference', () {
       final head = repo.head;
-      final commit = repo.lookupCommit(repo['78b8bf1']);
+      final commit = Commit.lookup(repo: repo, oid: repo['78b8bf1']);
       expect(commit.oid, isNot(head.target));
 
       expect(
-        () => repo.amendCommit(
+        () => Commit.amend(
+          repo: repo,
           commit: commit,
           message: 'amended commit\n',
           updateRef: 'HEAD',
@@ -369,7 +363,7 @@ Some description.
     });
 
     test('creates an in-memory copy of a commit', () {
-      final commit = repo.lookupCommit(tip);
+      final commit = Commit.lookup(repo: repo, oid: tip);
       final dupCommit = commit.duplicate();
 
       expect(dupCommit.oid, commit.oid);
@@ -379,7 +373,7 @@ Some description.
     });
 
     test('returns header field', () {
-      final commit = repo.lookupCommit(tip);
+      final commit = Commit.lookup(repo: repo, oid: tip);
       expect(
         commit.headerField('parent'),
         '78b8bf123e3952c970ae5c1ce0a3ea1d1336f6e8',
@@ -388,7 +382,7 @@ Some description.
     });
 
     test('throws when header field not found', () {
-      final commit = repo.lookupCommit(tip);
+      final commit = Commit.lookup(repo: repo, oid: tip);
       expect(
         () => commit.headerField('not-there'),
         throwsA(isA<LibGit2Error>()),
@@ -397,7 +391,7 @@ Some description.
     });
 
     test('returns nth generation ancestor commit', () {
-      final commit = repo.lookupCommit(tip);
+      final commit = Commit.lookup(repo: repo, oid: tip);
       final ancestor = commit.nthGenAncestor(3);
 
       expect(ancestor.oid.sha, 'f17d0d48eae3aa08cecf29128a35e310c97b3521');
@@ -408,15 +402,13 @@ Some description.
 
     test('throws when trying to get nth generation ancestor and none exists',
         () {
-      final commit = repo.lookupCommit(tip);
+      final commit = Commit.lookup(repo: repo, oid: tip);
       expect(() => commit.nthGenAncestor(10), throwsA(isA<LibGit2Error>()));
       commit.free();
     });
 
     test('returns parent at specified position', () {
-      final commit = repo.lookupCommit(
-        repo['78b8bf123e3952c970ae5c1ce0a3ea1d1336f6e8'],
-      );
+      final commit = Commit.lookup(repo: repo, oid: repo['78b8bf1']);
       final firstParent = commit.parent(0);
       final secondParent = commit.parent(1);
 
@@ -429,13 +421,13 @@ Some description.
     });
 
     test('throws when trying to get the parent at invalid position', () {
-      final commit = repo.lookupCommit(tip);
+      final commit = Commit.lookup(repo: repo, oid: tip);
       expect(() => commit.parent(10), throwsA(isA<LibGit2Error>()));
       commit.free();
     });
 
     test('returns string representation of Commit object', () {
-      final commit = repo.lookupCommit(tip);
+      final commit = Commit.lookup(repo: repo, oid: tip);
       expect(commit.toString(), contains('Commit{'));
       commit.free();
     });

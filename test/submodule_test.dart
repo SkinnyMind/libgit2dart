@@ -30,12 +30,12 @@ void main() {
 
   group('Submodule', () {
     test('returns list of all submodules paths', () {
-      expect(repo.submodules.length, 1);
+      expect(Submodule.list(repo).length, 1);
       expect(repo.submodules.first, testSubmodule);
     });
 
     test('finds submodule with provided name/path', () {
-      final submodule = repo.lookupSubmodule(testSubmodule);
+      final submodule = Submodule.lookup(repo: repo, name: testSubmodule);
 
       expect(submodule.name, testSubmodule);
       expect(submodule.path, testSubmodule);
@@ -53,7 +53,7 @@ void main() {
 
     test('throws when trying to lookup and submodule not found', () {
       expect(
-        () => repo.lookupSubmodule('not/there'),
+        () => Submodule.lookup(repo: repo, name: 'not/there'),
         throwsA(isA<LibGit2Error>()),
       );
     });
@@ -63,8 +63,8 @@ void main() {
           p.join(repo.workdir, testSubmodule, 'master.txt');
       expect(File(submoduleFilePath).existsSync(), false);
 
-      repo.initSubmodule(submodule: testSubmodule);
-      repo.updateSubmodule(submodule: testSubmodule);
+      Submodule.init(repo: repo, name: testSubmodule);
+      Submodule.update(repo: repo, name: testSubmodule);
 
       expect(File(submoduleFilePath).existsSync(), true);
     });
@@ -74,22 +74,22 @@ void main() {
           p.join(repo.workdir, testSubmodule, 'master.txt');
       expect(File(submoduleFilePath).existsSync(), false);
 
-      repo.updateSubmodule(submodule: testSubmodule, init: true);
+      Submodule.update(repo: repo, name: testSubmodule, init: true);
 
       expect(File(submoduleFilePath).existsSync(), true);
     });
 
     test('throws when trying to update not initialized submodule', () {
       expect(
-        () => repo.updateSubmodule(submodule: testSubmodule),
+        () => Submodule.update(repo: repo, name: testSubmodule),
         throwsA(isA<LibGit2Error>()),
       );
     });
 
     test('opens repository for a submodule', () {
-      final submodule = repo.lookupSubmodule(testSubmodule);
-      repo.initSubmodule(submodule: testSubmodule);
-      repo.updateSubmodule(submodule: testSubmodule);
+      final submodule = Submodule.lookup(repo: repo, name: testSubmodule);
+      Submodule.init(repo: repo, name: testSubmodule);
+      Submodule.update(repo: repo, name: testSubmodule);
 
       final submoduleRepo = submodule.open();
       final subHead = submoduleRepo.head;
@@ -107,13 +107,14 @@ void main() {
 
     test('throws when trying to open repository for not initialized submodule',
         () {
-      final submodule = repo.lookupSubmodule(testSubmodule);
+      final submodule = Submodule.lookup(repo: repo, name: testSubmodule);
       expect(() => submodule.open(), throwsA(isA<LibGit2Error>()));
       submodule.free();
     });
 
     test('adds submodule', () {
-      final submodule = repo.addSubmodule(
+      final submodule = Submodule.add(
+        repo: repo,
         url: submoduleUrl,
         path: 'test',
       );
@@ -129,7 +130,8 @@ void main() {
 
     test('throws when trying to add submodule with wrong url', () {
       expect(
-        () => repo.addSubmodule(
+        () => Submodule.add(
+          repo: repo,
           url: 'https://wrong.url/',
           path: 'test',
         ),
@@ -139,7 +141,8 @@ void main() {
 
     test('throws when trying to add submodule and error occurs', () {
       expect(
-        () => Repository(nullptr).addSubmodule(
+        () => Submodule.add(
+          repo: Repository(nullptr),
           url: 'https://wrong.url/',
           path: 'test',
         ),
@@ -148,7 +151,7 @@ void main() {
     });
 
     test('sets configuration values', () {
-      final submodule = repo.lookupSubmodule(testSubmodule);
+      final submodule = Submodule.lookup(repo: repo, name: testSubmodule);
       expect(submodule.url, submoduleUrl);
       expect(submodule.branch, '');
       expect(submodule.ignore, GitSubmoduleIgnore.none);
@@ -159,7 +162,10 @@ void main() {
       submodule.ignore = GitSubmoduleIgnore.all;
       submodule.updateRule = GitSubmoduleUpdate.rebase;
 
-      final updatedSubmodule = repo.lookupSubmodule(testSubmodule);
+      final updatedSubmodule = Submodule.lookup(
+        repo: repo,
+        name: testSubmodule,
+      );
       expect(updatedSubmodule.url, 'updated');
       expect(updatedSubmodule.branch, 'updated');
       expect(updatedSubmodule.ignore, GitSubmoduleIgnore.all);
@@ -170,8 +176,8 @@ void main() {
     });
 
     test('syncs', () {
-      repo.updateSubmodule(submodule: testSubmodule, init: true);
-      final submodule = repo.lookupSubmodule(testSubmodule);
+      Submodule.update(repo: repo, name: testSubmodule, init: true);
+      final submodule = Submodule.lookup(repo: repo, name: testSubmodule);
       final submRepo = submodule.open();
       final repoConfig = repo.config;
       final submRepoConfig = submRepo.config;
@@ -182,7 +188,10 @@ void main() {
       submodule.url = 'https://updated.com/';
       submodule.branch = 'updated';
 
-      final updatedSubmodule = repo.lookupSubmodule(testSubmodule);
+      final updatedSubmodule = Submodule.lookup(
+        repo: repo,
+        name: testSubmodule,
+      );
       updatedSubmodule.sync();
       final updatedSubmRepo = updatedSubmodule.open();
       final updatedSubmRepoConfig = updatedSubmRepo.config;
@@ -206,7 +215,7 @@ void main() {
     });
 
     test('reloads info', () {
-      final submodule = repo.lookupSubmodule(testSubmodule);
+      final submodule = Submodule.lookup(repo: repo, name: testSubmodule);
       expect(submodule.url, submoduleUrl);
 
       submodule.url = 'updated';
@@ -218,7 +227,7 @@ void main() {
     });
 
     test('returns status for a submodule', () {
-      final submodule = repo.lookupSubmodule(testSubmodule);
+      final submodule = Submodule.lookup(repo: repo, name: testSubmodule);
       expect(
         submodule.status(),
         {
@@ -229,7 +238,7 @@ void main() {
         },
       );
 
-      repo.updateSubmodule(submodule: testSubmodule, init: true);
+      Submodule.update(repo: repo, name: testSubmodule, init: true);
       expect(
         submodule.status(),
         {

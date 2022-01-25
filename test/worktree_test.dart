@@ -31,9 +31,10 @@ void main() {
 
   group('Worktree', () {
     test('creates worktree at provided path', () {
-      expect(repo.worktrees, <String>[]);
+      expect(Worktree.list(repo), <String>[]);
 
-      final worktree = repo.createWorktree(
+      final worktree = Worktree.create(
+        repo: repo,
         name: worktreeName,
         path: worktreeDir.path,
       );
@@ -54,17 +55,22 @@ void main() {
     });
 
     test('creates worktree at provided path from provided reference', () {
-      final head = repo.revParseSingle('HEAD');
-      final worktreeBranch = repo.createBranch(name: 'v1', target: head);
-      final ref = repo.lookupReference('refs/heads/v1');
+      final head = RevParse.single(repo: repo, spec: 'HEAD');
+      final worktreeBranch = Branch.create(
+        repo: repo,
+        name: 'v1',
+        target: head,
+      );
+      final ref = Reference.lookup(repo: repo, name: 'refs/heads/v1');
       expect(repo.worktrees, <String>[]);
 
-      final worktree = repo.createWorktree(
+      final worktree = Worktree.create(
+        repo: repo,
         name: worktreeName,
         path: worktreeDir.path,
         ref: ref,
       );
-      final branches = repo.branches;
+      final branches = Branch.list(repo: repo);
 
       expect(repo.worktrees, [worktreeName]);
       expect(branches.any((branch) => branch.name == 'v1'), true);
@@ -89,14 +95,16 @@ void main() {
 
     test('throws when trying to create worktree with invalid name or path', () {
       expect(
-        () => repo.createWorktree(
+        () => Worktree.create(
+          repo: repo,
           name: '',
           path: worktreeDir.path,
         ),
         throwsA(isA<LibGit2Error>()),
       );
       expect(
-        () => repo.createWorktree(
+        () => Worktree.create(
+          repo: repo,
           name: 'name',
           path: '',
         ),
@@ -105,11 +113,12 @@ void main() {
     });
 
     test('lookups worktree', () {
-      final worktree = repo.createWorktree(
+      final worktree = Worktree.create(
+        repo: repo,
         name: worktreeName,
         path: worktreeDir.path,
       );
-      final lookedupWorktree = repo.lookupWorktree(worktreeName);
+      final lookedupWorktree = Worktree.lookup(repo: repo, name: worktreeName);
 
       expect(lookedupWorktree.name, worktreeName);
       expect(lookedupWorktree.path, contains('worktree'));
@@ -127,7 +136,8 @@ void main() {
     });
 
     test('locks and unlocks worktree', () {
-      final worktree = repo.createWorktree(
+      final worktree = Worktree.create(
+        repo: repo,
         name: worktreeName,
         path: worktreeDir.path,
       );
@@ -145,7 +155,8 @@ void main() {
     test('prunes worktree', () {
       expect(repo.worktrees, <String>[]);
 
-      final worktree = repo.createWorktree(
+      final worktree = Worktree.create(
+        repo: repo,
         name: worktreeName,
         path: worktreeDir.path,
       );

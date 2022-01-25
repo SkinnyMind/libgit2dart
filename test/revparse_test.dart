@@ -24,13 +24,13 @@ void main() {
 
   group('revParse', () {
     test('.single() returns commit with different spec strings', () {
-      final headCommit = repo.revParseSingle('HEAD');
+      final headCommit = RevParse.single(repo: repo, spec: 'HEAD');
       expect(headCommit.oid.sha, headSHA);
 
-      final parentCommit = repo.revParseSingle('HEAD^');
+      final parentCommit = RevParse.single(repo: repo, spec: 'HEAD^');
       expect(parentCommit.oid.sha, parentSHA);
 
-      final initCommit = repo.revParseSingle('@{-1}');
+      final initCommit = RevParse.single(repo: repo, spec: '@{-1}');
       expect(initCommit.oid.sha, '5aecfa0fb97eadaac050ccb99f03c3fb65460ad4');
 
       headCommit.free();
@@ -40,15 +40,18 @@ void main() {
 
     test('.single() throws when spec string not found or invalid', () {
       expect(
-        () => repo.revParseSingle('invalid'),
+        () => RevParse.single(repo: repo, spec: 'invalid'),
         throwsA(isA<LibGit2Error>()),
       );
-      expect(() => repo.revParseSingle(''), throwsA(isA<LibGit2Error>()));
+      expect(
+        () => RevParse.single(repo: repo, spec: ''),
+        throwsA(isA<LibGit2Error>()),
+      );
     });
 
     test('.ext() returns commit and reference', () {
-      final masterRef = repo.lookupReference('refs/heads/master');
-      var headParse = repo.revParseExt('master');
+      final masterRef = Reference.lookup(repo: repo, name: 'refs/heads/master');
+      var headParse = RevParse.ext(repo: repo, spec: 'master');
 
       expect(headParse.object.oid.sha, headSHA);
       expect(headParse.reference, masterRef);
@@ -58,8 +61,11 @@ void main() {
       headParse.object.free();
       headParse.reference?.free();
 
-      final featureRef = repo.lookupReference('refs/heads/feature');
-      headParse = repo.revParseExt('feature');
+      final featureRef = Reference.lookup(
+        repo: repo,
+        name: 'refs/heads/feature',
+      );
+      headParse = RevParse.ext(repo: repo, spec: 'feature');
 
       expect(
         headParse.object.oid.sha,
@@ -73,7 +79,7 @@ void main() {
     });
 
     test('.ext() returns only commit when no intermidiate reference found', () {
-      final headParse = repo.revParseExt('HEAD^');
+      final headParse = RevParse.ext(repo: repo, spec: 'HEAD^');
 
       expect(headParse.object.oid.sha, parentSHA);
       expect(headParse.reference, isNull);
@@ -83,16 +89,19 @@ void main() {
 
     test('.ext() throws when spec string not found or invalid', () {
       expect(
-        () => repo.revParseExt('invalid'),
+        () => RevParse.ext(repo: repo, spec: 'invalid'),
         throwsA(isA<LibGit2Error>()),
       );
-      expect(() => repo.revParseExt(''), throwsA(isA<LibGit2Error>()));
+      expect(
+        () => RevParse.ext(repo: repo, spec: ''),
+        throwsA(isA<LibGit2Error>()),
+      );
     });
 
     test(
         '.range returns revspec with correct fields values based on '
         'provided spec', () {
-      var revspec = repo.revParse('master');
+      var revspec = RevParse.range(repo: repo, spec: 'master');
 
       expect(revspec.from.oid.sha, headSHA);
       expect(revspec.to, isNull);
@@ -101,7 +110,7 @@ void main() {
 
       revspec.from.free();
 
-      revspec = repo.revParse('HEAD^1..5aecfa');
+      revspec = RevParse.range(repo: repo, spec: 'HEAD^1..5aecfa');
 
       expect(revspec.from.oid.sha, parentSHA);
       expect(revspec.to?.oid.sha, '5aecfa0fb97eadaac050ccb99f03c3fb65460ad4');
@@ -110,7 +119,7 @@ void main() {
       revspec.from.free();
       revspec.to?.free();
 
-      revspec = repo.revParse('HEAD...feature');
+      revspec = RevParse.range(repo: repo, spec: 'HEAD...feature');
 
       expect(revspec.from.oid.sha, headSHA);
       expect(revspec.to?.oid.sha, '5aecfa0fb97eadaac050ccb99f03c3fb65460ad4');
@@ -126,11 +135,11 @@ void main() {
 
     test('throws on invalid range spec', () {
       expect(
-        () => repo.revParse('invalid..5aecfa'),
+        () => RevParse.range(repo: repo, spec: 'invalid..5aecfa'),
         throwsA(isA<LibGit2Error>()),
       );
       expect(
-        () => repo.revParse('master.......5aecfa'),
+        () => RevParse.range(repo: repo, spec: 'master.......5aecfa'),
         throwsA(isA<LibGit2Error>()),
       );
     });

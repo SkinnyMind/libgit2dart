@@ -1,7 +1,6 @@
 import 'dart:ffi';
 
 import 'package:libgit2dart/libgit2dart.dart';
-import 'package:libgit2dart/src/bindings/diff.dart' as diff_bindings;
 import 'package:libgit2dart/src/bindings/libgit2_bindings.dart';
 import 'package:libgit2dart/src/bindings/tree.dart' as bindings;
 
@@ -89,93 +88,6 @@ class Tree {
 
   /// Number of entries listed in a tree.
   int get length => bindings.entryCount(_treePointer);
-
-  /// Creates a diff between a tree and the working directory.
-  ///
-  /// [flags] is a combination of [GitDiff] flags. Defaults to [GitDiff.normal].
-  ///
-  /// [contextLines] is the number of unchanged lines that define the boundary
-  /// of a hunk (and to display before and after). Defaults to 3.
-  ///
-  /// [interhunkLines] is the maximum number of unchanged lines between hunk
-  /// boundaries before the hunks will be merged into one. Defaults to 0.
-  ///
-  /// Throws a [LibGit2Error] if error occured.
-  Diff diffToWorkdir({
-    Set<GitDiff> flags = const {GitDiff.normal},
-    int contextLines = 3,
-    int interhunkLines = 0,
-  }) {
-    return Diff(
-      diff_bindings.treeToWorkdir(
-        repoPointer: bindings.owner(_treePointer),
-        treePointer: _treePointer,
-        flags: flags.fold(0, (acc, e) => acc | e.value),
-        contextLines: contextLines,
-        interhunkLines: interhunkLines,
-      ),
-    );
-  }
-
-  /// Creates a diff between a tree and repository index.
-  ///
-  /// [index] is the [Index] object to diff to.
-  ///
-  /// [flags] is a combination of [GitDiff] flags. Defaults to [GitDiff.normal].
-  ///
-  /// [contextLines] is the number of unchanged lines that define the boundary
-  /// of a hunk (and to display before and after). Defaults to 3.
-  ///
-  /// [interhunkLines] is the maximum number of unchanged lines between hunk
-  /// boundaries before the hunks will be merged into one. Defaults to 0.
-  Diff diffToIndex({
-    required Index index,
-    Set<GitDiff> flags = const {GitDiff.normal},
-    int contextLines = 3,
-    int interhunkLines = 0,
-  }) {
-    return Diff(
-      diff_bindings.treeToIndex(
-        repoPointer: bindings.owner(_treePointer),
-        treePointer: _treePointer,
-        indexPointer: index.pointer,
-        flags: flags.fold(0, (acc, e) => acc | e.value),
-        contextLines: contextLines,
-        interhunkLines: interhunkLines,
-      ),
-    );
-  }
-
-  /// Creates a diff with the difference between two tree objects.
-  ///
-  /// [tree] is the [Tree] object to diff to.
-  ///
-  /// [flags] is a combination of [GitDiff] flags. Defaults to [GitDiff.normal].
-  ///
-  /// [contextLines] is the number of unchanged lines that define the boundary
-  /// of a hunk (and to display before and after). Defaults to 3.
-  ///
-  /// [interhunkLines] is the maximum number of unchanged lines between hunk
-  /// boundaries before the hunks will be merged into one. Defaults to 0.
-  ///
-  /// Throws a [LibGit2Error] if error occured.
-  Diff diffToTree({
-    required Tree tree,
-    Set<GitDiff> flags = const {GitDiff.normal},
-    int contextLines = 3,
-    int interhunkLines = 0,
-  }) {
-    return Diff(
-      diff_bindings.treeToTree(
-        repoPointer: bindings.owner(_treePointer),
-        oldTreePointer: _treePointer,
-        newTreePointer: tree.pointer,
-        flags: flags.fold(0, (acc, e) => acc | e.value),
-        contextLines: contextLines,
-        interhunkLines: interhunkLines,
-      ),
-    );
-  }
 
   /// Releases memory allocated for tree object.
   void free() => bindings.free(_treePointer);

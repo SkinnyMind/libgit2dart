@@ -66,7 +66,7 @@ Pointer<git_diff> indexToWorkdir({
 /// Create a diff between a tree and repository index.
 Pointer<git_diff> treeToIndex({
   required Pointer<git_repository> repoPointer,
-  required Pointer<git_tree> treePointer,
+  required Pointer<git_tree>? treePointer,
   required Pointer<git_index> indexPointer,
   required int flags,
   required int contextLines,
@@ -82,7 +82,7 @@ Pointer<git_diff> treeToIndex({
   libgit2.git_diff_tree_to_index(
     out,
     repoPointer,
-    treePointer,
+    treePointer ?? nullptr,
     indexPointer,
     opts,
   );
@@ -97,7 +97,7 @@ Pointer<git_diff> treeToIndex({
 /// Throws a [LibGit2Error] if error occured.
 Pointer<git_diff> treeToWorkdir({
   required Pointer<git_repository> repoPointer,
-  required Pointer<git_tree> treePointer,
+  required Pointer<git_tree>? treePointer,
   required int flags,
   required int contextLines,
   required int interhunkLines,
@@ -112,7 +112,7 @@ Pointer<git_diff> treeToWorkdir({
   final error = libgit2.git_diff_tree_to_workdir(
     out,
     repoPointer,
-    treePointer,
+    treePointer ?? nullptr,
     opts,
   );
 
@@ -170,8 +170,8 @@ Pointer<git_diff> treeToWorkdirWithIndex({
 /// Throws a [LibGit2Error] if error occured.
 Pointer<git_diff> treeToTree({
   required Pointer<git_repository> repoPointer,
-  required Pointer<git_tree> oldTreePointer,
-  required Pointer<git_tree> newTreePointer,
+  required Pointer<git_tree>? oldTreePointer,
+  required Pointer<git_tree>? newTreePointer,
   required int flags,
   required int contextLines,
   required int interhunkLines,
@@ -186,8 +186,8 @@ Pointer<git_diff> treeToTree({
   final error = libgit2.git_diff_tree_to_tree(
     out,
     repoPointer,
-    oldTreePointer,
-    newTreePointer,
+    oldTreePointer ?? nullptr,
+    newTreePointer ?? nullptr,
     opts,
   );
 

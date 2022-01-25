@@ -96,8 +96,8 @@ index e69de29..0000000
     });
 
     test('creates from blobs', () {
-      final a = repo.lookupBlob(oldBlobOid);
-      final b = repo.lookupBlob(newBlobOid);
+      final a = Blob.lookup(repo: repo, oid: oldBlobOid);
+      final b = Blob.lookup(repo: repo, oid: newBlobOid);
       final patch = Patch.create(
         a: a,
         b: b,
@@ -111,7 +111,7 @@ index e69de29..0000000
     });
 
     test('creates from one blob (add)', () {
-      final b = repo.lookupBlob(newBlobOid);
+      final b = Blob.lookup(repo: repo, oid: newBlobOid);
       final patch = Patch.create(
         a: null,
         b: b,
@@ -125,7 +125,7 @@ index e69de29..0000000
     });
 
     test('creates from one blob (delete)', () {
-      final a = repo.lookupBlob(oldBlobOid);
+      final a = Blob.lookup(repo: repo, oid: oldBlobOid);
       final patch = Patch.create(
         a: a,
         b: null,
@@ -139,7 +139,7 @@ index e69de29..0000000
     });
 
     test('creates from blob and buffer', () {
-      final a = repo.lookupBlob(oldBlobOid);
+      final a = Blob.lookup(repo: repo, oid: oldBlobOid);
       final patch = Patch.create(
         a: a,
         b: newBlob,
@@ -153,9 +153,8 @@ index e69de29..0000000
     });
 
     test('throws when argument is not Blob or String', () {
-      final commit = repo.lookupCommit(
-        repo['fc38877b2552ab554752d9a77e1f48f738cca79b'],
-      );
+      final commit = Commit.lookup(repo: repo, oid: repo['fc38877']);
+
       expect(
         () => Patch.create(
           a: commit,
