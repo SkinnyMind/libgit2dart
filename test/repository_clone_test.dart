@@ -72,7 +72,7 @@ void main() {
 
     test('clones repository with provided remote callback', () {
       Remote remote(Repository repo, String name, String url) =>
-          repo.createRemote(name: 'test', url: tmpDir.path);
+          Remote.create(repo: repo, name: 'test', url: tmpDir.path);
 
       final clonedRepo = Repository.clone(
         url: tmpDir.path,
@@ -90,7 +90,7 @@ void main() {
 
     test('throws when cloning repository with invalid remote callback', () {
       Remote remote(Repository repo, String name, String url) =>
-          repo.createRemote(name: '', url: '');
+          Remote.create(repo: repo, name: '', url: '');
 
       expect(
         () => Repository.clone(

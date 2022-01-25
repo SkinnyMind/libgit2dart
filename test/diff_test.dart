@@ -177,7 +177,7 @@ index e69de29..c217c63 100644
 
     test('returns diff between tree and workdir with index', () {
       final head = repo.head;
-      final commit = repo.lookupCommit(head.target);
+      final commit = Commit.lookup(repo: repo, oid: head.target);
       final tree = commit.tree;
 
       final diff = Diff.treeToWorkdirWithIndex(repo: repo, tree: tree);

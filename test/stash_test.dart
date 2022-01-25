@@ -56,7 +56,7 @@ void main() {
       expect(repo.status.isEmpty, true);
       expect(swpPath.existsSync(), false);
 
-      repo.applyStash();
+      Stash.apply(repo: repo);
       expect(swpPath.existsSync(), true);
     });
 
@@ -131,7 +131,7 @@ void main() {
       final stash = repo.stashes.first;
       Stash.drop(repo: repo, index: stash.index);
 
-      expect(() => repo.applyStash(), throwsA(isA<LibGit2Error>()));
+      expect(() => Stash.apply(repo: repo), throwsA(isA<LibGit2Error>()));
     });
 
     test('throws when trying to drop with wrong index', () {

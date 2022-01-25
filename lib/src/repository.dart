@@ -5,7 +5,6 @@ import 'package:libgit2dart/libgit2dart.dart';
 
 import 'package:libgit2dart/src/bindings/attr.dart' as attr_bindings;
 import 'package:libgit2dart/src/bindings/checkout.dart' as checkout_bindings;
-import 'package:libgit2dart/src/bindings/commit.dart' as commit_bindings;
 import 'package:libgit2dart/src/bindings/describe.dart' as describe_bindings;
 import 'package:libgit2dart/src/bindings/graph.dart' as graph_bindings;
 import 'package:libgit2dart/src/bindings/libgit2_bindings.dart';
@@ -398,96 +397,6 @@ class Repository {
   /// **IMPORTANT**: Should be freed to release allocated memory.
   Reference get head => Reference(bindings.head(_repoPointer));
 
-  /// List of all the references names that can be found in a repository.
-  ///
-  /// Throws a [LibGit2Error] if error occured.
-  List<String> get references => Reference.list(this);
-
-  /// Lookups reference [name] in a repository.
-  ///
-  /// The [name] will be checked for validity.
-  ///
-  /// **IMPORTANT**: Should be freed to release allocated memory.
-  ///
-  /// Throws a [LibGit2Error] if error occured.
-  Reference lookupReference(String name) {
-    return Reference.lookup(repo: this, name: name);
-  }
-
-  /// Creates a new reference for provided [target].
-  ///
-  /// The reference will be created in the repository and written to the disk.
-  ///
-  /// **IMPORTANT**: The generated [Reference] object should be freed to release
-  /// allocated memory.
-  ///
-  /// Valid reference [name]s must follow one of two patterns:
-  /// - Top-level names must contain only capital letters and underscores, and
-  /// must begin and end with a letter. (e.g. "HEAD", "ORIG_HEAD").
-  /// - Names prefixed with "refs/" can be almost anything. You must avoid the characters
-  /// '~', '^', ':', '\', '?', '[', and '*', and the sequences ".." and "@{" which have
-  /// special meaning to revparse.
-  ///
-  /// Throws a [LibGit2Error] if a reference already exists with the given
-  /// [name] unless [force] is true, in which case it will be overwritten.
-  ///
-  /// The [logMessage] message for the reflog will be ignored if the reference
-  /// does not belong in the standard set (HEAD, branches and remote-tracking
-  /// branches) and it does not have a reflog.
-  ///
-  /// Throws a [LibGit2Error] if error occured or [ArgumentError] if provided
-  /// [target] is not Oid or String reference name.
-  Reference createReference({
-    required String name,
-    required Object target,
-    bool force = false,
-    String? logMessage,
-  }) {
-    return Reference.create(
-      repo: this,
-      name: name,
-      target: target,
-      force: force,
-      logMessage: logMessage,
-    );
-  }
-
-  /// Deletes an existing reference with provided [name].
-  ///
-  /// This method works for both direct and symbolic references.
-  ///
-  /// Throws a [LibGit2Error] if error occured.
-  void deleteReference(String name) => Reference.delete(repo: this, name: name);
-
-  /// Renames an existing reference with provided [oldName].
-  ///
-  /// This method works for both direct and symbolic references.
-  ///
-  /// The [newName] will be checked for validity.
-  ///
-  /// If the [force] flag is set to false, and there's already a reference with
-  /// the given name, the renaming will fail.
-  ///
-  /// IMPORTANT: The user needs to write a proper reflog entry [logMessage] if
-  /// the reflog is enabled for the repository. We only rename the reflog if it
-  /// exists.
-  ///
-  /// Throws a [LibGit2Error] if error occured.
-  void renameReference({
-    required String oldName,
-    required String newName,
-    bool force = false,
-    String? logMessage,
-  }) {
-    Reference.rename(
-      repo: this,
-      oldName: oldName,
-      newName: newName,
-      force: force,
-      logMessage: logMessage,
-    );
-  }
-
   /// Index file for this repository.
   ///
   /// **IMPORTANT**: Should be freed to release allocated memory.
@@ -500,12 +409,52 @@ class Repository {
   /// Throws a [LibGit2Error] if error occured.
   Odb get odb => Odb(bindings.odb(_repoPointer));
 
-  /// Lookups a tree object for provided [oid].
+  /// List of all the references names that can be found in a repository.
   ///
-  /// **IMPORTANT**: Should be freed to release allocated memory.
-  Tree lookupTree(Oid oid) {
-    return Tree.lookup(repo: this, oid: oid);
-  }
+  /// Throws a [LibGit2Error] if error occured.
+  List<String> get references => Reference.list(this);
+
+  /// List with all the tags names in the repository.
+  ///
+  /// Throws a [LibGit2Error] if error occured.
+  List<String> get tags => Tag.list(this);
+
+  /// List of all branches that can be found in a repository.
+  ///
+  /// **IMPORTANT**: Branches should be freed to release allocated memory.
+  ///
+  /// Throws a [LibGit2Error] if error occured.
+  List<Branch> get branches => Branch.list(repo: this);
+
+  /// List of local branches that can be found in a repository.
+  ///
+  /// **IMPORTANT**: Branches should be freed to release allocated memory.
+  ///
+  /// Throws a [LibGit2Error] if error occured.
+  List<Branch> get branchesLocal =>
+      Branch.list(repo: this, type: GitBranch.local);
+
+  /// List of remote branches that can be found in a repository.
+  ///
+  /// **IMPORTANT**: Branches should be freed to release allocated memory.
+  ///
+  /// Throws a [LibGit2Error] if error occured.
+  List<Branch> get branchesRemote =>
+      Branch.list(repo: this, type: GitBranch.remote);
+
+  /// List of all the stashed states, first being the most recent.
+  List<Stash> get stashes => Stash.list(this);
+
+  /// List of the configured remotes names for a repository.
+  List<String> get remotes => Remote.list(this);
+
+  /// List with all tracked submodules paths of a repository.
+  List<String> get submodules => Submodule.list(this);
+
+  /// List of linked working trees names.
+  ///
+  /// Throws a [LibGit2Error] if error occured.
+  List<String> get worktrees => Worktree.list(this);
 
   /// Creates a new action signature with default user and now timestamp.
   ///
@@ -533,400 +482,6 @@ class Repository {
     walker.free();
 
     return result;
-  }
-
-  /// Finds a single object, as specified by a [spec] revision string.
-  /// See `man gitrevisions`, or https://git-scm.com/docs/git-rev-parse.html#_specifying_revisions
-  /// for information on the syntax accepted.
-  ///
-  /// **IMPORTANT**: Should be freed to release allocated memory.
-  ///
-  /// Throws a [LibGit2Error] if error occured.
-  Commit revParseSingle(String spec) {
-    return RevParse.single(repo: this, spec: spec);
-  }
-
-  /// Lookups commit object for provided [oid].
-  ///
-  /// **IMPORTANT**: Should be freed to release allocated memory.
-  Commit lookupCommit(Oid oid) {
-    return Commit.lookup(repo: this, oid: oid);
-  }
-
-  /// Creates new commit in the repository.
-  ///
-  /// [updateRef] is the name of the reference that will be updated to point to
-  /// this commit. If the reference is not direct, it will be resolved to a
-  /// direct reference. Use "HEAD" to update the HEAD of the current branch and
-  /// make it point to this commit. If the reference doesn't exist yet, it will
-  /// be created. If it does exist, the first parent must be the tip of this
-  /// branch.
-  ///
-  /// [author] is the signature with author and author time of commit.
-  ///
-  /// [committer] is the signature with committer and commit time of commit.
-  ///
-  /// [messageEncoding] is the encoding for the message in the commit,
-  /// represented with a standard encoding name. E.g. "UTF-8". If null, no
-  /// encoding header is written and UTF-8 is assumed.
-  ///
-  /// [message] is the full message for this commit.
-  ///
-  /// [tree] is an instance of a [Tree] object that will be used as the tree
-  /// for the commit.
-  ///
-  /// [parents] is a list of [Commit] objects that will be used as the parents
-  /// for this commit. This list may be empty if parent count is 0 (root
-  /// commit). All the given commits must be owned by the repo.
-  ///
-  /// Throws a [LibGit2Error] if error occured.
-  Oid createCommit({
-    required String updateRef,
-    required String message,
-    required Signature author,
-    required Signature committer,
-    required Tree tree,
-    required List<Commit> parents,
-    String? messageEncoding,
-  }) {
-    return Commit.create(
-      repo: this,
-      updateRef: updateRef,
-      message: message,
-      author: author,
-      committer: committer,
-      tree: tree,
-      parents: parents,
-      messageEncoding: messageEncoding,
-    );
-  }
-
-  /// Amends an existing commit by replacing only non-null values.
-  ///
-  /// This creates a new commit that is exactly the same as the old commit,
-  /// except that any non-null values will be updated. The new commit has the
-  /// same parents as the old commit.
-  ///
-  /// The [updateRef] value works as in the regular [create], updating the ref
-  /// to point to the newly rewritten commit. If you want to amend a commit
-  /// that is not currently the tip of the branch and then rewrite the
-  /// following commits to reach a ref, pass this as null and update the rest
-  /// of the commit chain and ref separately.
-  ///
-  /// Unlike [create], the [author], [committer], [message], [messageEncoding],
-  /// and [tree] arguments can be null in which case this will use the values
-  /// from the original [commit].
-  ///
-  /// All arguments have the same meanings as in [create].
-  ///
-  /// Throws a [LibGit2Error] if error occured.
-  Oid amendCommit({
-    required Commit commit,
-    required String? updateRef,
-    Signature? author,
-    Signature? committer,
-    Tree? tree,
-    String? message,
-    String? messageEncoding,
-  }) {
-    return Commit.amend(
-      repo: this,
-      commit: commit,
-      updateRef: updateRef,
-      author: author,
-      committer: committer,
-      tree: tree,
-      message: message,
-      messageEncoding: messageEncoding,
-    );
-  }
-
-  /// Reverts provided [revertCommit] against provided [ourCommit], producing
-  /// an index that reflects the result of the revert.
-  ///
-  /// [mainline] is parent of the [revertCommit] if it is a merge (i.e. 1, 2).
-  ///
-  /// **IMPORTANT**: produced index should be freed to release allocated memory.
-  ///
-  /// Throws a [LibGit2Error] if error occured.
-  Index revertCommit({
-    required Commit revertCommit,
-    required Commit ourCommit,
-    int mainline = 0,
-  }) {
-    return Index(
-      commit_bindings.revertCommit(
-        repoPointer: _repoPointer,
-        revertCommitPointer: revertCommit.pointer,
-        ourCommitPointer: ourCommit.pointer,
-        mainline: mainline,
-      ),
-    );
-  }
-
-  /// Reverts the given [commit], producing changes in the index and working
-  /// directory.
-  ///
-  /// Throws a [LibGit2Error] if error occured.
-  void revert(Commit commit) {
-    commit_bindings.revert(
-      repoPointer: _repoPointer,
-      commitPointer: commit.pointer,
-    );
-  }
-
-  /// Finds a single object and intermediate reference (if there is one) by a
-  /// [spec] revision string.
-  ///
-  /// See `man gitrevisions`, or https://git-scm.com/docs/git-rev-parse.html#_specifying_revisions
-  /// for information on the syntax accepted.
-  ///
-  /// In some cases (@{<-n>} or <branchname>@{upstream}), the expression may
-  /// point to an intermediate reference. When such expressions are being
-  /// passed in, reference_out will be valued as well.
-  ///
-  /// **IMPORTANT**: the returned object and reference should be released when
-  /// no longer needed.
-  ///
-  /// Throws a [LibGit2Error] if error occured.
-  RevParse revParseExt(String spec) {
-    return RevParse.ext(repo: this, spec: spec);
-  }
-
-  /// Parses a revision string for from, to, and intent.
-  ///
-  /// See `man gitrevisions` or https://git-scm.com/docs/git-rev-parse.html#_specifying_revisions
-  /// for information on the syntax accepted.
-  ///
-  /// Throws a [LibGit2Error] if error occured.
-  RevSpec revParse(String spec) {
-    return RevParse.range(repo: this, spec: spec);
-  }
-
-  /// Lookups a blob object for provided [oid].
-  ///
-  /// Should be freed to release allocated memory.
-  Blob lookupBlob(Oid oid) {
-    return Blob.lookup(repo: this, oid: oid);
-  }
-
-  /// Creates a new blob from a [content] string and writes it to ODB.
-  ///
-  /// Throws a [LibGit2Error] if error occured.
-  Oid createBlob(String content) => Blob.create(repo: this, content: content);
-
-  /// Creates a new blob from the file in working directory of a repository and
-  /// writes it to the ODB. Provided [relativePath] should be relative to the
-  /// working directory.
-  ///
-  /// Throws a [LibGit2Error] if error occured.
-  Oid createBlobFromWorkdir(String relativePath) {
-    return Blob.createFromWorkdir(
-      repo: this,
-      relativePath: relativePath,
-    );
-  }
-
-  /// Creates a new blob from the file at provided [path] in filesystem and
-  /// writes it to the ODB.
-  ///
-  /// Throws a [LibGit2Error] if error occured.
-  Oid createBlobFromDisk(String path) {
-    return Blob.createFromDisk(repo: this, path: path);
-  }
-
-  /// List with all the tags names in the repository.
-  ///
-  /// Throws a [LibGit2Error] if error occured.
-  List<String> get tags => Tag.list(this);
-
-  /// Lookups tag object for provided [oid].
-  ///
-  /// **IMPORTANT**: Should be freed to release allocated memory.
-  Tag lookupTag(Oid oid) => Tag.lookup(repo: this, oid: oid);
-
-  /// Creates a new annotated tag in the repository for provided [target]
-  /// object.
-  ///
-  /// A new reference will also be created in the `/refs/tags` folder pointing
-  /// to this tag object. If [force] is true and a reference already exists
-  /// with the given name, it'll be replaced.
-  ///
-  /// The [tagName] will be checked for validity. You must avoid the characters
-  /// '~', '^', ':', '\', '?', '[', and '*', and the sequences ".." and "@{" which have
-  /// special meaning to revparse.
-  ///
-  /// [tagName] is the name for the tag. This name is validated for
-  /// consistency. It should also not conflict with an already existing tag
-  /// name.
-  ///
-  /// [target] is the object to which this tag points. This object must belong
-  /// to the given [repo].
-  ///
-  /// [targetType] is one of the [GitObject] basic types: commit, tree, blob or
-  /// tag.
-  ///
-  /// [tagger] is the signature of the tagger for this tag, and of the tagging
-  /// time.
-  ///
-  /// [message] is the full message for this tag.
-  ///
-  /// [force] determines whether existing reference with the same [tagName]
-  /// should be replaced.
-  ///
-  /// Throws a [LibGit2Error] if error occured.
-  Oid createAnnotatedTag({
-    required String tagName,
-    required Oid target,
-    required GitObject targetType,
-    required Signature tagger,
-    required String message,
-    bool force = false,
-  }) {
-    return Tag.createAnnotated(
-      repo: this,
-      tagName: tagName,
-      target: target,
-      targetType: targetType,
-      tagger: tagger,
-      message: message,
-      force: force,
-    );
-  }
-
-  /// Creates a new lightweight tag in the repository for provided [target]
-  /// object.
-  ///
-  /// A new reference will also be created in the `/refs/tags` folder pointing
-  /// to this tag object. If [force] is true and a reference already exists
-  /// with the given name, it'll be replaced.
-  ///
-  /// The [tagName] will be checked for validity. You must avoid the characters
-  /// '~', '^', ':', '\', '?', '[', and '*', and the sequences ".." and "@{" which have
-  /// special meaning to revparse.
-  ///
-  /// [tagName] is the name for the tag. This name is validated for
-  /// consistency. It should also not conflict with an already existing tag
-  /// name.
-  ///
-  /// [target] is the object to which this tag points. This object must belong
-  /// to the given [repo].
-  ///
-  /// [targetType] is one of the [GitObject] basic types: commit, tree, blob or
-  /// tag.
-  ///
-  /// [force] determines whether existing reference with the same [tagName]
-  /// should be replaced.
-  ///
-  /// Throws a [LibGit2Error] if error occured.
-  void createLightweightTag({
-    required String tagName,
-    required Oid target,
-    required GitObject targetType,
-    bool force = false,
-  }) {
-    Tag.createLightweight(
-      repo: this,
-      tagName: tagName,
-      target: target,
-      targetType: targetType,
-      force: force,
-    );
-  }
-
-  /// Deletes an existing tag reference with provided [name].
-  ///
-  /// The tag [name] will be checked for validity.
-  ///
-  /// Throws a [LibGit2Error] if error occured.
-  void deleteTag(String name) => Tag.delete(repo: this, name: name);
-
-  /// List of all branches that can be found in a repository.
-  ///
-  /// **IMPORTANT**: Branches should be freed to release allocated memory.
-  ///
-  /// Throws a [LibGit2Error] if error occured.
-  List<Branch> get branches => Branch.list(repo: this);
-
-  /// List of local branches that can be found in a repository.
-  ///
-  /// **IMPORTANT**: Branches should be freed to release allocated memory.
-  ///
-  /// Throws a [LibGit2Error] if error occured.
-  List<Branch> get branchesLocal =>
-      Branch.list(repo: this, type: GitBranch.local);
-
-  /// List of remote branches that can be found in a repository.
-  ///
-  /// **IMPORTANT**: Branches should be freed to release allocated memory.
-  ///
-  /// Throws a [LibGit2Error] if error occured.
-  List<Branch> get branchesRemote =>
-      Branch.list(repo: this, type: GitBranch.remote);
-
-  /// Lookups a branch by its [name] and [type] in a repository.
-  ///
-  /// The branch [name] will be checked for validity.
-  ///
-  /// If branch [type] is [GitBranch.remote] you must include the remote name
-  /// in the [name] (e.g. "origin/master").
-  ///
-  /// **IMPORTANT**: Branches should be freed to release allocated memory.
-  ///
-  /// Throws a [LibGit2Error] if error occured.
-  Branch lookupBranch({
-    required String name,
-    GitBranch type = GitBranch.local,
-  }) {
-    return Branch.lookup(repo: this, name: name, type: type);
-  }
-
-  /// Creates a new branch pointing at a [target] commit.
-  ///
-  /// A new direct reference will be created pointing to this target commit.
-  /// If [force] is true and a reference already exists with the given name,
-  /// it'll be replaced.
-  ///
-  /// [name] is the name for the branch, this name is validated for consistency.
-  /// It should also not conflict with an already existing branch name.
-  ///
-  /// [target] is the commit to which this branch should point. This object must
-  /// belong to the repo.
-  ///
-  /// **IMPORTANT**: Should be freed to release allocated memory.
-  ///
-  /// Throws a [LibGit2Error] if error occured.
-  Branch createBranch({
-    required String name,
-    required Commit target,
-    bool force = false,
-  }) {
-    return Branch.create(
-      repo: this,
-      name: name,
-      target: target,
-      force: force,
-    );
-  }
-
-  /// Deletes an existing branch reference with provided [name].
-  ///
-  /// Throws a [LibGit2Error] if error occured.
-  void deleteBranch(String name) => Branch.delete(repo: this, name: name);
-
-  /// Renames an existing local branch reference with provided [oldName].
-  ///
-  /// The new branch name [newName] will be checked for validity.
-  ///
-  /// If [force] is true, existing branch will be overwritten.
-  ///
-  /// Throws a [LibGit2Error] if error occured.
-  void renameBranch({
-    required String oldName,
-    required String newName,
-    bool force = false,
-  }) {
-    Branch.rename(repo: this, oldName: oldName, newName: newName, force: force);
   }
 
   /// Status of the repository.
@@ -1042,7 +597,7 @@ class Repository {
     required Oid theirHead,
     String ourRef = 'HEAD',
   }) {
-    final ref = lookupReference(ourRef);
+    final ref = Reference.lookup(repo: this, name: ourRef);
     final head = AnnotatedCommit.lookup(
       repo: this,
       oid: theirHead,
@@ -1323,7 +878,7 @@ class Repository {
         paths: paths,
       );
     } else if (target is String) {
-      final ref = lookupReference(target);
+      final ref = Reference.lookup(repo: this, name: target);
       final treeish = object_bindings.lookup(
         repoPointer: _repoPointer,
         oidPointer: ref.target.pointer,
@@ -1409,173 +964,6 @@ class Repository {
     );
   }
 
-  /// Returns list of all the stashed states, first being the most recent.
-  List<Stash> get stashes => Stash.list(this);
-
-  /// Saves the local modifications to a new stash.
-  ///
-  /// [stasher] is the identity of the person performing the stashing.
-  ///
-  /// [message] is optional description along with the stashed state.
-  ///
-  /// [flags] is a combination of [GitStash] flags. Defaults to
-  /// [GitStash.defaults].
-  ///
-  /// Throws a [LibGit2Error] if error occured.
-  Oid createStash({
-    required Signature stasher,
-    String? message,
-    Set<GitStash> flags = const {GitStash.defaults},
-  }) {
-    return Stash.create(
-      repo: this,
-      stasher: stasher,
-      message: message,
-      flags: flags,
-    );
-  }
-
-  /// Applies a single stashed state from the stash list.
-  ///
-  /// [index] is the position of the stashed state in the list. Defaults to
-  /// last saved.
-  ///
-  /// [reinstateIndex] whether to try to reinstate not only the working tree's
-  /// changes, but also the index's changes.
-  ///
-  /// [strategy] is a combination of [GitCheckout] flags. Defaults to
-  /// [GitCheckout.safe] with [GitCheckout.recreateMissing].
-  ///
-  /// [directory] is the alternative checkout path to workdir, can be null.
-  ///
-  /// [paths] is a list of wildmatch patterns or paths. By default, all paths
-  /// are processed. If you pass a list of wildmatch patterns, those will be
-  /// used to filter which paths should be taken into account.
-  ///
-  /// Throws a [LibGit2Error] if error occured.
-  void applyStash({
-    int index = 0,
-    bool reinstateIndex = false,
-    Set<GitCheckout> strategy = const {
-      GitCheckout.safe,
-      GitCheckout.recreateMissing
-    },
-    String? directory,
-    List<String>? paths,
-  }) {
-    Stash.apply(
-      repo: this,
-      index: index,
-      reinstateIndex: reinstateIndex,
-      strategy: strategy,
-      directory: directory,
-      paths: paths,
-    );
-  }
-
-  /// Removes a single stashed state from the stash list at provided [index].
-  /// Defaults to the last saved stash.
-  ///
-  /// Throws a [LibGit2Error] if error occured.
-  void dropStash({int index = 0}) {
-    Stash.drop(repo: this, index: index);
-  }
-
-  /// Applies a single stashed state from the stash list and remove it from
-  /// the list if successful.
-  ///
-  /// [index] is the position of the stashed state in the list. Defaults to
-  /// last saved.
-  ///
-  /// [reinstateIndex] whether to try to reinstate not only the working tree's
-  /// changes, but also the index's changes.
-  ///
-  /// [strategy] is a combination of [GitCheckout] flags. Defaults to
-  /// [GitCheckout.safe] with [GitCheckout.recreateMissing].
-  ///
-  /// [directory] is the alternative checkout path to workdir, can be null.
-  ///
-  /// [paths] is a list of wildmatch patterns or paths. By default, all paths
-  /// are processed. If you pass a list of wildmatch patterns, those will be
-  /// used to filter which paths should be taken into account.
-  ///
-  /// Throws a [LibGit2Error] if error occured.
-  void popStash({
-    int index = 0,
-    bool reinstateIndex = false,
-    Set<GitCheckout> strategy = const {
-      GitCheckout.safe,
-      GitCheckout.recreateMissing
-    },
-    String? directory,
-    List<String>? paths,
-  }) {
-    Stash.pop(
-      repo: this,
-      index: index,
-      reinstateIndex: reinstateIndex,
-      strategy: strategy,
-      directory: directory,
-      paths: paths,
-    );
-  }
-
-  /// List of the configured remotes names for a repository.
-  List<String> get remotes => Remote.list(this);
-
-  /// Lookups remote with provided [name].
-  ///
-  /// The [name] will be checked for validity.
-  ///
-  /// **IMPORTANT**: Should be freed to release allocated memory.
-  ///
-  /// Throws a [LibGit2Error] if error occured.
-  Remote lookupRemote(String name) {
-    return Remote.lookup(repo: this, name: name);
-  }
-
-  /// Adds remote with provided [name] and [url] to the repository's
-  /// configuration with the default [fetch] refspec if none provided.
-  ///
-  /// **IMPORTANT**: Should be freed to release allocated memory.
-  ///
-  /// Throws a [LibGit2Error] if error occured.
-  Remote createRemote({
-    required String name,
-    required String url,
-    String? fetch,
-  }) {
-    return Remote.create(repo: this, name: name, url: url, fetch: fetch);
-  }
-
-  /// Deletes an existing persisted remote with provided [name].
-  ///
-  /// All remote-tracking branches and configuration settings for the remote
-  /// will be removed.
-  ///
-  /// Throws a [LibGit2Error] if error occured.
-  void deleteRemote(String name) => Remote.delete(repo: this, name: name);
-
-  /// Renames remote with provided [oldName].
-  ///
-  /// Returns list of non-default refspecs that cannot be renamed.
-  ///
-  /// All remote-tracking branches and configuration settings for the remote
-  /// are updated.
-  ///
-  /// The [newName] will be checked for validity.
-  ///
-  /// No loaded instances of a the remote with the old name will change their
-  /// name or their list of refspecs.
-  ///
-  /// Throws a [LibGit2Error] if error occured.
-  List<String> renameRemote({
-    required String oldName,
-    required String newName,
-  }) {
-    return Remote.rename(repo: this, oldName: oldName, newName: newName);
-  }
-
   /// Lookups the value of one git attribute with provided [name] for [path].
   ///
   /// Returned value can be either `true`, `false`, `null` (if the attribute
@@ -1591,135 +979,6 @@ class Repository {
       flags: flags.fold(0, (acc, e) => acc | e.value),
       path: path,
       name: name,
-    );
-  }
-
-  /// Returns the blame for a single file.
-  ///
-  /// [path] is the path to file to consider.
-  ///
-  /// [flags] is a combination of [GitBlameFlag]s. Defaults to
-  /// [GitBlameFlag.normal].
-  ///
-  /// [minMatchCharacters] is the lower bound on the number of alphanumeric
-  /// characters that must be detected as moving/copying within a file for
-  /// it to associate those lines with the parent commit. The default value is
-  /// 20. This value only takes effect if any of the [GitBlameFlag.trackCopies*]
-  /// flags are specified.
-  ///
-  /// [newestCommit] is the id of the newest commit to consider. The default is
-  /// HEAD.
-  ///
-  /// [oldestCommit] is the id of the oldest commit to consider. The default is
-  /// the first commit encountered with no parent.
-  ///
-  /// [minLine] is the first line in the file to blame. The default is 1
-  /// (line numbers start with 1).
-  ///
-  /// [maxLine] is the last line in the file to blame. The default is the last
-  /// line of the file.
-  ///
-  /// **IMPORTANT**: Should be freed to release allocated memory.
-  ///
-  /// Throws a [LibGit2Error] if error occured.
-  Blame blame({
-    required String path,
-    Set<GitBlameFlag> flags = const {GitBlameFlag.normal},
-    int? minMatchCharacters,
-    Oid? newestCommit,
-    Oid? oldestCommit,
-    int? minLine,
-    int? maxLine,
-  }) {
-    return Blame.file(
-      repo: this,
-      path: path,
-      flags: flags,
-      minMatchCharacters: minMatchCharacters,
-      newestCommit: newestCommit,
-      oldestCommit: oldestCommit,
-      minLine: minLine,
-      maxLine: maxLine,
-    );
-  }
-
-  /// Lookups the note for an [annotatedOid].
-  ///
-  /// [annotatedOid] is the [Oid] of the git object to read the note from.
-  ///
-  /// [notesRef] is the canonical name of the reference to use. Defaults to "refs/notes/commits".
-  ///
-  /// **IMPORTANT**: Should be freed to release allocated memory.
-  ///
-  /// Throws a [LibGit2Error] if error occured.
-  Note lookupNote({
-    required Oid annotatedOid,
-    String notesRef = 'refs/notes/commits',
-  }) {
-    return Note.lookup(
-      repo: this,
-      annotatedOid: annotatedOid,
-      notesRef: notesRef,
-    );
-  }
-
-  /// Creates a note for an [annotatedOid].
-  ///
-  /// [author] is the signature of the note's commit author.
-  ///
-  /// [committer] is the signature of the note's commit committer.
-  ///
-  /// [annotatedOid] is the [Oid] of the git object to decorate.
-  ///
-  /// [note] is the content of the note to add.
-  ///
-  /// [notesRef] is the canonical name of the reference to use. Defaults to "refs/notes/commits".
-  ///
-  /// [force] determines whether existing note should be overwritten.
-  ///
-  /// Throws a [LibGit2Error] if error occured.
-  Oid createNote({
-    required Signature author,
-    required Signature committer,
-    required Oid annotatedOid,
-    required String note,
-    String notesRef = 'refs/notes/commits',
-    bool force = false,
-  }) {
-    return Note.create(
-      repo: this,
-      author: author,
-      committer: committer,
-      annotatedOid: annotatedOid,
-      note: note,
-      notesRef: notesRef,
-      force: force,
-    );
-  }
-
-  /// Deletes the note for an [annotatedOid].
-  ///
-  /// [annotatedOid] is the [Oid] of the git object to remove the note from.
-  ///
-  /// [author] is the signature of the note's commit author.
-  ///
-  /// [committer] is the signature of the note's commit committer.
-  ///
-  /// [notesRef] is the canonical name of the reference to use. Defaults to "refs/notes/commits".
-  ///
-  /// Throws a [LibGit2Error] if error occured.
-  void deleteNote({
-    required Oid annotatedOid,
-    required Signature author,
-    required Signature committer,
-    String notesRef = 'refs/notes/commits',
-  }) {
-    Note.delete(
-      repo: this,
-      annotatedOid: annotatedOid,
-      author: author,
-      committer: committer,
-      notesRef: notesRef,
     );
   }
 
@@ -1871,122 +1130,5 @@ class Repository {
     packbuilder.free();
 
     return result;
-  }
-
-  /// List with all tracked submodules paths of a repository.
-  List<String> get submodules => Submodule.list(this);
-
-  /// Lookups submodule information by [name] or path (they are usually the
-  /// same).
-  ///
-  /// **IMPORTANT**: Should be freed to release allocated memory.
-  ///
-  /// Throws a [LibGit2Error] if error occured.
-  Submodule lookupSubmodule(String name) {
-    return Submodule.lookup(repo: this, name: name);
-  }
-
-  /// Copies submodule info into ".git/config" file.
-  ///
-  /// Just like `git submodule init`, this copies information about the
-  /// submodule into ".git/config".
-  ///
-  /// By default, existing entries will not be overwritten, but setting
-  /// [overwrite] to true forces them to be updated.
-  ///
-  /// Throws a [LibGit2Error] if error occured.
-  void initSubmodule({
-    required String submodule,
-    bool overwrite = false,
-  }) {
-    Submodule.init(repo: this, name: submodule, overwrite: overwrite);
-  }
-
-  /// Updates a submodule. This will clone a missing submodule and checkout the
-  /// subrepository to the commit specified in the index of the containing
-  /// repository. If the submodule repository doesn't contain the target commit
-  /// (e.g. because fetchRecurseSubmodules isn't set), then the submodule is
-  /// fetched using the fetch options supplied in [callbacks].
-  ///
-  /// If the submodule is not initialized, setting [init] to true will
-  /// initialize the submodule before updating. Otherwise, this will return an
-  /// error if attempting to update an uninitialzed repository.
-  ///
-  /// Throws a [LibGit2Error] if error occured.
-  void updateSubmodule({
-    required String submodule,
-    bool init = false,
-    Callbacks callbacks = const Callbacks(),
-  }) {
-    Submodule.update(
-      repo: this,
-      name: submodule,
-      init: init,
-      callbacks: callbacks,
-    );
-  }
-
-  /// Adds a submodule to the index.
-  ///
-  /// [url] is the URL for the submodule's remote.
-  ///
-  /// [path] is the path at which the submodule should be created.
-  ///
-  /// [useGitLink] determines if workdir should contain a gitlink to the repo in `.git/modules`
-  /// vs. repo directly in workdir. Default is true.
-  ///
-  /// [callbacks] is the combination of callback functions from [Callbacks]
-  /// object.
-  ///
-  /// **IMPORTANT**: Should be freed to release allocated memory.
-  ///
-  /// Throws a [LibGit2Error] if error occured.
-  Submodule addSubmodule({
-    required String url,
-    required String path,
-    bool useGitlink = true,
-    Callbacks callbacks = const Callbacks(),
-  }) {
-    return Submodule.add(
-      repo: this,
-      url: url,
-      path: path,
-      useGitlink: useGitlink,
-      callbacks: callbacks,
-    );
-  }
-
-  /// List of linked working trees names.
-  ///
-  /// Throws a [LibGit2Error] if error occured.
-  List<String> get worktrees => Worktree.list(this);
-
-  /// Lookups existing worktree with provided [name].
-  ///
-  /// **IMPORTANT**: Should be freed to release allocated memory.
-  ///
-  /// Throws a [LibGit2Error] if error occured.
-  Worktree lookupWorktree(String name) {
-    return Worktree.lookup(repo: this, name: name);
-  }
-
-  /// Creates new worktree.
-  ///
-  /// If [ref] is provided, no new branch will be created but specified [ref]
-  /// will be used instead.
-  ///
-  /// [name] is the name of the working tree.
-  ///
-  /// [path] is the path to create working tree at.
-  ///
-  /// **IMPORTANT**: Should be freed to release allocated memory.
-  ///
-  /// Throws a [LibGit2Error] if error occured.
-  Worktree createWorktree({
-    required String name,
-    required String path,
-    Reference? ref,
-  }) {
-    return Worktree.create(repo: this, name: name, path: path, ref: ref);
   }
 }
