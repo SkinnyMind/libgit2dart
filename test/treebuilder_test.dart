@@ -15,7 +15,7 @@ void main() {
   setUp(() {
     tmpDir = setupRepo(Directory(p.join('test', 'assets', 'test_repo')));
     repo = Repository.open(tmpDir.path);
-    tree = repo.lookupTree(repo['a8ae3dd59e6e1802c6f78e05e301bfd57c9f334f']);
+    tree = Tree.lookup(repo: repo, oid: repo['a8ae3dd']);
   });
 
   tearDown(() {

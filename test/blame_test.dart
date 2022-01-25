@@ -60,7 +60,8 @@ void main() {
 
   group('Blame', () {
     test('returns the blame for provided file', () {
-      final blame = repo.blame(
+      final blame = Blame.file(
+        repo: repo,
         path: 'feature_file',
         oldestCommit: repo['f17d0d4'],
       );
@@ -86,11 +87,14 @@ void main() {
     });
 
     test('throws when provided file path is invalid', () {
-      expect(() => repo.blame(path: 'invalid'), throwsA(isA<LibGit2Error>()));
+      expect(
+        () => Blame.file(repo: repo, path: 'invalid'),
+        throwsA(isA<LibGit2Error>()),
+      );
     });
 
     test('returns blame for buffer', () {
-      final blame = repo.blame(path: 'feature_file');
+      final blame = Blame.file(repo: repo, path: 'feature_file');
       expect(blame.length, 2);
 
       final bufferBlame = Blame.buffer(reference: blame, buffer: ' ');
@@ -106,7 +110,7 @@ void main() {
     });
 
     test('throws when trying to get blame for empty buffer', () {
-      final blame = repo.blame(path: 'feature_file');
+      final blame = Blame.file(repo: repo, path: 'feature_file');
       expect(
         () => Blame.buffer(reference: blame, buffer: ''),
         throwsA(isA<LibGit2Error>()),
@@ -115,7 +119,8 @@ void main() {
     });
 
     test('returns the blame for provided file with minMatchCharacters set', () {
-      final blame = repo.blame(
+      final blame = Blame.file(
+        repo: repo,
         path: 'feature_file',
         minMatchCharacters: 1,
         flags: {GitBlameFlag.trackCopiesSameFile},
@@ -127,7 +132,7 @@ void main() {
     });
 
     test('returns the blame for provided line', () {
-      final blame = repo.blame(path: 'feature_file');
+      final blame = Blame.file(repo: repo, path: 'feature_file');
 
       final hunk = blame.forLine(1);
 
@@ -148,21 +153,22 @@ void main() {
     });
 
     test('throws when provided index for hunk is invalid', () {
-      final blame = repo.blame(path: 'feature_file');
+      final blame = Blame.file(repo: repo, path: 'feature_file');
       expect(() => blame[10], throwsA(isA<RangeError>()));
 
       blame.free();
     });
 
     test('throws when provided line number for hunk is invalid', () {
-      final blame = repo.blame(path: 'feature_file');
+      final blame = Blame.file(repo: repo, path: 'feature_file');
       expect(() => blame.forLine(10), throwsA(isA<RangeError>()));
 
       blame.free();
     });
 
     test('returns the blame for provided file with newestCommit argument', () {
-      final blame = repo.blame(
+      final blame = Blame.file(
+        repo: repo,
         path: 'feature_file',
         newestCommit: repo['fc38877'],
         flags: {GitBlameFlag.ignoreWhitespace},
@@ -190,7 +196,8 @@ void main() {
 
     test('returns the blame for provided file with minLine and maxLine set',
         () {
-      final blame = repo.blame(
+      final blame = Blame.file(
+        repo: repo,
         path: 'feature_file',
         minLine: 1,
         maxLine: 1,
@@ -217,7 +224,7 @@ void main() {
     });
 
     test('returns string representation of BlameHunk object', () {
-      final blame = repo.blame(path: 'feature_file');
+      final blame = Blame.file(repo: repo, path: 'feature_file');
       expect(blame.toString(), contains('BlameHunk{'));
       blame.free();
     });

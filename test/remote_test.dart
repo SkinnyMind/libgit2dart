@@ -24,11 +24,11 @@ void main() {
 
   group('Remote', () {
     test('returns list of remotes', () {
-      expect(repo.remotes, ['origin']);
+      expect(Remote.list(repo), ['origin']);
     });
 
     test('lookups remote for provided name', () {
-      final remote = repo.lookupRemote('origin');
+      final remote = Remote.lookup(repo: repo, name: 'origin');
 
       expect(remote.name, remoteName);
       expect(remote.url, remoteUrl);
@@ -39,11 +39,18 @@ void main() {
     });
 
     test('throws when provided name for lookup is not found', () {
-      expect(() => repo.lookupRemote('upstream'), throwsA(isA<LibGit2Error>()));
+      expect(
+        () => Remote.lookup(repo: repo, name: 'upstream'),
+        throwsA(isA<LibGit2Error>()),
+      );
     });
 
     test('creates without fetchspec', () {
-      final remote = repo.createRemote(name: 'upstream', url: remoteUrl);
+      final remote = Remote.create(
+        repo: repo,
+        name: 'upstream',
+        url: remoteUrl,
+      );
 
       expect(repo.remotes.length, 2);
       expect(remote.name, 'upstream');
@@ -55,7 +62,8 @@ void main() {
 
     test('creates with provided fetchspec', () {
       const spec = '+refs/*:refs/*';
-      final remote = repo.createRemote(
+      final remote = Remote.create(
+        repo: repo,
         name: 'upstream',
         url: remoteUrl,
         fetch: spec,
@@ -73,7 +81,8 @@ void main() {
     test('throws when trying to create with fetchspec with invalid remote name',
         () {
       expect(
-        () => repo.createRemote(
+        () => Remote.create(
+          repo: repo,
           name: '',
           url: '',
           fetch: '',
@@ -83,10 +92,14 @@ void main() {
     });
 
     test('deletes remote', () {
-      final remote = repo.createRemote(name: 'upstream', url: remoteUrl);
+      final remote = Remote.create(
+        repo: repo,
+        name: 'upstream',
+        url: remoteUrl,
+      );
       expect(repo.remotes.length, 2);
 
-      repo.deleteRemote(remote.name);
+      Remote.delete(repo: repo, name: remote.name);
       expect(repo.remotes.length, 1);
 
       remote.free();
@@ -94,19 +107,23 @@ void main() {
 
     test('throws when trying to delete non existing remote', () {
       expect(
-        () => repo.deleteRemote('not/there'),
+        () => Remote.delete(repo: repo, name: 'not/there'),
         throwsA(isA<LibGit2Error>()),
       );
     });
 
     test('renames remote', () {
-      final remote = repo.lookupRemote(remoteName);
+      final remote = Remote.lookup(repo: repo, name: remoteName);
 
-      final problems = repo.renameRemote(oldName: remoteName, newName: 'new');
+      final problems = Remote.rename(
+        repo: repo,
+        oldName: remoteName,
+        newName: 'new',
+      );
       expect(problems, isEmpty);
       expect(remote.name, isNot('new'));
 
-      final newRemote = repo.lookupRemote('new');
+      final newRemote = Remote.lookup(repo: repo, name: 'new');
       expect(newRemote.name, 'new');
 
       newRemote.free();
@@ -114,14 +131,15 @@ void main() {
     });
 
     test('returns list of non-default refspecs that cannot be renamed', () {
-      final remote = repo.createRemote(
+      final remote = Remote.create(
+        repo: repo,
         name: 'upstream',
         url: remoteUrl,
         fetch: '+refs/*:refs/*',
       );
 
       expect(
-        repo.renameRemote(oldName: remote.name, newName: 'renamed'),
+        Remote.rename(repo: repo, oldName: remote.name, newName: 'renamed'),
         ['+refs/*:refs/*'],
       );
 
@@ -130,19 +148,19 @@ void main() {
 
     test('throws when renaming with invalid names', () {
       expect(
-        () => repo.renameRemote(oldName: '', newName: ''),
+        () => Remote.rename(repo: repo, oldName: '', newName: ''),
         throwsA(isA<LibGit2Error>()),
       );
     });
 
     test('sets url', () {
-      final remote = repo.lookupRemote(remoteName);
+      final remote = Remote.lookup(repo: repo, name: remoteName);
       expect(remote.url, remoteUrl);
 
       const newUrl = 'git://new/url.git';
       Remote.setUrl(repo: repo, remote: remoteName, url: newUrl);
 
-      final newRemote = repo.lookupRemote(remoteName);
+      final newRemote = Remote.lookup(repo: repo, name: remoteName);
       expect(newRemote.url, newUrl);
 
       newRemote.free();
@@ -160,7 +178,7 @@ void main() {
       const newUrl = 'git://new/url.git';
       Remote.setPushUrl(repo: repo, remote: remoteName, url: newUrl);
 
-      final remote = repo.lookupRemote(remoteName);
+      final remote = Remote.lookup(repo: repo, name: remoteName);
       expect(remote.pushUrl, newUrl);
 
       remote.free();
@@ -174,7 +192,7 @@ void main() {
     });
 
     test('returns refspec', () {
-      final remote = repo.lookupRemote('origin');
+      final remote = Remote.lookup(repo: repo, name: 'origin');
       expect(remote.refspecCount, 1);
 
       final refspec = remote.getRefspec(0);
@@ -203,7 +221,7 @@ void main() {
 
     test('throws when trying to transform refspec with invalid reference name',
         () {
-      final remote = repo.lookupRemote('origin');
+      final remote = Remote.lookup(repo: repo, name: 'origin');
       final refspec = remote.getRefspec(0);
 
       expect(
@@ -225,7 +243,7 @@ void main() {
         remote: 'origin',
         refspec: '+refs/test/*:refs/test/remotes/*',
       );
-      final remote = repo.lookupRemote('origin');
+      final remote = Remote.lookup(repo: repo, name: 'origin');
       expect(remote.fetchRefspecs.length, 2);
       expect(
         remote.fetchRefspecs,
@@ -255,7 +273,7 @@ void main() {
         remote: 'origin',
         refspec: '+refs/test/*:refs/test/remotes/*',
       );
-      final remote = repo.lookupRemote('origin');
+      final remote = Remote.lookup(repo: repo, name: 'origin');
       expect(remote.pushRefspecs.length, 1);
       expect(remote.pushRefspecs, ['+refs/test/*:refs/test/remotes/*']);
 
@@ -279,7 +297,7 @@ void main() {
         remote: 'libgit2',
         url: 'https://github.com/libgit2/TestGitRepository',
       );
-      final remote = repo.lookupRemote('libgit2');
+      final remote = Remote.lookup(repo: repo, name: 'libgit2');
 
       final refs = remote.ls();
       expect(refs.first['local'], false);
@@ -298,7 +316,7 @@ void main() {
         "throws when trying to get remote repo's reference list with "
         "invalid url", () {
       Remote.setUrl(repo: repo, remote: 'libgit2', url: 'invalid');
-      final remote = repo.lookupRemote('libgit2');
+      final remote = Remote.lookup(repo: repo, name: 'libgit2');
 
       expect(() => remote.ls(), throwsA(isA<LibGit2Error>()));
 
@@ -318,7 +336,7 @@ void main() {
           remote: 'libgit2',
           refspec: '+refs/heads/*:refs/remotes/origin/*',
         );
-        final remote = repo.lookupRemote('libgit2');
+        final remote = Remote.lookup(repo: repo, name: 'libgit2');
 
         final stats = remote.fetch(
           refspecs: ['+refs/heads/*:refs/remotes/origin/*'],
@@ -351,7 +369,7 @@ void main() {
           remote: 'libgit2',
           refspec: '+refs/heads/*:refs/remotes/origin/*',
         );
-        final remote = repo.lookupRemote('libgit2');
+        final remote = Remote.lookup(repo: repo, name: 'libgit2');
 
         final stats = remote.fetch(
           refspecs: ['+refs/heads/*:refs/remotes/origin/*'],
@@ -385,7 +403,7 @@ void main() {
           remote: 'libgit2',
           refspec: '+refs/heads/*:refs/remotes/origin/*',
         );
-        final remote = repo.lookupRemote('libgit2');
+        final remote = Remote.lookup(repo: repo, name: 'libgit2');
 
         expect(
           () => remote.fetch(
@@ -402,7 +420,7 @@ void main() {
 
     test('throws when trying to fetch data with invalid url', () {
       Remote.setUrl(repo: repo, remote: 'libgit2', url: 'https://wrong.url');
-      final remote = repo.lookupRemote('libgit2');
+      final remote = Remote.lookup(repo: repo, name: 'libgit2');
 
       expect(
         () => remote.fetch(),
@@ -420,7 +438,7 @@ void main() {
           remote: 'libgit2',
           url: 'https://github.com/libgit2/TestGitRepository',
         );
-        final remote = repo.lookupRemote('libgit2');
+        final remote = Remote.lookup(repo: repo, name: 'libgit2');
 
         TransferProgress? callbackStats;
         void tp(TransferProgress stats) => callbackStats = stats;
@@ -454,7 +472,7 @@ Total 69 (delta 0), reused 1 (delta 0), pack-reused 68
           remote: 'libgit2',
           url: 'https://github.com/libgit2/TestGitRepository',
         );
-        final remote = repo.lookupRemote('libgit2');
+        final remote = Remote.lookup(repo: repo, name: 'libgit2');
 
         final sidebandOutput = StringBuffer();
         void sideband(String message) {
@@ -479,7 +497,7 @@ Total 69 (delta 0), reused 1 (delta 0), pack-reused 68
           remote: 'libgit2',
           url: 'https://github.com/libgit2/TestGitRepository',
         );
-        final remote = repo.lookupRemote('libgit2');
+        final remote = Remote.lookup(repo: repo, name: 'libgit2');
         final tipsExpected = [
           {
             'refname': 'refs/tags/annotated_tag',
@@ -531,8 +549,8 @@ Total 69 (delta 0), reused 1 (delta 0), pack-reused 68
       );
       final originRepo = Repository.open(originDir.path);
 
-      repo.createRemote(name: 'local', url: originDir.path);
-      final remote = repo.lookupRemote('local');
+      Remote.create(repo: repo, name: 'local', url: originDir.path);
+      final remote = Remote.lookup(repo: repo, name: 'local');
 
       final updateRefOutput = <String, String>{};
       void updateRef(String refname, String message) {
@@ -543,7 +561,7 @@ Total 69 (delta 0), reused 1 (delta 0), pack-reused 68
 
       remote.push(refspecs: ['refs/heads/master'], callbacks: callbacks);
       expect(
-        originRepo.lookupCommit(originRepo.head.target).oid.sha,
+        Commit.lookup(repo: originRepo, oid: originRepo.head.target).oid.sha,
         '821ed6e80627b8769d170a293862f9fc60825226',
       );
       expect(updateRefOutput, {'refs/heads/master': ''});
@@ -555,7 +573,7 @@ Total 69 (delta 0), reused 1 (delta 0), pack-reused 68
 
     test('throws when trying to push to invalid url', () {
       Remote.setUrl(repo: repo, remote: 'libgit2', url: 'https://wrong.url');
-      final remote = repo.lookupRemote('libgit2');
+      final remote = Remote.lookup(repo: repo, name: 'libgit2');
 
       expect(
         () => remote.push(refspecs: ['refs/heads/master']),

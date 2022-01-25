@@ -65,12 +65,12 @@ class Submodule {
   /// Throws a [LibGit2Error] if error occured.
   static void init({
     required Repository repo,
-    required String submodule,
+    required String name,
     bool overwrite = false,
   }) {
     final submodulePointer = bindings.lookup(
       repoPointer: repo.pointer,
-      name: submodule,
+      name: name,
     );
 
     bindings.init(submodulePointer: submodulePointer, overwrite: overwrite);
@@ -91,13 +91,13 @@ class Submodule {
   /// Throws a [LibGit2Error] if error occured.
   static void update({
     required Repository repo,
-    required String submodule,
+    required String name,
     bool init = false,
     Callbacks callbacks = const Callbacks(),
   }) {
     final submodulePointer = bindings.lookup(
       repoPointer: repo.pointer,
-      name: submodule,
+      name: name,
     );
 
     bindings.update(

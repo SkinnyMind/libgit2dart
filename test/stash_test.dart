@@ -33,13 +33,13 @@ void main() {
     test('saves changes to stash', () {
       File(filePath).writeAsStringSync('edit', mode: FileMode.append);
 
-      repo.createStash(stasher: stasher);
+      Stash.create(repo: repo, stasher: stasher);
       expect(repo.status.isEmpty, true);
     });
 
     test('throws when trying to save and error occurs', () {
       expect(
-        () => Repository(nullptr).createStash(stasher: stasher),
+        () => Stash.create(repo: Repository(nullptr), stasher: stasher),
         throwsA(isA<LibGit2Error>()),
       );
     });
@@ -48,7 +48,8 @@ void main() {
       final swpPath = File(p.join(repo.workdir, 'some.swp'));
       swpPath.writeAsStringSync('ignored');
 
-      repo.createStash(
+      Stash.create(
+        repo: repo,
         stasher: stasher,
         flags: {GitStash.includeUntracked, GitStash.includeIgnored},
       );
@@ -64,7 +65,7 @@ void main() {
       final index = repo.index;
       index.add('file');
 
-      repo.createStash(stasher: stasher, flags: {GitStash.keepIndex});
+      Stash.create(repo: repo, stasher: stasher, flags: {GitStash.keepIndex});
       expect(repo.status.isEmpty, false);
       expect(repo.stashes.length, 1);
 
@@ -74,20 +75,20 @@ void main() {
     test('applies changes from stash', () {
       File(filePath).writeAsStringSync('edit', mode: FileMode.append);
 
-      repo.createStash(stasher: stasher);
+      Stash.create(repo: repo, stasher: stasher);
       expect(repo.status.isEmpty, true);
 
-      repo.applyStash();
+      Stash.apply(repo: repo);
       expect(repo.status, contains('file'));
     });
 
     test('applies changes from stash with paths provided', () {
       File(filePath).writeAsStringSync('edit', mode: FileMode.append);
 
-      repo.createStash(stasher: stasher);
+      Stash.create(repo: repo, stasher: stasher);
       expect(repo.status.isEmpty, true);
 
-      repo.applyStash(paths: ['file']);
+      Stash.apply(repo: repo, paths: ['file']);
       expect(repo.status, contains('file'));
     });
 
@@ -97,11 +98,15 @@ void main() {
       index.add('stash.this');
       expect(index.find('stash.this'), true);
 
-      repo.createStash(stasher: stasher, flags: {GitStash.includeUntracked});
+      Stash.create(
+        repo: repo,
+        stasher: stasher,
+        flags: {GitStash.includeUntracked},
+      );
       expect(repo.status.isEmpty, true);
       expect(index.find('stash.this'), false);
 
-      repo.applyStash(reinstateIndex: true);
+      Stash.apply(repo: repo, reinstateIndex: true);
       expect(repo.status, contains('stash.this'));
       expect(index.find('stash.this'), true);
 
@@ -111,17 +116,20 @@ void main() {
     test('throws when trying to apply with wrong index', () {
       File(filePath).writeAsStringSync('edit', mode: FileMode.append);
 
-      repo.createStash(stasher: stasher);
+      Stash.create(repo: repo, stasher: stasher);
 
-      expect(() => repo.applyStash(index: 10), throwsA(isA<LibGit2Error>()));
+      expect(
+        () => Stash.apply(repo: repo, index: 10),
+        throwsA(isA<LibGit2Error>()),
+      );
     });
 
     test('drops stash', () {
       File(filePath).writeAsStringSync('edit', mode: FileMode.append);
 
-      repo.createStash(stasher: stasher);
+      Stash.create(repo: repo, stasher: stasher);
       final stash = repo.stashes.first;
-      repo.dropStash(index: stash.index);
+      Stash.drop(repo: repo, index: stash.index);
 
       expect(() => repo.applyStash(), throwsA(isA<LibGit2Error>()));
     });
@@ -129,29 +137,32 @@ void main() {
     test('throws when trying to drop with wrong index', () {
       File(filePath).writeAsStringSync('edit', mode: FileMode.append);
 
-      repo.createStash(stasher: stasher);
+      Stash.create(repo: repo, stasher: stasher);
 
-      expect(() => repo.dropStash(index: 10), throwsA(isA<LibGit2Error>()));
+      expect(
+        () => Stash.drop(repo: repo, index: 10),
+        throwsA(isA<LibGit2Error>()),
+      );
     });
 
     test('pops from stash', () {
       File(filePath).writeAsStringSync('edit', mode: FileMode.append);
 
-      repo.createStash(stasher: stasher);
-      repo.popStash();
+      Stash.create(repo: repo, stasher: stasher);
+      Stash.pop(repo: repo);
 
       expect(repo.status, contains('file'));
-      expect(() => repo.applyStash(), throwsA(isA<LibGit2Error>()));
+      expect(() => Stash.apply(repo: repo), throwsA(isA<LibGit2Error>()));
     });
 
     test('pops from stash with provided path', () {
       File(filePath).writeAsStringSync('edit', mode: FileMode.append);
 
-      repo.createStash(stasher: stasher);
-      repo.popStash(paths: ['file']);
+      Stash.create(repo: repo, stasher: stasher);
+      Stash.pop(repo: repo, paths: ['file']);
 
       expect(repo.status, contains('file'));
-      expect(() => repo.applyStash(), throwsA(isA<LibGit2Error>()));
+      expect(() => Stash.apply(repo: repo), throwsA(isA<LibGit2Error>()));
     });
 
     test('pops from stash including index changes', () {
@@ -160,11 +171,15 @@ void main() {
       index.add('stash.this');
       expect(index.find('stash.this'), true);
 
-      repo.createStash(stasher: stasher, flags: {GitStash.includeUntracked});
+      Stash.create(
+        repo: repo,
+        stasher: stasher,
+        flags: {GitStash.includeUntracked},
+      );
       expect(repo.status.isEmpty, true);
       expect(index.find('stash.this'), false);
 
-      repo.popStash(reinstateIndex: true);
+      Stash.pop(repo: repo, reinstateIndex: true);
       expect(repo.status, contains('stash.this'));
       expect(index.find('stash.this'), true);
 
@@ -174,17 +189,20 @@ void main() {
     test('throws when trying to pop with wrong index', () {
       File(filePath).writeAsStringSync('edit', mode: FileMode.append);
 
-      repo.createStash(stasher: stasher);
+      Stash.create(repo: repo, stasher: stasher);
 
-      expect(() => repo.popStash(index: 10), throwsA(isA<LibGit2Error>()));
+      expect(
+        () => Stash.pop(repo: repo, index: 10),
+        throwsA(isA<LibGit2Error>()),
+      );
     });
 
     test('returns list of stashes', () {
       File(filePath).writeAsStringSync('edit', mode: FileMode.append);
 
-      repo.createStash(stasher: stasher, message: 'WIP');
+      Stash.create(repo: repo, stasher: stasher, message: 'WIP');
 
-      final stash = repo.stashes.first;
+      final stash = Stash.list(repo).first;
 
       expect(repo.stashes.length, 1);
       expect(stash.index, 0);
@@ -194,7 +212,11 @@ void main() {
     test('returns string representation of Stash object', () {
       File(p.join(repo.workdir, 'stash.this')).writeAsStringSync('stash');
 
-      repo.createStash(stasher: stasher, flags: {GitStash.includeUntracked});
+      Stash.create(
+        repo: repo,
+        stasher: stasher,
+        flags: {GitStash.includeUntracked},
+      );
 
       expect(repo.stashes[0].toString(), contains('Stash{'));
     });

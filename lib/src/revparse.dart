@@ -14,8 +14,7 @@ class RevParse {
   /// point to an intermediate reference. When such expressions are being
   /// passed in, reference_out will be valued as well.
   ///
-  /// **IMPORTANT**: The returned object and reference should be freed to
-  /// release allocated memory.
+  /// **IMPORTANT**: Should be freed to release allocated memory.
   ///
   /// Throws a [LibGit2Error] if error occured.
   RevParse.ext({required Repository repo, required String spec}) {
@@ -41,7 +40,7 @@ class RevParse {
   /// See `man gitrevisions`, or https://git-scm.com/docs/git-rev-parse.html#_specifying_revisions
   /// for information on the syntax accepted.
   ///
-  /// The returned object should be released when no longer needed.
+  /// **IMPORTANT**: Should be freed to release allocated memory.
   ///
   /// Throws a [LibGit2Error] if error occured.
   static Commit single({required Repository repo, required String spec}) {

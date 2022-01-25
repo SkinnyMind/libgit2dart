@@ -120,7 +120,7 @@ index e69de29..c217c63 100644
   group('Diff', () {
     test('returns diff between index and workdir', () {
       final index = repo.index;
-      final diff = repo.diff();
+      final diff = Diff.indexToWorkdir(repo: repo, index: index);
 
       expect(diff.length, 8);
       for (var i = 0; i < diff.deltas.length; i++) {
@@ -134,34 +134,27 @@ index e69de29..c217c63 100644
     test('returns diff between index and tree', () {
       final index = repo.index;
       final head = repo.head;
-      final commit = repo.lookupCommit(head.target);
+      final commit = Commit.lookup(repo: repo, oid: head.target);
       final tree = commit.tree;
-      final diff1 = index.diffToTree(tree: tree);
-      final diff2 = tree.diffToIndex(index: index);
+      final diff = Diff.treeToIndex(repo: repo, tree: tree, index: index);
 
-      expect(diff1.length, 8);
-      for (var i = 0; i < diff1.deltas.length; i++) {
-        expect(diff1.deltas[i].newFile.path, indexToTree[i]);
-      }
-
-      expect(diff2.length, 8);
-      for (var i = 0; i < diff2.deltas.length; i++) {
-        expect(diff2.deltas[i].newFile.path, indexToTree[i]);
+      expect(diff.length, 8);
+      for (var i = 0; i < diff.deltas.length; i++) {
+        expect(diff.deltas[i].newFile.path, indexToTree[i]);
       }
 
       commit.free();
       head.free();
       tree.free();
-      diff1.free();
-      diff2.free();
+      diff.free();
       index.free();
     });
 
     test('returns diff between tree and workdir', () {
       final head = repo.head;
-      final commit = repo.lookupCommit(head.target);
+      final commit = Commit.lookup(repo: repo, oid: head.target);
       final tree = commit.tree;
-      final diff = repo.diff(a: tree);
+      final diff = Diff.treeToWorkdir(repo: repo, tree: tree);
 
       expect(diff.length, 9);
       for (var i = 0; i < diff.deltas.length; i++) {
@@ -176,63 +169,10 @@ index e69de29..c217c63 100644
 
     test('throws when trying to diff between tree and workdir and error occurs',
         () {
-      final nullRepo = Repository(nullptr);
-      final nullTree = Tree(nullptr);
-      expect(() => nullRepo.diff(a: nullTree), throwsA(isA<LibGit2Error>()));
-    });
-
-    test('returns diff between tree and index', () {
-      final index = repo.index;
-      final head = repo.head;
-      final commit = repo.lookupCommit(head.target);
-      final tree = commit.tree;
-      final diff = repo.diff(a: tree, cached: true);
-
-      expect(diff.length, 8);
-      for (var i = 0; i < diff.deltas.length; i++) {
-        expect(diff.deltas[i].newFile.path, indexToTree[i]);
-      }
-
-      commit.free();
-      head.free();
-      tree.free();
-      diff.free();
-      index.free();
-    });
-
-    test('returns diff between tree and tree', () {
-      final head = repo.head;
-      final commit = repo.lookupCommit(head.target);
-      final tree1 = commit.tree;
-      final tree2 = repo.lookupTree(repo['b85d53c']);
-      final diff = repo.diff(a: tree1, b: tree2);
-
-      expect(diff.length, 10);
-      for (var i = 0; i < diff.deltas.length; i++) {
-        expect(diff.deltas[i].newFile.path, treeToTree[i]);
-      }
-
-      commit.free();
-      head.free();
-      tree1.free();
-      tree2.free();
-      diff.free();
-    });
-
-    test('throws when trying to diff between tree and tree and error occurs',
-        () {
-      final nullRepo = Repository(nullptr);
-      final nullTree = Tree(nullptr);
       expect(
-        () => nullRepo.diff(a: nullTree, b: nullTree),
+        () => Diff.treeToWorkdir(repo: Repository(nullptr), tree: null),
         throwsA(isA<LibGit2Error>()),
       );
-    });
-
-    test('throws when trying to diff between null and tree', () {
-      final tree = repo.lookupTree(repo['b85d53c']);
-      expect(() => repo.diff(b: tree), throwsA(isA<ArgumentError>()));
-      tree.free();
     });
 
     test('returns diff between tree and workdir with index', () {
@@ -264,11 +204,54 @@ index e69de29..c217c63 100644
       );
     });
 
+    test('returns diff between tree and tree', () {
+      final head = repo.head;
+      final commit = Commit.lookup(repo: repo, oid: head.target);
+      final tree1 = commit.tree;
+      final tree2 = Tree.lookup(repo: repo, oid: repo['b85d53c']);
+      final diff = Diff.treeToTree(repo: repo, oldTree: tree1, newTree: tree2);
+
+      expect(diff.length, 10);
+      for (var i = 0; i < diff.deltas.length; i++) {
+        expect(diff.deltas[i].newFile.path, treeToTree[i]);
+      }
+
+      commit.free();
+      head.free();
+      tree1.free();
+      tree2.free();
+      diff.free();
+    });
+
+    test('throws when trying to diff between tree and tree and error occurs',
+        () {
+      final nullTree = Tree(nullptr);
+      expect(
+        () => Diff.treeToTree(
+          repo: Repository(nullptr),
+          oldTree: nullTree,
+          newTree: nullTree,
+        ),
+        throwsA(isA<LibGit2Error>()),
+      );
+    });
+
+    test('throws when trying to diff between two null trees', () {
+      expect(
+        () => Diff.treeToTree(repo: repo, oldTree: null, newTree: null),
+        throwsA(isA<ArgumentError>()),
+      );
+    });
+
     test('returns diff between index and index', () {
       final index = repo.index;
       final emptyIndex = Index.newInMemory();
 
-      final diff = index.diffToIndex(index: emptyIndex);
+      final diff = Diff.indexToIndex(
+        repo: repo,
+        oldIndex: index,
+        newIndex: emptyIndex,
+      );
 
       expect(diff.length, 12);
       for (var i = 0; i < diff.deltas.length; i++) {
@@ -284,7 +267,11 @@ index e69de29..c217c63 100644
       final index = repo.index;
 
       expect(
-        () => index.diffToIndex(index: Index(nullptr)),
+        () => Diff.indexToIndex(
+          repo: repo,
+          oldIndex: index,
+          newIndex: Index(nullptr),
+        ),
         throwsA(isA<LibGit2Error>()),
       );
 
@@ -293,13 +280,11 @@ index e69de29..c217c63 100644
 
     test('merges diffs', () {
       final head = repo.head;
-      final commit = repo.lookupCommit(head.target);
+      final commit = Commit.lookup(repo: repo, oid: head.target);
       final tree1 = commit.tree;
-      final tree2 = repo.lookupTree(
-        repo['b85d53c9236e89aff2b62558adaa885fd1d6ff1c'],
-      );
-      final diff1 = tree1.diffToTree(tree: tree2);
-      final diff2 = tree1.diffToWorkdir();
+      final tree2 = Tree.lookup(repo: repo, oid: repo['b85d53c']);
+      final diff1 = Diff.treeToTree(repo: repo, oldTree: tree1, newTree: tree2);
+      final diff2 = Diff.treeToWorkdir(repo: repo, tree: tree1);
 
       expect(diff1.length, 10);
       expect(diff2.length, 9);
@@ -330,28 +315,31 @@ index e69de29..c217c63 100644
 
     group('apply', () {
       test('checks if diff can be applied to repository', () {
-        final diff1 = repo.diff();
+        final index = repo.index;
+        final diff1 = Diff.indexToWorkdir(repo: repo, index: index);
         expect(
-          repo.applies(diff: diff1, location: GitApplyLocation.both),
+          diff1.applies(repo: repo, location: GitApplyLocation.both),
           false,
         );
 
         final diff2 = Diff.parse(patchText);
         repo.checkout(target: 'HEAD', strategy: {GitCheckout.force});
         expect(
-          repo.applies(diff: diff2, location: GitApplyLocation.both),
+          diff2.applies(repo: repo, location: GitApplyLocation.both),
           true,
         );
 
         diff1.free();
         diff2.free();
+        index.free();
       });
 
       test('checks if hunk with provided index can be applied to repository',
           () {
-        final diff1 = repo.diff();
+        final index = repo.index;
+        final diff1 = Diff.indexToWorkdir(repo: repo, index: index);
         expect(
-          repo.applies(diff: diff1, location: GitApplyLocation.both),
+          diff1.applies(repo: repo, location: GitApplyLocation.both),
           false,
         );
 
@@ -359,8 +347,8 @@ index e69de29..c217c63 100644
         final hunk = diff2.patches.first.hunks.first;
         repo.checkout(target: 'HEAD', strategy: {GitCheckout.force});
         expect(
-          repo.applies(
-            diff: diff2,
+          diff2.applies(
+            repo: repo,
             hunkIndex: hunk.index,
             location: GitApplyLocation.both,
           ),
@@ -369,6 +357,7 @@ index e69de29..c217c63 100644
 
         diff1.free();
         diff2.free();
+        index.free();
       });
 
       test('applies diff to repository', () {
@@ -378,15 +367,17 @@ index e69de29..c217c63 100644
         repo.checkout(target: 'HEAD', strategy: {GitCheckout.force});
         expect(file.readAsStringSync(), '');
 
-        repo.apply(diff: diff);
+        diff.apply(repo: repo);
         expect(file.readAsStringSync(), 'Modified content\n');
 
         diff.free();
       });
 
       test('throws when trying to apply diff and error occurs', () {
-        final nullDiff = Diff(nullptr);
-        expect(() => repo.apply(diff: nullDiff), throwsA(isA<LibGit2Error>()));
+        expect(
+          () => Diff(nullptr).apply(repo: repo),
+          throwsA(isA<LibGit2Error>()),
+        );
       });
 
       test('creates patch from entry index in diff', () {
@@ -408,7 +399,7 @@ index e69de29..c217c63 100644
         repo.checkout(target: 'HEAD', strategy: {GitCheckout.force});
         expect(file.readAsStringSync(), '');
 
-        repo.apply(diff: diff, hunkIndex: hunk.index);
+        diff.apply(repo: repo, hunkIndex: hunk.index);
         expect(file.readAsStringSync(), 'Modified content\n');
 
         diff.free();
@@ -419,15 +410,21 @@ index e69de29..c217c63 100644
 
         repo.checkout(target: 'HEAD', strategy: {GitCheckout.force});
         final head = repo.head;
-        final commit = repo.lookupCommit(head.target);
+        final commit = Commit.lookup(repo: repo, oid: head.target);
         final tree = commit.tree;
 
         final oldIndex = repo.index;
-        final oldBlob = repo.lookupBlob(oldIndex['subdir/modified_file'].oid);
+        final oldBlob = Blob.lookup(
+          repo: repo,
+          oid: oldIndex['subdir/modified_file'].oid,
+        );
         expect(oldBlob.content, '');
 
-        final newIndex = repo.applyToTree(diff: diff, tree: tree);
-        final newBlob = repo.lookupBlob(newIndex['subdir/modified_file'].oid);
+        final newIndex = diff.applyToTree(repo: repo, tree: tree);
+        final newBlob = Blob.lookup(
+          repo: repo,
+          oid: newIndex['subdir/modified_file'].oid,
+        );
         expect(newBlob.content, 'Modified content\n');
 
         oldBlob.free();
@@ -446,19 +443,25 @@ index e69de29..c217c63 100644
 
         repo.checkout(target: 'HEAD', strategy: {GitCheckout.force});
         final head = repo.head;
-        final commit = repo.lookupCommit(head.target);
+        final commit = Commit.lookup(repo: repo, oid: head.target);
         final tree = commit.tree;
 
         final oldIndex = repo.index;
-        final oldBlob = repo.lookupBlob(oldIndex['subdir/modified_file'].oid);
+        final oldBlob = Blob.lookup(
+          repo: repo,
+          oid: oldIndex['subdir/modified_file'].oid,
+        );
         expect(oldBlob.content, '');
 
-        final newIndex = repo.applyToTree(
-          diff: diff,
+        final newIndex = diff.applyToTree(
+          repo: repo,
           tree: tree,
           hunkIndex: hunk.index,
         );
-        final newBlob = repo.lookupBlob(newIndex['subdir/modified_file'].oid);
+        final newBlob = Blob.lookup(
+          repo: repo,
+          oid: newIndex['subdir/modified_file'].oid,
+        );
         expect(newBlob.content, 'Modified content\n');
 
         oldBlob.free();
@@ -474,7 +477,7 @@ index e69de29..c217c63 100644
       test('throws when trying to apply diff to tree and error occurs', () {
         final diff = Diff.parse(patchText);
         expect(
-          () => repo.applyToTree(diff: diff, tree: Tree(nullptr)),
+          () => diff.applyToTree(repo: repo, tree: Tree(nullptr)),
           throwsA(isA<LibGit2Error>()),
         );
       });
@@ -483,11 +486,15 @@ index e69de29..c217c63 100644
     test('finds similar entries', () {
       final index = repo.index;
       final head = repo.head;
-      final commit = repo.lookupCommit(head.target);
+      final commit = Commit.lookup(repo: repo, oid: head.target);
       final oldTree = commit.tree;
-      final newTree = repo.lookupTree(index.writeTree());
+      final newTree = Tree.lookup(repo: repo, oid: index.writeTree());
 
-      final diff = oldTree.diffToTree(tree: newTree);
+      final diff = Diff.treeToTree(
+        repo: repo,
+        oldTree: oldTree,
+        newTree: newTree,
+      );
       expect(
         diff.deltas.singleWhere((e) => e.newFile.path == 'staged_new').status,
         GitDelta.added,
@@ -519,7 +526,7 @@ index e69de29..c217c63 100644
 
     test('returns deltas', () {
       final index = repo.index;
-      final diff = index.diffToWorkdir();
+      final diff = Diff.indexToWorkdir(repo: repo, index: index);
 
       expect(diff.deltas[0].numberOfFiles, 1);
       expect(diff.deltas[0].status, GitDelta.deleted);
@@ -553,7 +560,7 @@ index e69de29..c217c63 100644
 
     test('throws when trying to get delta with invalid index', () {
       final index = repo.index;
-      final diff = index.diffToWorkdir();
+      final diff = Diff.indexToWorkdir(repo: repo, index: index);
 
       expect(() => diff.deltas[-1], throwsA(isA<RangeError>()));
 
@@ -563,7 +570,7 @@ index e69de29..c217c63 100644
 
     test('returns patches', () {
       final index = repo.index;
-      final diff = index.diffToWorkdir();
+      final diff = Diff.indexToWorkdir(repo: repo, index: index);
       final patches = diff.patches;
 
       expect(patches.length, 8);
@@ -578,7 +585,7 @@ index e69de29..c217c63 100644
 
     test('returns stats', () {
       final index = repo.index;
-      final diff = index.diffToWorkdir();
+      final diff = Diff.indexToWorkdir(repo: repo, index: index);
       final stats = diff.stats;
 
       expect(stats.insertions, 4);

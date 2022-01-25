@@ -17,7 +17,7 @@ void main() {
     tmpDir = setupRepo(Directory(p.join('test', 'assets', 'test_repo')));
     repo = Repository.open(tmpDir.path);
     tagOid = repo['f0fdbf506397e9f58c59b88dfdd72778ec06cc0c'];
-    tag = repo.lookupTag(tagOid);
+    tag = Tag.lookup(repo: repo, oid: tagOid);
   });
 
   tearDown(() {
@@ -33,7 +33,7 @@ void main() {
 
     test('throws when trying to lookup tag for invalid oid', () {
       expect(
-        () => repo.lookupTag(repo['0' * 40]),
+        () => Tag.lookup(repo: repo, oid: repo['0' * 40]),
         throwsA(isA<LibGit2Error>()),
       );
     });
@@ -84,7 +84,7 @@ void main() {
         message: message,
       );
 
-      final newTag = repo.lookupTag(oid);
+      final newTag = Tag.lookup(repo: repo, oid: oid);
       final tagger = newTag.tagger;
       final newTagTarget = newTag.target as Commit;
 
@@ -111,7 +111,7 @@ void main() {
         targetType: GitObject.commit,
       );
 
-      final newTag = repo.lookupReference('refs/tags/$tagName');
+      final newTag = Reference.lookup(repo: repo, name: 'refs/tags/$tagName');
 
       expect(newTag.shorthand, tagName);
       expect(newTag.target, target);
@@ -138,7 +138,7 @@ void main() {
         message: message,
       );
 
-      final newTag = repo.lookupTag(oid);
+      final newTag = Tag.lookup(repo: repo, oid: oid);
       final tagger = newTag.tagger;
       final newTagTarget = newTag.target as Tree;
 
@@ -164,7 +164,7 @@ void main() {
         targetType: GitObject.tree,
       );
 
-      final newTag = repo.lookupReference('refs/tags/$tagName');
+      final newTag = Reference.lookup(repo: repo, name: 'refs/tags/$tagName');
 
       expect(newTag.shorthand, tagName);
       expect(newTag.target, target);
@@ -191,7 +191,7 @@ void main() {
         message: message,
       );
 
-      final newTag = repo.lookupTag(oid);
+      final newTag = Tag.lookup(repo: repo, oid: oid);
       final tagger = newTag.tagger;
       final newTagTarget = newTag.target as Blob;
 
@@ -217,7 +217,7 @@ void main() {
         targetType: GitObject.blob,
       );
 
-      final newTag = repo.lookupReference('refs/tags/$tagName');
+      final newTag = Reference.lookup(repo: repo, name: 'refs/tags/$tagName');
 
       expect(newTag.shorthand, tagName);
       expect(newTag.target, target);
@@ -243,7 +243,7 @@ void main() {
         message: message,
       );
 
-      final newTag = repo.lookupTag(oid);
+      final newTag = Tag.lookup(repo: repo, oid: oid);
       final tagger = newTag.tagger;
       final newTagTarget = newTag.target as Tag;
 
@@ -268,7 +268,7 @@ void main() {
         targetType: GitObject.tag,
       );
 
-      final newTag = repo.lookupReference('refs/tags/$tagName');
+      final newTag = Reference.lookup(repo: repo, name: 'refs/tags/$tagName');
 
       expect(newTag.shorthand, tagName);
       expect(newTag.target, tag.oid);
@@ -302,7 +302,7 @@ void main() {
         force: true,
       );
 
-      final newTag = repo.lookupTag(oid);
+      final newTag = Tag.lookup(repo: repo, oid: oid);
       final tagger = newTag.tagger;
       final newTagTarget = newTag.target as Commit;
 
@@ -337,7 +337,7 @@ void main() {
         force: true,
       );
 
-      final newTag = repo.lookupReference('refs/tags/$tagName');
+      final newTag = Reference.lookup(repo: repo, name: 'refs/tags/$tagName');
 
       expect(newTag.shorthand, tagName);
       expect(newTag.target, target);
@@ -408,14 +408,17 @@ void main() {
     });
 
     test('deletes tag', () {
-      expect(repo.tags, ['v0.1', 'v0.2']);
+      expect(Tag.list(repo), ['v0.1', 'v0.2']);
 
-      repo.deleteTag('v0.2');
-      expect(repo.tags, ['v0.1']);
+      Tag.delete(repo: repo, name: 'v0.2');
+      expect(Tag.list(repo), ['v0.1']);
     });
 
     test('throws when trying to delete non existing tag', () {
-      expect(() => repo.deleteTag('not.there'), throwsA(isA<LibGit2Error>()));
+      expect(
+        () => Tag.delete(repo: repo, name: 'not.there'),
+        throwsA(isA<LibGit2Error>()),
+      );
     });
   });
 }
