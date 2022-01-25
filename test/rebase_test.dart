@@ -43,7 +43,8 @@ void main() {
         reference: feature,
       );
 
-      repo.checkout(target: feature.name);
+      Checkout.reference(repo: repo, name: feature.name);
+      repo.setHead(feature.name);
       expect(() => repo.index['.gitignore'], throwsA(isA<ArgumentError>()));
 
       final rebase = Rebase.init(
@@ -141,7 +142,8 @@ void main() {
       final feature = Reference.lookup(repo: repo, name: 'refs/heads/feature');
       final upstream = AnnotatedCommit.lookup(repo: repo, oid: repo[shas[1]]);
 
-      repo.checkout(target: feature.name);
+      Checkout.reference(repo: repo, name: feature.name);
+      repo.setHead(feature.name);
       expect(() => repo.index['conflict_file'], throwsA(isA<ArgumentError>()));
 
       final rebase = Rebase.init(
@@ -197,7 +199,8 @@ void main() {
       );
       final ontoHead = AnnotatedCommit.lookup(repo: repo, oid: conflict.target);
 
-      repo.checkout(target: conflict.name);
+      Checkout.reference(repo: repo, name: conflict.name);
+      repo.setHead(conflict.name);
 
       final rebase = Rebase.init(
         repo: repo,
@@ -237,7 +240,8 @@ void main() {
       );
       final ontoHead = AnnotatedCommit.lookup(repo: repo, oid: conflict.target);
 
-      repo.checkout(target: conflict.name);
+      Checkout.reference(repo: repo, name: conflict.name);
+      repo.setHead(conflict.name);
 
       final rebase = Rebase.init(
         repo: repo,
@@ -266,7 +270,8 @@ void main() {
       );
       final ontoHead = AnnotatedCommit.lookup(repo: repo, oid: conflict.target);
 
-      repo.checkout(target: conflict.name);
+      Checkout.reference(repo: repo, name: conflict.name);
+      repo.setHead(conflict.name);
 
       final rebase = Rebase.init(
         repo: repo,

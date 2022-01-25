@@ -83,8 +83,6 @@ void index({
 
 /// Updates files in the index and working tree to match the content of the tree
 /// pointed at by the treeish.
-///
-/// Throws a [LibGit2Error] if error occured.
 void tree({
   required Pointer<git_repository> repoPointer,
   required Pointer<git_object> treeishPointer,
