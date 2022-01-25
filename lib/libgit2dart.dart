@@ -12,6 +12,7 @@ export 'src/git_types.dart';
 export 'src/index.dart';
 export 'src/libgit2.dart';
 export 'src/mailmap.dart';
+export 'src/merge.dart';
 export 'src/note.dart';
 export 'src/odb.dart';
 export 'src/oid.dart';

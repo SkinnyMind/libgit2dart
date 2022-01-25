@@ -189,7 +189,7 @@ void main() {
     test('cleans up state', () {
       expect(repo.state, GitRepositoryState.none);
       final commit = Commit.lookup(repo: repo, oid: repo['5aecfa0']);
-      repo.cherryPick(commit);
+      Merge.cherryPick(repo: repo, commit: commit);
 
       expect(repo.state, GitRepositoryState.cherrypick);
       repo.stateCleanup();
