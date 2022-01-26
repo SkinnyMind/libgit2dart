@@ -6,6 +6,28 @@ libgit2dart package provides ability to use [libgit2](https://github.com/libgit2
 
 Currently supported platforms are 64-bit Linux, MacOS and Windows on both Flutter and Dart VM.
 
+- [Getting Started](#getting-started)
+- [Usage](#usage)
+  - [Repository](#repository)
+  - [Commit](#commit)
+  - [Tree and TreeEntry](#tree-and-treeentry)
+  - [Tag](#tag)
+  - [Blob](#blob)
+  - [Commit Walker](#commit-walker)
+  - [Index and IndexEntry](#index-and-indexentry)
+  - [References and RefLog](#references-and-reflog)
+  - [Branches](#branches)
+  - [Diff](#diff)
+  - [Patch](#patch)
+  - [Config Files](#config-files)
+  - [Checkout](#checkout)
+  - [Merge](#merge)
+  - [Stashes](#stashes)
+  - [Worktrees](#worktrees)
+  - [Submodules](#submodules)
+- [Contributing](#contributing)
+- [Development](#development)
+
 ## Getting Started
 
 1. Add package as a dependency in your `pubspec.yaml`
@@ -106,8 +128,8 @@ ref.target.sha; // => '821ed6e80627b8769d170a293862f9fc60825226'
 ref.free();
 
 // Looking up object with oid
-final oid = repo['821ed6e80627b8769d170a293862f9fc60825226']; // Oid
-final commit = repo.lookupCommit(oid); // Commit
+final oid = repo['821ed6e80627b8769d170a293862f9fc60825226']; // => Oid
+final commit = Commit.lookup(repo: repo, oid: oid); // => Commit
 commit.message; // => 'initial commit'
 // Release memory allocated for Commit object when it's no longer needed
 commit.free();
@@ -118,25 +140,24 @@ repo.free();
 
 #### Writing to repository
 
-There is two ways to write to repository. Using methods from different classes (e.g., `Commit.create(...)`) or using aliases of those methods on repository object:
-
 ```dart
 // Suppose you created a new file named 'new.txt' in your freshly initialized
 // repository and you want to commit it.
 
-final index = repo.index;
+final index = repo.index; // => Index
 index.add('new.txt');
 index.write();
-final tree = repo.lookupTree(index.writeTree());
+final tree = Tree.lookup(repo: repo, oid: index.writeTree()); // => Tree
 
-repo.createCommit(
+Commit.create(
+  repo: repo,
   updateRef: 'refs/heads/master',
   message: 'initial commit\n',
   author: repo.defaultSignature,
   committer: repo.defaultSignature,
   tree: tree,
-  parents: [],
-);
+  parents: [], // empty list for initial commit, 1 parent for regular and 2+ for merge commits
+); // => Oid
 
 tree.free();
 index.free();
@@ -166,10 +187,6 @@ final oid = Oid.fromSHA(repo: repo, sha: '821ed6e');
 Commit lookup and some of the getters of the object:
 
 ```dart
-// Lookup using alias on repository object
-final commit = repo.lookupCommit(repo['821ed6e']); // => Commit
-
-// Lookup using named constructor from Commit class
 final commit = Commit.lookup(repo: repo, oid: repo['821ed6e']); // => Commit
 
 commit.message; // => 'initial commit\n'
@@ -186,16 +203,11 @@ commit.free();
 Tree and TreeEntry lookup and some of their getters and methods:
 
 ```dart
-// Lookup using alias on repository object
-final tree = tree.lookupTree(repo['a8ae3dd']); // => Tree
-
-// Lookup using named constructor from Tree class
 final tree = Tree.lookup(repo: repo, oid: repo['a8ae3dd']); // => Tree
 
 tree.entries; // => [TreeEntry, TreeEntry, ...]
 tree.length; // => 3
 tree.oid; // => Oid
-tree.diffToWorkdir(); // => Diff
 
 // You can lookup single tree entry in the tree with index
 final entry = tree[0]; // => TreeEntry
@@ -238,8 +250,9 @@ builder.free();
 Tag create and lookup methods and some of the object getters:
 
 ```dart
-// Create using alias on repository object
-final oid = repo.createTag(
+// Create annotated tag
+final annotated = Tag.createAnnotated(
+  repo: repo,
   tagName: 'v0.1',
   target: repo['821ed6e'],
   targetType: GitObject.commit,
@@ -247,13 +260,15 @@ final oid = repo.createTag(
   message: 'tag message',
 ); // => Oid
 
-// Create using named constructor from Tag class
-final oid = Tag.create(repo: repo, ...); // => Oid
+// Create lightweight tag
+final lightweight = Tag.createLightweight(
+  repo: repo,
+  tagName: 'v0.1',
+  target: repo['821ed6e'],
+  targetType: GitObject.commit,
+); // => Oid
 
-// Lookup using alias on repository object
-final tag = repo.lookupTag(repo['f0fdbf5']); // => Tag
-
-// Lookup using named constructor from Tag class
+// Lookup tag
 final tag = Tag.lookup(repo: repo, oid: repo['f0fdbf5']); // => Tag
 
 // Get list of all the tags names in repository
@@ -271,18 +286,10 @@ tag.free();
 Blob create and lookup methods and some of the object getters:
 
 ```dart
-// Create a new blob from the file at provided path using alias on repository
-// object
-final oid = repo.createBlobFromDisk('path/to/file.txt'); // => Oid
-
-// Create a new blob from the file at provided path using static method from
-// Blob class
+// Create a new blob from the file at provided path
 final oid = Blob.createFromDisk(repo: repo, path: 'path/to/file.txt'); // => Oid
 
-// Lookup using alias on repository object
-final blob = repo.lookupBlob(repo['e69de29']); // => Blob
-
-// Lookup using named constructor from Blob class
+// Lookup blob
 final blob = Blob.lookup(repo: repo, oid: repo['e69de29']); // => Blob
 
 blob.oid; // => Oid
@@ -324,9 +331,9 @@ walker.free();
 
 ---
 
-### Index ("staging") area and IndexEntry
+### Index and IndexEntry
 
-Some methods and getters to inspect and manipulate the Git index:
+Some methods and getters to inspect and manipulate the Git index ("staging area"):
 
 ```dart
 // Initialize Index object
@@ -367,18 +374,16 @@ index.free();
 // Get names of all of the references that can be found in repository
 final refs = repo.references; // => ['refs/heads/master', 'refs/tags/v0.1', ...]
 
-// Lookup reference using alias on repository object
-final ref = repo.lookupReference('refs/heads/master'); // => Reference
-
-// Lookup using named constructor from Reference class
+// Lookup reference
 final ref = Reference.lookup(repo: repo, name: 'refs/heads/master'); // => Reference
 
 ref.type; // => ReferenceType.direct
 ref.target; // => Oid
 ref.name; // => 'refs/heads/master'
 
-// Create reference using alias on repository object
-final ref = repo.createReference(
+// Create reference
+final ref = Reference.create(
+  repo: repo,
   name: 'refs/heads/feature',
   target: repo['821ed6e'],
 ); // => Reference
@@ -387,10 +392,10 @@ final ref = repo.createReference(
 ref.setTarget(repo['c68ff54']);
 
 // Rename reference
-repo.renameReference(oldName: 'refs/heads/feature', newName: 'refs/heads/feature2');
+Reference.rename(repo: repo, oldName: 'refs/heads/feature', newName: 'refs/heads/feature2');
 
 // Delete reference
-repo.deleteReference('refs/heads/feature2');
+Reference.delete(repo: repo, name: 'refs/heads/feature2');
 
 // Access the reflog
 final reflog = ref.log; // => RefLog
@@ -418,26 +423,22 @@ final branches = repo.branches; // => [Branch, Branch, ...]
 final local = repo.branchesLocal; // => [Branch, Branch, ...]
 final remote = repo.branchesRemote; // => [Branch, Branch, ...]
 
-// Lookup branch using alias on repository object (lookups in local branches
-// if no value for argument `type` is provided)
-final branch = repo.lookupBranch(name: 'master'); // => Branch
-
-// Lookup branch using named constructor from Branch class (lookups in local
-// branches if no value for argument `type` is provided)
+// Lookup branch (lookups in local branches if no value for argument `type`
+// is provided)
 final branch = Branch.lookup(repo: repo, name: 'master'); // => Branch
 
 branch.target; // => Oid
 branch.isHead; // => true
 branch.name; // => 'master'
 
-// Create branch using alias on repository object
-final branch = repo.createBranch(name: 'feature', target: commit); // => Branch
+// Create branch
+final branch = Branch.create(repo: repo, name: 'feature', target: commit); // => Branch
 
 // Rename branch
-repo.renameBranch(oldName: 'feature', newName: 'feature2');
+Branch.rename(repo: repo, oldName: 'feature', newName: 'feature2');
 
 // Delete branch
-repo.deleteBranch('feature2');
+Branch.delete(repo: repo, name: 'feature2');
 
 // Release memory allocated for Branch object when it's no longer needed
 branch.free();
@@ -450,17 +451,26 @@ branch.free();
 There is multiple ways to get the diff:
 
 ```dart
-// Diff between two tree objects
-final diff = repo.diff(a: tree1, b: tree2); // => Diff
+// Diff between index (staging area) and current working directory
+final diff = Diff.indexToWorkdir(repo: repo, index: repo.index); // => Diff
+
+// Diff between tree and index (staging area)
+final diff = Diff.treeToIndex(repo: repo, tree: tree, index: repo.index); // => Diff
 
 // Diff between tree and current working directory
-final diff = repo.diff(a: tree); // => Diff
+final diff = Diff.treeToWorkdir(repo: repo, tree: tree); // => Diff
 
-// Diff between index (staging area) and current working directory
-final diff = repo.diff(); // => Diff
+// Diff between tree and current working directory with index
+final diff = Diff.treeToWorkdirWithIndex(repo: repo, tree: tree); // => Diff
 
-// Diff between index (staging area) and tree
-final diff = repo.diff(a: tree, cached: true); // => Diff
+// Diff between two tree objects
+final diff = Diff.treeToTree(repo: repo, oldTree: tree1, newTree: tree2); // => Diff
+
+// Diff between two index objects
+final diff = Diff.indexToIndex(repo: repo, oldIndex: repo.index, newIndex: index); // => Diff
+
+// Read the contents of a git patch file
+final diff = Diff.parse(patch.text); // => Diff
 
 // Release memory allocated for Diff object when it's no longer needed
 diff.free();
@@ -493,6 +503,41 @@ delta.newFile; // => DiffFile
 
 ---
 
+### Patch
+
+Some API methods to generate patch:
+
+```dart
+// Patch from difference between two blobs
+final patch = Patch.fromBlobs(
+  oldBlob: null, // empty blob
+  newBlob: blob,
+  newBlobPath: 'file.txt',
+); // => Patch
+
+// Patch from entry in the diff list at provided index position
+final patch = Patch.fromDiff(diff: diff, index: 0); // => Patch
+
+// Release memory allocated for Patch object when it's no longer needed
+patch.free();
+```
+
+Some methods for inspecting Patch object:
+
+```dart
+// Get the content of a patch as a single diff text
+patch.text; // => 'diff --git a/modified_file b/modified_file ...'
+
+// Get the size of a patch diff data in bytes
+patch.size(); // => 1337
+
+// Get the list of hunks in a patch
+patch.hunks; // => [DiffHunk, DiffHunk, ...]
+
+```
+
+---
+
 ### Config files
 
 Some methods and getters of Config object:
@@ -515,6 +560,155 @@ config.delete('user.name');
 
 // Release memory allocated for Config object when it's no longer needed
 config.free();
+```
+
+---
+
+### Checkout
+
+Perform different types of checkout:
+
+```dart
+// Update files in the index and the working directory to match the
+// content of the commit pointed at by HEAD
+Checkout.head(repo: repo);
+
+// Update files in the working directory to match the content of the index
+Checkout.index(repo: repo);
+
+// Update files in the working directory to match the content of the tree
+// pointed at by the reference target
+Checkout.reference(repo: repo, name: 'refs/heads/master');
+
+// Update files in the working directory to match the content of the tree
+// pointed at by the commit
+Checkout.commit(repo: repo, commit: commit);
+
+// Perform checkout using various strategies
+Checkout.head(repo: repo, strategy: {GitCheckout.force});
+
+// Checkout only required files
+Checkout.head(repo: repo, paths: ['some/file.txt']);
+```
+
+---
+
+### Merge
+
+Some API methods:
+
+```dart
+// Find a merge base between commits
+final oid = Merge.base(
+  repo: repo,
+  commits: [commit1.oid, commit2.oid],
+); // => Oid
+
+// Merge commit into HEAD writing the results into the working directory
+Merge.commit(repo: repo, commit: annotatedCommit);
+
+// Cherry-pick the provided commit, producing changes in the index and
+// working directory.
+Merge.cherryPick(repo: repo, commit: commit);
+```
+
+---
+
+### Stashes
+
+```dart
+// Get the list of all stashed states (first being the most recent)
+repo.stashes;
+
+// Save local modifications to a new stash
+Stash.create(repo: repo, stasher: signature, message: 'WIP'); // => Oid
+
+// Apply stash (defaults to last saved if index is not provided)
+Stash.apply(repo: repo);
+
+// Apply only specific paths from stash
+Stash.apply(repo: repo, paths: ['file.txt']);
+
+// Drop stash (defaults to last saved if index is not provided)
+Stash.drop(repo: repo);
+
+// Pop stash (apply and drop if successful, defaults to last saved
+// if index is not provided)
+Stash.pop(repo: repo);
+```
+
+---
+
+### Worktrees
+
+```dart
+// Get list of names of linked worktrees
+repo.worktrees; // => ['worktree1', 'worktree2'];
+
+// Lookup existing worktree
+final worktree = Worktree.lookup(repo: repo, name: 'worktree1'); // => Worktree
+
+// Create new worktree
+final worktree = Worktree.create(
+  repo: repo,
+  name: 'worktree3',
+  path: '/worktree3/path/',
+); // => Worktree
+
+// Get name of worktree
+worktree.name; // => 'worktree3'
+
+// Get path for the worktree
+worktree.path; // => '/worktree3/path/';
+
+// Lock and unlock worktree
+worktree.lock();
+worktree.unlock();
+
+// Prune the worktree (remove the git data structures on disk)
+worktree.prune();
+```
+
+---
+
+### Submodules
+
+Some API methods for submodule management:
+
+```dart
+// Get list with all tracked submodules paths
+repo.submodules; // => ['Submodule1', 'Submodule2'];
+
+// Lookup submodule
+final submodule = Submodule.lookup(repo: repo, name: 'Submodule'); // => Submodule
+
+// Init and update
+Submodule.init(repo: repo, name: 'Submodule');
+Submodule.update(repo: repo, name: 'Submodule');
+
+// Add submodule
+final submodule = Submodule.add(
+  repo: repo,
+  url: 'https://some.url',
+  path: 'submodule',
+); // => Submodule
+```
+
+Some methods for inspecting Submodule object:
+
+```dart
+// Get name of the submodule
+submodule.name; // => 'Submodule'
+
+// Get path to the submodule
+submodule.path; // => 'Submodule'
+
+// Get URL for the submodule
+submodule.url; // => 'https://some.url'
+
+// Set URL for the submodule in the configuration
+submodule.url = 'https://updated.url';
+submodule.sync();
 ```
 
 ---

@@ -22,7 +22,7 @@ class Checkout {
   ///
   /// [directory] is optional alternative checkout path to workdir.
   ///
-  /// [paths] is optional list of files to checkout from index.
+  /// [paths] is optional list of files to checkout.
   ///
   /// Throws a [LibGit2Error] if error occured.
   static void head({
@@ -51,7 +51,7 @@ class Checkout {
   ///
   /// [directory] is optional alternative checkout path to workdir.
   ///
-  /// [paths] is optional list of files to checkout from index.
+  /// [paths] is optional list of files to checkout.
   ///
   /// Throws a [LibGit2Error] if error occured.
   static void index({
@@ -84,7 +84,7 @@ class Checkout {
   ///
   /// [directory] is optional alternative checkout path to workdir.
   ///
-  /// [paths] is optional list of files to checkout from index.
+  /// [paths] is optional list of files to checkout.
   ///
   /// Throws a [LibGit2Error] if error occured.
   static void reference({
@@ -129,7 +129,7 @@ class Checkout {
   ///
   /// [directory] is optional alternative checkout path to workdir.
   ///
-  /// [paths] is optional list of files to checkout from index.
+  /// [paths] is optional list of files to checkout.
   ///
   /// Throws a [LibGit2Error] if error occured.
   static void commit({
