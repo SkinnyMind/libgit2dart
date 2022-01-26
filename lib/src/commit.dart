@@ -2,6 +2,7 @@ import 'dart:ffi';
 
 import 'package:libgit2dart/libgit2dart.dart';
 import 'package:libgit2dart/src/bindings/commit.dart' as bindings;
+import 'package:libgit2dart/src/bindings/graph.dart' as graph_bindings;
 import 'package:libgit2dart/src/bindings/libgit2_bindings.dart';
 
 class Commit {
@@ -307,6 +308,18 @@ class Commit {
   /// Throws a [LibGit2Error] if error occured.
   Commit nthGenAncestor(int n) {
     return Commit(bindings.nthGenAncestor(commitPointer: _commitPointer, n: n));
+  }
+
+  /// Checks if commit is the descendant of another [ancestor] commit.
+  ///
+  /// Note that a commit is not considered a descendant of itself, in contrast
+  /// to `git merge-base --is-ancestor`.
+  bool descendantOf(Commit ancestor) {
+    return graph_bindings.descendantOf(
+      repoPointer: bindings.owner(_commitPointer),
+      commitPointer: bindings.id(_commitPointer),
+      ancestorPointer: bindings.id(ancestor.pointer),
+    );
   }
 
   /// Creates an in-memory copy of a commit.
