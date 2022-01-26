@@ -1,5 +1,7 @@
 # libgit2dart
 
+![Coverage](coverage_badge.svg)
+
 **Dart bindings to libgit2**
 
 libgit2dart package provides ability to use [libgit2](https://github.com/libgit2/libgit2) in Dart/Flutter.
@@ -717,6 +719,8 @@ submodule.sync();
 
 Fork libgit2dart, improve libgit2dart, send a pull request.
 
+---
+
 ## Development
 
 ### Troubleshooting
@@ -743,23 +747,24 @@ To generate bindings with ffigen use (adjust paths to yours):
 dart run ffigen --compiler-opts "-I/path/to/libgit2dart/libgit2/headers/ -I/lib64/clang/12.0.1/include"
 ```
 
-## Running Tests
+### Running Tests
 
-To run all tests and generate coverage report use the following commands:
+To run all tests and generate coverage report make sure to have activated packages and [lcov](https://github.com/linux-test-project/lcov) installed:
 
 ```sh
 $ dart pub global activate coverage
-$ dart test --coverage="coverage"
-$ format_coverage --lcov --check-ignore --in=coverage --out=coverage/lcov.info --packages=.packages --report-on=lib
+$ dart pub global activate flutter_coverage_badge
 ```
 
-To view the generated coverage report you can use [lcov](https://github.com/linux-test-project/lcov):
+And run:
 
 ```sh
-$ genhtml coverage/lcov.info -o coverage/
+$ ./coverage.sh
 $ open coverage/index.html
 ```
 
+---
+
 ## Licence
 
-MIT. See LICENSE file for more information.
+MIT. See [LICENSE](LICENSE) file for more information.
