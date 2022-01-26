@@ -525,9 +525,5 @@ void conflictCleanup(Pointer<git_index> index) {
   }
 }
 
-/// Get the repository this index relates to.
-Pointer<git_repository> owner(Pointer<git_index> index) =>
-    libgit2.git_index_owner(index);
-
 /// Free an existing index object.
 void free(Pointer<git_index> index) => libgit2.git_index_free(index);

@@ -11,7 +11,9 @@ import 'helpers/util.dart';
 void main() {
   late Repository repo;
   late Directory tmpDir;
-  final cloneDir = Directory(p.join(Directory.systemTemp.path, 'cloned'));
+  final cloneDir = Directory(
+    p.join(Directory.systemTemp.path, 'repository_cloned'),
+  );
 
   setUp(() {
     tmpDir = setupRepo(Directory(p.join('test', 'assets', 'test_repo')));

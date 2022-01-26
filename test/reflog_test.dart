@@ -141,6 +141,17 @@ void main() {
       expect(newReflog.length, 3);
     });
 
+    test('throws when trying to write reflog to disk and error occurs', () {
+      final ref = Reference.lookup(repo: repo, name: 'refs/heads/feature');
+      final reflog = ref.log;
+      Reference.delete(repo: repo, name: ref.name);
+
+      expect(() => reflog.write(), throwsA(isA<LibGit2Error>()));
+
+      reflog.free();
+      ref.free();
+    });
+
     test('returns string representation of RefLogEntry object', () {
       expect(reflog[0].toString(), contains('RefLogEntry{'));
     });

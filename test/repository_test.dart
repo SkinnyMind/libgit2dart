@@ -249,18 +249,6 @@ void main() {
       expect(repo.getAttribute(path: 'file.sh', name: 'eol'), 'lf');
     });
 
-    test('checks if commit is a descendant of another commit', () {
-      final commit1 = Commit.lookup(repo: repo, oid: repo['821ed6e8']);
-      final commit2 = Commit.lookup(repo: repo, oid: repo['78b8bf12']);
-
-      expect(commit1.descendantOf(commit2), true);
-      expect(commit1.descendantOf(commit1), false);
-      expect(commit2.descendantOf(commit1), false);
-
-      commit1.free();
-      commit2.free();
-    });
-
     test('returns number of ahead behind commits', () {
       final commit1 = Commit.lookup(repo: repo, oid: repo['821ed6e']);
       final commit2 = Commit.lookup(repo: repo, oid: repo['c68ff54']);

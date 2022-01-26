@@ -5,7 +5,7 @@ import 'package:libgit2dart/src/bindings/merge.dart' as bindings;
 import 'package:libgit2dart/src/util.dart';
 
 class Merge {
-  const Merge._();
+  const Merge._(); // coverage:ignore-line
 
   /// Finds a merge base between [commits].
   ///

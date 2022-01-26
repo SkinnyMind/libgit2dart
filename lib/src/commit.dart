@@ -314,11 +314,11 @@ class Commit {
   ///
   /// Note that a commit is not considered a descendant of itself, in contrast
   /// to `git merge-base --is-ancestor`.
-  bool descendantOf(Commit ancestor) {
+  bool descendantOf(Oid ancestor) {
     return graph_bindings.descendantOf(
       repoPointer: bindings.owner(_commitPointer),
       commitPointer: bindings.id(_commitPointer),
-      ancestorPointer: bindings.id(ancestor.pointer),
+      ancestorPointer: ancestor.pointer,
     );
   }
 

@@ -86,6 +86,20 @@ void main() {
     'subdir/modified_file',
   ];
 
+  const treeToEmptyTree = [
+    'current_file',
+    'file_deleted',
+    'modified_file',
+    'staged_changes',
+    'staged_changes_file_deleted',
+    'staged_changes_file_modified',
+    'staged_delete',
+    'staged_delete_file_modified',
+    'subdir/current_file',
+    'subdir/deleted_file',
+    'subdir/modified_file',
+  ];
+
   const patchText = """
 diff --git a/subdir/modified_file b/subdir/modified_file
 index e69de29..c217c63 100644
@@ -141,6 +155,25 @@ index e69de29..c217c63 100644
       expect(diff.length, 8);
       for (var i = 0; i < diff.deltas.length; i++) {
         expect(diff.deltas[i].newFile.path, indexToTree[i]);
+      }
+
+      commit.free();
+      head.free();
+      tree.free();
+      diff.free();
+      index.free();
+    });
+
+    test('returns diff between index and empty tree', () {
+      final index = repo.index;
+      final head = repo.head;
+      final commit = Commit.lookup(repo: repo, oid: head.target);
+      final tree = commit.tree;
+      final diff = Diff.treeToIndex(repo: repo, tree: null, index: index);
+
+      expect(diff.length, 12);
+      for (var i = 0; i < diff.deltas.length; i++) {
+        expect(diff.deltas[i].newFile.path, indexToIndex[i]);
       }
 
       commit.free();
@@ -220,6 +253,42 @@ index e69de29..c217c63 100644
       head.free();
       tree1.free();
       tree2.free();
+      diff.free();
+    });
+
+    test('returns diff between tree and empty tree', () {
+      final head = repo.head;
+      final commit = Commit.lookup(repo: repo, oid: head.target);
+      final tree = commit.tree;
+
+      final diff = Diff.treeToTree(repo: repo, oldTree: tree, newTree: null);
+
+      expect(diff.length, 11);
+      for (var i = 0; i < diff.deltas.length; i++) {
+        expect(diff.deltas[i].newFile.path, treeToEmptyTree[i]);
+      }
+
+      commit.free();
+      head.free();
+      tree.free();
+      diff.free();
+    });
+
+    test('returns diff between empty tree and tree', () {
+      final head = repo.head;
+      final commit = Commit.lookup(repo: repo, oid: head.target);
+      final tree = commit.tree;
+
+      final diff = Diff.treeToTree(repo: repo, oldTree: null, newTree: tree);
+
+      expect(diff.length, 11);
+      for (var i = 0; i < diff.deltas.length; i++) {
+        expect(diff.deltas[i].newFile.path, treeToEmptyTree[i]);
+      }
+
+      commit.free();
+      head.free();
+      tree.free();
       diff.free();
     });
 
@@ -401,6 +470,19 @@ index e69de29..c217c63 100644
 
         diff.apply(repo: repo, hunkIndex: hunk.index);
         expect(file.readAsStringSync(), 'Modified content\n');
+
+        diff.free();
+      });
+
+      test('does not apply hunk with non existing index', () {
+        final diff = Diff.parse(patchText);
+        final file = File(p.join(tmpDir.path, 'subdir', 'modified_file'));
+
+        Checkout.head(repo: repo, strategy: {GitCheckout.force});
+        expect(file.readAsStringSync(), '');
+
+        diff.apply(repo: repo, hunkIndex: 10);
+        expect(file.readAsStringSync(), '');
 
         diff.free();
       });

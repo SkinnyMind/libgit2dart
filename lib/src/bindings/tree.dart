@@ -26,10 +26,6 @@ Pointer<git_tree> lookup({
   }
 }
 
-/// Get the repository that contains the tree.
-Pointer<git_repository> owner(Pointer<git_tree> tree) =>
-    libgit2.git_tree_owner(tree);
-
 /// Lookup a tree entry by its position in the tree.
 ///
 /// This returns a tree entry that is owned by the tree. You don't have to free

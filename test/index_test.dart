@@ -341,6 +341,7 @@ void main() {
     test('adds conflict entry', () {
       expect(index.conflicts, isEmpty);
       index.addConflict(
+        ancestorEntry: index['file'],
         ourEntry: index['file'],
         theirEntry: index['feature_file'],
       );

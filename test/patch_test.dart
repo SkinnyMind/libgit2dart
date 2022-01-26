@@ -152,6 +152,19 @@ index e69de29..0000000
       patch.free();
     });
 
+    test('creates from empty blob and buffer', () {
+      final patch = Patch.fromBlobAndBuffer(
+        blob: null,
+        buffer: newBuffer,
+        blobPath: path,
+        bufferPath: path,
+      );
+
+      expect(patch.text, blobPatchAdd);
+
+      patch.free();
+    });
+
     test('throws when trying to create from diff and error occurs', () {
       expect(
         () => Patch.fromDiff(diff: Diff(nullptr), index: 0),
