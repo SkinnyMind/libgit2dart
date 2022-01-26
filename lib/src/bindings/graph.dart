@@ -2,15 +2,12 @@ import 'dart:ffi';
 
 import 'package:ffi/ffi.dart';
 import 'package:libgit2dart/src/bindings/libgit2_bindings.dart';
-import 'package:libgit2dart/src/error.dart';
 import 'package:libgit2dart/src/util.dart';
 
 /// Determine if a commit is the descendant of another commit.
 ///
 /// Note that a commit is not considered a descendant of itself, in contrast to
 /// `git merge-base --is-ancestor`.
-///
-/// Throws a [LibGit2Error] if error occured.
 bool descendantOf({
   required Pointer<git_repository> repoPointer,
   required Pointer<git_oid> commitPointer,
@@ -22,11 +19,7 @@ bool descendantOf({
     ancestorPointer,
   );
 
-  if (result < 0) {
-    throw LibGit2Error(libgit2.git_error_last());
-  } else {
-    return result == 1 || false;
-  }
+  return result == 1 || false;
 }
 
 /// Count the number of unique commits between two commit objects.

@@ -617,21 +617,6 @@ class Repository {
     );
   }
 
-  /// Checks if a provided [commit] is the descendant of another [ancestor]
-  /// commit.
-  ///
-  /// Note that a commit is not considered a descendant of itself, in contrast
-  /// to `git merge-base --is-ancestor`.
-  ///
-  /// Throws a [LibGit2Error] if error occured.
-  bool descendantOf({required Oid commit, required Oid ancestor}) {
-    return graph_bindings.descendantOf(
-      repoPointer: _repoPointer,
-      commitPointer: commit.pointer,
-      ancestorPointer: ancestor.pointer,
-    );
-  }
-
   /// Returns list with the `ahead` and `behind` number of unique commits
   /// respectively.
   ///

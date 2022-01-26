@@ -250,32 +250,15 @@ void main() {
     });
 
     test('checks if commit is a descendant of another commit', () {
-      final commit1 = repo['821ed6e8'];
-      final commit2 = repo['78b8bf12'];
+      final commit1 = Commit.lookup(repo: repo, oid: repo['821ed6e8']);
+      final commit2 = Commit.lookup(repo: repo, oid: repo['78b8bf12']);
 
-      expect(
-        repo.descendantOf(commit: commit1, ancestor: commit2),
-        true,
-      );
-      expect(
-        repo.descendantOf(commit: commit1, ancestor: commit1),
-        false,
-      );
-      expect(
-        repo.descendantOf(commit: commit2, ancestor: commit1),
-        false,
-      );
-    });
+      expect(commit1.descendantOf(commit2), true);
+      expect(commit1.descendantOf(commit1), false);
+      expect(commit2.descendantOf(commit1), false);
 
-    test('throws when trying to check if commit is descendant and error occurs',
-        () {
-      final commit1 = repo['821ed6e8'];
-      final commit2 = repo['78b8bf12'];
-      final nullRepo = Repository(nullptr);
-      expect(
-        () => nullRepo.descendantOf(commit: commit1, ancestor: commit2),
-        throwsA(isA<LibGit2Error>()),
-      );
+      commit1.free();
+      commit2.free();
     });
 
     test('returns number of ahead behind commits', () {
