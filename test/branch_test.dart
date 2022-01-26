@@ -29,30 +29,39 @@ void main() {
     test('returns a list of all branches', () {
       const branchesExpected = ['feature', 'master', 'origin/master'];
       final branches = Branch.list(repo: repo);
+      final aliasBranches = repo.branches;
 
       for (var i = 0; i < branches.length; i++) {
         expect(branches[i].name, branchesExpected[i]);
+        expect(aliasBranches[i].name, branchesExpected[i]);
         branches[i].free();
+        aliasBranches[i].free();
       }
     });
 
     test('returns a list of local branches', () {
       const branchesExpected = ['feature', 'master'];
       final branches = Branch.list(repo: repo, type: GitBranch.local);
+      final aliasBranches = repo.branchesLocal;
 
       for (var i = 0; i < branches.length; i++) {
         expect(branches[i].name, branchesExpected[i]);
+        expect(aliasBranches[i].name, branchesExpected[i]);
         branches[i].free();
+        aliasBranches[i].free();
       }
     });
 
     test('returns a list of remote branches', () {
       const branchesExpected = ['origin/master'];
       final branches = Branch.list(repo: repo, type: GitBranch.remote);
+      final aliasBranches = repo.branchesRemote;
 
       for (var i = 0; i < branches.length; i++) {
         expect(branches[i].name, branchesExpected[i]);
+        expect(aliasBranches[i].name, branchesExpected[i]);
         branches[i].free();
+        aliasBranches[i].free();
       }
     });
 
@@ -226,7 +235,7 @@ void main() {
 
     test('throws when trying to get upstream remote of a remote branch', () {
       final branch = Branch.list(repo: repo, type: GitBranch.remote).first;
-      expect(() => branch.upstreamName, throwsA(isA<LibGit2Error>()));
+      expect(() => branch.upstreamRemote, throwsA(isA<LibGit2Error>()));
       branch.free();
     });
 

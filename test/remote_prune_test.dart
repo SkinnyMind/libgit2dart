@@ -11,7 +11,9 @@ void main() {
   late Repository clonedRepo;
   late Directory tmpDir;
   late Remote remote;
-  final cloneDir = Directory(p.join(Directory.systemTemp.path, 'cloned'));
+  final cloneDir = Directory(
+    p.join(Directory.systemTemp.path, 'remote_prune_cloned'),
+  );
 
   setUp(() {
     tmpDir = setupRepo(Directory(p.join('test', 'assets', 'test_repo')));

@@ -107,6 +107,18 @@ void main() {
       );
     });
 
+    test('checks if commit is a descendant of another commit', () {
+      final commit1 = Commit.lookup(repo: repo, oid: repo['821ed6e8']);
+      final commit2 = Commit.lookup(repo: repo, oid: repo['78b8bf12']);
+
+      expect(commit1.descendantOf(commit2.oid), true);
+      expect(commit1.descendantOf(commit1.oid), false);
+      expect(commit2.descendantOf(commit1.oid), false);
+
+      commit1.free();
+      commit2.free();
+    });
+
     test('creates commit', () {
       final parent = Commit.lookup(repo: repo, oid: tip);
       final oid = Commit.create(
@@ -136,6 +148,33 @@ void main() {
       expect(commit.parents[0], tip);
 
       commit.free();
+      parent.free();
+    });
+
+    test('writes commit without parents into the buffer', () {
+      final parent = Commit.lookup(repo: repo, oid: tip);
+      final commit = Commit.createBuffer(
+        repo: repo,
+        updateRef: 'HEAD',
+        message: message,
+        author: author,
+        committer: committer,
+        tree: tree,
+        parents: [],
+      );
+
+      const expected = """
+tree a8ae3dd59e6e1802c6f78e05e301bfd57c9f334f
+author Author Name <author@email.com> 123 +0000
+committer Commiter <commiter@email.com> 124 +0000
+
+Commit message.
+
+Some description.
+""";
+
+      expect(commit, expected);
+
       parent.free();
     });
 

@@ -347,18 +347,10 @@ Pointer<git_oid> treeOid(Pointer<git_commit> commit) {
 }
 
 /// Get the tree pointed to by a commit.
-///
-/// Throws a [LibGit2Error] if error occured.
 Pointer<git_tree> tree(Pointer<git_commit> commit) {
   final out = calloc<Pointer<git_tree>>();
-  final error = libgit2.git_commit_tree(out, commit);
-
-  if (error < 0) {
-    calloc.free(out);
-    throw LibGit2Error(libgit2.git_error_last());
-  } else {
-    return out.value;
-  }
+  libgit2.git_commit_tree(out, commit);
+  return out.value;
 }
 
 /// Reverts the given commit, producing changes in the index and working

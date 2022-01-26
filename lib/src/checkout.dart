@@ -3,7 +3,7 @@ import 'package:libgit2dart/src/bindings/checkout.dart' as bindings;
 import 'package:libgit2dart/src/bindings/object.dart' as object_bindings;
 
 class Checkout {
-  const Checkout._();
+  const Checkout._(); // coverage:ignore-line
 
   /// Updates files in the index and the working tree to match the content of
   /// the commit pointed at by HEAD.

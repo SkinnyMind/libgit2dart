@@ -352,7 +352,7 @@ void main() {
           repo: repo,
           tagName: '',
           target: repo['9c78c21'],
-          targetType: GitObject.commit,
+          targetType: GitObject.any,
           tagger: Signature(nullptr),
           message: '',
         ),
@@ -366,7 +366,7 @@ void main() {
           repo: repo,
           tagName: '',
           target: repo['9c78c21'],
-          targetType: GitObject.commit,
+          targetType: GitObject.any,
         ),
         throwsA(isA<LibGit2Error>()),
       );
