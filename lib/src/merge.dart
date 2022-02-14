@@ -50,7 +50,7 @@ class Merge {
   /// values respectively.
   ///
   /// Throws a [LibGit2Error] if error occured.
-  static List analysis({
+  static List<Object> analysis({
     required Repository repo,
     required Oid theirHead,
     String ourRef = 'HEAD',
