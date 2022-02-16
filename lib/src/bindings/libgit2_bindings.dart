@@ -1316,6 +1316,20 @@ class Libgit2 {
   late final _realloc = _reallocPtr
       .asFunction<ffi.Pointer<ffi.Void> Function(ffi.Pointer<ffi.Void>, int)>();
 
+  void free(
+    ffi.Pointer<ffi.Void> __ptr,
+  ) {
+    return _free(
+      __ptr,
+    );
+  }
+
+  late final _freePtr =
+      _lookup<ffi.NativeFunction<ffi.Void Function(ffi.Pointer<ffi.Void>)>>(
+          'free');
+  late final _free =
+      _freePtr.asFunction<void Function(ffi.Pointer<ffi.Void>)>();
+
   ffi.Pointer<ffi.Void> reallocarray(
     ffi.Pointer<ffi.Void> __ptr,
     int __nmemb,
@@ -1334,20 +1348,6 @@ class Libgit2 {
               ffi.Pointer<ffi.Void>, size_t, size_t)>>('reallocarray');
   late final _reallocarray = _reallocarrayPtr.asFunction<
       ffi.Pointer<ffi.Void> Function(ffi.Pointer<ffi.Void>, int, int)>();
-
-  void free(
-    ffi.Pointer<ffi.Void> __ptr,
-  ) {
-    return _free(
-      __ptr,
-    );
-  }
-
-  late final _freePtr =
-      _lookup<ffi.NativeFunction<ffi.Void Function(ffi.Pointer<ffi.Void>)>>(
-          'free');
-  late final _free =
-      _freePtr.asFunction<void Function(ffi.Pointer<ffi.Void>)>();
 
   ffi.Pointer<ffi.Void> alloca(
     int __size,
@@ -2221,6 +2221,9 @@ class Libgit2 {
   /// - GIT_FEATURE_SSH
   /// Libgit2 supports the SSH protocol for network operations. This requires
   /// the libssh2 library to be found when compiling libgit2
+  ///
+  /// - GIT_FEATURE_NSEC
+  /// Libgit2 supports the sub-second resolution in file modification times.
   int git_libgit2_features() {
     return _git_libgit2_features();
   }
@@ -2484,9 +2487,7 @@ class Libgit2 {
   /// Free the memory referred to by the git_buf.
   ///
   /// Note that this does not free the `git_buf` itself, just the memory
-  /// pointed to by `buffer->ptr`.  This will not free the memory if it looks
-  /// like it was not allocated internally, but it will clear the buffer back
-  /// to the empty state.
+  /// pointed to by `buffer->ptr`.
   ///
   /// @param buffer The buffer to deallocate
   void git_buf_dispose(
@@ -2502,102 +2503,6 @@ class Libgit2 {
           'git_buf_dispose');
   late final _git_buf_dispose =
       _git_buf_disposePtr.asFunction<void Function(ffi.Pointer<git_buf>)>();
-
-  /// Resize the buffer allocation to make more space.
-  ///
-  /// This will attempt to grow the buffer to accommodate the target size.
-  ///
-  /// If the buffer refers to memory that was not allocated by libgit2 (i.e.
-  /// the `asize` field is zero), then `ptr` will be replaced with a newly
-  /// allocated block of data.  Be careful so that memory allocated by the
-  /// caller is not lost.  As a special variant, if you pass `target_size` as
-  /// 0 and the memory is not allocated by libgit2, this will allocate a new
-  /// buffer of size `size` and copy the external data into it.
-  ///
-  /// Currently, this will never shrink a buffer, only expand it.
-  ///
-  /// If the allocation fails, this will return an error and the buffer will be
-  /// marked as invalid for future operations, invaliding the contents.
-  ///
-  /// @param buffer The buffer to be resized; may or may not be allocated yet
-  /// @param target_size The desired available size
-  /// @return 0 on success, -1 on allocation failure
-  int git_buf_grow(
-    ffi.Pointer<git_buf> buffer,
-    int target_size,
-  ) {
-    return _git_buf_grow(
-      buffer,
-      target_size,
-    );
-  }
-
-  late final _git_buf_growPtr = _lookup<
-          ffi.NativeFunction<ffi.Int32 Function(ffi.Pointer<git_buf>, size_t)>>(
-      'git_buf_grow');
-  late final _git_buf_grow =
-      _git_buf_growPtr.asFunction<int Function(ffi.Pointer<git_buf>, int)>();
-
-  /// Set buffer to a copy of some raw data.
-  ///
-  /// @param buffer The buffer to set
-  /// @param data The data to copy into the buffer
-  /// @param datalen The length of the data to copy into the buffer
-  /// @return 0 on success, -1 on allocation failure
-  int git_buf_set(
-    ffi.Pointer<git_buf> buffer,
-    ffi.Pointer<ffi.Void> data,
-    int datalen,
-  ) {
-    return _git_buf_set(
-      buffer,
-      data,
-      datalen,
-    );
-  }
-
-  late final _git_buf_setPtr = _lookup<
-      ffi.NativeFunction<
-          ffi.Int32 Function(ffi.Pointer<git_buf>, ffi.Pointer<ffi.Void>,
-              size_t)>>('git_buf_set');
-  late final _git_buf_set = _git_buf_setPtr.asFunction<
-      int Function(ffi.Pointer<git_buf>, ffi.Pointer<ffi.Void>, int)>();
-
-  /// Check quickly if buffer looks like it contains binary data
-  ///
-  /// @param buf Buffer to check
-  /// @return 1 if buffer looks like non-text data
-  int git_buf_is_binary(
-    ffi.Pointer<git_buf> buf,
-  ) {
-    return _git_buf_is_binary(
-      buf,
-    );
-  }
-
-  late final _git_buf_is_binaryPtr =
-      _lookup<ffi.NativeFunction<ffi.Int32 Function(ffi.Pointer<git_buf>)>>(
-          'git_buf_is_binary');
-  late final _git_buf_is_binary =
-      _git_buf_is_binaryPtr.asFunction<int Function(ffi.Pointer<git_buf>)>();
-
-  /// Check quickly if buffer contains a NUL byte
-  ///
-  /// @param buf Buffer to check
-  /// @return 1 if buffer contains a NUL byte
-  int git_buf_contains_nul(
-    ffi.Pointer<git_buf> buf,
-  ) {
-    return _git_buf_contains_nul(
-      buf,
-    );
-  }
-
-  late final _git_buf_contains_nulPtr =
-      _lookup<ffi.NativeFunction<ffi.Int32 Function(ffi.Pointer<git_buf>)>>(
-          'git_buf_contains_nul');
-  late final _git_buf_contains_nul =
-      _git_buf_contains_nulPtr.asFunction<int Function(ffi.Pointer<git_buf>)>();
 
   /// Parse a hex formatted object id into a git_oid.
   ///
@@ -3896,6 +3801,9 @@ class Libgit2 {
   /// Remove git's prepared message.
   ///
   /// Remove the message that `git_repository_message` retrieves.
+  ///
+  /// @param repo Repository to remove prepared message from.
+  /// @return 0 or an error code.
   int git_repository_message_remove(
     ffi.Pointer<git_repository> repo,
   ) {
@@ -4083,22 +3991,22 @@ class Libgit2 {
   /// If the provided committish cannot be found in the repository, the HEAD
   /// is unaltered and GIT_ENOTFOUND is returned.
   ///
-  /// If the provided commitish cannot be peeled into a commit, the HEAD
+  /// If the provided committish cannot be peeled into a commit, the HEAD
   /// is unaltered and -1 is returned.
   ///
   /// Otherwise, the HEAD will eventually be detached and will directly point to
   /// the peeled Commit.
   ///
   /// @param repo Repository pointer
-  /// @param commitish Object id of the Commit the HEAD should point to
+  /// @param committish Object id of the Commit the HEAD should point to
   /// @return 0 on success, or an error code
   int git_repository_set_head_detached(
     ffi.Pointer<git_repository> repo,
-    ffi.Pointer<git_oid> commitish,
+    ffi.Pointer<git_oid> committish,
   ) {
     return _git_repository_set_head_detached(
       repo,
-      commitish,
+      committish,
     );
   }
 
@@ -4122,11 +4030,11 @@ class Libgit2 {
   /// @see git_repository_set_head_detached
   int git_repository_set_head_detached_from_annotated(
     ffi.Pointer<git_repository> repo,
-    ffi.Pointer<git_annotated_commit> commitish,
+    ffi.Pointer<git_annotated_commit> committish,
   ) {
     return _git_repository_set_head_detached_from_annotated(
       repo,
-      commitish,
+      committish,
     );
   }
 
@@ -4147,7 +4055,7 @@ class Libgit2 {
   /// If the HEAD is already detached and points to a Tag, the HEAD is
   /// updated into making it point to the peeled Commit, and 0 is returned.
   ///
-  /// If the HEAD is already detached and points to a non commitish, the HEAD is
+  /// If the HEAD is already detached and points to a non committish, the HEAD is
   /// unaltered, and -1 is returned.
   ///
   /// Otherwise, the HEAD will be detached and point to the peeled Commit.
@@ -4262,6 +4170,7 @@ class Libgit2 {
   /// @param name where to store the pointer to the name
   /// @param email where to store the pointer to the email
   /// @param repo the repository
+  /// @return 0 or an error code
   int git_repository_ident(
     ffi.Pointer<ffi.Pointer<ffi.Int8>> name,
     ffi.Pointer<ffi.Pointer<ffi.Int8>> email,
@@ -4293,6 +4202,7 @@ class Libgit2 {
   /// @param repo the repository to configure
   /// @param name the name to use for the reflog entries
   /// @param email the email to use for the reflog entries
+  /// @return 0 or an error code.
   int git_repository_set_ident(
     ffi.Pointer<git_repository> repo,
     ffi.Pointer<ffi.Int8> name,
@@ -4866,6 +4776,7 @@ class Libgit2 {
   ///
   /// @param dest Pointer to store the copy of the object
   /// @param source Original object to copy
+  /// @return 0 or an error code
   int git_object_dup(
     ffi.Pointer<ffi.Pointer<git_object>> dest,
     ffi.Pointer<git_object> source,
@@ -4883,6 +4794,43 @@ class Libgit2 {
   late final _git_object_dup = _git_object_dupPtr.asFunction<
       int Function(
           ffi.Pointer<ffi.Pointer<git_object>>, ffi.Pointer<git_object>)>();
+
+  /// Analyzes a buffer of raw object content and determines its validity.
+  /// Tree, commit, and tag objects will be parsed and ensured that they
+  /// are valid, parseable content.  (Blobs are always valid by definition.)
+  /// An error message will be set with an informative message if the object
+  /// is not valid.
+  ///
+  /// @warning This function is experimental and its signature may change in
+  /// the future.
+  ///
+  /// @param valid Output pointer to set with validity of the object content
+  /// @param buf The contents to validate
+  /// @param len The length of the buffer
+  /// @param type The type of the object in the buffer
+  /// @return 0 on success or an error code
+  int git_object_rawcontent_is_valid(
+    ffi.Pointer<ffi.Int32> valid,
+    ffi.Pointer<ffi.Int8> buf,
+    int len,
+    int type,
+  ) {
+    return _git_object_rawcontent_is_valid(
+      valid,
+      buf,
+      len,
+      type,
+    );
+  }
+
+  late final _git_object_rawcontent_is_validPtr = _lookup<
+      ffi.NativeFunction<
+          ffi.Int32 Function(ffi.Pointer<ffi.Int32>, ffi.Pointer<ffi.Int8>,
+              size_t, ffi.Int32)>>('git_object_rawcontent_is_valid');
+  late final _git_object_rawcontent_is_valid =
+      _git_object_rawcontent_is_validPtr.asFunction<
+          int Function(
+              ffi.Pointer<ffi.Int32>, ffi.Pointer<ffi.Int8>, int, int)>();
 
   /// Lookup a tree object from the repository.
   ///
@@ -5367,7 +5315,7 @@ class Libgit2 {
       int Function(ffi.Pointer<ffi.Pointer<git_treebuilder>>,
           ffi.Pointer<git_repository>, ffi.Pointer<git_tree>)>();
 
-  /// Clear all the entires in the builder
+  /// Clear all the entries in the builder
   ///
   /// @param bld Builder to clear
   /// @return 0 on success; error code otherwise
@@ -5629,6 +5577,7 @@ class Libgit2 {
   ///
   /// @param out Pointer to store the copy of the tree
   /// @param source Original tree to copy
+  /// @return 0
   int git_tree_dup(
     ffi.Pointer<ffi.Pointer<git_tree>> out,
     ffi.Pointer<git_tree> source,
@@ -5810,7 +5759,7 @@ class Libgit2 {
 
   /// Lookup a reference by DWIMing its short name
   ///
-  /// Apply the git precendence rules to the given shorthand to determine
+  /// Apply the git precedence rules to the given shorthand to determine
   /// which reference the user is referring to.
   ///
   /// @param out pointer in which to store the reference
@@ -7157,6 +7106,7 @@ class Libgit2 {
   /// @param old_tree A git_tree object to diff from, or NULL for empty tree.
   /// @param new_tree A git_tree object to diff to, or NULL for empty tree.
   /// @param opts Structure with options to influence diff or NULL for defaults.
+  /// @return 0 or an error code.
   int git_diff_tree_to_tree(
     ffi.Pointer<ffi.Pointer<git_diff>> diff,
     ffi.Pointer<git_repository> repo,
@@ -7206,6 +7156,7 @@ class Libgit2 {
   /// @param old_tree A git_tree object to diff from, or NULL for empty tree.
   /// @param index The index to diff with; repo index used if NULL.
   /// @param opts Structure with options to influence diff or NULL for defaults.
+  /// @return 0 or an error code.
   int git_diff_tree_to_index(
     ffi.Pointer<ffi.Pointer<git_diff>> diff,
     ffi.Pointer<git_repository> repo,
@@ -7256,6 +7207,7 @@ class Libgit2 {
   /// @param repo The repository.
   /// @param index The index to diff from; repo index used if NULL.
   /// @param opts Structure with options to influence diff or NULL for defaults.
+  /// @return 0 or an error code.
   int git_diff_index_to_workdir(
     ffi.Pointer<ffi.Pointer<git_diff>> diff,
     ffi.Pointer<git_repository> repo,
@@ -7306,6 +7258,7 @@ class Libgit2 {
   /// @param repo The repository containing the tree.
   /// @param old_tree A git_tree object to diff from, or NULL for empty tree.
   /// @param opts Structure with options to influence diff or NULL for defaults.
+  /// @return 0 or an error code.
   int git_diff_tree_to_workdir(
     ffi.Pointer<ffi.Pointer<git_diff>> diff,
     ffi.Pointer<git_repository> repo,
@@ -7346,6 +7299,7 @@ class Libgit2 {
   /// @param repo The repository containing the tree.
   /// @param old_tree A git_tree object to diff from, or NULL for empty tree.
   /// @param opts Structure with options to influence diff or NULL for defaults.
+  /// @return 0 or an error code.
   int git_diff_tree_to_workdir_with_index(
     ffi.Pointer<ffi.Pointer<git_diff>> diff,
     ffi.Pointer<git_repository> repo,
@@ -7386,6 +7340,7 @@ class Libgit2 {
   /// @param old_index A git_index object to diff from.
   /// @param new_index A git_index object to diff to.
   /// @param opts Structure with options to influence diff or NULL for defaults.
+  /// @return 0 or an error code.
   int git_diff_index_to_index(
     ffi.Pointer<ffi.Pointer<git_diff>> diff,
     ffi.Pointer<git_repository> repo,
@@ -7429,6 +7384,7 @@ class Libgit2 {
   ///
   /// @param onto Diff to merge into.
   /// @param from Diff to merge.
+  /// @return 0 or an error code.
   int git_diff_merge(
     ffi.Pointer<git_diff> onto,
     ffi.Pointer<git_diff> from,
@@ -7980,7 +7936,7 @@ class Libgit2 {
 
   /// Accumulate diff statistics for all patches.
   ///
-  /// @param out Structure containg the diff statistics.
+  /// @param out Structure containing the diff statistics.
   /// @param diff A git_diff generated by one of the above functions.
   /// @return 0 on success; non-zero on error
   int git_diff_get_stats(
@@ -8164,6 +8120,14 @@ class Libgit2 {
       int Function(ffi.Pointer<git_oid>, ffi.Pointer<git_diff>,
           ffi.Pointer<git_diff_patchid_options>)>();
 
+  /// Initialize git_apply_options structure
+  ///
+  /// Initialize a `git_apply_options` with default values. Equivalent to creating
+  /// an instance with GIT_APPLY_OPTIONS_INIT.
+  ///
+  /// @param opts The `git_apply_options` struct to initialize.
+  /// @param version The struct version; pass `GIT_APPLY_OPTIONS_VERSION`
+  /// @return 0 on success or -1 on failure.
   int git_apply_options_init(
     ffi.Pointer<git_apply_options> opts,
     int version,
@@ -8290,6 +8254,7 @@ class Libgit2 {
   /// not have to exist, but if it does not, then it will be
   /// treated as a plain file (not a directory).
   /// @param name The name of the attribute to look up.
+  /// @return 0 or an error code.
   int git_attr_get(
     ffi.Pointer<ffi.Pointer<ffi.Int8>> value_out,
     ffi.Pointer<git_repository> repo,
@@ -8335,6 +8300,7 @@ class Libgit2 {
   /// not have to exist, but if it does not, then it will be
   /// treated as a plain file (not a directory).
   /// @param name The name of the attribute to look up.
+  /// @return 0 or an error code.
   int git_attr_get_ext(
     ffi.Pointer<ffi.Pointer<ffi.Int8>> value_out,
     ffi.Pointer<git_repository> repo,
@@ -8394,6 +8360,7 @@ class Libgit2 {
   /// it will be treated as a plain file (i.e. not a directory).
   /// @param num_attr The number of attributes being looked up
   /// @param names An array of num_attr strings containing attribute names.
+  /// @return 0 or an error code.
   int git_attr_get_many(
     ffi.Pointer<ffi.Pointer<ffi.Int8>> values_out,
     ffi.Pointer<git_repository> repo,
@@ -8444,6 +8411,7 @@ class Libgit2 {
   /// it will be treated as a plain file (i.e. not a directory).
   /// @param num_attr The number of attributes being looked up
   /// @param names An array of num_attr strings containing attribute names.
+  /// @return 0 or an error code.
   int git_attr_get_many_ext(
     ffi.Pointer<ffi.Pointer<ffi.Int8>> values_out,
     ffi.Pointer<git_repository> repo,
@@ -8584,11 +8552,16 @@ class Libgit2 {
   /// Add a macro definition.
   ///
   /// Macros will automatically be loaded from the top level `.gitattributes`
-  /// file of the repository (plus the build-in "binary" macro).  This
+  /// file of the repository (plus the built-in "binary" macro).  This
   /// function allows you to add others.  For example, to add the default
   /// macro, you would call:
   ///
   /// git_attr_add_macro(repo, "binary", "-diff -crlf");
+  ///
+  /// @param repo The repository to add the macro in.
+  /// @param name The name of the macro.
+  /// @param values The value for the macro.
+  /// @return 0 or an error code.
   int git_attr_add_macro(
     ffi.Pointer<git_repository> repo,
     ffi.Pointer<ffi.Int8> name,
@@ -9029,11 +9002,37 @@ class Libgit2 {
   late final _git_blob_is_binary =
       _git_blob_is_binaryPtr.asFunction<int Function(ffi.Pointer<git_blob>)>();
 
+  /// Determine if the given content is most certainly binary or not;
+  /// this is the same mechanism used by `git_blob_is_binary` but only
+  /// looking at raw data.
+  ///
+  /// @param data The blob data which content should be analyzed
+  /// @param len The length of the data
+  /// @return 1 if the content of the blob is detected
+  /// as binary; 0 otherwise.
+  int git_blob_data_is_binary(
+    ffi.Pointer<ffi.Int8> data,
+    int len,
+  ) {
+    return _git_blob_data_is_binary(
+      data,
+      len,
+    );
+  }
+
+  late final _git_blob_data_is_binaryPtr = _lookup<
+      ffi.NativeFunction<
+          ffi.Int32 Function(
+              ffi.Pointer<ffi.Int8>, size_t)>>('git_blob_data_is_binary');
+  late final _git_blob_data_is_binary = _git_blob_data_is_binaryPtr
+      .asFunction<int Function(ffi.Pointer<ffi.Int8>, int)>();
+
   /// Create an in-memory copy of a blob. The copy must be explicitly
   /// free'd or it will leak.
   ///
   /// @param out Pointer to store the copy of the object
   /// @param source Original object to copy
+  /// @return 0.
   int git_blob_dup(
     ffi.Pointer<ffi.Pointer<git_blob>> out,
     ffi.Pointer<git_blob> source,
@@ -9078,6 +9077,9 @@ class Libgit2 {
       .asFunction<int Function(ffi.Pointer<git_blame_options>, int)>();
 
   /// Gets the number of hunks that exist in the blame structure.
+  ///
+  /// @param blame The blame structure to query.
+  /// @return The number of hunks.
   int git_blame_get_hunk_count(
     ffi.Pointer<git_blame> blame,
   ) {
@@ -9244,6 +9246,8 @@ class Libgit2 {
   /// See `git_tag_create()` for rules about valid names.
   ///
   /// @param out Pointer where to store the underlying reference.
+  ///
+  /// @param repo the repository to create the branch in.
   ///
   /// @param branch_name Name for the branch; this name is
   /// validated for consistency. It should also not conflict with
@@ -9974,6 +9978,7 @@ class Libgit2 {
   /// will be returned if there are bases missing)
   /// @param opts Optional structure containing additional options. See
   /// `git_indexer_options` above.
+  /// @return 0 or an error code.
   int git_indexer_new(
     ffi.Pointer<ffi.Pointer<git_indexer>> out,
     ffi.Pointer<ffi.Int8> path,
@@ -10008,6 +10013,7 @@ class Libgit2 {
   /// @param data the data to add
   /// @param size the size of the data in bytes
   /// @param stats stat storage
+  /// @return 0 or an error code.
   int git_indexer_append(
     ffi.Pointer<git_indexer> idx,
     ffi.Pointer<ffi.Void> data,
@@ -10038,6 +10044,8 @@ class Libgit2 {
   /// Resolve any pending deltas and write out the index file
   ///
   /// @param idx the indexer
+  /// @param stats Stat storage.
+  /// @return 0 or an error code.
   int git_indexer_commit(
     ffi.Pointer<git_indexer> idx,
     ffi.Pointer<git_indexer_progress> stats,
@@ -10061,7 +10069,9 @@ class Libgit2 {
   /// A packfile's name is derived from the sorted hashing of all object
   /// names. This is only correct after the index has been finalized.
   ///
+  /// @deprecated use git_indexer_name
   /// @param idx the indexer instance
+  /// @return the packfile's hash
   ffi.Pointer<git_oid> git_indexer_hash(
     ffi.Pointer<git_indexer> idx,
   ) {
@@ -10076,6 +10086,28 @@ class Libgit2 {
               ffi.Pointer<git_indexer>)>>('git_indexer_hash');
   late final _git_indexer_hash = _git_indexer_hashPtr
       .asFunction<ffi.Pointer<git_oid> Function(ffi.Pointer<git_indexer>)>();
+
+  /// Get the unique name for the resulting packfile.
+  ///
+  /// The packfile's name is derived from the packfile's content.
+  /// This is only correct after the index has been finalized.
+  ///
+  /// @param idx the indexer instance
+  /// @return a NUL terminated string for the packfile name
+  ffi.Pointer<ffi.Int8> git_indexer_name(
+    ffi.Pointer<git_indexer> idx,
+  ) {
+    return _git_indexer_name(
+      idx,
+    );
+  }
+
+  late final _git_indexer_namePtr = _lookup<
+      ffi.NativeFunction<
+          ffi.Pointer<ffi.Int8> Function(
+              ffi.Pointer<git_indexer>)>>('git_indexer_name');
+  late final _git_indexer_name = _git_indexer_namePtr
+      .asFunction<ffi.Pointer<ffi.Int8> Function(ffi.Pointer<git_indexer>)>();
 
   /// Free the indexer and its resources
   ///
@@ -10356,6 +10388,7 @@ class Libgit2 {
   /// last 20 bytes which are the checksum itself). In cases where the
   /// index does not exist on-disk, it will be zeroed out.
   ///
+  /// @deprecated this function is deprecated with no replacement
   /// @param index an existing index object
   /// @return a pointer to the checksum of the index
   ffi.Pointer<git_oid> git_index_checksum(
@@ -10688,6 +10721,7 @@ class Libgit2 {
   ///
   /// @param iterator_out The newly created iterator
   /// @param index The index to iterate
+  /// @return 0 or an error code.
   int git_index_iterator_new(
     ffi.Pointer<ffi.Pointer<git_index_iterator>> iterator_out,
     ffi.Pointer<git_index> index,
@@ -11196,6 +11230,7 @@ class Libgit2 {
 
   /// Determine if the index contains entries representing file conflicts.
   ///
+  /// @param index An existing index object.
   /// @return 1 if at least one conflict is found, 0 otherwise.
   int git_index_has_conflicts(
     ffi.Pointer<git_index> index,
@@ -11244,6 +11279,7 @@ class Libgit2 {
   /// @param ancestor_out Pointer to store the ancestor side of the conflict
   /// @param our_out Pointer to store our side of the conflict
   /// @param their_out Pointer to store their side of the conflict
+  /// @param iterator The conflict iterator.
   /// @return 0 (no error), GIT_ITEROVER (iteration is done) or an error code
   /// (negative value)
   int git_index_conflict_next(
@@ -11372,6 +11408,7 @@ class Libgit2 {
   /// merging them into the HEAD of the repository.
   ///
   /// @param analysis_out analysis enumeration that the result is written into
+  /// @param preference_out One of the `git_merge_preference_t` flag.
   /// @param repo the repository to merge
   /// @param their_heads the heads to merge into
   /// @param their_heads_len the number of heads to merge
@@ -11412,6 +11449,7 @@ class Libgit2 {
   /// merging them into a reference.
   ///
   /// @param analysis_out analysis enumeration that the result is written into
+  /// @param preference_out One of the `git_merge_preference_t` flag.
   /// @param repo the repository to merge
   /// @param our_ref the reference to perform the analysis from
   /// @param their_heads the heads to merge into
@@ -12416,6 +12454,7 @@ class Libgit2 {
   /// Create a new ssh keyboard-interactive based credential object.
   /// The supplied credential parameter will be internally duplicated.
   ///
+  /// @param out The newly created credential object.
   /// @param username Username to use to authenticate.
   /// @param prompt_callback The callback method used for prompts.
   /// @param payload Additional data to pass to the callback.
@@ -12723,6 +12762,7 @@ class Libgit2 {
   ///
   /// @param buf Buffer where to write the packfile
   /// @param pb The packbuilder
+  /// @return 0 or an error code
   int git_packbuilder_write_buf(
     ffi.Pointer<git_buf> buf,
     ffi.Pointer<git_packbuilder> pb,
@@ -12783,7 +12823,9 @@ class Libgit2 {
   /// A packfile's name is derived from the sorted hashing of all object
   /// names. This is only correct after the packfile has been written.
   ///
+  /// @deprecated use git_packbuilder_name
   /// @param pb The packbuilder object
+  /// @return 0 or an error code
   ffi.Pointer<git_oid> git_packbuilder_hash(
     ffi.Pointer<git_packbuilder> pb,
   ) {
@@ -12798,6 +12840,28 @@ class Libgit2 {
               ffi.Pointer<git_packbuilder>)>>('git_packbuilder_hash');
   late final _git_packbuilder_hash = _git_packbuilder_hashPtr.asFunction<
       ffi.Pointer<git_oid> Function(ffi.Pointer<git_packbuilder>)>();
+
+  /// Get the unique name for the resulting packfile.
+  ///
+  /// The packfile's name is derived from the packfile's content.
+  /// This is only correct after the packfile has been written.
+  ///
+  /// @param pb the packbuilder instance
+  /// @return a NUL terminated string for the packfile name
+  ffi.Pointer<ffi.Int8> git_packbuilder_name(
+    ffi.Pointer<git_packbuilder> pb,
+  ) {
+    return _git_packbuilder_name(
+      pb,
+    );
+  }
+
+  late final _git_packbuilder_namePtr = _lookup<
+      ffi.NativeFunction<
+          ffi.Pointer<ffi.Int8> Function(
+              ffi.Pointer<git_packbuilder>)>>('git_packbuilder_name');
+  late final _git_packbuilder_name = _git_packbuilder_namePtr.asFunction<
+      ffi.Pointer<ffi.Int8> Function(ffi.Pointer<git_packbuilder>)>();
 
   /// Create the new pack and pass each object to the callback
   ///
@@ -13420,6 +13484,7 @@ class Libgit2 {
   ///
   /// @param array pointer to the array in which to store the strings
   /// @param remote the remote to query
+  /// @return 0 or an error code.
   int git_remote_get_fetch_refspecs(
     ffi.Pointer<git_strarray> array,
     ffi.Pointer<git_remote> remote,
@@ -13474,6 +13539,7 @@ class Libgit2 {
   ///
   /// @param array pointer to the array in which to store the strings
   /// @param remote the remote to query
+  /// @return 0 or an error code.
   int git_remote_get_push_refspecs(
     ffi.Pointer<git_strarray> array,
     ffi.Pointer<git_remote> remote,
@@ -13531,51 +13597,6 @@ class Libgit2 {
               ffi.Pointer<git_remote>, size_t)>>('git_remote_get_refspec');
   late final _git_remote_get_refspec = _git_remote_get_refspecPtr.asFunction<
       ffi.Pointer<git_refspec> Function(ffi.Pointer<git_remote>, int)>();
-
-  /// Open a connection to a remote
-  ///
-  /// The transport is selected based on the URL. The direction argument
-  /// is due to a limitation of the git protocol (over TCP or SSH) which
-  /// starts up a specific binary which can only do the one or the other.
-  ///
-  /// @param remote the remote to connect to
-  /// @param direction GIT_DIRECTION_FETCH if you want to fetch or
-  /// GIT_DIRECTION_PUSH if you want to push
-  /// @param callbacks the callbacks to use for this connection
-  /// @param proxy_opts proxy settings
-  /// @param custom_headers extra HTTP headers to use in this connection
-  /// @return 0 or an error code
-  int git_remote_connect(
-    ffi.Pointer<git_remote> remote,
-    int direction,
-    ffi.Pointer<git_remote_callbacks> callbacks,
-    ffi.Pointer<git_proxy_options> proxy_opts,
-    ffi.Pointer<git_strarray> custom_headers,
-  ) {
-    return _git_remote_connect(
-      remote,
-      direction,
-      callbacks,
-      proxy_opts,
-      custom_headers,
-    );
-  }
-
-  late final _git_remote_connectPtr = _lookup<
-      ffi.NativeFunction<
-          ffi.Int32 Function(
-              ffi.Pointer<git_remote>,
-              ffi.Int32,
-              ffi.Pointer<git_remote_callbacks>,
-              ffi.Pointer<git_proxy_options>,
-              ffi.Pointer<git_strarray>)>>('git_remote_connect');
-  late final _git_remote_connect = _git_remote_connectPtr.asFunction<
-      int Function(
-          ffi.Pointer<git_remote>,
-          int,
-          ffi.Pointer<git_remote_callbacks>,
-          ffi.Pointer<git_proxy_options>,
-          ffi.Pointer<git_strarray>)>();
 
   /// Get the remote repository's reference advertisement list
   ///
@@ -13796,7 +13817,116 @@ class Libgit2 {
   late final _git_push_options_init = _git_push_options_initPtr
       .asFunction<int Function(ffi.Pointer<git_push_options>, int)>();
 
-  /// Download and index the packfile
+  /// Initialize git_remote_connect_options structure.
+  ///
+  /// Initializes a `git_remote_connect_options` with default values.
+  /// Equivalent to creating an instance with
+  /// `GIT_REMOTE_CONNECT_OPTIONS_INIT`.
+  ///
+  /// @param opts The `git_remote_connect_options` struct to initialize.
+  /// @param version The struct version; pass `GIT_REMOTE_CONNECT_OPTIONS_VERSION`.
+  /// @return Zero on success; -1 on failure.
+  int git_remote_connect_options_init(
+    ffi.Pointer<git_remote_connect_options> opts,
+    int version,
+  ) {
+    return _git_remote_connect_options_init(
+      opts,
+      version,
+    );
+  }
+
+  late final _git_remote_connect_options_initPtr = _lookup<
+      ffi.NativeFunction<
+          ffi.Int32 Function(ffi.Pointer<git_remote_connect_options>,
+              ffi.Uint32)>>('git_remote_connect_options_init');
+  late final _git_remote_connect_options_init =
+      _git_remote_connect_options_initPtr.asFunction<
+          int Function(ffi.Pointer<git_remote_connect_options>, int)>();
+
+  /// Open a connection to a remote.
+  ///
+  /// The transport is selected based on the URL; the direction argument
+  /// is due to a limitation of the git protocol which starts up a
+  /// specific binary which can only do the one or the other.
+  ///
+  /// @param remote the remote to connect to
+  /// @param direction GIT_DIRECTION_FETCH if you want to fetch or
+  /// GIT_DIRECTION_PUSH if you want to push
+  /// @param callbacks the callbacks to use for this connection
+  /// @param proxy_opts proxy settings
+  /// @param custom_headers extra HTTP headers to use in this connection
+  /// @return 0 or an error code
+  int git_remote_connect(
+    ffi.Pointer<git_remote> remote,
+    int direction,
+    ffi.Pointer<git_remote_callbacks> callbacks,
+    ffi.Pointer<git_proxy_options> proxy_opts,
+    ffi.Pointer<git_strarray> custom_headers,
+  ) {
+    return _git_remote_connect(
+      remote,
+      direction,
+      callbacks,
+      proxy_opts,
+      custom_headers,
+    );
+  }
+
+  late final _git_remote_connectPtr = _lookup<
+      ffi.NativeFunction<
+          ffi.Int32 Function(
+              ffi.Pointer<git_remote>,
+              ffi.Int32,
+              ffi.Pointer<git_remote_callbacks>,
+              ffi.Pointer<git_proxy_options>,
+              ffi.Pointer<git_strarray>)>>('git_remote_connect');
+  late final _git_remote_connect = _git_remote_connectPtr.asFunction<
+      int Function(
+          ffi.Pointer<git_remote>,
+          int,
+          ffi.Pointer<git_remote_callbacks>,
+          ffi.Pointer<git_proxy_options>,
+          ffi.Pointer<git_strarray>)>();
+
+  /// Open a connection to a remote with extended options.
+  ///
+  /// The transport is selected based on the URL; the direction argument
+  /// is due to a limitation of the git protocol which starts up a
+  /// specific binary which can only do the one or the other.
+  ///
+  /// The given options structure will form the defaults for connection
+  /// options and callback setup.  Callers may override these defaults
+  /// by specifying `git_fetch_options` or `git_push_options` in
+  /// subsequent calls.
+  ///
+  /// @param remote the remote to connect to
+  /// @param direction GIT_DIRECTION_FETCH if you want to fetch or
+  /// GIT_DIRECTION_PUSH if you want to push
+  /// @param opts the remote connection options
+  /// @return 0 or an error code
+  int git_remote_connect_ext(
+    ffi.Pointer<git_remote> remote,
+    int direction,
+    ffi.Pointer<git_remote_connect_options> opts,
+  ) {
+    return _git_remote_connect_ext(
+      remote,
+      direction,
+      opts,
+    );
+  }
+
+  late final _git_remote_connect_extPtr = _lookup<
+          ffi.NativeFunction<
+              ffi.Int32 Function(ffi.Pointer<git_remote>, ffi.Int32,
+                  ffi.Pointer<git_remote_connect_options>)>>(
+      'git_remote_connect_ext');
+  late final _git_remote_connect_ext = _git_remote_connect_extPtr.asFunction<
+      int Function(ffi.Pointer<git_remote>, int,
+          ffi.Pointer<git_remote_connect_options>)>();
+
+  /// Download and index the packfile.
   ///
   /// Connect to the remote if it hasn't been done yet, negotiate with
   /// the remote git which objects are missing, download and index the
@@ -13805,10 +13935,14 @@ class Libgit2 {
   /// The .idx file will be created and both it and the packfile with be
   /// renamed to their final name.
   ///
+  /// If options are specified and this remote is already connected then
+  /// the existing remote connection options will be discarded and the
+  /// remote will now use the new options.
+  ///
   /// @param remote the remote
   /// @param refspecs the refspecs to use for this negotiation and
   /// download. Use NULL or an empty array to use the base refspecs
-  /// @param opts the options to use for this fetch
+  /// @param opts the options to use for this fetch or NULL
   /// @return 0 or an error code
   int git_remote_download(
     ffi.Pointer<git_remote> remote,
@@ -13833,7 +13967,12 @@ class Libgit2 {
   /// Create a packfile and send it to the server
   ///
   /// Connect to the remote if it hasn't been done yet, negotiate with
-  /// the remote git which objects are missing, create a packfile with the missing objects and send it.
+  /// the remote git which objects are missing, create a packfile with
+  /// the missing objects and send it.
+  ///
+  /// If options are specified and this remote is already connected then
+  /// the existing remote connection options will be discarded and the
+  /// remote will now use the new options.
   ///
   /// @param remote the remote
   /// @param refspecs the refspecs to use for this negotiation and
@@ -13860,14 +13999,17 @@ class Libgit2 {
       int Function(ffi.Pointer<git_remote>, ffi.Pointer<git_strarray>,
           ffi.Pointer<git_push_options>)>();
 
-  /// Update the tips to the new state
+  /// Update the tips to the new state.
+  ///
+  /// If callbacks are not specified then the callbacks specified to
+  /// `git_remote_connect` will be used (if it was called).
   ///
   /// @param remote the remote to update
   /// @param reflog_message The message to insert into the reflogs. If
   /// NULL and fetching, the default is "fetch <name>", where <name> is
   /// the name of the remote (or its url, for in-memory remotes). This
   /// parameter is ignored when pushing.
-  /// @param callbacks  pointer to the callback structure to use
+  /// @param callbacks  pointer to the callback structure to use or NULL
   /// @param update_fetchhead whether to write to FETCH_HEAD. Pass 1 to behave like git.
   /// @param download_tags what the behaviour for downloading tags is for this fetch. This is
   /// ignored for push. This must be the same value passed to `git_remote_download()`.
@@ -13900,15 +14042,19 @@ class Libgit2 {
       int Function(ffi.Pointer<git_remote>, ffi.Pointer<git_remote_callbacks>,
           int, int, ffi.Pointer<ffi.Int8>)>();
 
-  /// Download new data and update tips
+  /// Download new data and update tips.
   ///
   /// Convenience function to connect to a remote, download the data,
   /// disconnect and update the remote-tracking branches.
   ///
+  /// If options are specified and this remote is already connected then
+  /// the existing remote connection options will be discarded and the
+  /// remote will now use the new options.
+  ///
   /// @param remote the remote to fetch from
   /// @param refspecs the refspecs to use for this fetch. Pass NULL or an
   /// empty array to use the base refspecs.
-  /// @param opts options to use for this fetch
+  /// @param opts options to use for this fetch or NULL
   /// @param reflog_message The message to insert into the reflogs. If NULL, the
   /// default is "fetch"
   /// @return 0 or an error code
@@ -13937,7 +14083,10 @@ class Libgit2 {
       int Function(ffi.Pointer<git_remote>, ffi.Pointer<git_strarray>,
           ffi.Pointer<git_fetch_options>, ffi.Pointer<ffi.Int8>)>();
 
-  /// Prune tracking refs that are no longer present on remote
+  /// Prune tracking refs that are no longer present on remote.
+  ///
+  /// If callbacks are not specified then the callbacks specified to
+  /// `git_remote_connect` will be used (if it was called).
   ///
   /// @param remote the remote to prune
   /// @param callbacks callbacks to use for this prune
@@ -13960,14 +14109,17 @@ class Libgit2 {
       int Function(
           ffi.Pointer<git_remote>, ffi.Pointer<git_remote_callbacks>)>();
 
-  /// Perform a push
+  /// Perform a push.
   ///
-  /// Peform all the steps from a push.
+  /// If options are specified and this remote is already connected then
+  /// the existing remote connection options will be discarded and the
+  /// remote will now use the new options.
   ///
   /// @param remote the remote to push to
   /// @param refspecs the refspecs to use for pushing. If NULL or an empty
   /// array, the configured refspecs will be used
   /// @param opts options to use for this push
+  /// @return 0 or an error code.
   int git_remote_push(
     ffi.Pointer<git_remote> remote,
     ffi.Pointer<git_strarray> refspecs,
@@ -15189,6 +15341,7 @@ class Libgit2 {
   /// to the commit and write it into the given repository.
   ///
   /// @param out the resulting commit id
+  /// @param repo the repository to create the commit in.
   /// @param commit_content the content of the unsigned commit object
   /// @param signature the signature to add to the commit. Leave `NULL`
   /// to create a commit without adding a signature field.
@@ -15233,6 +15386,7 @@ class Libgit2 {
   ///
   /// @param out Pointer to store the copy of the commit
   /// @param source Original commit to copy
+  /// @return 0
   int git_commit_dup(
     ffi.Pointer<ffi.Pointer<git_commit>> out,
     ffi.Pointer<git_commit> source,
@@ -15252,11 +15406,13 @@ class Libgit2 {
           ffi.Pointer<ffi.Pointer<git_commit>>, ffi.Pointer<git_commit>)>();
 
   /// Free a config entry
+  ///
+  /// @param entry The entry to free.
   void git_config_entry_free(
-    ffi.Pointer<git_config_entry> arg0,
+    ffi.Pointer<git_config_entry> entry,
   ) {
     return _git_config_entry_free(
-      arg0,
+      entry,
     );
   }
 
@@ -15536,6 +15692,7 @@ class Libgit2 {
   ///
   /// @param out pointer in which to store the config object
   /// @param config the config object in which to look
+  /// @return 0 or an error code.
   int git_config_open_global(
     ffi.Pointer<ffi.Pointer<git_config>> out,
     ffi.Pointer<git_config> config,
@@ -15841,6 +15998,7 @@ class Libgit2 {
   /// interested in. Use NULL to indicate all
   /// @param callback the function to be called on each value of the variable
   /// @param payload opaque pointer to pass to the callback
+  /// @return 0 or an error code.
   int git_config_get_multivar_foreach(
     ffi.Pointer<git_config> cfg,
     ffi.Pointer<ffi.Int8> name,
@@ -15885,6 +16043,7 @@ class Libgit2 {
   /// @param name the variable's name
   /// @param regexp regular expression to filter which variables we're
   /// interested in. Use NULL to indicate all
+  /// @return 0 or an error code.
   int git_config_multivar_iterator_new(
     ffi.Pointer<ffi.Pointer<git_config_iterator>> out,
     ffi.Pointer<git_config> cfg,
@@ -16074,6 +16233,7 @@ class Libgit2 {
   /// @param name the variable's name
   /// @param regexp a regular expression to indicate which values to replace
   /// @param value the new value.
+  /// @return 0 or an error code.
   int git_config_set_multivar(
     ffi.Pointer<git_config> cfg,
     ffi.Pointer<ffi.Int8> name,
@@ -16104,6 +16264,7 @@ class Libgit2 {
   ///
   /// @param cfg the configuration
   /// @param name the variable to delete
+  /// @return 0 or an error code.
   int git_config_delete_entry(
     ffi.Pointer<git_config> cfg,
     ffi.Pointer<ffi.Int8> name,
@@ -16191,7 +16352,8 @@ class Libgit2 {
   /// `git_config_iterator_free` when done.
   ///
   /// @param out pointer to store the iterator
-  /// @param cfg where to ge the variables from
+  /// @param cfg where to get the variables from
+  /// @return 0 or an error code.
   int git_config_iterator_new(
     ffi.Pointer<ffi.Pointer<git_config_iterator>> out,
     ffi.Pointer<git_config> cfg,
@@ -16222,6 +16384,7 @@ class Libgit2 {
   /// @param out pointer to store the iterator
   /// @param cfg where to ge the variables from
   /// @param regexp regular expression to match the names
+  /// @return 0 or an error code.
   int git_config_iterator_glob_new(
     ffi.Pointer<ffi.Pointer<git_config_iterator>> out,
     ffi.Pointer<git_config> cfg,
@@ -16355,6 +16518,7 @@ class Libgit2 {
   /// @param maps array of `git_configmap` objects specifying the possible mappings
   /// @param map_n number of mapping objects in `maps`
   /// @param value value to parse
+  /// @return 0 or an error code.
   int git_config_lookup_map_value(
     ffi.Pointer<ffi.Int32> out,
     ffi.Pointer<git_configmap> maps,
@@ -16386,6 +16550,7 @@ class Libgit2 {
   ///
   /// @param out place to store the result of the parsing
   /// @param value value to parse
+  /// @return 0 or an error code.
   int git_config_parse_bool(
     ffi.Pointer<ffi.Int32> out,
     ffi.Pointer<ffi.Int8> value,
@@ -16411,6 +16576,7 @@ class Libgit2 {
   ///
   /// @param out place to store the result of the parsing
   /// @param value value to parse
+  /// @return 0 or an error code.
   int git_config_parse_int32(
     ffi.Pointer<ffi.Int32> out,
     ffi.Pointer<ffi.Int8> value,
@@ -16436,6 +16602,7 @@ class Libgit2 {
   ///
   /// @param out place to store the result of the parsing
   /// @param value value to parse
+  /// @return 0 or an error code.
   int git_config_parse_int64(
     ffi.Pointer<ffi.Int64> out,
     ffi.Pointer<ffi.Int8> value,
@@ -16464,6 +16631,7 @@ class Libgit2 {
   ///
   /// @param out placae to store the result of parsing
   /// @param value the path to evaluate
+  /// @return 0 or an error code.
   int git_config_parse_path(
     ffi.Pointer<git_buf> out,
     ffi.Pointer<ffi.Int8> value,
@@ -16495,6 +16663,7 @@ class Libgit2 {
   /// @param regexp regular expression to match against config names (can be NULL)
   /// @param callback the function to call on each variable
   /// @param payload the data to pass to the callback
+  /// @return 0 or an error code.
   int git_config_backend_foreach_match(
     ffi.Pointer<git_config_backend> backend,
     ffi.Pointer<ffi.Int8> regexp,
@@ -16612,6 +16781,7 @@ class Libgit2 {
   /// you're done with it.
   /// @param committish a committish to describe
   /// @param opts the lookup options (or NULL for defaults)
+  /// @return 0 or an error code.
   int git_describe_commit(
     ffi.Pointer<ffi.Pointer<git_describe_result>> result,
     ffi.Pointer<git_object> committish,
@@ -16637,13 +16807,14 @@ class Libgit2 {
   /// Describe a commit
   ///
   /// Perform the describe operation on the current commit and the
-  /// worktree. After peforming describe on HEAD, a status is run and the
+  /// worktree. After performing describe on HEAD, a status is run and the
   /// description is considered to be dirty if there are.
   ///
   /// @param out pointer to store the result. You must free this once
   /// you're done with it.
   /// @param repo the repository in which to perform the describe
   /// @param opts the lookup options (or NULL for defaults)
+  /// @return 0 or an error code.
   int git_describe_workdir(
     ffi.Pointer<ffi.Pointer<git_describe_result>> out,
     ffi.Pointer<git_repository> repo,
@@ -16672,6 +16843,7 @@ class Libgit2 {
   /// @param result the result from `git_describe_commit()` or
   /// `git_describe_workdir()`.
   /// @param opts the formatting options (or NULL for defaults)
+  /// @return 0 or an error code.
   int git_describe_format(
     ffi.Pointer<git_buf> out,
     ffi.Pointer<git_describe_result> result,
@@ -16696,6 +16868,8 @@ class Libgit2 {
           ffi.Pointer<git_describe_format_options>)>();
 
   /// Free the describe result.
+  ///
+  /// @param result The result to free.
   void git_describe_result_free(
     ffi.Pointer<git_describe_result> result,
   ) {
@@ -16955,6 +17129,7 @@ class Libgit2 {
   /// @param repo the repository in which to perform the filtering
   /// @param path the path of the file to filter, a relative path will be
   /// taken as relative to the workdir
+  /// @return 0 or an error code.
   int git_filter_list_apply_to_file(
     ffi.Pointer<git_buf> out,
     ffi.Pointer<git_filter_list> filters,
@@ -16986,6 +17161,7 @@ class Libgit2 {
   /// @param out buffer into which to store the filtered file
   /// @param filters the list of filters to apply
   /// @param blob the blob to filter
+  /// @return 0 or an error code.
   int git_filter_list_apply_to_blob(
     ffi.Pointer<git_buf> out,
     ffi.Pointer<git_filter_list> filters,
@@ -17013,6 +17189,7 @@ class Libgit2 {
   /// @param buffer the buffer to filter
   /// @param len the size of the buffer
   /// @param target the stream into which the data will be written
+  /// @return 0 or an error code.
   int git_filter_list_stream_buffer(
     ffi.Pointer<git_filter_list> filters,
     ffi.Pointer<ffi.Int8> buffer,
@@ -17046,6 +17223,7 @@ class Libgit2 {
   /// @param path the path of the file to filter, a relative path will be
   /// taken as relative to the workdir
   /// @param target the stream into which the data will be written
+  /// @return 0 or an error code.
   int git_filter_list_stream_file(
     ffi.Pointer<git_filter_list> filters,
     ffi.Pointer<git_repository> repo,
@@ -17080,6 +17258,7 @@ class Libgit2 {
   /// @param filters the list of filters to apply
   /// @param blob the blob to filter
   /// @param target the stream into which the data will be written
+  /// @return 0 or an error code.
   int git_filter_list_stream_blob(
     ffi.Pointer<git_filter_list> filters,
     ffi.Pointer<git_blob> blob,
@@ -17227,6 +17406,7 @@ class Libgit2 {
 
   /// Gets the original `HEAD` ref name for merge rebases.
   ///
+  /// @param rebase The in-progress rebase.
   /// @return The original `HEAD` ref name
   ffi.Pointer<ffi.Int8> git_rebase_orig_head_name(
     ffi.Pointer<git_rebase> rebase,
@@ -17245,6 +17425,7 @@ class Libgit2 {
 
   /// Gets the original `HEAD` id for merge rebases.
   ///
+  /// @param rebase The in-progress rebase.
   /// @return The original `HEAD` id
   ffi.Pointer<git_oid> git_rebase_orig_head_id(
     ffi.Pointer<git_rebase> rebase,
@@ -17263,6 +17444,7 @@ class Libgit2 {
 
   /// Gets the `onto` ref name for merge rebases.
   ///
+  /// @param rebase The in-progress rebase.
   /// @return The `onto` ref name
   ffi.Pointer<ffi.Int8> git_rebase_onto_name(
     ffi.Pointer<git_rebase> rebase,
@@ -17281,6 +17463,7 @@ class Libgit2 {
 
   /// Gets the `onto` id for merge rebases.
   ///
+  /// @param rebase The in-progress rebase.
   /// @return The `onto` id
   ffi.Pointer<git_oid> git_rebase_onto_id(
     ffi.Pointer<git_rebase> rebase,
@@ -17397,6 +17580,10 @@ class Libgit2 {
   /// This is only applicable for in-memory rebases; for rebases within
   /// a working directory, the changes were applied to the repository's
   /// index.
+  ///
+  /// @param index The result index of the last operation.
+  /// @param rebase The in-progress rebase.
+  /// @return 0 or an error code
   int git_rebase_inmemory_index(
     ffi.Pointer<ffi.Pointer<git_index>> index,
     ffi.Pointer<git_rebase> rebase,
@@ -18285,7 +18472,7 @@ class Libgit2 {
   /// @param submodule Submodule object
   /// @param init If the submodule is not initialized, setting this flag to true
   /// will initialize the submodule before updating. Otherwise, this will
-  /// return an error if attempting to update an uninitialzed repository.
+  /// return an error if attempting to update an uninitialized repository.
   /// but setting this to true forces them to be updated.
   /// @param options configuration options for the update.  If NULL, the
   /// function works as though GIT_SUBMODULE_UPDATE_OPTIONS_INIT was passed.
@@ -18365,6 +18552,7 @@ class Libgit2 {
   ///
   /// @param out Pointer to store the copy of the submodule.
   /// @param source Original submodule to copy.
+  /// @return 0
   int git_submodule_dup(
     ffi.Pointer<ffi.Pointer<git_submodule>> out,
     ffi.Pointer<git_submodule> source,
@@ -18534,6 +18722,7 @@ class Libgit2 {
   /// (but doesn't actually do the commit).
   ///
   /// @param submodule The submodule to finish adding.
+  /// @return 0 or an error code.
   int git_submodule_add_finalize(
     ffi.Pointer<git_submodule> submodule,
   ) {
@@ -19060,6 +19249,9 @@ class Libgit2 {
   /// submodule config, acting like "git submodule sync".  This is useful if
   /// you have altered the URL for the submodule (or it has been altered by a
   /// fetch of upstream changes) and you need to update your local repo.
+  ///
+  /// @param submodule The submodule to copy.
+  /// @return 0 or an error code.
   int git_submodule_sync(
     ffi.Pointer<git_submodule> submodule,
   ) {
@@ -19254,6 +19446,7 @@ class Libgit2 {
   ///
   /// @param out Out-pointer for the newly allocated worktree
   /// @param repo Repository to look up worktree for
+  /// @return 0 or an error code
   int git_worktree_open_from_repository(
     ffi.Pointer<ffi.Pointer<git_worktree>> out,
     ffi.Pointer<git_repository> repo,
@@ -19531,6 +19724,10 @@ class Libgit2 {
   /// If the worktree is not valid and not locked or if the above
   /// flags have been passed in, this function will return a
   /// positive value.
+  ///
+  /// @param wt Worktree to check.
+  /// @param opts The prunable options.
+  /// @return 1 if the worktree is prunable, 0 otherwise, or an error code.
   int git_worktree_is_prunable(
     ffi.Pointer<git_worktree> wt,
     ffi.Pointer<git_worktree_prune_options> opts,
@@ -19590,6 +19787,7 @@ class Libgit2 {
   /// @param allowed_types A bitmask stating which credential types are OK to return.
   /// @param payload The payload provided when specifying this callback.  (This is
   /// interpreted as a `git_credential_userpass_payload*`.)
+  /// @return 0 or an error code.
   int git_credential_userpass(
     ffi.Pointer<ffi.Pointer<git_credential>> out,
     ffi.Pointer<ffi.Int8> url,
@@ -19835,6 +20033,102 @@ class Libgit2 {
       _git_treebuilder_write_with_bufferPtr.asFunction<
           int Function(ffi.Pointer<git_oid>, ffi.Pointer<git_treebuilder>,
               ffi.Pointer<git_buf>)>();
+
+  /// Resize the buffer allocation to make more space.
+  ///
+  /// This will attempt to grow the buffer to accommodate the target size.
+  ///
+  /// If the buffer refers to memory that was not allocated by libgit2 (i.e.
+  /// the `asize` field is zero), then `ptr` will be replaced with a newly
+  /// allocated block of data.  Be careful so that memory allocated by the
+  /// caller is not lost.  As a special variant, if you pass `target_size` as
+  /// 0 and the memory is not allocated by libgit2, this will allocate a new
+  /// buffer of size `size` and copy the external data into it.
+  ///
+  /// Currently, this will never shrink a buffer, only expand it.
+  ///
+  /// If the allocation fails, this will return an error and the buffer will be
+  /// marked as invalid for future operations, invaliding the contents.
+  ///
+  /// @param buffer The buffer to be resized; may or may not be allocated yet
+  /// @param target_size The desired available size
+  /// @return 0 on success, -1 on allocation failure
+  int git_buf_grow(
+    ffi.Pointer<git_buf> buffer,
+    int target_size,
+  ) {
+    return _git_buf_grow(
+      buffer,
+      target_size,
+    );
+  }
+
+  late final _git_buf_growPtr = _lookup<
+          ffi.NativeFunction<ffi.Int32 Function(ffi.Pointer<git_buf>, size_t)>>(
+      'git_buf_grow');
+  late final _git_buf_grow =
+      _git_buf_growPtr.asFunction<int Function(ffi.Pointer<git_buf>, int)>();
+
+  /// Set buffer to a copy of some raw data.
+  ///
+  /// @param buffer The buffer to set
+  /// @param data The data to copy into the buffer
+  /// @param datalen The length of the data to copy into the buffer
+  /// @return 0 on success, -1 on allocation failure
+  int git_buf_set(
+    ffi.Pointer<git_buf> buffer,
+    ffi.Pointer<ffi.Void> data,
+    int datalen,
+  ) {
+    return _git_buf_set(
+      buffer,
+      data,
+      datalen,
+    );
+  }
+
+  late final _git_buf_setPtr = _lookup<
+      ffi.NativeFunction<
+          ffi.Int32 Function(ffi.Pointer<git_buf>, ffi.Pointer<ffi.Void>,
+              size_t)>>('git_buf_set');
+  late final _git_buf_set = _git_buf_setPtr.asFunction<
+      int Function(ffi.Pointer<git_buf>, ffi.Pointer<ffi.Void>, int)>();
+
+  /// Check quickly if buffer looks like it contains binary data
+  ///
+  /// @param buf Buffer to check
+  /// @return 1 if buffer looks like non-text data
+  int git_buf_is_binary(
+    ffi.Pointer<git_buf> buf,
+  ) {
+    return _git_buf_is_binary(
+      buf,
+    );
+  }
+
+  late final _git_buf_is_binaryPtr =
+      _lookup<ffi.NativeFunction<ffi.Int32 Function(ffi.Pointer<git_buf>)>>(
+          'git_buf_is_binary');
+  late final _git_buf_is_binary =
+      _git_buf_is_binaryPtr.asFunction<int Function(ffi.Pointer<git_buf>)>();
+
+  /// Check quickly if buffer contains a NUL byte
+  ///
+  /// @param buf Buffer to check
+  /// @return 1 if buffer contains a NUL byte
+  int git_buf_contains_nul(
+    ffi.Pointer<git_buf> buf,
+  ) {
+    return _git_buf_contains_nul(
+      buf,
+    );
+  }
+
+  late final _git_buf_contains_nulPtr =
+      _lookup<ffi.NativeFunction<ffi.Int32 Function(ffi.Pointer<git_buf>)>>(
+          'git_buf_contains_nul');
+  late final _git_buf_contains_nul =
+      _git_buf_contains_nulPtr.asFunction<int Function(ffi.Pointer<git_buf>)>();
 
   /// Free the memory referred to by the git_buf.  This is an alias of
   /// `git_buf_dispose` and is preserved for backward compatibility.
@@ -21091,6 +21385,7 @@ class Libgit2 {
   /// @param repo the repository where the commits exist
   /// @param local the commit for local
   /// @param upstream the commit for upstream
+  /// @return 0 or an error code.
   int git_graph_ahead_behind(
     ffi.Pointer<size_t> ahead,
     ffi.Pointer<size_t> behind,
@@ -21201,7 +21496,7 @@ class Libgit2 {
   /// This would add three rules to the ignores.
   ///
   /// @param repo The repository to add ignore rules to.
-  /// @param rules Text of rules, a la the contents of a .gitignore file.
+  /// @param rules Text of rules, the contents to add on a .gitignore file.
   /// It is okay to have multiple rules in the text; if so,
   /// each rule should be terminated with a newline.
   /// @return 0 on success
@@ -21558,6 +21853,8 @@ class Libgit2 {
 
   /// Clean's up any allocated memory in the git_message_trailer_array filled by
   /// a call to git_message_trailers.
+  ///
+  /// @param arr The trailer to free.
   void git_message_trailer_array_free(
     ffi.Pointer<git_message_trailer_array> arr,
   ) {
@@ -22371,6 +22668,32 @@ class Libgit2 {
   late final _git_odb_exists = _git_odb_existsPtr
       .asFunction<int Function(ffi.Pointer<git_odb>, ffi.Pointer<git_oid>)>();
 
+  /// Determine if the given object can be found in the object database, with
+  /// extended options.
+  ///
+  /// @param db database to be searched for the given object.
+  /// @param id the object to search for.
+  /// @param flags flags affecting the lookup (see `git_odb_lookup_flags_t`)
+  /// @return 1 if the object was found, 0 otherwise
+  int git_odb_exists_ext(
+    ffi.Pointer<git_odb> db,
+    ffi.Pointer<git_oid> id,
+    int flags,
+  ) {
+    return _git_odb_exists_ext(
+      db,
+      id,
+      flags,
+    );
+  }
+
+  late final _git_odb_exists_extPtr = _lookup<
+      ffi.NativeFunction<
+          ffi.Int32 Function(ffi.Pointer<git_odb>, ffi.Pointer<git_oid>,
+              ffi.Uint32)>>('git_odb_exists_ext');
+  late final _git_odb_exists_ext = _git_odb_exists_extPtr.asFunction<
+      int Function(ffi.Pointer<git_odb>, ffi.Pointer<git_oid>, int)>();
+
   /// Determine if an object can be found in the object database by an
   /// abbreviated object ID.
   ///
@@ -22403,12 +22726,13 @@ class Libgit2 {
           ffi.Pointer<git_oid>, int)>();
 
   /// Determine if one or more objects can be found in the object database
-  /// by their abbreviated object ID and type.  The given array will be
-  /// updated in place:  for each abbreviated ID that is unique in the
-  /// database, and of the given type (if specified), the full object ID,
-  /// object ID length (`GIT_OID_HEXSZ`) and type will be written back to
-  /// the array.  For IDs that are not found (or are ambiguous), the
-  /// array entry will be zeroed.
+  /// by their abbreviated object ID and type.
+  ///
+  /// The given array will be updated in place: for each abbreviated ID that is
+  /// unique in the database, and of the given type (if specified),
+  /// the full object ID, object ID length (`GIT_OID_HEXSZ`) and type will be
+  /// written back to the array. For IDs that are not found (or are ambiguous),
+  /// the array entry will be zeroed.
   ///
   /// Note that since this function operates on multiple objects, the
   /// underlying database will not be asked to be reloaded if an object is
@@ -22643,6 +22967,11 @@ class Libgit2 {
   /// Read from an odb stream
   ///
   /// Most backends don't implement streaming reads
+  ///
+  /// @param stream the stream
+  /// @param buffer a user-allocated buffer to store the data in.
+  /// @param len the buffer's length
+  /// @return 0 if the read succeeded, error code otherwise
   int git_odb_stream_read(
     ffi.Pointer<git_odb_stream> stream,
     ffi.Pointer<ffi.Int8> buffer,
@@ -22751,6 +23080,7 @@ class Libgit2 {
   /// Be aware that this is called inline with network and indexing operations,
   /// so performance may be affected.
   /// @param progress_payload payload for the progress callback
+  /// @return 0 or an error code.
   int git_odb_write_pack(
     ffi.Pointer<ffi.Pointer<git_odb_writepack>> out,
     ffi.Pointer<git_odb> db,
@@ -22788,6 +23118,7 @@ class Libgit2 {
   /// exist).
   ///
   /// @param db object database where the `multi-pack-index` file will be written.
+  /// @return 0 or an error code.
   int git_odb_write_multi_pack_index(
     ffi.Pointer<git_odb> db,
   ) {
@@ -23108,7 +23439,7 @@ class Libgit2 {
 
   /// Set the git commit-graph for the ODB.
   ///
-  /// After a successfull call, the ownership of the cgraph parameter will be
+  /// After a successful call, the ownership of the cgraph parameter will be
   /// transferred to libgit2, and the caller should not free it.
   ///
   /// The commit-graph can also be unset by explicitly passing NULL as the cgraph
@@ -23453,6 +23784,8 @@ class Libgit2 {
           ffi.Pointer<git_diff_options>)>();
 
   /// Free a git_patch object.
+  ///
+  /// @param patch The patch to free.
   void git_patch_free(
     ffi.Pointer<git_patch> patch,
   ) {
@@ -23469,6 +23802,9 @@ class Libgit2 {
 
   /// Get the delta associated with a patch.  This delta points to internal
   /// data and you do not have to release it when you are done with it.
+  ///
+  /// @param patch The patch in which to get the delta.
+  /// @return The delta associated with the patch.
   ffi.Pointer<git_diff_delta> git_patch_get_delta(
     ffi.Pointer<git_patch> patch,
   ) {
@@ -23485,6 +23821,9 @@ class Libgit2 {
       ffi.Pointer<git_diff_delta> Function(ffi.Pointer<git_patch>)>();
 
   /// Get the number of hunks in a patch
+  ///
+  /// @param patch The patch in which to get the number of hunks.
+  /// @return The number of hunks of the patch.
   int git_patch_num_hunks(
     ffi.Pointer<git_patch> patch,
   ) {
@@ -24168,6 +24507,9 @@ class Libgit2 {
   /// Suggests that the given refdb compress or optimize its references.
   /// This mechanism is implementation specific.  For on-disk reference
   /// databases, for example, this may pack all loose references.
+  ///
+  /// @param refdb The reference database to optimize.
+  /// @return 0 or an error code.
   int git_refdb_compress(
     ffi.Pointer<git_refdb> refdb,
   ) {
@@ -24209,7 +24551,7 @@ class Libgit2 {
   /// git_reflog_free().
   ///
   /// @param out pointer to reflog
-  /// @param repo the repostiory
+  /// @param repo the repository
   /// @param name reference to look up
   /// @return 0 or an error code
   int git_reflog_read(
@@ -24533,7 +24875,7 @@ class Libgit2 {
   ///
   /// @param target Committish to which the Head should be moved to. This object
   /// must belong to the given `repo` and can either be a git_commit or a
-  /// git_tag. When a git_tag is being passed, it should be dereferencable
+  /// git_tag. When a git_tag is being passed, it should be dereferenceable
   /// to a git_commit which oid will be used as the target of the branch.
   ///
   /// @param reset_type Kind of reset operation to perform.
@@ -25001,6 +25343,7 @@ class Libgit2 {
   ///
   /// No parents other than the first for each commit will be enqueued.
   ///
+  /// @param walk The revision walker.
   /// @return 0 or an error code
   int git_revwalk_simplify_first_parent(
     ffi.Pointer<git_revwalk> walk,
@@ -25059,6 +25402,7 @@ class Libgit2 {
   /// @param walk the revision walker
   /// @param hide_cb  callback function to hide a commit and its parents
   /// @param payload  data payload to be passed to callback function
+  /// @return 0 or an error code.
   int git_revwalk_add_hide_cb(
     ffi.Pointer<git_revwalk> walk,
     git_revwalk_hide_cb hide_cb,
@@ -25186,7 +25530,7 @@ class Libgit2 {
   ///
   /// @param out new signature
   /// @param buf signature string
-  /// @return 0 on success, or an error code
+  /// @return 0 on success, GIT_EINVALID if the signature is not parseable, or an error code
   int git_signature_from_buffer(
     ffi.Pointer<ffi.Pointer<git_signature>> out,
     ffi.Pointer<ffi.Int8> buf,
@@ -25865,6 +26209,7 @@ class Libgit2 {
   ///
   /// @param out Pointer to store the copy of the tag
   /// @param source Original tag to copy
+  /// @return 0
   int git_tag_dup(
     ffi.Pointer<ffi.Pointer<git_tag>> out,
     ffi.Pointer<git_tag> source,
@@ -26574,34 +26919,25 @@ abstract class git_libgit2_opt_t {
 ///
 /// Sometimes libgit2 wants to return an allocated data buffer to the
 /// caller and have the caller take responsibility for freeing that memory.
-/// This can be awkward if the caller does not have easy access to the same
-/// allocation functions that libgit2 is using.  In those cases, libgit2
-/// will fill in a `git_buf` and the caller can use `git_buf_dispose()` to
-/// release it when they are done.
+/// To make ownership clear in these cases, libgit2 uses  `git_buf` to
+/// return this data.  Callers should use `git_buf_dispose()` to release
+/// the memory when they are done.
 ///
-/// A `git_buf` may also be used for the caller to pass in a reference to
-/// a block of memory they hold.  In this case, libgit2 will not resize or
-/// free the memory, but will read from it as needed.
-///
-/// Some APIs may occasionally do something slightly unusual with a buffer,
-/// such as setting `ptr` to a value that was passed in by the user.  In
-/// those cases, the behavior will be clearly documented by the API.
+/// A `git_buf` contains a pointer to a NUL-terminated C string, and
+/// the length of the string (not including the NUL terminator).
 class git_buf extends ffi.Struct {
-  /// The buffer contents.
-  ///
-  /// `ptr` points to the start of the allocated memory.  If it is NULL,
-  /// then the `git_buf` is considered empty and libgit2 will feel free
-  /// to overwrite it with new data.
+  /// The buffer contents.  `ptr` points to the start of the buffer
+  /// being returned.  The buffer's length (in bytes) is specified
+  /// by the `size` member of the structure, and contains a NUL
+  /// terminator at position `(size + 1)`.
   external ffi.Pointer<ffi.Int8> ptr;
 
-  /// `asize` holds the known total amount of allocated memory if the `ptr`
-  /// was allocated by libgit2.  It may be larger than `size`.  If `ptr`
-  /// was not allocated by libgit2 and should not be resized and/or freed,
-  /// then `asize` will be set to zero.
+  /// This field is reserved and unused.
   @size_t()
-  external int asize;
+  external int reserved;
 
-  /// `size` holds the size (in bytes) of the data that is actually used.
+  /// The length (in bytes) of the buffer pointed to by `ptr`,
+  /// not including a NUL terminator.
   @size_t()
   external int size;
 }
@@ -27787,6 +28123,9 @@ abstract class git_diff_flag_t {
 
   /// < file exists at this side of the delta
   static const int GIT_DIFF_FLAG_EXISTS = 8;
+
+  /// < file size value is known correct
+  static const int GIT_DIFF_FLAG_VALID_SIZE = 16;
 }
 
 /// What type of change is described by a git_diff_delta?
@@ -28315,7 +28654,7 @@ class git_diff_find_options extends ffi.Struct {
   @ffi.Uint16()
   external int copy_threshold;
 
-  /// Treshold below which similar files will be split into a delete/add pair.
+  /// Threshold below which similar files will be split into a delete/add pair.
   /// This is equivalent to the last part of the -B option. Defaults to 60.
   @ffi.Uint16()
   external int break_rewrite_threshold;
@@ -28324,7 +28663,7 @@ class git_diff_find_options extends ffi.Struct {
   ///
   /// This is a little different from the `-l` option from Git because we
   /// will still process up to this many matches before abandoning the search.
-  /// Defaults to 200.
+  /// Defaults to 1000.
   @size_t()
   external int rename_limit;
 
@@ -28468,6 +28807,8 @@ class git_apply_options extends ffi.Struct {
 ///
 /// @param delta The delta to be applied
 /// @param payload User-specified payload
+/// @return 0 if the delta is applied, < 0 if the apply process will be aborted
+/// or > 0 if the delta will not be applied.
 typedef git_apply_delta_cb = ffi.Pointer<
     ffi.NativeFunction<
         ffi.Int32 Function(
@@ -28483,6 +28824,8 @@ typedef git_apply_delta_cb = ffi.Pointer<
 ///
 /// @param hunk The hunk to be applied
 /// @param payload User-specified payload
+/// @return 0 if the hunk is applied, < 0 if the apply process will be aborted
+/// or > 0 if the hunk will not be applied.
 typedef git_apply_hunk_cb = ffi.Pointer<
     ffi.NativeFunction<
         ffi.Int32 Function(ffi.Pointer<git_diff_hunk>, ffi.Pointer<ffi.Void>)>>;
@@ -28956,6 +29299,9 @@ abstract class git_checkout_strategy_t {
   /// notifications; don't update the working directory or index.
   static const int GIT_CHECKOUT_DRY_RUN = 16777216;
 
+  /// Include common ancestor data in zdiff3 format for conflicts
+  static const int GIT_CHECKOUT_CONFLICT_STYLE_ZDIFF3 = 33554432;
+
   /// Recursively checkout submodules with same options (NOT IMPLEMENTED)
   static const int GIT_CHECKOUT_UPDATE_SUBMODULES = 65536;
 
@@ -29318,6 +29664,12 @@ abstract class git_merge_flag_t {
   /// instead simply use the first base.  This flag provides a similar
   /// merge base to `git-merge-resolve`.
   static const int GIT_MERGE_NO_RECURSIVE = 8;
+
+  /// Treat this merge as if it is to produce the virtual base
+  /// of a recursive merge.  This will ensure that there are
+  /// no conflicts, any conflicting regions will keep conflict
+  /// markers in the merge result.
+  static const int GIT_MERGE_VIRTUAL_BASE = 16;
 }
 
 /// Merge file favor options for `git_merge_options` instruct the file-level
@@ -29374,6 +29726,14 @@ abstract class git_merge_file_flag_t {
 
   /// Take extra time to find minimal diff
   static const int GIT_MERGE_FILE_DIFF_MINIMAL = 128;
+
+  /// Create zdiff3 ("zealous diff3")-style files
+  static const int GIT_MERGE_FILE_STYLE_ZDIFF3 = 256;
+
+  /// Do not produce file conflicts when common regions have
+  /// changed; keep the conflict markers in the file and accept
+  /// that as the merge result.
+  static const int GIT_MERGE_FILE_ACCEPT_CONFLICTS = 512;
 }
 
 /// Options for merging a file
@@ -29719,6 +30079,22 @@ class git_proxy_options extends ffi.Struct {
   external ffi.Pointer<ffi.Void> payload;
 }
 
+/// Remote redirection settings; whether redirects to another host
+/// are permitted.  By default, git will follow a redirect on the
+/// initial request (`/info/refs`), but not subsequent requests.
+abstract class git_remote_redirect_t {
+  /// Do not follow any off-site redirects at any stage of
+  /// the fetch or push.
+  static const int GIT_REMOTE_REDIRECT_NONE = 1;
+
+  /// Allow off-site redirects only upon the initial request.
+  /// This is the default.
+  static const int GIT_REMOTE_REDIRECT_INITIAL = 2;
+
+  /// Allow redirects at any stage in the fetch or push.
+  static const int GIT_REMOTE_REDIRECT_ALL = 4;
+}
+
 /// Remote creation options flags
 abstract class git_remote_create_flags {
   /// Ignore the repository apply.insteadOf configuration
@@ -29815,6 +30191,12 @@ class git_fetch_options extends ffi.Struct {
   /// Proxy options to use, by default no proxy is used.
   external git_proxy_options proxy_opts;
 
+  /// Whether to allow off-site redirects.  If this is not
+  /// specified, the `http.followRedirects` configuration setting
+  /// will be consulted.
+  @ffi.Int32()
+  external int follow_redirects;
+
   /// Extra headers for this fetch operation
   external git_strarray custom_headers;
 }
@@ -29839,7 +30221,37 @@ class git_push_options extends ffi.Struct {
   /// Proxy options to use, by default no proxy is used.
   external git_proxy_options proxy_opts;
 
+  /// Whether to allow off-site redirects.  If this is not
+  /// specified, the `http.followRedirects` configuration setting
+  /// will be consulted.
+  @ffi.Int32()
+  external int follow_redirects;
+
   /// Extra headers for this push operation
+  external git_strarray custom_headers;
+}
+
+/// Remote creation options structure
+///
+/// Initialize with `GIT_REMOTE_CREATE_OPTIONS_INIT`. Alternatively, you can
+/// use `git_remote_create_options_init`.
+class git_remote_connect_options extends ffi.Struct {
+  @ffi.Uint32()
+  external int version;
+
+  /// Callbacks to use for this connection
+  external git_remote_callbacks callbacks;
+
+  /// HTTP Proxy settings
+  external git_proxy_options proxy_opts;
+
+  /// Whether to allow off-site redirects.  If this is not
+  /// specified, the `http.followRedirects` configuration setting
+  /// will be consulted.
+  @ffi.Int32()
+  external int follow_redirects;
+
+  /// Extra HTTP headers to use in this connection
   external git_strarray custom_headers;
 }
 
@@ -29916,8 +30328,8 @@ class git_clone_options extends ffi.Struct {
   external ffi.Pointer<ffi.Void> remote_cb_payload;
 }
 
-/// The signature of a function matchin git_repository_init, with an
-/// aditional void * as callback payload.
+/// The signature of a function matching git_repository_init, with an
+/// additional void * as callback payload.
 ///
 /// Callers of git_clone my provide a function matching this signature
 /// to override the repository creation and customization process
@@ -30035,6 +30447,7 @@ class git_configmap extends ffi.Struct {
 ///
 /// @param entry the entry currently being enumerated
 /// @param payload a user-specified pointer
+/// @return non-zero to terminate the iteration.
 typedef git_config_foreach_cb = ffi.Pointer<
     ffi.NativeFunction<
         ffi.Int32 Function(
@@ -30779,6 +31192,11 @@ class git_status_options extends ffi.Struct {
   /// The `baseline` is the tree to be used for comparison to the
   /// working directory and index; defaults to HEAD.
   external ffi.Pointer<git_tree> baseline;
+
+  /// Threshold above which similar files will be considered renames.
+  /// This is equivalent to the -M option. Defaults to 50.
+  @ffi.Uint16()
+  external int rename_threshold;
 }
 
 /// A status entry, providing the differences between the file as it exists
@@ -30923,6 +31341,9 @@ class git_worktree_add_options extends ffi.Struct {
 
   /// < reference to use for the new worktree HEAD
   external ffi.Pointer<git_reference> ref;
+
+  /// Options for the checkout.
+  external git_checkout_options checkout_options;
 }
 
 /// Flags which can be passed to git_worktree_prune to alter its
@@ -31081,6 +31502,15 @@ typedef git_note_foreach_cb = ffi.Pointer<
         ffi.Int32 Function(ffi.Pointer<git_oid>, ffi.Pointer<git_oid>,
             ffi.Pointer<ffi.Void>)>>;
 
+/// Flags controlling the behavior of ODB lookup operations
+abstract class git_odb_lookup_flags_t {
+  /// Don't call `git_odb_refresh` if the lookup fails. Useful when doing
+  /// a batch of lookup operations for objects that may legitimately not
+  /// exist. When using this flag, you may wish to manually call
+  /// `git_odb_refresh` before processing a batch of objects.
+  static const int GIT_ODB_LOOKUP_NO_REFRESH = 1;
+}
+
 /// The information about object IDs to query in `git_odb_expand_ids`,
 /// which will be populated upon return.
 class git_odb_expand_id extends ffi.Struct {
@@ -31190,6 +31620,7 @@ abstract class git_sort_t {
 ///
 /// @param commit_id oid of Commit
 /// @param payload User-specified pointer to data to be passed as data payload
+/// @return non-zero to hide the commmit and it parent.
 typedef git_revwalk_hide_cb = ffi.Pointer<
     ffi.NativeFunction<
         ffi.Int32 Function(ffi.Pointer<git_oid>, ffi.Pointer<ffi.Void>)>>;
@@ -31239,6 +31670,14 @@ const int __USE_XOPEN2K8 = 1;
 
 const int _ATFILE_SOURCE = 1;
 
+const int __WORDSIZE = 64;
+
+const int __WORDSIZE_TIME64_COMPAT32 = 1;
+
+const int __SYSCALL_WORDSIZE = 64;
+
+const int __TIMESIZE = 64;
+
 const int __USE_MISC = 1;
 
 const int __USE_ATFILE = 1;
@@ -31261,7 +31700,7 @@ const int __GNU_LIBRARY__ = 6;
 
 const int __GLIBC__ = 2;
 
-const int __GLIBC_MINOR__ = 33;
+const int __GLIBC_MINOR__ = 34;
 
 const int _SYS_CDEFS_H = 1;
 
@@ -31270,12 +31709,6 @@ const int __THROW = 1;
 const int __THROWNL = 1;
 
 const int __glibc_c99_flexarr_available = 1;
-
-const int __WORDSIZE = 64;
-
-const int __WORDSIZE_TIME64_COMPAT32 = 1;
-
-const int __SYSCALL_WORDSIZE = 64;
 
 const int __LDOUBLE_REDIRECTS_TO_FLOAT128_ABI = 0;
 
@@ -31286,8 +31719,6 @@ const int NULL = 0;
 const int _BITS_TIME_H = 1;
 
 const int _BITS_TYPES_H = 1;
-
-const int __TIMESIZE = 64;
 
 const int _BITS_TYPESIZES_H = 1;
 
@@ -31370,6 +31801,8 @@ const int __GLIBC_USE_LIB_EXT2 = 1;
 const int __GLIBC_USE_IEC_60559_BFP_EXT = 1;
 
 const int __GLIBC_USE_IEC_60559_BFP_EXT_C2X = 1;
+
+const int __GLIBC_USE_IEC_60559_EXT = 1;
 
 const int __GLIBC_USE_IEC_60559_FUNCS_EXT = 1;
 
@@ -32017,6 +32450,8 @@ const int GIT_FETCH_OPTIONS_VERSION = 1;
 
 const int GIT_PUSH_OPTIONS_VERSION = 1;
 
+const int GIT_REMOTE_CONNECT_OPTIONS_VERSION = 1;
+
 const int GIT_CLONE_OPTIONS_VERSION = 1;
 
 const int GIT_DESCRIBE_DEFAULT_MAX_CANDIDATES_TAGS = 10;
@@ -32245,14 +32680,14 @@ const int GIT_CREDTYPE_SSH_MEMORY = 64;
 
 const int GIT_EMAIL_CREATE_OPTIONS_VERSION = 1;
 
-const String LIBGIT2_VERSION = '1.3.0';
+const String LIBGIT2_VERSION = '1.4.0';
 
 const int LIBGIT2_VER_MAJOR = 1;
 
-const int LIBGIT2_VER_MINOR = 3;
+const int LIBGIT2_VER_MINOR = 4;
 
 const int LIBGIT2_VER_REVISION = 0;
 
 const int LIBGIT2_VER_PATCH = 0;
 
-const String LIBGIT2_SOVERSION = '1.3';
+const String LIBGIT2_SOVERSION = '1.4';

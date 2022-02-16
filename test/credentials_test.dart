@@ -95,25 +95,29 @@ void main() {
       );
     });
 
-    test('clones repository with provided keypair', () {
-      final keypair = Keypair(
-        username: 'git',
-        pubKey: p.join('test', 'assets', 'keys', 'id_rsa.pub'),
-        privateKey: p.join('test', 'assets', 'keys', 'id_rsa'),
-        passPhrase: 'empty',
-      );
-      final callbacks = Callbacks(credentials: keypair);
+    test(
+      'clones repository with provided keypair',
+      () {
+        final keypair = Keypair(
+          username: 'git',
+          pubKey: p.join('test', 'assets', 'keys', 'id_rsa.pub'),
+          privateKey: p.join('test', 'assets', 'keys', 'id_rsa'),
+          passPhrase: 'empty',
+        );
+        final callbacks = Callbacks(credentials: keypair);
 
-      final repo = Repository.clone(
-        url: 'https://github.com/libgit2/TestGitRepository',
-        localPath: cloneDir.path,
-        callbacks: callbacks,
-      );
+        final repo = Repository.clone(
+          url: 'ssh://git@github.com/libgit2/TestGitRepository',
+          localPath: cloneDir.path,
+          callbacks: callbacks,
+        );
 
-      expect(repo.isEmpty, false);
+        expect(repo.isEmpty, false);
 
-      repo.free();
-    });
+        repo.free();
+      },
+      testOn: '!linux',
+    );
 
     test('throws when no credentials is provided', () {
       expect(
@@ -181,29 +185,33 @@ void main() {
       );
     });
 
-    test('clones repository with provided keypair from memory', () {
-      final pubKey = File(p.join('test', 'assets', 'keys', 'id_rsa.pub'))
-          .readAsStringSync();
-      final privateKey =
-          File(p.join('test', 'assets', 'keys', 'id_rsa')).readAsStringSync();
-      final keypair = KeypairFromMemory(
-        username: 'git',
-        pubKey: pubKey,
-        privateKey: privateKey,
-        passPhrase: 'empty',
-      );
-      final callbacks = Callbacks(credentials: keypair);
+    test(
+      'clones repository with provided keypair from memory',
+      () {
+        final pubKey = File(p.join('test', 'assets', 'keys', 'id_rsa.pub'))
+            .readAsStringSync();
+        final privateKey =
+            File(p.join('test', 'assets', 'keys', 'id_rsa')).readAsStringSync();
+        final keypair = KeypairFromMemory(
+          username: 'git',
+          pubKey: pubKey,
+          privateKey: privateKey,
+          passPhrase: 'empty',
+        );
+        final callbacks = Callbacks(credentials: keypair);
 
-      final repo = Repository.clone(
-        url: 'https://github.com/libgit2/TestGitRepository',
-        localPath: cloneDir.path,
-        callbacks: callbacks,
-      );
+        final repo = Repository.clone(
+          url: 'ssh://git@github.com/libgit2/TestGitRepository',
+          localPath: cloneDir.path,
+          callbacks: callbacks,
+        );
 
-      expect(repo.isEmpty, false);
+        expect(repo.isEmpty, false);
 
-      repo.free();
-    });
+        repo.free();
+      },
+      testOn: '!linux',
+    );
 
     test('throws when provided keypair from memory is incorrect', () {
       final pubKey = File(p.join('test', 'assets', 'keys', 'id_rsa.pub'))
