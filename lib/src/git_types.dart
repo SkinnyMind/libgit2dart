@@ -447,6 +447,14 @@ class GitMergeFileFlag {
   /// Take extra time to find minimal diff.
   static const diffMinimal = GitMergeFileFlag._(128, 'diffMinimal');
 
+  /// Create zdiff3 ("zealous diff3")-style files.
+  static const styleZdiff3 = GitMergeFileFlag._(256, 'styleZdiff3');
+
+  /// Do not produce file conflicts when common regions have
+  /// changed; keep the conflict markers in the file and accept
+  /// that as the merge result.
+  static const acceptConflicts = GitMergeFileFlag._(512, 'acceptConflicts');
+
   static const List<GitMergeFileFlag> values = [
     defaults,
     styleMerge,
@@ -457,6 +465,8 @@ class GitMergeFileFlag {
     ignoreWhitespaceEOL,
     diffPatience,
     diffMinimal,
+    styleZdiff3,
+    acceptConflicts,
   ];
 
   int get value => _value;
@@ -554,6 +564,10 @@ class GitCheckout {
   /// notifications; don't update the working directory or index.
   static const dryRun = GitCheckout._(16777216, 'dryRun');
 
+  /// Include common ancestor data in zdiff3 format for conflicts.
+  static const conflictStyleZdiff3 =
+      GitCheckout._(33554432, 'conflictStyleZdiff3');
+
   static const List<GitCheckout> values = [
     none,
     safe,
@@ -575,7 +589,8 @@ class GitCheckout {
     conflictStyleDiff3,
     dontRemoveExisting,
     dontWriteIndex,
-    dryRun
+    dryRun,
+    conflictStyleZdiff3,
   ];
 
   int get value => _value;

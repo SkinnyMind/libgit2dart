@@ -143,12 +143,13 @@ int writtenCount(Pointer<git_packbuilder> pb) {
   return libgit2.git_packbuilder_written(pb);
 }
 
-/// Get the packfile's hash.
+/// Get the unique name for the resulting packfile.
 ///
-/// A packfile's name is derived from the sorted hashing of all object names.
-/// This is only correct after the packfile has been written.
-Pointer<git_oid> hash(Pointer<git_packbuilder> pb) {
-  return libgit2.git_packbuilder_hash(pb);
+/// The packfile's name is derived from the packfile's content. This is only
+/// correct after the packfile has been written.
+String name(Pointer<git_packbuilder> pb) {
+  final result = libgit2.git_packbuilder_name(pb);
+  return result == nullptr ? '' : result.cast<Utf8>().toDartString();
 }
 
 /// Set number of threads to spawn.

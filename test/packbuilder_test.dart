@@ -146,16 +146,16 @@ void main() {
       packbuilder.free();
     });
 
-    test('returns hash of packfile', () {
+    test('returns name of packfile', () {
       final packbuilder = PackBuilder(repo);
       final odb = repo.odb;
 
       packbuilder.add(odb.objects[0]);
       Directory(packDirPath).createSync();
 
-      expect(packbuilder.hash.sha, '0' * 40);
+      expect(packbuilder.name, isEmpty);
       packbuilder.write(null);
-      expect(packbuilder.hash.sha, isNot('0' * 40));
+      expect(packbuilder.name, isNotEmpty);
 
       packbuilder.free();
     });

@@ -90,11 +90,11 @@ class PackBuilder {
   /// Number of objects the packbuilder has already written out.
   int get writtenLength => bindings.writtenCount(_packbuilderPointer);
 
-  /// Packfile's hash.
+  /// Unique name for the resulting packfile.
   ///
-  /// A packfile's name is derived from the sorted hashing of all object names.
-  /// This is only correct after the packfile has been written.
-  Oid get hash => Oid(bindings.hash(_packbuilderPointer));
+  /// The packfile's name is derived from the packfile's content. This is only
+  /// correct after the packfile has been written.
+  String get name => bindings.name(_packbuilderPointer);
 
   /// Sets and returns the number of threads to spawn.
   ///

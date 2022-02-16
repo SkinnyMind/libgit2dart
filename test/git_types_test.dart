@@ -165,7 +165,7 @@ void main() {
 
     group('GitMergeFileFlag', () {
       test('returns correct values', () {
-        const expected = [0, 1, 2, 4, 8, 16, 32, 64, 128];
+        const expected = [0, 1, 2, 4, 8, 16, 32, 64, 128, 256, 512];
         final actual = GitMergeFileFlag.values.map((e) => e.value).toList();
         expect(actual, expected);
       });
@@ -202,6 +202,7 @@ void main() {
           4194304,
           8388608,
           16777216,
+          33554432,
         ];
         final actual = GitCheckout.values.map((e) => e.value).toList();
         expect(actual, expected);

@@ -105,7 +105,7 @@ void main() {
       final callbacks = Callbacks(credentials: keypair);
 
       final repo = Repository.clone(
-        url: 'https://github.com/libgit2/TestGitRepository',
+        url: 'ssh://git@github.com/libgit2/TestGitRepository',
         localPath: cloneDir.path,
         callbacks: callbacks,
       );
@@ -195,7 +195,7 @@ void main() {
       final callbacks = Callbacks(credentials: keypair);
 
       final repo = Repository.clone(
-        url: 'https://github.com/libgit2/TestGitRepository',
+        url: 'ssh://git@github.com/libgit2/TestGitRepository',
         localPath: cloneDir.path,
         callbacks: callbacks,
       );
