@@ -35,9 +35,7 @@ String? _resolveLibPath(String name) {
   var libPath = path.join(Directory.current.path, name);
 
   // If lib is in Present Working Directory.
-  if (_doesFileExist(libPath)) {
-    return libPath;
-  }
+  if (_doesFileExist(libPath)) return libPath;
 
   // If lib is in Present Working Directory's '.dart_tool/libgit2/[platform]' folder.
   libPath = path.join(
@@ -46,23 +44,29 @@ String? _resolveLibPath(String name) {
     Platform.operatingSystem,
     name,
   );
-  if (_doesFileExist(libPath)) {
-    return libPath;
-  }
+  if (_doesFileExist(libPath)) return libPath;
 
   // If lib is in Present Working Directory's '[platform]' folder.
   libPath = path.join(Directory.current.path, Platform.operatingSystem, name);
-  if (_doesFileExist(libPath)) {
-    return libPath;
+  if (_doesFileExist(libPath)) return libPath;
+
+  String checkCache(PubCache pubCache) {
+    final pubCacheDir =
+        pubCache.getLatestVersion('libgit2dart')!.resolve()!.location;
+    return path.join(pubCacheDir.path, Platform.operatingSystem, name);
   }
 
-  // If lib is in '.pub_cache' folder.
-  final pubCache = PubCache();
-  final pubCacheDir =
-      pubCache.getLatestVersion('libgit2dart')!.resolve()!.location;
-  libPath = path.join(pubCacheDir.path, Platform.operatingSystem, name);
-  if (_doesFileExist(libPath)) {
-    return libPath;
+  // If lib is in Dart's '.pub_cache' folder.
+  libPath = checkCache(PubCache());
+  if (_doesFileExist(libPath)) return libPath;
+
+  // If lib is in Flutter's '.pub_cache' folder.
+  final env = Platform.environment;
+  if (env.containsKey('FLUTTER_ROOT')) {
+    final flutterPubCache =
+        PubCache(Directory(path.join(env['FLUTTER_ROOT']!, '.pub-cache')));
+    libPath = checkCache(flutterPubCache);
+    if (_doesFileExist(libPath)) return libPath;
   }
 
   return null;
