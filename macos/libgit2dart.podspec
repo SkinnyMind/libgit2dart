@@ -15,7 +15,7 @@ Dart bindings to libgit2.
   s.source           = { :path => '.' }
   s.source_files     = 'Classes/**/*'
   s.dependency 'FlutterMacOS'
-  s.vendored_libraries = 'libgit2-1.4.0.dylib'
+  s.vendored_libraries = 'libgit2-1.4.1.dylib'
 
   s.platform = :osx, '10.11'
   s.pod_target_xcconfig = { 'DEFINES_MODULE' => 'YES' }
