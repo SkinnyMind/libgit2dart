@@ -55,7 +55,7 @@ void main() {
     });
 
     test('creates worktree at provided path from provided reference', () {
-      final head = RevParse.single(repo: repo, spec: 'HEAD');
+      final head = RevParse.single(repo: repo, spec: 'HEAD') as Commit;
       final worktreeBranch = Branch.create(
         repo: repo,
         name: 'v1',

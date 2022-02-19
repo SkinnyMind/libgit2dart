@@ -23,19 +23,30 @@ void main() {
   });
 
   group('revParse', () {
-    test('.single() returns commit with different spec strings', () {
-      final headCommit = RevParse.single(repo: repo, spec: 'HEAD');
-      expect(headCommit.oid.sha, headSHA);
+    test('.single() returns correct objects with different spec strings', () {
+      final commit = RevParse.single(repo: repo, spec: 'HEAD') as Commit;
+      expect(commit, isA<Commit>());
+      expect(commit.oid.sha, headSHA);
 
-      final parentCommit = RevParse.single(repo: repo, spec: 'HEAD^');
-      expect(parentCommit.oid.sha, parentSHA);
+      final tree = RevParse.single(repo: repo, spec: 'HEAD^{tree}') as Tree;
+      expect(tree, isA<Tree>());
+      expect(tree.length, isNonZero);
 
-      final initCommit = RevParse.single(repo: repo, spec: '@{-1}');
-      expect(initCommit.oid.sha, '5aecfa0fb97eadaac050ccb99f03c3fb65460ad4');
+      final blob = RevParse.single(
+        repo: repo,
+        spec: 'HEAD:feature_file',
+      ) as Blob;
+      expect(blob, isA<Blob>());
+      expect(blob.content, 'Feature edit\n');
 
-      headCommit.free();
-      parentCommit.free();
-      initCommit.free();
+      final tag = RevParse.single(repo: repo, spec: 'v0.2') as Tag;
+      expect(tag, isA<Tag>());
+      expect(tag.message, 'annotated tag\n');
+
+      commit.free();
+      tree.free();
+      blob.free();
+      tag.free();
     });
 
     test('.single() throws when spec string not found or invalid', () {

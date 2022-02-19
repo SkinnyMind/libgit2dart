@@ -1,6 +1,7 @@
 import 'dart:ffi';
 import 'package:libgit2dart/libgit2dart.dart';
 import 'package:libgit2dart/src/bindings/libgit2_bindings.dart';
+import 'package:libgit2dart/src/bindings/object.dart' as object_bindings;
 import 'package:libgit2dart/src/bindings/revparse.dart' as bindings;
 
 class RevParse {
@@ -40,18 +41,35 @@ class RevParse {
   /// See `man gitrevisions`, or https://git-scm.com/docs/git-rev-parse.html#_specifying_revisions
   /// for information on the syntax accepted.
   ///
+  /// Returned object should be explicitly downcasted to one of four of git
+  /// object types.
+  ///
+  /// ```dart
+  /// final commit = RevParse.single(repo: repo, spec: 'HEAD') as Commit;
+  /// final tree = RevParse.single(repo: repo, spec: 'HEAD^{tree}') as Tree;
+  /// final blob = RevParse.single(repo: repo, spec: 'HEAD:file.txt') as Blob;
+  /// final tag = RevParse.single(repo: repo, spec: 'v1.0') as Tag;
+  /// ```
+  ///
   /// **IMPORTANT**: Should be freed to release allocated memory.
   ///
   /// Throws a [LibGit2Error] if error occured.
-  static Commit single({required Repository repo, required String spec}) {
-    return Commit(
-      bindings
-          .revParseSingle(
-            repoPointer: repo.pointer,
-            spec: spec,
-          )
-          .cast(),
+  static Object single({required Repository repo, required String spec}) {
+    final object = bindings.revParseSingle(
+      repoPointer: repo.pointer,
+      spec: spec,
     );
+    final objectType = object_bindings.type(object);
+
+    if (objectType == GitObject.commit.value) {
+      return Commit(object.cast());
+    } else if (objectType == GitObject.tree.value) {
+      return Tree(object.cast());
+    } else if (objectType == GitObject.blob.value) {
+      return Blob(object.cast());
+    } else {
+      return Tag(object.cast());
+    }
   }
 
   /// Parses a revision string for from, to, and intent.
