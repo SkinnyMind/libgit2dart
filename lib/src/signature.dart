@@ -4,7 +4,9 @@ import 'package:libgit2dart/libgit2dart.dart';
 import 'package:libgit2dart/src/bindings/libgit2_bindings.dart';
 import 'package:libgit2dart/src/bindings/signature.dart' as bindings;
 import 'package:libgit2dart/src/util.dart';
+import 'package:meta/meta.dart';
 
+@immutable
 class Signature {
   /// Initializes a new instance of [Signature] class from provided pointer to
   /// signature object in memory.

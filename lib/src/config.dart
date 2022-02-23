@@ -211,12 +211,12 @@ class _ConfigIterator implements Iterator<ConfigEntry> {
   /// Pointer to memory address for allocated config iterator.
   final Pointer<git_config_iterator> _iteratorPointer;
 
-  ConfigEntry? _currentEntry;
+  late ConfigEntry _currentEntry;
   int error = 0;
   final entry = calloc<Pointer<git_config_entry>>();
 
   @override
-  ConfigEntry get current => _currentEntry!;
+  ConfigEntry get current => _currentEntry;
 
   @override
   bool moveNext() {

@@ -280,20 +280,19 @@ class Reference {
   /// Repository where a reference resides.
   Repository get owner => Repository(bindings.owner(_refPointer));
 
-  @override
-  bool operator ==(Object other) {
-    return (other is Reference) &&
-        bindings.compare(
-          ref1Pointer: _refPointer,
-          ref2Pointer: other._refPointer,
-        );
+  /// Compares two references.
+  bool equals(Reference other) {
+    return bindings.compare(
+      ref1Pointer: _refPointer,
+      ref2Pointer: other._refPointer,
+    );
   }
+
+  /// Compares two references.
+  bool notEquals(Reference other) => !equals(other);
 
   /// Releases memory allocated for reference object.
   void free() => bindings.free(_refPointer);
-
-  @override // coverage:ignore-line
-  int get hashCode => _refPointer.address.hashCode; // coverage:ignore-line
 
   @override
   String toString() {

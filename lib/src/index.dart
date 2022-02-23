@@ -394,12 +394,12 @@ class _IndexIterator implements Iterator<IndexEntry> {
   }
 
   final Pointer<git_index> _indexPointer;
-  IndexEntry? _currentEntry;
+  late IndexEntry _currentEntry;
   int _index = 0;
   late final int count;
 
   @override
-  IndexEntry get current => _currentEntry!;
+  IndexEntry get current => _currentEntry;
 
   @override
   bool moveNext() {

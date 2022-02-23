@@ -65,7 +65,7 @@ void main() {
       var headParse = RevParse.ext(repo: repo, spec: 'master');
 
       expect(headParse.object.oid.sha, headSHA);
-      expect(headParse.reference, masterRef);
+      expect(headParse.reference?.equals(masterRef), true);
       expect(headParse.toString(), contains('RevParse{'));
 
       masterRef.free();
@@ -82,7 +82,7 @@ void main() {
         headParse.object.oid.sha,
         '5aecfa0fb97eadaac050ccb99f03c3fb65460ad4',
       );
-      expect(headParse.reference, featureRef);
+      expect(headParse.reference?.equals(featureRef), true);
 
       featureRef.free();
       headParse.object.free();

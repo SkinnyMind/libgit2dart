@@ -129,12 +129,12 @@ class _RefLogIterator implements Iterator<RefLogEntry> {
   /// Pointer to memory address for allocated reflog object.
   final Pointer<git_reflog> _reflogPointer;
 
-  RefLogEntry? _currentEntry;
+  late RefLogEntry _currentEntry;
   int _index = 0;
   late final int _count;
 
   @override
-  RefLogEntry get current => _currentEntry!;
+  RefLogEntry get current => _currentEntry;
 
   @override
   bool moveNext() {

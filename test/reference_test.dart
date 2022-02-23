@@ -166,7 +166,7 @@ void main() {
       final duplicate = ref.duplicate();
 
       expect(repo.references.length, 6);
-      expect(duplicate, equals(ref));
+      expect(duplicate.equals(ref), true);
 
       duplicate.free();
       ref.free();
@@ -519,10 +519,10 @@ void main() {
       final ref2 = Reference.lookup(repo: repo, name: 'refs/heads/master');
       final ref3 = Reference.lookup(repo: repo, name: 'refs/heads/feature');
 
-      expect(ref1 == ref2, true);
-      expect(ref1 != ref2, false);
-      expect(ref1 == ref3, false);
-      expect(ref1 != ref3, true);
+      expect(ref1.equals(ref2), true);
+      expect(ref1.notEquals(ref2), false);
+      expect(ref1.equals(ref3), false);
+      expect(ref1.notEquals(ref3), true);
 
       ref1.free();
       ref2.free();

@@ -249,7 +249,7 @@ Pointer<git_reference> createDirect({
 
   if (error < 0) {
     calloc.free(out);
-    throw (LibGit2Error(libgit2.git_error_last()));
+    throw LibGit2Error(libgit2.git_error_last());
   } else {
     return out.value;
   }
@@ -309,7 +309,7 @@ Pointer<git_reference> createSymbolic({
 
   if (error < 0) {
     calloc.free(out);
-    throw (LibGit2Error(libgit2.git_error_last()));
+    throw LibGit2Error(libgit2.git_error_last());
   } else {
     return out.value;
   }

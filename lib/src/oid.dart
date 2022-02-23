@@ -5,7 +5,9 @@ import 'package:libgit2dart/src/bindings/libgit2_bindings.dart';
 import 'package:libgit2dart/src/bindings/odb.dart' as odb_bindings;
 import 'package:libgit2dart/src/bindings/oid.dart' as bindings;
 import 'package:libgit2dart/src/util.dart';
+import 'package:meta/meta.dart';
 
+@immutable
 class Oid {
   /// Initializes a new instance of [Oid] class from provided
   /// pointer to Oid object in memory.
