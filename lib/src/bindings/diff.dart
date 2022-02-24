@@ -365,14 +365,15 @@ String statsPrint({
   }
 }
 
-/// Add patch to buffer.
-Pointer<git_buf> addToBuf({
-  required Pointer<git_patch> patchPointer,
-  required Pointer<git_buf> bufferPointer,
-}) {
-  libgit2.git_patch_to_buf(bufferPointer, patchPointer);
-
-  return bufferPointer;
+/// Produce the complete formatted text output from a diff into a buffer.
+String addToBuf(Pointer<git_diff> diff) {
+  final out = calloc<git_buf>();
+  libgit2.git_diff_to_buf(out, diff, git_diff_format_t.GIT_DIFF_FORMAT_PATCH);
+  final result = out.ref.ptr == nullptr
+      ? ''
+      : out.ref.ptr.cast<Utf8>().toDartString(length: out.ref.size);
+  calloc.free(out);
+  return result;
 }
 
 /// Counter for hunk number being applied.

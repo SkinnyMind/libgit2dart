@@ -293,26 +293,8 @@ class Diff {
     return patches;
   }
 
-  /// The patch diff string.
-  String get patch {
-    final length = bindings.length(_diffPointer);
-    var buffer = calloc<git_buf>(sizeOf<git_buf>());
-
-    for (var i = 0; i < length; i++) {
-      final patch = Patch.fromDiff(diff: this, index: i);
-      buffer = bindings.addToBuf(
-        patchPointer: patch.pointer,
-        bufferPointer: buffer,
-      );
-      patch.free();
-    }
-
-    final result = buffer.ref.ptr == nullptr
-        ? ''
-        : buffer.ref.ptr.cast<Utf8>().toDartString();
-    calloc.free(buffer);
-    return result;
-  }
+  /// The patch diff text.
+  String get patch => bindings.addToBuf(_diffPointer);
 
   /// Accumulates diff statistics for all patches.
   ///

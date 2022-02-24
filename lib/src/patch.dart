@@ -153,9 +153,6 @@ class Patch {
 
   late final Pointer<git_patch> _patchPointer;
 
-  /// Pointer to memory address for allocated patch object.
-  Pointer<git_patch> get pointer => _patchPointer;
-
   /// Line counts of each type in a patch.
   PatchStats get stats {
     final result = bindings.lineStats(_patchPointer);
