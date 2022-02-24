@@ -352,14 +352,14 @@ String statsPrint({
   required int format,
   required int width,
 }) {
-  final out = calloc<git_buf>(sizeOf<git_buf>());
+  final out = calloc<git_buf>();
   final error = libgit2.git_diff_stats_to_buf(out, statsPointer, format, width);
 
   if (error < 0) {
     calloc.free(out);
     throw LibGit2Error(libgit2.git_error_last());
   } else {
-    final result = out.ref.ptr.cast<Utf8>().toDartString();
+    final result = out.ref.ptr.cast<Utf8>().toDartString(length: out.ref.size);
     calloc.free(out);
     return result;
   }

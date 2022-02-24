@@ -85,7 +85,7 @@ String format({
   bool? alwaysUseLongFormat,
   String? dirtySuffix,
 }) {
-  final out = calloc<git_buf>(sizeOf<git_buf>());
+  final out = calloc<git_buf>();
   final opts = calloc<git_describe_format_options>();
   libgit2.git_describe_format_options_init(
     opts,
@@ -104,7 +104,7 @@ String format({
 
   libgit2.git_describe_format(out, describeResultPointer, opts);
 
-  final result = out.ref.ptr.cast<Utf8>().toDartString();
+  final result = out.ref.ptr.cast<Utf8>().toDartString(length: out.ref.size);
 
   calloc.free(opts);
   calloc.free(out);

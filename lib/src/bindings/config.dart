@@ -51,14 +51,14 @@ Pointer<git_config> openDefault() {
 ///
 /// Throws a [LibGit2Error] if error occured.
 String findGlobal() {
-  final out = calloc<git_buf>(sizeOf<git_buf>());
+  final out = calloc<git_buf>();
   final error = libgit2.git_config_find_global(out);
 
   if (error < 0) {
     calloc.free(out);
     throw LibGit2Error(libgit2.git_error_last());
   } else {
-    final result = out.ref.ptr.cast<Utf8>().toDartString();
+    final result = out.ref.ptr.cast<Utf8>().toDartString(length: out.ref.size);
     calloc.free(out);
     return result;
   }
@@ -77,7 +77,7 @@ String findSystem() {
     calloc.free(out);
     throw LibGit2Error(libgit2.git_error_last());
   } else {
-    final result = out.ref.ptr.cast<Utf8>().toDartString();
+    final result = out.ref.ptr.cast<Utf8>().toDartString(length: out.ref.size);
     calloc.free(out);
     return result;
   }
@@ -97,7 +97,7 @@ String findXdg() {
     calloc.free(out);
     throw LibGit2Error(libgit2.git_error_last());
   } else {
-    final result = out.ref.ptr.cast<Utf8>().toDartString();
+    final result = out.ref.ptr.cast<Utf8>().toDartString(length: out.ref.size);
     calloc.free(out);
     return result;
   }

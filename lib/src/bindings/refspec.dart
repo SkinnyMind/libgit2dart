@@ -62,7 +62,7 @@ String transform({
   required Pointer<git_refspec> refspecPointer,
   required String name,
 }) {
-  final out = calloc<git_buf>(sizeOf<git_buf>());
+  final out = calloc<git_buf>();
   final nameC = name.toNativeUtf8().cast<Int8>();
   final error = libgit2.git_refspec_transform(out, refspecPointer, nameC);
 
@@ -72,7 +72,7 @@ String transform({
     calloc.free(out);
     throw LibGit2Error(libgit2.git_error_last());
   } else {
-    final result = out.ref.ptr.cast<Utf8>().toDartString();
+    final result = out.ref.ptr.cast<Utf8>().toDartString(length: out.ref.size);
     calloc.free(out);
     return result;
   }
@@ -86,7 +86,7 @@ String rTransform({
   required Pointer<git_refspec> refspecPointer,
   required String name,
 }) {
-  final out = calloc<git_buf>(sizeOf<git_buf>());
+  final out = calloc<git_buf>();
   final nameC = name.toNativeUtf8().cast<Int8>();
   final error = libgit2.git_refspec_rtransform(out, refspecPointer, nameC);
 
@@ -96,7 +96,7 @@ String rTransform({
     calloc.free(out);
     throw LibGit2Error(libgit2.git_error_last());
   } else {
-    final result = out.ref.ptr.cast<Utf8>().toDartString();
+    final result = out.ref.ptr.cast<Utf8>().toDartString(length: out.ref.size);
     calloc.free(out);
     return result;
   }

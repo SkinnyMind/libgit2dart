@@ -218,14 +218,14 @@ Pointer<git_diff_line> lines({
 ///
 /// Throws a [LibGit2Error] if error occured.
 String text(Pointer<git_patch> patch) {
-  final out = calloc<git_buf>(sizeOf<git_buf>());
+  final out = calloc<git_buf>();
   final error = libgit2.git_patch_to_buf(out, patch);
 
   if (error < 0) {
     calloc.free(out);
     throw LibGit2Error(libgit2.git_error_last());
   } else {
-    final result = out.ref.ptr.cast<Utf8>().toDartString();
+    final result = out.ref.ptr.cast<Utf8>().toDartString(length: out.ref.size);
     calloc.free(out);
     return result;
   }

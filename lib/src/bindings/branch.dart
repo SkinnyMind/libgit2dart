@@ -224,7 +224,7 @@ String remoteName({
     calloc.free(out);
     throw LibGit2Error(libgit2.git_error_last());
   } else {
-    final result = out.ref.ptr.cast<Utf8>().toDartString();
+    final result = out.ref.ptr.cast<Utf8>().toDartString(length: out.ref.size);
     calloc.free(out);
     return result;
   }
@@ -292,7 +292,7 @@ String upstreamName({
     calloc.free(out);
     throw LibGit2Error(libgit2.git_error_last());
   } else {
-    final result = out.ref.ptr.cast<Utf8>().toDartString();
+    final result = out.ref.ptr.cast<Utf8>().toDartString(length: out.ref.size);
     calloc.free(out);
     return result;
   }
@@ -322,7 +322,7 @@ String upstreamRemote({
     calloc.free(out);
     throw LibGit2Error(libgit2.git_error_last());
   } else {
-    final result = out.ref.ptr.cast<Utf8>().toDartString();
+    final result = out.ref.ptr.cast<Utf8>().toDartString(length: out.ref.size);
     calloc.free(out);
     return result;
   }
@@ -350,7 +350,7 @@ String upstreamMerge({
     calloc.free(out);
     throw LibGit2Error(libgit2.git_error_last());
   } else {
-    final result = out.ref.ptr.cast<Utf8>().toDartString();
+    final result = out.ref.ptr.cast<Utf8>().toDartString(length: out.ref.size);
     calloc.free(out);
     return result;
   }

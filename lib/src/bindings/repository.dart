@@ -40,7 +40,7 @@ String discover({
   required String startPath,
   String? ceilingDirs,
 }) {
-  final out = calloc<git_buf>(sizeOf<git_buf>());
+  final out = calloc<git_buf>();
   final startPathC = startPath.toNativeUtf8().cast<Int8>();
   final ceilingDirsC = ceilingDirs?.toNativeUtf8().cast<Int8>() ?? nullptr;
 
@@ -49,7 +49,7 @@ String discover({
   calloc.free(startPathC);
   calloc.free(ceilingDirsC);
 
-  final result = out.ref.ptr.cast<Utf8>().toDartString();
+  final result = out.ref.ptr.cast<Utf8>().toDartString(length: out.ref.size);
   calloc.free(out);
   return result;
 }
@@ -389,14 +389,14 @@ bool isWorktree(Pointer<git_repository> repo) {
 ///
 /// Throws a [LibGit2Error] if error occured.
 String message(Pointer<git_repository> repo) {
-  final out = calloc<git_buf>(sizeOf<git_buf>());
+  final out = calloc<git_buf>();
   final error = libgit2.git_repository_message(out, repo);
 
   if (error < 0) {
     calloc.free(out);
     throw LibGit2Error(libgit2.git_error_last());
   } else {
-    final result = out.ref.ptr.cast<Utf8>().toDartString();
+    final result = out.ref.ptr.cast<Utf8>().toDartString(length: out.ref.size);
     calloc.free(out);
     return result;
   }
