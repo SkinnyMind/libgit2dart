@@ -32680,13 +32680,13 @@ const int GIT_CREDTYPE_SSH_MEMORY = 64;
 
 const int GIT_EMAIL_CREATE_OPTIONS_VERSION = 1;
 
-const String LIBGIT2_VERSION = '1.4.0';
+const String LIBGIT2_VERSION = '1.4.2';
 
 const int LIBGIT2_VER_MAJOR = 1;
 
 const int LIBGIT2_VER_MINOR = 4;
 
-const int LIBGIT2_VER_REVISION = 0;
+const int LIBGIT2_VER_REVISION = 2;
 
 const int LIBGIT2_VER_PATCH = 0;
 
