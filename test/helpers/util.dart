@@ -1,7 +1,9 @@
 import 'dart:io';
+import 'package:libgit2dart/libgit2dart.dart';
 import 'package:path/path.dart' as p;
 
 Directory setupRepo(Directory repoDir) {
+  Libgit2.ownerValidation = false;
   final tmpDir = Directory.systemTemp.createTempSync('testrepo');
   copyRepo(from: repoDir, to: tmpDir);
   return tmpDir;
