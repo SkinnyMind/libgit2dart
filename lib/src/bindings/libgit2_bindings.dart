@@ -2488,11 +2488,12 @@ class Libgit2 {
     );
   }
 
-  late final _git_libgit2_optsPtr =
-      _lookup<ffi.NativeFunction<ffi.Int32 Function(ffi.Int32, ffi.Pointer<ffi.Int8>)>>(
-          'git_libgit2_opts');
-  late final _git_libgit2_opts =
-      _git_libgit2_optsPtr.asFunction<int Function(int, ffi.Pointer<ffi.Int8>)>();
+  late final _git_libgit2_optsPtr = _lookup<
+      ffi.NativeFunction<
+          ffi.Int32 Function(
+              ffi.Int32, ffi.Pointer<ffi.Int8>)>>('git_libgit2_opts');
+  late final _git_libgit2_opts = _git_libgit2_optsPtr
+      .asFunction<int Function(int, ffi.Pointer<ffi.Int8>)>();
 
   /// Set a library global option.
   ///
