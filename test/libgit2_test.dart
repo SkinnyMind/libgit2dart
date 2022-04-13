@@ -15,14 +15,15 @@ void main() {
       );
     });
 
-    test('returns the owner validation setting for repository directories', () {
-      expect(Libgit2.ownerValidation, true);
-    });
+    test(
+        'sets and returns the owner validation setting for repository '
+        'directories', () {
+      final oldValue = Libgit2.ownerValidation;
+      Libgit2.ownerValidation = !oldValue;
+      expect(Libgit2.ownerValidation, equals(!oldValue));
 
-    test('sets the owner validation setting for repository directories', () {
-      expect(Libgit2.ownerValidation, true);
-      Libgit2.ownerValidation = false;
-      expect(Libgit2.ownerValidation, false);
+      // Set it back
+      Libgit2.ownerValidation = oldValue;
     });
   });
 }
