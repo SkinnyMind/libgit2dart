@@ -8,7 +8,7 @@ import 'package:libgit2dart/src/bindings/libgit2_bindings.dart';
 import 'package:path/path.dart' as path;
 import 'package:pub_cache/pub_cache.dart';
 
-const libgit2Version = '1.4.2';
+const libgit2Version = '1.4.3';
 final libDir = path.join('.dart_tool', 'libgit2');
 
 String getLibName() {
@@ -25,7 +25,7 @@ String getLibName() {
   return 'libgit2-$libgit2Version.$ext';
 }
 
-/// Checks if [File]/[Link] exists for an [uri].
+/// Checks if [File]/[Link] exists for [path].
 bool _doesFileExist(String path) {
   return File(path).existsSync() || Link(path).existsSync();
 }

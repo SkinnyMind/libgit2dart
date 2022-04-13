@@ -2467,6 +2467,14 @@ class Libgit2 {
   /// > to support repositories with the `noop` extension but does want
   /// > to support repositories with the `newext` extension.
   ///
+  /// opts(GIT_OPT_GET_OWNER_VALIDATION, int *enabled)
+  /// > Gets the owner validation setting for repository
+  /// > directories.
+  ///
+  /// opts(GIT_OPT_SET_OWNER_VALIDATION, int enabled)
+  /// > Set that repository directories should be owned by the current
+  /// > user. The default is to validate ownership.
+  ///
   /// @param option Option key
   /// @param ... value to set the option
   /// @return 0 on success, <0 on failure
@@ -26913,6 +26921,8 @@ abstract class git_libgit2_opt_t {
   static const int GIT_OPT_SET_ODB_LOOSE_PRIORITY = 32;
   static const int GIT_OPT_GET_EXTENSIONS = 33;
   static const int GIT_OPT_SET_EXTENSIONS = 34;
+  static const int GIT_OPT_GET_OWNER_VALIDATION = 35;
+  static const int GIT_OPT_SET_OWNER_VALIDATION = 36;
 }
 
 /// A data buffer for exporting data from libgit2
@@ -30613,6 +30623,9 @@ abstract class git_error_code {
 
   /// < Patch application failed
   static const int GIT_EAPPLYFAIL = -35;
+
+  /// < The object is not owned by the current user
+  static const int GIT_EOWNER = -36;
 }
 
 /// Structure to store extra details of the last error that occurred.
@@ -32680,13 +32693,13 @@ const int GIT_CREDTYPE_SSH_MEMORY = 64;
 
 const int GIT_EMAIL_CREATE_OPTIONS_VERSION = 1;
 
-const String LIBGIT2_VERSION = '1.4.2';
+const String LIBGIT2_VERSION = '1.4.3';
 
 const int LIBGIT2_VER_MAJOR = 1;
 
 const int LIBGIT2_VER_MINOR = 4;
 
-const int LIBGIT2_VER_REVISION = 2;
+const int LIBGIT2_VER_REVISION = 3;
 
 const int LIBGIT2_VER_PATCH = 0;
 
