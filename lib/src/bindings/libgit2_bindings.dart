@@ -2480,17 +2480,39 @@ class Libgit2 {
   /// @return 0 on success, <0 on failure
   int git_libgit2_opts(
     int option,
+    ffi.Pointer<ffi.Int8> out,
   ) {
     return _git_libgit2_opts(
       option,
+      out,
     );
   }
 
-  late final _git_libgit2_optsPtr =
-      _lookup<ffi.NativeFunction<ffi.Int32 Function(ffi.Int32)>>(
+  late final _git_libgit2_optsPtr = _lookup<
+      ffi.NativeFunction<
+          ffi.Int32 Function(
+              ffi.Int32, ffi.Pointer<ffi.Int8>)>>('git_libgit2_opts');
+  late final _git_libgit2_opts = _git_libgit2_optsPtr
+      .asFunction<int Function(int, ffi.Pointer<ffi.Int8>)>();
+
+  /// Set a library global option.
+  ///
+  /// Look at [git_libgit2_opts]
+  int git_libgit2_opts_set(
+    int option,
+    int value,
+  ) {
+    return _git_libgit2_opts_set(
+      option,
+      value,
+    );
+  }
+
+  late final _git_libgit2_opts_setPtr =
+      _lookup<ffi.NativeFunction<ffi.Int32 Function(ffi.Int32, ffi.Int32)>>(
           'git_libgit2_opts');
-  late final _git_libgit2_opts =
-      _git_libgit2_optsPtr.asFunction<int Function(int)>();
+  late final _git_libgit2_opts_set =
+      _git_libgit2_opts_setPtr.asFunction<int Function(int, int)>();
 
   /// Free the memory referred to by the git_buf.
   ///

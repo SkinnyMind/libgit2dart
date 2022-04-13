@@ -14,5 +14,16 @@ void main() {
         {GitFeature.threads, GitFeature.https, GitFeature.ssh, GitFeature.nsec},
       );
     });
+
+    test(
+        'sets and returns the owner validation setting for repository '
+        'directories', () {
+      final oldValue = Libgit2.ownerValidation;
+      Libgit2.ownerValidation = !oldValue;
+      expect(Libgit2.ownerValidation, equals(!oldValue));
+
+      // Set it back
+      Libgit2.ownerValidation = oldValue;
+    });
   });
 }
