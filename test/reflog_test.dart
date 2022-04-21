@@ -10,19 +10,15 @@ import 'helpers/util.dart';
 void main() {
   late Repository repo;
   late RefLog reflog;
-  late Reference head;
   late Directory tmpDir;
 
   setUp(() {
     tmpDir = setupRepo(Directory(p.join('test', 'assets', 'test_repo')));
     repo = Repository.open(tmpDir.path);
-    head = repo.head;
-    reflog = RefLog(head);
+    reflog = RefLog(repo.head);
   });
 
   tearDown(() {
-    reflog.free();
-    head.free();
     repo.free();
     tmpDir.deleteSync(recursive: true);
   });
@@ -52,9 +48,9 @@ void main() {
     });
 
     test('deletes the reflog of provided reference', () {
-      expect(head.hasLog, true);
-      RefLog.delete(head);
-      expect(head.hasLog, false);
+      expect(repo.head.hasLog, true);
+      RefLog.delete(repo.head);
+      expect(repo.head.hasLog, false);
     });
 
     test('renames existing reflog', () {
@@ -94,19 +90,21 @@ void main() {
       );
 
       expect(reflog.length, 4);
-      reflog.add(oid: head.target, committer: committer);
+      reflog.add(oid: repo.head.target, committer: committer);
       expect(reflog.length, 5);
 
-      reflog.add(oid: head.target, committer: committer, message: 'new entry');
+      reflog.add(
+        oid: repo.head.target,
+        committer: committer,
+        message: 'new entry',
+      );
       expect(reflog.length, 6);
       expect(reflog[0].message, 'new entry');
-
-      committer.free();
     });
 
     test('throws when trying to add new entry', () {
       expect(
-        () => reflog.add(oid: head.target, committer: Signature(nullptr)),
+        () => reflog.add(oid: repo.head.target, committer: Signature(nullptr)),
         throwsA(isA<LibGit2Error>()),
       );
     });
@@ -132,12 +130,12 @@ void main() {
       reflog.remove(0);
 
       // making sure change is only in memory
-      final oldReflog = RefLog(head);
+      final oldReflog = RefLog(repo.head);
       expect(oldReflog.length, 4);
 
       reflog.write();
 
-      final newReflog = RefLog(head);
+      final newReflog = RefLog(repo.head);
       expect(newReflog.length, 3);
     });
 
@@ -147,9 +145,10 @@ void main() {
       Reference.delete(repo: repo, name: ref.name);
 
       expect(() => reflog.write(), throwsA(isA<LibGit2Error>()));
+    });
 
-      reflog.free();
-      ref.free();
+    test('manually releases allocated memory', () {
+      expect(() => RefLog(repo.head).free(), returnsNormally);
     });
 
     test('returns string representation of RefLogEntry object', () {

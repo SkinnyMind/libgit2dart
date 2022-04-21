@@ -10,9 +10,9 @@ import 'package:libgit2dart/src/util.dart';
 class Diff {
   /// Initializes a new instance of [Diff] class from provided
   /// pointer to diff object in memory.
-  ///
-  /// **IMPORTANT**: Should be freed to release allocated memory.
-  Diff(this._diffPointer);
+  Diff(this._diffPointer) {
+    _finalizer.attach(this, _diffPointer, detach: this);
+  }
 
   /// Creates a diff between the [repo]sitory [index] and the workdir directory.
   ///
@@ -30,8 +30,6 @@ class Diff {
   /// [interhunkLines] is the maximum number of unchanged lines between hunk
   /// boundaries before the hunks will be merged into one. Defaults to 0.
   ///
-  /// **IMPORTANT**: Should be freed to release allocated memory.
-  ///
   /// Throws a [LibGit2Error] if error occured.
   Diff.indexToWorkdir({
     required Repository repo,
@@ -47,6 +45,7 @@ class Diff {
       contextLines: contextLines,
       interhunkLines: interhunkLines,
     );
+    _finalizer.attach(this, _diffPointer, detach: this);
   }
 
   /// Creates a diff between a [tree] and [repo]sitory [index].
@@ -83,6 +82,7 @@ class Diff {
       contextLines: contextLines,
       interhunkLines: interhunkLines,
     );
+    _finalizer.attach(this, _diffPointer, detach: this);
   }
 
   /// Creates a diff between a [tree] and the working directory.
@@ -124,6 +124,7 @@ class Diff {
       contextLines: contextLines,
       interhunkLines: interhunkLines,
     );
+    _finalizer.attach(this, _diffPointer, detach: this);
   }
 
   /// Creates a diff between a [tree] and the working directory using index
@@ -145,8 +146,6 @@ class Diff {
   /// [interhunkLines] is the maximum number of unchanged lines between hunk
   /// boundaries before the hunks will be merged into one. Defaults to 0.
   ///
-  /// **IMPORTANT**: Should be freed to release allocated memory.
-  ///
   /// Throws a [LibGit2Error] if error occured.
   Diff.treeToWorkdirWithIndex({
     required Repository repo,
@@ -162,6 +161,7 @@ class Diff {
       contextLines: contextLines,
       interhunkLines: interhunkLines,
     );
+    _finalizer.attach(this, _diffPointer, detach: this);
   }
 
   /// Creates a diff with the difference between two [Tree] objects.
@@ -204,6 +204,7 @@ class Diff {
       contextLines: contextLines,
       interhunkLines: interhunkLines,
     );
+    _finalizer.attach(this, _diffPointer, detach: this);
   }
 
   /// Creates a diff with the difference between two [Index] objects.
@@ -239,6 +240,7 @@ class Diff {
       contextLines: contextLines,
       interhunkLines: interhunkLines,
     );
+    _finalizer.attach(this, _diffPointer, detach: this);
   }
 
   /// Reads the [content]s of a git patch file into a git diff object.
@@ -255,6 +257,7 @@ class Diff {
   Diff.parse(String content) {
     libgit2.git_libgit2_init();
     _diffPointer = bindings.parse(content);
+    _finalizer.attach(this, _diffPointer, detach: this);
   }
 
   late final Pointer<git_diff> _diffPointer;
@@ -441,13 +444,22 @@ class Diff {
   Oid get patchOid => Oid(bindings.patchOid(_diffPointer));
 
   /// Releases memory allocated for diff object.
-  void free() => bindings.free(_diffPointer);
+  void free() {
+    bindings.free(_diffPointer);
+    _finalizer.detach(this);
+  }
 
   @override
   String toString() {
     return 'Diff{length: $length}';
   }
 }
+
+// coverage:ignore-start
+final _finalizer = Finalizer<Pointer<git_diff>>(
+  (pointer) => bindings.free(pointer),
+);
+// coverage:ignore-end
 
 class DiffDelta {
   /// Initializes a new instance of [DiffDelta] class from provided
@@ -543,9 +555,9 @@ class DiffFile {
 class DiffStats {
   /// Initializes a new instance of [DiffStats] class from provided
   /// pointer to diff stats object in memory.
-  ///
-  /// **IMPORTANT**: Should be freed to release allocated memory.
-  const DiffStats(this._diffStatsPointer);
+  DiffStats(this._diffStatsPointer) {
+    _statsFinalizer.attach(this, _diffStatsPointer, detach: this);
+  }
 
   /// Pointer to memory address for allocated diff delta object.
   final Pointer<git_diff_stats> _diffStatsPointer;
@@ -573,7 +585,10 @@ class DiffStats {
   }
 
   /// Releases memory allocated for diff stats object.
-  void free() => bindings.statsFree(_diffStatsPointer);
+  void free() {
+    bindings.statsFree(_diffStatsPointer);
+    _statsFinalizer.detach(this);
+  }
 
   @override
   String toString() {
@@ -581,6 +596,12 @@ class DiffStats {
         'filesChanged: $filesChanged}';
   }
 }
+
+// coverage:ignore-start
+final _statsFinalizer = Finalizer<Pointer<git_diff_stats>>(
+  (pointer) => bindings.statsFree(pointer),
+);
+// coverage:ignore-end
 
 class DiffHunk {
   /// Initializes a new instance of [DiffHunk] class from provided

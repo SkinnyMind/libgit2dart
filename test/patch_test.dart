@@ -65,8 +65,6 @@ index e69de29..0000000
 
       expect(patch.size(), 14);
       expect(patch.text, blobPatch);
-
-      patch.free();
     });
 
     test('creates from one buffer (add)', () {
@@ -78,8 +76,6 @@ index e69de29..0000000
       );
 
       expect(patch.text, blobPatchAdd);
-
-      patch.free();
     });
 
     test('creates from one buffer (delete)', () {
@@ -91,8 +87,6 @@ index e69de29..0000000
       );
 
       expect(patch.text, blobPatchDelete);
-
-      patch.free();
     });
 
     test('creates from blobs', () {
@@ -106,8 +100,6 @@ index e69de29..0000000
       );
 
       expect(patch.text, blobPatch);
-
-      patch.free();
     });
 
     test('creates from one blob (add)', () {
@@ -120,8 +112,6 @@ index e69de29..0000000
       );
 
       expect(patch.text, blobPatchAdd);
-
-      patch.free();
     });
 
     test('creates from one blob (delete)', () {
@@ -134,8 +124,6 @@ index e69de29..0000000
       );
 
       expect(patch.text, blobPatchDelete);
-
-      patch.free();
     });
 
     test('creates from blob and buffer', () {
@@ -148,8 +136,6 @@ index e69de29..0000000
       );
 
       expect(patch.text, blobPatch);
-
-      patch.free();
     });
 
     test('creates from empty blob and buffer', () {
@@ -161,8 +147,6 @@ index e69de29..0000000
       );
 
       expect(patch.text, blobPatchAdd);
-
-      patch.free();
     });
 
     test('throws when trying to create from diff and error occurs', () {
@@ -189,8 +173,16 @@ index e69de29..0000000
       expect(stats.insertions, equals(1));
       expect(stats.deletions, equals(0));
       expect(stats.toString(), contains('PatchStats{'));
+    });
 
-      patch.free();
+    test('manually releases allocated memory', () {
+      final patch = Patch.fromBuffers(
+        oldBuffer: oldBuffer,
+        newBuffer: newBuffer,
+        oldBufferPath: path,
+        newBufferPath: path,
+      );
+      expect(() => patch.free(), returnsNormally);
     });
 
     test('returns string representation of Patch object', () {
@@ -202,8 +194,6 @@ index e69de29..0000000
       );
 
       expect(patch.toString(), contains('Patch{'));
-
-      patch.free();
     });
   });
 }

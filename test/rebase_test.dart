@@ -76,13 +76,6 @@ void main() {
 
       rebase.finish();
       expect(repo.index['.gitignore'], isA<IndexEntry>());
-
-      rebase.free();
-      ontoHead.free();
-      branchHead.free();
-      feature.free();
-      master.free();
-      signature.free();
     });
 
     test('performs rebase without branch provided', () {
@@ -124,11 +117,6 @@ void main() {
       }
 
       rebase.finish();
-
-      rebase.free();
-      ontoHead.free();
-      feature.free();
-      signature.free();
     });
 
     test('performs rebase with provided upstream', () {
@@ -170,13 +158,6 @@ void main() {
 
       rebase.finish();
       expect(repo.index['conflict_file'], isA<IndexEntry>());
-
-      rebase.free();
-      upstream.free();
-      branchHead.free();
-      feature.free();
-      master.free();
-      signature.free();
     });
 
     test(
@@ -216,22 +197,10 @@ void main() {
         () => rebase.commit(committer: signature),
         throwsA(isA<LibGit2Error>()),
       );
-
-      rebase.free();
-      ontoHead.free();
-      branchHead.free();
-      conflict.free();
-      master.free();
-      signature.free();
     });
 
     test('throws when trying to perfrom next rebase operation and error occurs',
         () {
-      final signature = Signature.create(
-        name: 'Author',
-        email: 'author@email.com',
-        time: 1234,
-      );
       final master = Reference.lookup(repo: repo, name: 'refs/heads/master');
       final branchHead = AnnotatedCommit.lookup(repo: repo, oid: master.target);
       final conflict = Reference.lookup(
@@ -252,13 +221,6 @@ void main() {
 
       rebase.next(); // repo now have conflicts
       expect(() => rebase.next(), throwsA(isA<LibGit2Error>()));
-
-      rebase.free();
-      ontoHead.free();
-      branchHead.free();
-      conflict.free();
-      master.free();
-      signature.free();
     });
 
     test('aborts rebase in progress', () {
@@ -287,12 +249,6 @@ void main() {
       rebase.abort();
       expect(repo.status, isEmpty);
       expect(repo.state, GitRepositoryState.none);
-
-      rebase.free();
-      ontoHead.free();
-      branchHead.free();
-      conflict.free();
-      master.free();
     });
 
     test('opens an existing rebase', () {
@@ -307,15 +263,21 @@ void main() {
 
       final openRebase = Rebase.open(repo);
       expect(openRebase.operations.length, 3);
-
-      openRebase.free();
-      rebase.free();
-      ontoHead.free();
-      feature.free();
     });
 
     test('throws when trying to open an existing rebase but there is none', () {
       expect(() => Rebase.open(repo), throwsA(isA<LibGit2Error>()));
+    });
+
+    test('manually releases allocated memory', () {
+      final feature = Reference.lookup(repo: repo, name: 'refs/heads/feature');
+      final ontoHead = AnnotatedCommit.lookup(repo: repo, oid: feature.target);
+      final rebase = Rebase.init(
+        repo: repo,
+        onto: ontoHead,
+      );
+
+      expect(() => rebase.free(), returnsNormally);
     });
   });
 }

@@ -30,7 +30,6 @@ void main() {
   });
 
   tearDown(() {
-    remote.free();
     originRepo.free();
     clonedRepo.free();
     tmpDir.deleteSync(recursive: true);
@@ -42,34 +41,28 @@ void main() {
     test('fetch() does not prune branch by default', () {
       remote.fetch();
 
-      final branches = clonedRepo.branches;
-      expect(branches.any((branch) => branch.name == 'origin/feature'), true);
-
-      for (final branch in branches) {
-        branch.free();
-      }
+      expect(
+        clonedRepo.branches.any((branch) => branch.name == 'origin/feature'),
+        true,
+      );
     });
 
     test('fetch() prunes branch with provided flag', () {
       remote.fetch(prune: GitFetchPrune.prune);
 
-      final branches = clonedRepo.branches;
-      expect(branches.any((branch) => branch.name == 'origin/feature'), false);
-
-      for (final branch in branches) {
-        branch.free();
-      }
+      expect(
+        clonedRepo.branches.any((branch) => branch.name == 'origin/feature'),
+        false,
+      );
     });
 
     test('fetch() does not prune branch with provided flag', () {
       remote.fetch(prune: GitFetchPrune.noPrune);
 
-      final branches = clonedRepo.branches;
-      expect(branches.any((branch) => branch.name == 'origin/feature'), true);
-
-      for (final branch in branches) {
-        branch.free();
-      }
+      expect(
+        clonedRepo.branches.any((branch) => branch.name == 'origin/feature'),
+        true,
+      );
     });
 
     test('prune() prunes branches', () {
@@ -81,22 +74,18 @@ void main() {
       final callbacks = Callbacks(updateTips: updateTips);
 
       remote.fetch(prune: GitFetchPrune.noPrune);
-      var branches = clonedRepo.branches;
-      expect(branches.any((branch) => branch.name == 'origin/feature'), true);
-
-      for (final branch in branches) {
-        branch.free();
-      }
+      expect(
+        clonedRepo.branches.any((branch) => branch.name == 'origin/feature'),
+        true,
+      );
 
       remote.prune(callbacks);
 
-      branches = clonedRepo.branches;
       expect(pruned, contains('refs/remotes/origin/feature'));
-      expect(branches.any((branch) => branch.name == 'origin/feature'), false);
-
-      for (final branch in branches) {
-        branch.free();
-      }
+      expect(
+        clonedRepo.branches.any((branch) => branch.name == 'origin/feature'),
+        false,
+      );
     });
 
     test(

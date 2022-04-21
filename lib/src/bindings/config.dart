@@ -281,3 +281,11 @@ void deleteMultivar({
 
 /// Free the configuration and its associated memory and files.
 void free(Pointer<git_config> cfg) => libgit2.git_config_free(cfg);
+
+/// Free a config entry.
+void freeEntry(Pointer<git_config_entry> entry) =>
+    libgit2.git_config_entry_free(entry);
+
+/// Free a config iterator.
+void freeIterator(Pointer<git_config_iterator> iter) =>
+    libgit2.git_config_iterator_free(iter);

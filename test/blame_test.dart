@@ -52,8 +52,6 @@ void main() {
   });
 
   tearDown(() {
-    sig1.free();
-    sig2.free();
     repo.free();
     tmpDir.deleteSync(recursive: true);
   });
@@ -82,8 +80,6 @@ void main() {
         expect(blame[i].isBoundary, hunks[i]['isBoundary']);
         expect(blame[i].originPath, 'feature_file');
       }
-
-      blame.free();
     });
 
     test('throws when provided file path is invalid', () {
@@ -104,9 +100,6 @@ void main() {
       expect(blameHunk.originCommitter, null);
       expect(blameHunk.finalCommitOid.sha, '0' * 40);
       expect(blameHunk.finalCommitter, null);
-
-      bufferBlame.free();
-      blame.free();
     });
 
     test('throws when trying to get blame for empty buffer', () {
@@ -115,7 +108,6 @@ void main() {
         () => Blame.buffer(reference: blame, buffer: ''),
         throwsA(isA<LibGit2Error>()),
       );
-      blame.free();
     });
 
     test('returns the blame for provided file with minMatchCharacters set', () {
@@ -127,8 +119,6 @@ void main() {
       );
 
       expect(blame.length, 2);
-
-      blame.free();
     });
 
     test('returns the blame for provided line', () {
@@ -148,22 +138,16 @@ void main() {
       expect(hunk.originCommitter, hunks[0]['originCommitter']);
       expect(hunk.isBoundary, hunks[0]['isBoundary']);
       expect(hunk.originPath, 'feature_file');
-
-      blame.free();
     });
 
     test('throws when provided index for hunk is invalid', () {
       final blame = Blame.file(repo: repo, path: 'feature_file');
       expect(() => blame[10], throwsA(isA<RangeError>()));
-
-      blame.free();
     });
 
     test('throws when provided line number for hunk is invalid', () {
       final blame = Blame.file(repo: repo, path: 'feature_file');
       expect(() => blame.forLine(10), throwsA(isA<RangeError>()));
-
-      blame.free();
     });
 
     test('returns the blame for provided file with newestCommit argument', () {
@@ -190,8 +174,6 @@ void main() {
       expect(hunk.originCommitter, hunks[0]['originCommitter']);
       expect(hunk.isBoundary, hunks[0]['isBoundary']);
       expect(hunk.originPath, 'feature_file');
-
-      blame.free();
     });
 
     test('returns the blame for provided file with minLine and maxLine set',
@@ -219,14 +201,16 @@ void main() {
         expect(blame[i].isBoundary, hunks[i]['isBoundary']);
         expect(blame[i].originPath, 'feature_file');
       }
+    });
 
-      blame.free();
+    test('manually releases allocated memory', () {
+      final blame = Blame.file(repo: repo, path: 'feature_file');
+      expect(() => blame.free(), returnsNormally);
     });
 
     test('returns string representation of BlameHunk object', () {
       final blame = Blame.file(repo: repo, path: 'feature_file');
       expect(blame.toString(), contains('BlameHunk{'));
-      blame.free();
     });
   });
 }

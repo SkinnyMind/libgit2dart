@@ -11,9 +11,9 @@ import 'package:libgit2dart/src/util.dart';
 class Config with IterableMixin<ConfigEntry> {
   /// Initializes a new instance of [Config] class from provided
   /// pointer to config object in memory.
-  ///
-  /// **IMPORTANT**: Should be freed to release allocated memory.
-  Config(this._configPointer);
+  Config(this._configPointer) {
+    _finalizer.attach(this, _configPointer, detach: this);
+  }
 
   /// Opens config file at provided [path].
   ///
@@ -22,8 +22,6 @@ class Config with IterableMixin<ConfigEntry> {
   /// [path] should point to single on-disk file; it's expected to be a native
   /// Git config file following the default Git config syntax (see
   /// `man git-config`).
-  ///
-  /// **IMPORTANT**: Should be freed to release allocated memory.
   ///
   /// Throws an [Exception] if file not found at provided path.
   Config.open([String? path]) {
@@ -38,39 +36,44 @@ class Config with IterableMixin<ConfigEntry> {
         throw Exception('File not found');
       }
     }
+
+    _finalizer.attach(this, _configPointer, detach: this);
   }
 
   /// Opens the system configuration file.
-  ///
-  /// **IMPORTANT**: Should be freed to release allocated memory.
   ///
   /// Throws a [LibGit2Error] if error occured.
   Config.system() {
     libgit2.git_libgit2_init();
 
     _configPointer = bindings.open(bindings.findSystem());
+    // coverage:ignore-start
+    _finalizer.attach(this, _configPointer, detach: this);
+    // coverage:ignore-end
   }
 
   /// Opens the global configuration file.
-  ///
-  /// **IMPORTANT**: Should be freed to release allocated memory.
   ///
   /// Throws a [LibGit2Error] if error occured.
   Config.global() {
     libgit2.git_libgit2_init();
 
     _configPointer = bindings.open(bindings.findGlobal());
+    // coverage:ignore-start
+    _finalizer.attach(this, _configPointer, detach: this);
+    // coverage:ignore-end
   }
 
   /// Opens the global XDG configuration file.
-  ///
-  /// **IMPORTANT**: Should be freed to release allocated memory.
   ///
   /// Throws a [LibGit2Error] if error occured.
   Config.xdg() {
     libgit2.git_libgit2_init();
 
     _configPointer = bindings.open(bindings.findXdg());
+    // coverage:ignore-start
+    _finalizer.attach(this, _configPointer, detach: this);
+    // coverage:ignore-end
   }
 
   /// Pointer to memory address for allocated config object.
@@ -83,11 +86,24 @@ class Config with IterableMixin<ConfigEntry> {
 
   /// Returns the [ConfigEntry] of a [variable].
   ConfigEntry operator [](String variable) {
-    return ConfigEntry(
-      bindings.getEntry(
-        configPointer: _configPointer,
-        variable: variable,
-      ),
+    final entryPointer = bindings.getEntry(
+      configPointer: _configPointer,
+      variable: variable,
+    );
+    final name = entryPointer.ref.name.cast<Utf8>().toDartString();
+    final value = entryPointer.ref.value.cast<Utf8>().toDartString();
+    final includeDepth = entryPointer.ref.include_depth;
+    final level = GitConfigLevel.values.singleWhere(
+      (e) => entryPointer.ref.level == e.value,
+    );
+
+    bindings.freeEntry(entryPointer);
+
+    return ConfigEntry._(
+      name: name,
+      value: value,
+      includeDepth: includeDepth,
+      level: level,
     );
   }
 
@@ -167,36 +183,41 @@ class Config with IterableMixin<ConfigEntry> {
   }
 
   /// Releases memory allocated for config object.
-  void free() => bindings.free(_configPointer);
+  void free() {
+    bindings.free(_configPointer);
+    _finalizer.detach(this);
+  }
 
   @override
   Iterator<ConfigEntry> get iterator =>
       _ConfigIterator(bindings.iterator(_configPointer));
 }
 
-class ConfigEntry {
-  /// Initializes a new instance of [ConfigEntry] class from provided
-  /// pointer to config entry object in memory.
-  const ConfigEntry(this._configEntryPointer);
+// coverage:ignore-start
+final _finalizer = Finalizer<Pointer<git_config>>(
+  (pointer) => bindings.free(pointer),
+);
+// coverage:ignore-end
 
-  /// Pointer to memory address for allocated config entry object.
-  final Pointer<git_config_entry> _configEntryPointer;
+class ConfigEntry {
+  ConfigEntry._({
+    required this.name,
+    required this.value,
+    required this.includeDepth,
+    required this.level,
+  });
 
   /// Name of the entry (normalised).
-  String get name => _configEntryPointer.ref.name.cast<Utf8>().toDartString();
+  final String name;
 
   /// Value of the entry.
-  String get value => _configEntryPointer.ref.value.cast<Utf8>().toDartString();
+  final String value;
 
   /// Depth of includes where this variable was found
-  int get includeDepth => _configEntryPointer.ref.include_depth;
+  final int includeDepth;
 
   /// Which config file this was found in.
-  GitConfigLevel get level {
-    return GitConfigLevel.values.singleWhere(
-      (e) => _configEntryPointer.ref.level == e.value,
-    );
-  }
+  final GitConfigLevel level;
 
   @override
   String toString() {
@@ -206,7 +227,9 @@ class ConfigEntry {
 }
 
 class _ConfigIterator implements Iterator<ConfigEntry> {
-  _ConfigIterator(this._iteratorPointer);
+  _ConfigIterator(this._iteratorPointer) {
+    _iteratorFinalizer.attach(this, _iteratorPointer);
+  }
 
   /// Pointer to memory address for allocated config iterator.
   final Pointer<git_config_iterator> _iteratorPointer;
@@ -225,7 +248,20 @@ class _ConfigIterator implements Iterator<ConfigEntry> {
     } else {
       error = libgit2.git_config_next(entry, _iteratorPointer);
       if (error != -31) {
-        _currentEntry = ConfigEntry(entry.value);
+        final name = entry.value.ref.name.cast<Utf8>().toDartString();
+        final value = entry.value.ref.value.cast<Utf8>().toDartString();
+        final includeDepth = entry.value.ref.include_depth;
+        final level = GitConfigLevel.values.singleWhere(
+          (e) => entry.value.ref.level == e.value,
+        );
+
+        _currentEntry = ConfigEntry._(
+          name: name,
+          value: value,
+          includeDepth: includeDepth,
+          level: level,
+        );
+
         return true;
       } else {
         return false;
@@ -233,3 +269,9 @@ class _ConfigIterator implements Iterator<ConfigEntry> {
     }
   }
 }
+
+// coverage:ignore-start
+final _iteratorFinalizer = Finalizer<Pointer<git_config_iterator>>(
+  (pointer) => bindings.freeIterator(pointer),
+);
+// coverage:ignore-end

@@ -89,12 +89,6 @@ void main() {
         featureTree.entries.any((e) => e.name == 'another_feature_file'),
         true,
       );
-
-      repoHead.free();
-      featureTree.free();
-      featureHead.free();
-      masterTree.free();
-      masterHead.free();
     });
 
     test(
@@ -121,10 +115,6 @@ void main() {
       // does not change HEAD
       expect(repoHead.target, isNot(featureHead.oid));
       expect(index.find('another_feature_file'), equals(true));
-
-      repoHead.free();
-      featureHead.free();
-      index.free();
     });
 
     test('checkouts commit with provided path', () {
@@ -144,26 +134,19 @@ void main() {
           'another_feature_file': {GitStatus.indexNew}
         },
       );
-
-      repoHead.free();
-      featureHead.free();
     });
 
     test(
         'throws when trying to checkout commit with invalid alternative '
         'directory', () {
-      final commit = Commit.lookup(repo: repo, oid: repo['5aecfa0']);
-
       expect(
         () => Checkout.commit(
           repo: repo,
-          commit: commit,
+          commit: Commit.lookup(repo: repo, oid: repo['5aecfa0']),
           directory: 'not/there',
         ),
         throwsA(isA<LibGit2Error>()),
       );
-
-      commit.free();
     });
 
     test('checkouts with alrenative directory', () {
@@ -220,8 +203,6 @@ void main() {
       );
       expect(index.length, 4);
       expect(file.existsSync(), false);
-
-      index.free();
     });
   });
 }

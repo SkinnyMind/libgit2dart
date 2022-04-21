@@ -8,9 +8,9 @@ import 'package:libgit2dart/src/util.dart';
 class Patch {
   /// Initializes a new instance of [Patch] class from provided
   /// pointer to patch object in memory and pointers to old and new blobs/buffers.
-  ///
-  /// **IMPORTANT**: Should be freed to release allocated memory.
-  Patch(this._patchPointer);
+  Patch(this._patchPointer) {
+    _finalizer.attach(this, _patchPointer, detach: this);
+  }
 
   /// Directly generates a [Patch] from the difference between two blobs.
   ///
@@ -29,8 +29,6 @@ class Patch {
   ///
   /// [interhunkLines] is the maximum number of unchanged lines between hunk
   /// boundaries before the hunks will be merged into one. Defaults to 0.
-  ///
-  /// **IMPORTANT**: Should be freed to release allocated memory.
   ///
   /// Throws a [LibGit2Error] if error occured.
   Patch.fromBlobs({
@@ -51,6 +49,7 @@ class Patch {
       contextLines: contextLines,
       interhunkLines: interhunkLines,
     );
+    _finalizer.attach(this, _patchPointer, detach: this);
   }
 
   /// Directly generates a [Patch] from the difference between the blob and a
@@ -72,8 +71,6 @@ class Patch {
   /// [interhunkLines] is the maximum number of unchanged lines between hunk
   /// boundaries before the hunks will be merged into one. Defaults to 0.
   ///
-  /// **IMPORTANT**: Should be freed to release allocated memory.
-  ///
   /// Throws a [LibGit2Error] if error occured.
   Patch.fromBlobAndBuffer({
     required Blob? blob,
@@ -93,6 +90,7 @@ class Patch {
       contextLines: contextLines,
       interhunkLines: interhunkLines,
     );
+    _finalizer.attach(this, _patchPointer, detach: this);
   }
 
   /// Directly generates a [Patch] from the difference between two buffers
@@ -112,8 +110,6 @@ class Patch {
   ///
   /// [interhunkLines] is the maximum number of unchanged lines between hunk
   /// boundaries before the hunks will be merged into one. Defaults to 0.
-  ///
-  /// **IMPORTANT**: Should be freed to release allocated memory.
   ///
   /// Throws a [LibGit2Error] if error occured.
   Patch.fromBuffers({
@@ -136,6 +132,7 @@ class Patch {
       contextLines: contextLines,
       interhunkLines: interhunkLines,
     );
+    _finalizer.attach(this, _patchPointer, detach: this);
   }
 
   /// Creates a patch for an entry in the diff list.
@@ -144,11 +141,10 @@ class Patch {
   ///
   /// [index] is the position of an entry in diff list.
   ///
-  /// **IMPORTANT**: Should be freed to release allocated memory.
-  ///
   /// Throws a [LibGit2Error] if error occured.
   Patch.fromDiff({required Diff diff, required int index}) {
     _patchPointer = bindings.fromDiff(diffPointer: diff.pointer, index: index);
+    _finalizer.attach(this, _patchPointer, detach: this);
   }
 
   late final Pointer<git_patch> _patchPointer;
@@ -217,11 +213,20 @@ class Patch {
   }
 
   /// Releases memory allocated for patch object.
-  void free() => bindings.free(_patchPointer);
+  void free() {
+    bindings.free(_patchPointer);
+    _finalizer.detach(this);
+  }
 
   @override
   String toString() => 'Patch{size: ${size()}, delta: $delta}';
 }
+
+// coverage:ignore-start
+final _finalizer = Finalizer<Pointer<git_patch>>(
+  (pointer) => bindings.free(pointer),
+);
+// coverage:ignore-end
 
 /// Line counts of each type in a patch.
 class PatchStats {

@@ -6,11 +6,10 @@ import 'package:libgit2dart/src/bindings/packbuilder.dart' as bindings;
 class PackBuilder {
   /// Initializes a new instance of [PackBuilder] class.
   ///
-  /// **IMPORTANT**: Should be freed to release allocated memory.
-  ///
   /// Throws a [LibGit2Error] if error occured.
   PackBuilder(Repository repo) {
     _packbuilderPointer = bindings.init(repo.pointer);
+    _finalizer.attach(this, _packbuilderPointer, detach: this);
   }
 
   /// Pointer to memory address for allocated packbuilder object.
@@ -108,10 +107,19 @@ class PackBuilder {
   }
 
   /// Releases memory allocated for packbuilder object.
-  void free() => bindings.free(_packbuilderPointer);
+  void free() {
+    bindings.free(_packbuilderPointer);
+    _finalizer.detach(this);
+  }
 
   @override
   String toString() {
     return 'PackBuilder{length: $length, writtenLength: $writtenLength}';
   }
 }
+
+// coverage:ignore-start
+final _finalizer = Finalizer<Pointer<git_packbuilder>>(
+  (pointer) => bindings.free(pointer),
+);
+// coverage:ignore-end

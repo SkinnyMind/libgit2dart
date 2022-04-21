@@ -25,13 +25,11 @@ class Oid {
       if (sha.length == 40) {
         _oidPointer = bindings.fromSHA(sha);
       } else {
-        final odb = repo.odb;
         _oidPointer = odb_bindings.existsPrefix(
-          odbPointer: odb.pointer,
+          odbPointer: repo.odb.pointer,
           shortOidPointer: bindings.fromStrN(sha),
           length: sha.length,
         );
-        odb.free();
       }
     } else {
       throw ArgumentError.value('$sha is not a valid sha hex string');

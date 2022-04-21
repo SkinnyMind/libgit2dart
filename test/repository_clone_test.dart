@@ -9,7 +9,6 @@ import 'package:test/test.dart';
 import 'helpers/util.dart';
 
 void main() {
-  late Repository repo;
   late Directory tmpDir;
   final cloneDir = Directory(
     p.join(Directory.systemTemp.path, 'repository_cloned'),
@@ -17,14 +16,12 @@ void main() {
 
   setUp(() {
     tmpDir = setupRepo(Directory(p.join('test', 'assets', 'test_repo')));
-    repo = Repository.open(tmpDir.path);
     if (cloneDir.existsSync()) {
       cloneDir.delete(recursive: true);
     }
   });
 
   tearDown(() {
-    repo.free();
     tmpDir.deleteSync(recursive: true);
     if (cloneDir.existsSync()) {
       cloneDir.deleteSync(recursive: true);
@@ -72,14 +69,13 @@ void main() {
       clonedRepo.free();
     });
 
-    test('clones repository with provided remote callback', () {
-      Remote remote(Repository repo, String name, String url) =>
-          Remote.create(repo: repo, name: 'test', url: tmpDir.path);
-
+    test(
+        'clones repository with provided remote callback having default fetch '
+        'refspec value', () {
       final clonedRepo = Repository.clone(
         url: tmpDir.path,
         localPath: cloneDir.path,
-        remote: remote,
+        remoteCallback: RemoteCallback(name: 'test', url: tmpDir.path),
       );
 
       expect(clonedRepo.isEmpty, false);
@@ -90,15 +86,35 @@ void main() {
       clonedRepo.free();
     });
 
-    test('throws when cloning repository with invalid remote callback', () {
-      Remote remote(Repository repo, String name, String url) =>
-          Remote.create(repo: repo, name: '', url: '');
+    test('clones repository with provided remote callback ', () {
+      const fetchRefspec = '+refs/heads/*:refs/remotes/spec/*';
+      final clonedRepo = Repository.clone(
+        url: tmpDir.path,
+        localPath: cloneDir.path,
+        remoteCallback: RemoteCallback(
+          name: 'test',
+          url: tmpDir.path,
+          fetch: fetchRefspec,
+        ),
+      );
 
+      final remote = Remote.lookup(repo: clonedRepo, name: 'test');
+
+      expect(clonedRepo.isEmpty, false);
+      expect(clonedRepo.isBare, false);
+      expect(clonedRepo.remotes, ['test']);
+      expect(clonedRepo.references, contains('refs/remotes/spec/master'));
+      expect(remote.fetchRefspecs, [fetchRefspec]);
+
+      clonedRepo.free();
+    });
+
+    test('throws when cloning repository with invalid remote callback', () {
       expect(
         () => Repository.clone(
           url: tmpDir.path,
           localPath: cloneDir.path,
-          remote: remote,
+          remoteCallback: const RemoteCallback(name: '', url: ''),
         ),
         throwsA(isA<LibGit2Error>()),
       );
@@ -113,13 +129,10 @@ void main() {
       }
       callbackPath.createSync();
 
-      Repository repository(String path, bool bare) =>
-          Repository.init(path: callbackPath.path);
-
       final clonedRepo = Repository.clone(
         url: tmpDir.path,
         localPath: cloneDir.path,
-        repository: repository,
+        repositoryCallback: RepositoryCallback(path: callbackPath.path),
       );
 
       expect(clonedRepo.isEmpty, false);
@@ -131,17 +144,41 @@ void main() {
     });
 
     test('throws when cloning repository with invalid repository callback', () {
-      Repository repository(String path, bool bare) =>
-          Repository.init(path: '');
-
       expect(
         () => Repository.clone(
           url: tmpDir.path,
           localPath: cloneDir.path,
-          repository: repository,
+          repositoryCallback: const RepositoryCallback(path: ''),
         ),
         throwsA(isA<LibGit2Error>()),
       );
+    });
+  });
+
+  group('RepositoryCallback', () {
+    test('initializes and returns values', () {
+      const repositoryCallback = RepositoryCallback(
+        path: 'some/path',
+        bare: true,
+        flags: {GitRepositoryInit.noReinit},
+        mode: 1,
+        workdirPath: 'some/path',
+        description: 'description',
+        templatePath: 'some/path',
+        initialHead: 'feature',
+        originUrl: 'some.url',
+      );
+
+      expect(repositoryCallback, isA<RepositoryCallback>());
+      expect(repositoryCallback.path, 'some/path');
+      expect(repositoryCallback.bare, true);
+      expect(repositoryCallback.flags, {GitRepositoryInit.noReinit});
+      expect(repositoryCallback.mode, 1);
+      expect(repositoryCallback.workdirPath, 'some/path');
+      expect(repositoryCallback.description, 'description');
+      expect(repositoryCallback.templatePath, 'some/path');
+      expect(repositoryCallback.initialHead, 'feature');
+      expect(repositoryCallback.originUrl, 'some.url');
     });
   });
 }

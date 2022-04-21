@@ -64,5 +64,14 @@ Pointer<git_signature> defaultSignature(Pointer<git_repository> repo) {
   return out.value;
 }
 
+/// Create a copy of an existing signature.
+Pointer<git_signature> duplicate(Pointer<git_signature> sig) {
+  final out = calloc<Pointer<git_signature>>();
+  libgit2.git_signature_dup(out, sig);
+  final result = out.value;
+  calloc.free(out);
+  return result;
+}
+
 /// Free an existing signature.
 void free(Pointer<git_signature> sig) => libgit2.git_signature_free(sig);

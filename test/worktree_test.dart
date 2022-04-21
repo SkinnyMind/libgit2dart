@@ -38,20 +38,14 @@ void main() {
         name: worktreeName,
         path: worktreeDir.path,
       );
-      final branches = repo.branches;
 
       expect(repo.worktrees, [worktreeName]);
-      expect(branches.any((branch) => branch.name == worktreeName), true);
+      expect(repo.branches.any((branch) => branch.name == worktreeName), true);
       expect(worktree.name, worktreeName);
       expect(worktree.path, contains('worktree'));
       expect(worktree.isLocked, false);
       expect(worktree.toString(), contains('Worktree{'));
       expect(File(p.join(worktreeDir.path, '.git')).existsSync(), true);
-
-      for (final branch in branches) {
-        branch.free();
-      }
-      worktree.free();
     });
 
     test('creates worktree at provided path from provided reference', () {
@@ -83,14 +77,6 @@ void main() {
       expect(repo.worktrees, <String>[]);
       expect(worktreeBranch.isCheckedOut, false);
       expect(branches.any((branch) => branch.name == 'v1'), true);
-
-      for (final branch in branches) {
-        branch.free();
-      }
-      worktreeBranch.free();
-      ref.free();
-      head.free();
-      worktree.free();
     });
 
     test('throws when trying to create worktree with invalid name or path', () {
@@ -113,19 +99,16 @@ void main() {
     });
 
     test('lookups worktree', () {
-      final worktree = Worktree.create(
+      Worktree.create(
         repo: repo,
         name: worktreeName,
         path: worktreeDir.path,
       );
-      final lookedupWorktree = Worktree.lookup(repo: repo, name: worktreeName);
+      final worktree = Worktree.lookup(repo: repo, name: worktreeName);
 
-      expect(lookedupWorktree.name, worktreeName);
-      expect(lookedupWorktree.path, contains('worktree'));
-      expect(lookedupWorktree.isLocked, false);
-
-      lookedupWorktree.free();
-      worktree.free();
+      expect(worktree.name, worktreeName);
+      expect(worktree.path, contains('worktree'));
+      expect(worktree.isLocked, false);
     });
 
     test('throws when trying to lookup and error occurs', () {
@@ -148,8 +131,6 @@ void main() {
 
       worktree.unlock();
       expect(worktree.isLocked, false);
-
-      worktree.free();
     });
 
     test('prunes worktree', () {
@@ -170,8 +151,6 @@ void main() {
 
       worktree.prune();
       expect(repo.worktrees, <String>[]);
-
-      worktree.free();
     });
 
     test('throws when trying get list of worktrees and error occurs', () {
@@ -179,6 +158,15 @@ void main() {
         () => Worktree.list(Repository(nullptr)),
         throwsA(isA<LibGit2Error>()),
       );
+    });
+
+    test('manually releases allocated memory', () {
+      final worktree = Worktree.create(
+        repo: repo,
+        name: worktreeName,
+        path: worktreeDir.path,
+      );
+      expect(() => worktree.free(), returnsNormally);
     });
   });
 }

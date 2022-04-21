@@ -25,22 +25,17 @@ void main() {
 
   group('Repository', () {
     test('returns config for repository', () {
-      final config = repo.config;
       expect(
-        config['remote.origin.url'].value,
+        repo.config['remote.origin.url'].value,
         'git://github.com/SkinnyMind/libgit2dart.git',
       );
-
-      config.free();
     });
 
     test('returns snapshot of repository config', () {
-      final snapshot = repo.configSnapshot;
       expect(
-        snapshot['remote.origin.url'].value,
+        repo.configSnapshot['remote.origin.url'].value,
         'git://github.com/SkinnyMind/libgit2dart.git',
       );
-      snapshot.free();
     });
 
     test('returns list of commits by walking from provided starting oid', () {
@@ -56,10 +51,6 @@ void main() {
 
       for (var i = 0; i < commits.length; i++) {
         expect(commits[i].oid.sha, log[i]);
-      }
-
-      for (final c in commits) {
-        c.free();
       }
     });
 
@@ -119,11 +110,6 @@ void main() {
     });
 
     group('setHead', () {
-      late Reference head;
-
-      setUp(() => head = repo.head);
-      tearDown(() => head.free());
-
       test('sets head when target is reference', () {
         expect(repo.head.name, 'refs/heads/master');
         expect(repo.head.target.sha, lastCommit);
@@ -164,9 +150,8 @@ void main() {
 
     test('returns status of a repository', () {
       File(p.join(tmpDir.path, 'new_file.txt')).createSync();
-      final index = repo.index;
-      index.remove('file');
-      index.add('new_file.txt');
+      repo.index.remove('file');
+      repo.index.add('new_file.txt');
       expect(
         repo.status,
         {
@@ -174,8 +159,6 @@ void main() {
           'new_file.txt': {GitStatus.indexNew}
         },
       );
-
-      index.free();
     });
 
     test('throws when trying to get status of bare repository', () {
@@ -194,8 +177,6 @@ void main() {
       expect(repo.state, GitRepositoryState.cherrypick);
       repo.stateCleanup();
       expect(repo.state, GitRepositoryState.none);
-
-      commit.free();
     });
 
     test('throws when trying to clean up state and error occurs', () {
@@ -206,15 +187,12 @@ void main() {
     });
 
     test('returns status of a single file for provided path', () {
-      final index = repo.index;
-      index.remove('file');
+      repo.index.remove('file');
       expect(
         repo.statusFile('file'),
         {GitStatus.indexDeleted, GitStatus.wtNew},
       );
       expect(repo.statusFile('.gitignore'), {GitStatus.current});
-
-      index.free();
     });
 
     test('throws when checking status of a single file for invalid path', () {
@@ -229,9 +207,6 @@ void main() {
       final signature = repo.defaultSignature;
       expect(signature.name, 'Some Name');
       expect(signature.email, 'some@email.com');
-
-      signature.free();
-      config.free();
     });
 
     test('returns attribute value', () {
@@ -265,9 +240,11 @@ void main() {
         repo.aheadBehind(local: commit1.oid, upstream: commit1.oid),
         [0, 0],
       );
+    });
 
-      commit1.free();
-      commit2.free();
+    test('manually releases allocated memory', () {
+      final repo = Repository.open(tmpDir.path);
+      expect(() => repo.free(), returnsNormally);
     });
 
     test('returns string representation of Repository object', () {

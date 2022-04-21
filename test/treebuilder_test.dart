@@ -19,7 +19,6 @@ void main() {
   });
 
   tearDown(() {
-    tree.free();
     repo.free();
     tmpDir.deleteSync(recursive: true);
   });
@@ -29,7 +28,6 @@ void main() {
       final builder = TreeBuilder(repo: repo);
       expect(builder, isA<TreeBuilder>());
       expect(builder.toString(), contains('TreeBuilder{'));
-      builder.free();
     });
 
     test('initializes tree builder with provided tree', () {
@@ -39,8 +37,6 @@ void main() {
       expect(builder, isA<TreeBuilder>());
       expect(builder.length, tree.length);
       expect(oid, tree.oid);
-
-      builder.free();
     });
 
     test('throws when trying to initialize and error occurs', () {
@@ -56,8 +52,6 @@ void main() {
       expect(builder.length, 4);
       builder.clear();
       expect(builder.length, 0);
-
-      builder.free();
     });
 
     test('builds the tree builder from entry of tree', () {
@@ -72,8 +66,6 @@ void main() {
         filemode: entry.filemode,
       );
       expect(builder[entry.name].name, entry.name);
-
-      builder.free();
     });
 
     test('throws when trying to add entry with invalid name or invalid oid',
@@ -96,8 +88,6 @@ void main() {
         ),
         throwsA(isA<LibGit2Error>()),
       );
-
-      builder.free();
     });
 
     test('removes an entry', () {
@@ -108,14 +98,17 @@ void main() {
       builder.remove('.gitignore');
       expect(() => builder['.gitignore'], throwsA(isA<ArgumentError>()));
       expect(builder.length, tree.length - 1);
-
-      builder.free();
     });
 
     test('throws when trying to remove entry that is not in the tree', () {
-      final builder = TreeBuilder(repo: repo);
-      expect(() => builder.remove('not.there'), throwsA(isA<LibGit2Error>()));
-      builder.free();
+      expect(
+        () => TreeBuilder(repo: repo).remove('not.there'),
+        throwsA(isA<LibGit2Error>()),
+      );
+    });
+
+    test('manually releases allocated memory', () {
+      expect(() => TreeBuilder(repo: repo).free(), returnsNormally);
     });
   });
 }

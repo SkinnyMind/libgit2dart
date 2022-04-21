@@ -6,13 +6,12 @@ import 'package:libgit2dart/src/bindings/reflog.dart' as bindings;
 
 class RefLog with IterableMixin<RefLogEntry> {
   /// Initializes a new instance of [RefLog] class from provided [Reference].
-  ///
-  /// **IMPORTANT**: Should be freed to release allocated memory.
   RefLog(Reference ref) {
     _reflogPointer = bindings.read(
       repoPointer: ref.owner.pointer,
       name: ref.name,
     );
+    _finalizer.attach(this, _reflogPointer, detach: this);
   }
 
   /// Pointer to memory address for allocated reflog object.
@@ -89,11 +88,20 @@ class RefLog with IterableMixin<RefLogEntry> {
   void write() => bindings.write(_reflogPointer);
 
   /// Releases memory allocated for reflog object.
-  void free() => bindings.free(_reflogPointer);
+  void free() {
+    bindings.free(_reflogPointer);
+    _finalizer.detach(this);
+  }
 
   @override
   Iterator<RefLogEntry> get iterator => _RefLogIterator(_reflogPointer);
 }
+
+// coverage:ignore-start
+final _finalizer = Finalizer<Pointer<git_reflog>>(
+  (pointer) => bindings.free(pointer),
+);
+// coverage:ignore-end
 
 class RefLogEntry {
   /// Initializes a new instance of [RefLogEntry] class from provided

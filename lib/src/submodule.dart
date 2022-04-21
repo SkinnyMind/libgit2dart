@@ -7,14 +7,13 @@ class Submodule {
   /// Lookups submodule information by [name] or path (they are usually the
   /// same).
   ///
-  /// **IMPORTANT**: Should be freed to release allocated memory.
-  ///
   /// Throws a [LibGit2Error] if error occured.
   Submodule.lookup({required Repository repo, required String name}) {
     _submodulePointer = bindings.lookup(
       repoPointer: repo.pointer,
       name: name,
     );
+    _finalizer.attach(this, _submodulePointer, detach: this);
   }
 
   /// Adds a submodule to the index.
@@ -28,8 +27,6 @@ class Submodule {
   ///
   /// [callbacks] is the combination of callback functions from [Callbacks]
   /// object.
-  ///
-  /// **IMPORTANT**: Should be freed to release allocated memory.
   ///
   /// Throws a [LibGit2Error] if error occured.
   Submodule.add({
@@ -49,6 +46,8 @@ class Submodule {
     bindings.clone(submodule: _submodulePointer, callbacks: callbacks);
 
     bindings.addFinalize(_submodulePointer);
+
+    _finalizer.attach(this, _submodulePointer, detach: this);
   }
 
   /// Pointer to memory address for allocated submodule object.
@@ -264,7 +263,10 @@ class Submodule {
   }
 
   /// Releases memory allocated for submodule object.
-  void free() => bindings.free(_submodulePointer);
+  void free() {
+    bindings.free(_submodulePointer);
+    _finalizer.detach(this);
+  }
 
   @override
   String toString() {
@@ -273,3 +275,9 @@ class Submodule {
         'workdirOid: $workdirOid, ignore: $ignore, updateRule: $updateRule}';
   }
 }
+
+// coverage:ignore-start
+final _finalizer = Finalizer<Pointer<git_submodule>>(
+  (pointer) => bindings.free(pointer),
+);
+// coverage:ignore-end

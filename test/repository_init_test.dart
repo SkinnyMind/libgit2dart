@@ -5,7 +5,6 @@ import 'package:path/path.dart' as p;
 import 'package:test/test.dart';
 
 void main() {
-  late Repository repo;
   final initDir = Directory(p.join(Directory.systemTemp.path, 'init_repo'));
 
   setUp(() {
@@ -17,27 +16,30 @@ void main() {
   });
 
   tearDown(() {
-    repo.free();
     initDir.deleteSync(recursive: true);
   });
   group('Repository.init', () {
     test('creates new bare repo at provided path', () {
-      repo = Repository.init(path: initDir.path, bare: true);
+      final repo = Repository.init(path: initDir.path, bare: true);
 
       expect(repo.path, contains('init_repo'));
       expect(repo.isBare, true);
+
+      repo.free();
     });
 
     test('creates new standard repo at provided path', () {
-      repo = Repository.init(path: initDir.path);
+      final repo = Repository.init(path: initDir.path);
 
       expect(repo.path, contains('init_repo/.git/'));
       expect(repo.isBare, false);
       expect(repo.isEmpty, true);
+
+      repo.free();
     });
 
     test('creates new standard repo with provided options', () {
-      repo = Repository.init(
+      final repo = Repository.init(
         path: initDir.path,
         description: 'test repo',
         originUrl: 'test.url',
@@ -52,6 +54,8 @@ void main() {
         'test repo',
       );
       expect(Remote.lookup(repo: repo, name: 'origin').url, 'test.url');
+
+      repo.free();
     });
   });
 }

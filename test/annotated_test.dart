@@ -29,8 +29,6 @@ void main() {
 
       expect(annotated.oid, tip);
       expect(annotated.refName, '');
-
-      annotated.free();
     });
 
     test('throws when trying to lookup annotated commit with invalid oid', () {
@@ -49,25 +47,18 @@ void main() {
 
       expect(annotated.oid, reference.target);
       expect(annotated.refName, 'refs/heads/master');
-
-      annotated.free();
-      reference.free();
     });
 
     test(
         'throws when trying to create annotated commit from provided '
         'reference and error occurs', () {
-      final reference = Reference.lookup(repo: repo, name: 'refs/heads/master');
-
       expect(
         () => AnnotatedCommit.fromReference(
           repo: Repository(nullptr),
-          reference: reference,
+          reference: Reference.lookup(repo: repo, name: 'refs/heads/master'),
         ),
         throwsA(isA<LibGit2Error>()),
       );
-
-      reference.free();
     });
 
     test('creates annotated commit from provided revspec', () {
@@ -75,8 +66,6 @@ void main() {
 
       expect(annotated.oid.sha, '5aecfa0fb97eadaac050ccb99f03c3fb65460ad4');
       expect(annotated.refName, '');
-
-      annotated.free();
     });
 
     test('throws when trying to create annotated commit from invalid revspec',
@@ -98,8 +87,6 @@ void main() {
 
       expect(annotated.oid, oid);
       expect(annotated.refName, 'master');
-
-      annotated.free();
     });
 
     test(
@@ -114,6 +101,11 @@ void main() {
         ),
         throwsA(isA<LibGit2Error>()),
       );
+    });
+
+    test('manually releases allocated memory', () {
+      final annotated = AnnotatedCommit.lookup(repo: repo, oid: tip);
+      expect(() => annotated.free(), returnsNormally);
     });
   });
 }

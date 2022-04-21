@@ -8,18 +8,17 @@ import 'package:libgit2dart/src/bindings/tag.dart' as bindings;
 class Tag {
   /// Initializes a new instance of [Tag] class from provided pointer to
   /// tag object in memory.
-  ///
-  /// **IMPORTANT**: Should be freed to release allocated memory.
-  Tag(this._tagPointer);
+  Tag(this._tagPointer) {
+    _finalizer.attach(this, _tagPointer, detach: this);
+  }
 
   /// Lookups tag object for provided [oid] in a [repo]sitory.
-  ///
-  /// **IMPORTANT**: Should be freed to release allocated memory.
   Tag.lookup({required Repository repo, required Oid oid}) {
     _tagPointer = bindings.lookup(
       repoPointer: repo.pointer,
       oidPointer: oid.pointer,
     );
+    _finalizer.attach(this, _tagPointer, detach: this);
   }
 
   /// Pointer to memory address for allocated tag object.
@@ -160,9 +159,6 @@ class Tag {
   /// Returned object should be explicitly downcasted to one of four of git
   /// object types.
   ///
-  /// **IMPORTANT**: returned object should be freed to release allocated
-  /// memory.
-  ///
   /// ```dart
   /// final commit = tag.target as Commit;
   /// final tree = tag.target as Tree;
@@ -215,7 +211,10 @@ class Tag {
   }
 
   /// Releases memory allocated for tag object.
-  void free() => bindings.free(_tagPointer);
+  void free() {
+    bindings.free(_tagPointer);
+    _finalizer.detach(this);
+  }
 
   @override
   String toString() {
@@ -223,3 +222,9 @@ class Tag {
         'tagger: $tagger}';
   }
 }
+
+// coverage:ignore-start
+final _finalizer = Finalizer<Pointer<git_tag>>(
+  (pointer) => bindings.free(pointer),
+);
+// coverage:ignore-end

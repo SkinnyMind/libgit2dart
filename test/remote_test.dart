@@ -34,8 +34,6 @@ void main() {
       expect(remote.url, remoteUrl);
       expect(remote.pushUrl, '');
       expect(remote.toString(), contains('Remote{'));
-
-      remote.free();
     });
 
     test('throws when provided name for lookup is not found', () {
@@ -56,8 +54,6 @@ void main() {
       expect(remote.name, 'upstream');
       expect(remote.url, remoteUrl);
       expect(remote.pushUrl, '');
-
-      remote.free();
     });
 
     test('creates with provided fetchspec', () {
@@ -74,8 +70,6 @@ void main() {
       expect(remote.url, remoteUrl);
       expect(remote.pushUrl, '');
       expect(remote.fetchRefspecs, [spec]);
-
-      remote.free();
     });
 
     test('throws when trying to create with fetchspec with invalid remote name',
@@ -101,8 +95,6 @@ void main() {
 
       Remote.delete(repo: repo, name: remote.name);
       expect(repo.remotes.length, 1);
-
-      remote.free();
     });
 
     test('throws when trying to delete non existing remote', () {
@@ -125,9 +117,6 @@ void main() {
 
       final newRemote = Remote.lookup(repo: repo, name: 'new');
       expect(newRemote.name, 'new');
-
-      newRemote.free();
-      remote.free();
     });
 
     test('returns list of non-default refspecs that cannot be renamed', () {
@@ -142,8 +131,6 @@ void main() {
         Remote.rename(repo: repo, oldName: remote.name, newName: 'renamed'),
         ['+refs/*:refs/*'],
       );
-
-      remote.free();
     });
 
     test('throws when renaming with invalid names', () {
@@ -162,9 +149,6 @@ void main() {
 
       final newRemote = Remote.lookup(repo: repo, name: remoteName);
       expect(newRemote.url, newUrl);
-
-      newRemote.free();
-      remote.free();
     });
 
     test('throws when trying to set invalid url name', () {
@@ -180,8 +164,6 @@ void main() {
 
       final remote = Remote.lookup(repo: repo, name: remoteName);
       expect(remote.pushUrl, newUrl);
-
-      remote.free();
     });
 
     test('throws when trying to set invalid push url name', () {
@@ -215,8 +197,6 @@ void main() {
         refspec.rTransform('refs/remotes/origin/master'),
         'refs/heads/master',
       );
-
-      remote.free();
     });
 
     test('throws when trying to transform refspec with invalid reference name',
@@ -233,8 +213,6 @@ void main() {
         () => refspec.rTransform('invalid/name'),
         throwsA(isA<LibGit2Error>()),
       );
-
-      remote.free();
     });
 
     test('adds fetch refspec', () {
@@ -252,8 +230,6 @@ void main() {
           '+refs/test/*:refs/test/remotes/*',
         ],
       );
-
-      remote.free();
     });
 
     test('throws when trying to add fetch refspec for invalid remote name', () {
@@ -276,8 +252,6 @@ void main() {
       final remote = Remote.lookup(repo: repo, name: 'origin');
       expect(remote.pushRefspecs.length, 1);
       expect(remote.pushRefspecs, ['+refs/test/*:refs/test/remotes/*']);
-
-      remote.free();
     });
 
     test('throws when trying to add push refspec for invalid remote name', () {
@@ -308,8 +282,6 @@ void main() {
         (refs.first['oid']! as Oid).sha,
         '49322bb17d3acc9146f98c97d078513228bbf3c0',
       );
-
-      remote.free();
     });
 
     test(
@@ -319,8 +291,6 @@ void main() {
       final remote = Remote.lookup(repo: repo, name: 'libgit2');
 
       expect(() => remote.ls(), throwsA(isA<LibGit2Error>()));
-
-      remote.free();
     });
 
     test(
@@ -350,8 +320,6 @@ void main() {
         expect(stats.indexedDeltas, 3);
         expect(stats.receivedBytes, 0);
         expect(stats.toString(), contains('TransferProgress{'));
-
-        remote.free();
       },
       tags: 'remote_fetch',
     );
@@ -384,8 +352,6 @@ void main() {
         expect(stats.indexedDeltas, 3);
         expect(stats.receivedBytes, 0);
         expect(stats.toString(), contains('TransferProgress{'));
-
-        remote.free();
       },
       tags: 'remote_fetch',
     );
@@ -412,8 +378,6 @@ void main() {
           ),
           throwsA(isA<LibGit2Error>()),
         );
-
-        remote.free();
       },
       tags: 'remote_fetch',
     );
@@ -426,8 +390,6 @@ void main() {
         () => remote.fetch(),
         throwsA(isA<LibGit2Error>()),
       );
-
-      remote.free();
     });
 
     test(
@@ -453,8 +415,6 @@ void main() {
         expect(stats.totalDeltas == callbackStats?.totalDeltas, true);
         expect(stats.indexedDeltas == callbackStats?.indexedDeltas, true);
         expect(stats.receivedBytes == callbackStats?.receivedBytes, true);
-
-        remote.free();
       },
       tags: 'remote_fetch',
     );
@@ -483,8 +443,6 @@ Total 69 (delta 0), reused 1 (delta 0), pack-reused 68
 
         remote.fetch(callbacks: callbacks);
         expect(sidebandOutput.toString(), sidebandMessage);
-
-        remote.free();
       },
       tags: 'remote_fetch',
     );
@@ -529,8 +487,6 @@ Total 69 (delta 0), reused 1 (delta 0), pack-reused 68
 
         remote.fetch(callbacks: callbacks);
         expect(updateTipsOutput, tipsExpected);
-
-        remote.free();
       },
       tags: 'remote_fetch',
     );
@@ -566,7 +522,6 @@ Total 69 (delta 0), reused 1 (delta 0), pack-reused 68
       );
       expect(updateRefOutput, {'refs/heads/master': ''});
 
-      remote.free();
       originRepo.free();
       originDir.delete(recursive: true);
     });
@@ -579,8 +534,26 @@ Total 69 (delta 0), reused 1 (delta 0), pack-reused 68
         () => remote.push(refspecs: ['refs/heads/master']),
         throwsA(isA<LibGit2Error>()),
       );
+    });
 
-      remote.free();
+    test('manually releases allocated memory', () {
+      final remote = Remote.lookup(repo: repo, name: 'origin');
+      expect(() => remote.free(), returnsNormally);
+    });
+  });
+
+  group('RemoteCallback', () {
+    test('initializes and returns values', () {
+      const remoteCallback = RemoteCallback(
+        name: 'name',
+        url: 'url',
+        fetch: 'fetchRefspec',
+      );
+
+      expect(remoteCallback, isA<RemoteCallback>());
+      expect(remoteCallback.name, 'name');
+      expect(remoteCallback.url, 'url');
+      expect(remoteCallback.fetch, 'fetchRefspec');
     });
   });
 }

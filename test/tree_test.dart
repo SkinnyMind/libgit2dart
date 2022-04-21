@@ -19,7 +19,6 @@ void main() {
   });
 
   tearDown(() {
-    tree.free();
     repo.free();
     tmpDir.deleteSync(recursive: true);
   });
@@ -65,7 +64,6 @@ void main() {
       final entry = tree['dir/dir_file.txt'];
       expect(entry.oid.sha, 'e69de29bb2d1d6434b8b29ae775ad8c2e48c5391');
       expect(entry.toString(), contains('TreeEntry{'));
-      entry.free();
     });
 
     test('throws when nothing found for provided path', () {
@@ -92,9 +90,17 @@ void main() {
       expect(entry.name, 'filename');
       expect(entry.filemode, GitFilemode.blob);
       expect(entry.oid, fileOid);
+    });
 
-      builder.free();
-      newTree.free();
+    test('manually releases allocated memory', () {
+      final tree = Tree.lookup(repo: repo, oid: repo['a8ae3dd']);
+      expect(() => tree.free(), returnsNormally);
+    });
+
+    test(
+        'manually releases allocated memory for tree entry '
+        'looked up by path', () {
+      expect(() => tree['dir/dir_file.txt'].free(), returnsNormally);
     });
   });
 }

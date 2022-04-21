@@ -3,19 +3,20 @@ description: Dart bindings to libgit2
 version: 0.0.1
 
 environment:
-  sdk: ">=2.16.0 <3.0.0"
-  flutter: ">=2.10.0"
+  sdk: ">=2.17.0 <3.0.0"
+  flutter: ">=2.13.0-0.0.pre.578"
 
 dependencies:
   args: ^2.3.0
   cli_util: ^0.3.5
   ffi: ^1.1.2
+  meta: ^1.7.0
+  path: ^1.8.1
   pub_cache: ^0.3.1
 
 dev_dependencies:
   ffigen: ^4.1.2
-  lints: ^1.0.1
-  path: ^1.8.1
+  lints: ^2.0.0
   test: ^1.20.0
 
 flutter:

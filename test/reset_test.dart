@@ -41,11 +41,8 @@ void main() {
       contents = file.readAsStringSync();
       expect(contents, 'Feature edit\n');
 
-      final index = repo.index;
-      final diff = Diff.indexToWorkdir(repo: repo, index: index);
+      final diff = Diff.indexToWorkdir(repo: repo, index: repo.index);
       expect(diff.deltas, isEmpty);
-
-      index.free();
     });
 
     test('resets with mixed', () {
@@ -56,37 +53,26 @@ void main() {
       contents = file.readAsStringSync();
       expect(contents, 'Feature edit\n');
 
-      final index = repo.index;
-      final diff = Diff.indexToWorkdir(repo: repo, index: index);
+      final diff = Diff.indexToWorkdir(repo: repo, index: repo.index);
       expect(diff.deltas.length, 1);
-
-      index.free();
     });
 
     group('resetDefault', () {
       test('updates entry in the index', () {
         file.writeAsStringSync('new edit');
 
-        final index = repo.index;
-        index.add('feature_file');
+        repo.index.add('feature_file');
         expect(repo.status['feature_file'], {GitStatus.indexModified});
 
-        final head = repo.head;
-        repo.resetDefault(oid: head.target, pathspec: ['feature_file']);
+        repo.resetDefault(oid: repo.head.target, pathspec: ['feature_file']);
         expect(repo.status['feature_file'], {GitStatus.wtModified});
-
-        head.free();
-        index.free();
       });
 
       test('throws when pathspec list is empty', () {
-        final head = repo.head;
         expect(
-          () => repo.resetDefault(oid: head.target, pathspec: []),
+          () => repo.resetDefault(oid: repo.head.target, pathspec: []),
           throwsA(isA<LibGit2Error>()),
         );
-
-        head.free();
       });
     });
   });

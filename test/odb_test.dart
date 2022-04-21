@@ -26,9 +26,7 @@ void main() {
 
   group('Odb', () {
     test('successfully initializes', () {
-      final odb = repo.odb;
-      expect(odb, isA<Odb>());
-      odb.free();
+      expect(repo.odb, isA<Odb>());
     });
 
     test('throws when trying to get odb and error occurs', () {
@@ -36,9 +34,7 @@ void main() {
     });
 
     test('creates new odb with no backends', () {
-      final odb = Odb.create();
-      expect(odb, isA<Odb>());
-      odb.free();
+      expect(Odb.create(), isA<Odb>());
     });
 
     test('adds disk alternate', () {
@@ -46,33 +42,23 @@ void main() {
       odb.addDiskAlternate(p.join(repo.path, 'objects'));
 
       expect(odb.contains(repo[blobSha]), true);
-
-      odb.free();
     });
 
     test('reads object', () {
       final oid = repo[blobSha];
-      final odb = repo.odb;
-      final object = odb.read(oid);
+      final object = repo.odb.read(oid);
 
       expect(object.oid, oid);
       expect(object.type, GitObject.blob);
       expect(object.data, blobContent);
       expect(object.size, 13);
-
-      object.free();
-      odb.free();
     });
 
     test('throws when trying to read object and error occurs', () {
-      final odb = repo.odb;
-
       expect(
-        () => odb.read(repo['0' * 40]),
+        () => repo.odb.read(repo['0' * 40]),
         throwsA(isA<LibGit2Error>()),
       );
-
-      odb.free();
     });
 
     test("returns list of all objects oid's in database", () {
@@ -80,8 +66,6 @@ void main() {
 
       expect(odb.objects, isNot(isEmpty));
       expect(odb.objects.contains(repo[commitSha]), true);
-
-      odb.free();
     });
 
     test('throws when trying to get list of all objects and error occurs', () {
@@ -92,8 +76,6 @@ void main() {
         () => odb.objects,
         throwsA(isA<LibGit2Error>()),
       );
-
-      odb.free();
     });
 
     test('writes data', () {
@@ -103,19 +85,13 @@ void main() {
 
       expect(odb.contains(oid), true);
       expect(object.data, 'testing');
-
-      object.free();
-      odb.free();
     });
 
     test('throws when trying to write with invalid object type', () {
-      final odb = repo.odb;
       expect(
-        () => odb.write(type: GitObject.any, data: 'testing'),
+        () => repo.odb.write(type: GitObject.any, data: 'testing'),
         throwsA(isA<ArgumentError>()),
       );
-
-      odb.free();
     });
 
     test('throws when trying to write alternate odb to disk', () {
@@ -126,15 +102,20 @@ void main() {
         () => odb.write(type: GitObject.blob, data: ''),
         throwsA(isA<LibGit2Error>()),
       );
+    });
 
-      odb.free();
+    test('manually releases allocated memory', () {
+      expect(() => repo.odb.free(), returnsNormally);
+    });
+
+    test('manually releases allocated memory for odbObject object', () {
+      final object = repo.odb.read(repo[blobSha]);
+      expect(() => object.free(), returnsNormally);
     });
 
     test('returns string representation of OdbObject object', () {
-      final odb = repo.odb;
-      final object = odb.read(repo[blobSha]);
+      final object = repo.odb.read(repo[blobSha]);
       expect(object.toString(), contains('OdbObject{'));
-      odb.free();
     });
   });
 }

@@ -116,7 +116,6 @@ class Checkout {
     );
 
     object_bindings.free(treeish);
-    ref.free();
   }
 
   /// Updates files in the working tree to match the content of the tree

@@ -46,25 +46,19 @@ void main() {
     });
 
     test('returns correct type of reference', () {
-      final head = repo.head;
-      expect(head.type, ReferenceType.direct);
-      head.free();
+      expect(repo.head.type, ReferenceType.direct);
 
       final ref = Reference.lookup(repo: repo, name: 'HEAD');
       expect(ref.type, ReferenceType.symbolic);
-      ref.free();
     });
 
     test('returns SHA hex of direct reference', () {
-      final head = repo.head;
-      expect(head.target.sha, lastCommit);
-      head.free();
+      expect(repo.head.target.sha, lastCommit);
     });
 
     test('returns SHA hex of symbolic reference', () {
       final ref = Reference.lookup(repo: repo, name: 'HEAD');
       expect(ref.target.sha, lastCommit);
-      ref.free();
     });
 
     test('throws when trying to resolve invalid reference', () {
@@ -75,9 +69,7 @@ void main() {
     });
 
     test('returns the full name', () {
-      final head = repo.head;
-      expect(head.name, 'refs/heads/master');
-      head.free();
+      expect(repo.head.name, 'refs/heads/master');
     });
 
     test('returns the short name', () {
@@ -87,25 +79,18 @@ void main() {
         target: repo[lastCommit],
       );
 
-      final head = repo.head;
-
-      expect(head.shorthand, 'master');
+      expect(repo.head.shorthand, 'master');
       expect(ref.shorthand, 'origin/upstream');
-
-      head.free();
-      ref.free();
     });
 
     test('checks if reference is a local branch', () {
       final ref = Reference.lookup(repo: repo, name: 'refs/heads/feature');
       expect(ref.isBranch, true);
-      ref.free();
     });
 
     test('checks if reference is a note', () {
       final ref = Reference.lookup(repo: repo, name: 'refs/heads/master');
       expect(ref.isNote, false);
-      ref.free();
     });
 
     test('checks if reference is a remote branch', () {
@@ -114,13 +99,11 @@ void main() {
         name: 'refs/remotes/origin/master',
       );
       expect(ref.isRemote, true);
-      ref.free();
     });
 
     test('checks if reference is a tag', () {
       final ref = Reference.lookup(repo: repo, name: 'refs/tags/v0.1');
       expect(ref.isTag, true);
-      ref.free();
     });
 
     test('checks if reflog exists for the reference', () {
@@ -129,8 +112,6 @@ void main() {
 
       ref = Reference.lookup(repo: repo, name: 'refs/tags/v0.1');
       expect(ref.hasLog, false);
-
-      ref.free();
     });
 
     test('ensures updates to the reference will append to its log', () {
@@ -141,12 +122,8 @@ void main() {
         name: 'refs/tags/tag',
         target: repo[lastCommit],
       );
-      final reflog = ref.log;
 
-      expect(reflog.length, 1);
-
-      reflog.free();
-      ref.free();
+      expect(ref.log.length, 1);
     });
 
     test('throws when trying to ensure there is a reflog and error occurs', () {
@@ -167,24 +144,19 @@ void main() {
 
       expect(repo.references.length, 6);
       expect(duplicate.equals(ref), true);
-
-      duplicate.free();
-      ref.free();
     });
 
     group('create direct', () {
       test('creates with oid as target', () {
         final ref = Reference.lookup(repo: repo, name: 'refs/heads/master');
-        final refFromOid = Reference.create(
+
+        Reference.create(
           repo: repo,
           name: 'refs/tags/from.oid',
           target: ref.target,
         );
 
         expect(repo.references, contains('refs/tags/from.oid'));
-
-        refFromOid.free();
-        ref.free();
       });
 
       test('creates with log message', () {
@@ -196,15 +168,11 @@ void main() {
           logMessage: 'log message',
         );
 
-        final reflog = ref.log;
-        final reflogEntry = reflog[0];
+        final reflogEntry = ref.log[0];
 
         expect(reflogEntry.message, 'log message');
         expect(reflogEntry.committer.name, 'name');
         expect(reflogEntry.committer.email, 'email');
-
-        reflog.free();
-        ref.free();
       });
 
       test('throws if target is not valid', () {
@@ -239,7 +207,7 @@ void main() {
       });
 
       test('creates with force flag if name already exists', () {
-        final ref = Reference.create(
+        Reference.create(
           repo: repo,
           name: 'refs/tags/test',
           target: repo[lastCommit],
@@ -253,13 +221,10 @@ void main() {
         );
 
         expect(forceRef.target.sha, lastCommit);
-
-        ref.free();
-        forceRef.free();
       });
 
       test('throws if name already exists', () {
-        final ref = Reference.create(
+        Reference.create(
           repo: repo,
           name: 'refs/tags/test',
           target: repo[lastCommit],
@@ -273,8 +238,6 @@ void main() {
           ),
           throwsA(isA<LibGit2Error>()),
         );
-
-        ref.free();
       });
     });
 
@@ -288,12 +251,10 @@ void main() {
 
         expect(repo.references, contains('refs/tags/symbolic'));
         expect(ref.type, ReferenceType.symbolic);
-
-        ref.free();
       });
 
       test('creates with force flag if name already exists', () {
-        final ref = Reference.create(
+        Reference.create(
           repo: repo,
           name: 'refs/tags/test',
           target: 'refs/heads/master',
@@ -308,13 +269,10 @@ void main() {
 
         expect(forceRef.target.sha, lastCommit);
         expect(forceRef.type, ReferenceType.symbolic);
-
-        ref.free();
-        forceRef.free();
       });
 
       test('throws if name already exists', () {
-        final ref = Reference.create(
+        Reference.create(
           repo: repo,
           name: 'refs/tags/exists',
           target: 'refs/heads/master',
@@ -328,8 +286,6 @@ void main() {
           ),
           throwsA(isA<LibGit2Error>()),
         );
-
-        ref.free();
       });
 
       test('throws if name is not valid', () {
@@ -353,15 +309,11 @@ void main() {
           logMessage: 'log message',
         );
 
-        final reflog = ref.log;
-        final reflogEntry = reflog[0];
+        final reflogEntry = ref.log[0];
 
         expect(reflogEntry.message, 'log message');
         expect(reflogEntry.committer.name, 'name');
         expect(reflogEntry.committer.email, 'email');
-
-        reflog.free();
-        ref.free();
       });
     });
 
@@ -376,7 +328,6 @@ void main() {
       test('with provided name', () {
         final ref = Reference.lookup(repo: repo, name: 'refs/heads/master');
         expect(ref.target.sha, lastCommit);
-        ref.free();
       });
 
       test('throws when error occured', () {
@@ -389,11 +340,7 @@ void main() {
 
     test('returns log for reference', () {
       final ref = Reference.lookup(repo: repo, name: 'refs/heads/master');
-      final reflog = ref.log;
-      expect(reflog.last.message, 'commit (initial): init');
-
-      reflog.free();
-      ref.free();
+      expect(ref.log.last.message, 'commit (initial): init');
     });
 
     group('set target', () {
@@ -401,8 +348,6 @@ void main() {
         final ref = Reference.lookup(repo: repo, name: 'refs/heads/master');
         ref.setTarget(target: repo[newCommit]);
         expect(ref.target.sha, newCommit);
-
-        ref.free();
       });
 
       test('sets symbolic target with provided reference name', () {
@@ -411,8 +356,6 @@ void main() {
 
         ref.setTarget(target: 'refs/heads/feature');
         expect(ref.target.sha, '5aecfa0fb97eadaac050ccb99f03c3fb65460ad4');
-
-        ref.free();
       });
 
       test('sets target with log message', () {
@@ -422,13 +365,10 @@ void main() {
         repo.setIdentity(name: 'name', email: 'email');
         ref.setTarget(target: 'refs/heads/feature', logMessage: 'log message');
         expect(ref.target.sha, '5aecfa0fb97eadaac050ccb99f03c3fb65460ad4');
-        final reflog = ref.log;
-        expect(reflog.first.message, 'log message');
-        expect(reflog.first.committer.name, 'name');
-        expect(reflog.first.committer.email, 'email');
-
-        reflog.free();
-        ref.free();
+        final logEntry = ref.log.first;
+        expect(logEntry.message, 'log message');
+        expect(logEntry.committer.name, 'name');
+        expect(logEntry.committer.email, 'email');
       });
 
       test('throws on invalid target', () {
@@ -444,8 +384,6 @@ void main() {
         );
 
         expect(() => ref.setTarget(target: 0), throwsA(isA<ArgumentError>()));
-
-        ref.free();
       });
     });
 
@@ -508,9 +446,6 @@ void main() {
         );
         expect(repo.references, isNot(contains('refs/tags/v0.1')));
         expect(repo.references.length, 5);
-
-        ref1.free();
-        ref2.free();
       });
     });
 
@@ -523,10 +458,6 @@ void main() {
       expect(ref1.notEquals(ref2), false);
       expect(ref1.equals(ref3), false);
       expect(ref1.notEquals(ref3), true);
-
-      ref1.free();
-      ref2.free();
-      ref3.free();
     });
 
     test('peels to non-tag object when no type is provided', () {
@@ -535,10 +466,6 @@ void main() {
       final peeled = ref.peel() as Commit;
 
       expect(peeled.oid, commit.oid);
-
-      peeled.free();
-      commit.free();
-      ref.free();
     });
 
     test('peels to object of provided type', () {
@@ -562,17 +489,6 @@ void main() {
       expect(peeledTree.oid, tree.oid);
       expect(peeledBlob.content, 'Feature edit\n');
       expect(peeledTag.name, 'v0.2');
-
-      peeledTag.free();
-      peeledBlob.free();
-      peeledTree.free();
-      peeledCommit.free();
-      tagRef.free();
-      blobRef.free();
-      blob.free();
-      commit.free();
-      tree.free();
-      ref.free();
     });
 
     test('throws when trying to peel and error occurs', () {
@@ -598,10 +514,14 @@ void main() {
       );
     });
 
+    test('manually releases allocated memory', () {
+      final ref = Reference.lookup(repo: repo, name: 'refs/heads/master');
+      expect(() => ref.free(), returnsNormally);
+    });
+
     test('returns string representation of Reference object', () {
       final ref = Reference.lookup(repo: repo, name: 'refs/heads/master');
       expect(ref.toString(), contains('Reference{'));
-      ref.free();
     });
   });
 }

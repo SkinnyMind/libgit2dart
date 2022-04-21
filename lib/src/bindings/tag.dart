@@ -77,8 +77,10 @@ String name(Pointer<git_tag> tag) =>
     libgit2.git_tag_name(tag).cast<Utf8>().toDartString();
 
 /// Get the message of a tag.
-String message(Pointer<git_tag> tag) =>
-    libgit2.git_tag_message(tag).cast<Utf8>().toDartString();
+String message(Pointer<git_tag> tag) {
+  final result = libgit2.git_tag_message(tag);
+  return result == nullptr ? '' : result.cast<Utf8>().toDartString();
+}
 
 /// Get the tagger (author) of a tag.
 Pointer<git_signature> tagger(Pointer<git_tag> tag) =>

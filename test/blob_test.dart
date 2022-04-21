@@ -26,9 +26,7 @@ void main() {
 
   group('Blob', () {
     test('lookups blob with provided oid', () {
-      final blob = Blob.lookup(repo: repo, oid: repo[blobSHA]);
-      expect(blob, isA<Blob>());
-      blob.free();
+      expect(Blob.lookup(repo: repo, oid: repo[blobSHA]), isA<Blob>());
     });
 
     test('throws when trying to lookup with invalid oid', () {
@@ -45,8 +43,6 @@ void main() {
       expect(blob.isBinary, false);
       expect(blob.size, 13);
       expect(blob.content, blobContent);
-
-      blob.free();
     });
 
     test('creates new blob with provided content', () {
@@ -57,14 +53,11 @@ void main() {
       expect(newBlob.isBinary, false);
       expect(newBlob.size, 9);
       expect(newBlob.content, newBlobContent);
-
-      newBlob.free();
     });
 
     test('throws when trying to create new blob and error occurs', () {
-      final nullRepo = Repository(nullptr);
       expect(
-        () => Blob.create(repo: nullRepo, content: ''),
+        () => Blob.create(repo: Repository(nullptr), content: ''),
         throwsA(isA<LibGit2Error>()),
       );
     });
@@ -80,8 +73,6 @@ void main() {
       expect(newBlob.isBinary, false);
       expect(newBlob.size, 13);
       expect(newBlob.content, blobContent);
-
-      newBlob.free();
     });
 
     test('throws when creating new blob from invalid path', () {
@@ -103,8 +94,6 @@ void main() {
 
       expect(newBlob, isA<Blob>());
       expect(newBlob.isBinary, false);
-
-      newBlob.free();
     });
 
     test('throws when trying to create from invalid path', () {
@@ -119,9 +108,6 @@ void main() {
       final dupBlob = blob.duplicate();
 
       expect(blob.oid.sha, dupBlob.oid.sha);
-
-      dupBlob.free();
-      blob.free();
     });
 
     test('filters content of a blob', () {
@@ -129,8 +115,6 @@ void main() {
       final blob = Blob.lookup(repo: repo, oid: blobOid);
 
       expect(blob.filterContent(asPath: 'file.crlf'), 'clrf\r\nclrf\r\n');
-
-      blob.free();
     });
 
     test('filters content of a blob with provided commit for attributes', () {
@@ -152,9 +136,6 @@ void main() {
         ),
         'clrf\r\nclrf\r\n',
       );
-
-      commit.free();
-      blob.free();
     });
 
     test('throws when trying to filter content of a blob and error occurs', () {
@@ -164,10 +145,14 @@ void main() {
       );
     });
 
+    test('manually releases allocated memory', () {
+      final blob = Blob.lookup(repo: repo, oid: repo[blobSHA]);
+      expect(() => blob.free(), returnsNormally);
+    });
+
     test('returns string representation of Blob object', () {
       final blob = Blob.lookup(repo: repo, oid: repo[blobSHA]);
       expect(blob.toString(), contains('Blob{'));
-      blob.free();
     });
   });
 }

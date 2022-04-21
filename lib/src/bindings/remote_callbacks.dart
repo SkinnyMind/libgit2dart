@@ -5,6 +5,7 @@ import 'package:libgit2dart/libgit2dart.dart';
 import 'package:libgit2dart/src/bindings/credentials.dart'
     as credentials_bindings;
 import 'package:libgit2dart/src/bindings/libgit2_bindings.dart';
+import 'package:libgit2dart/src/bindings/remote.dart' as remote_bindings;
 import 'package:libgit2dart/src/util.dart';
 
 class RemoteCallbacks {
@@ -65,11 +66,9 @@ class RemoteCallbacks {
     return 0;
   }
 
-  /// A function matching the
-  /// `Remote Function(Repository repo, String name, String url)` signature to
-  /// override the remote creation and customization process during a clone
-  /// operation.
-  static Remote Function(Repository, String, String)? remoteFunction;
+  /// Values used to override the remote creation and customization process
+  /// during a clone operation.
+  static RemoteCallback? remoteCbData;
 
   /// A callback used to create the git remote, prior to its being used to
   /// perform the clone operation.
@@ -80,19 +79,31 @@ class RemoteCallbacks {
     Pointer<Int8> url,
     Pointer<Void> payload,
   ) {
-    remote[0] = remoteFunction!(
-      Repository(repo),
-      name.cast<Utf8>().toDartString(),
-      url.cast<Utf8>().toDartString(),
-    ).pointer;
+    late final Pointer<git_remote> remotePointer;
+
+    if (remoteCbData!.fetch == null) {
+      remotePointer = remote_bindings.create(
+        repoPointer: repo,
+        name: remoteCbData!.name,
+        url: remoteCbData!.url,
+      );
+    } else {
+      remotePointer = remote_bindings.createWithFetchSpec(
+        repoPointer: repo,
+        name: remoteCbData!.name,
+        url: remoteCbData!.url,
+        fetch: remoteCbData!.fetch!,
+      );
+    }
+
+    remote[0] = remotePointer;
 
     return 0;
   }
 
-  /// A function matching the `Repository Function(String path, bool bare)`
-  /// signature to override the repository creation and customization process
+  /// Values used to override the repository creation and customization process
   /// during a clone operation.
-  static Repository Function(String, bool)? repositoryFunction;
+  static RepositoryCallback? repositoryCbData;
 
   /// A callback used to create the new repository into which to clone.
   static int repositoryCb(
@@ -101,10 +112,19 @@ class RemoteCallbacks {
     int bare,
     Pointer<Void> payload,
   ) {
-    repo[0] = repositoryFunction!(
-      path.cast<Utf8>().toDartString(),
-      bare == 1 || false,
+    final repoPointer = Repository.init(
+      path: repositoryCbData!.path,
+      bare: repositoryCbData!.bare,
+      flags: repositoryCbData!.flags,
+      mode: repositoryCbData!.mode,
+      workdirPath: repositoryCbData!.workdirPath,
+      description: repositoryCbData!.description,
+      templatePath: repositoryCbData!.templatePath,
+      initialHead: repositoryCbData!.initialHead,
+      originUrl: repositoryCbData!.originUrl,
     ).pointer;
+
+    repo[0] = repoPointer;
 
     return 0;
   }
@@ -236,8 +256,8 @@ class RemoteCallbacks {
     sidebandProgress = null;
     updateTips = null;
     pushUpdateReference = null;
-    remoteFunction = null;
-    repositoryFunction = null;
+    remoteCbData = null;
+    repositoryCbData = null;
     credentials = null;
   }
 }

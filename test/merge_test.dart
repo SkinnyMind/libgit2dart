@@ -62,9 +62,6 @@ void main() {
           {GitMergeAnalysis.fastForward, GitMergeAnalysis.normal},
         );
         expect(repo.status, isEmpty);
-
-        ffBranch.free();
-        ffCommit.free();
       });
 
       test('is not fast forward and there is no conflicts', () {
@@ -114,10 +111,6 @@ void main() {
           'conflict_file': {GitStatus.indexModified}
         },
       );
-
-      index.free();
-      commit.free();
-      conflictBranch.free();
     });
 
     group('merge file from index', () {
@@ -150,10 +143,6 @@ conflict branch edit
         );
 
         expect(diff, diffExpected);
-
-        index.free();
-        commit.free();
-        conflictBranch.free();
       });
 
       test('merges with ancestor', () {
@@ -187,10 +176,6 @@ Another feature edit
         );
 
         expect(diff, diffExpected);
-
-        index.free();
-        commit.free();
-        conflictBranch.free();
       });
 
       test('merges with provided merge flags and file flags', () {
@@ -227,10 +212,6 @@ conflict branch edit
         );
 
         expect(diff, diffExpected);
-
-        index.free();
-        commit.free();
-        conflictBranch.free();
       });
 
       test('merges with provided merge favor', () {
@@ -251,10 +232,6 @@ conflict branch edit
           File(p.join(repo.workdir, 'conflict_file')).readAsStringSync(),
           'master conflict edit\n',
         );
-
-        index.free();
-        commit.free();
-        conflictBranch.free();
       });
 
       test('throws when error occurs', () {
@@ -348,12 +325,6 @@ theirs content
         final mergeTree = index.writeTree();
 
         expect(mergeCommitsTree == mergeTree, true);
-
-        index.free();
-        mergeIndex.free();
-        ourCommit.free();
-        theirCommitAnnotated.free();
-        theirCommit.free();
       });
 
       test('merges with provided favor', () {
@@ -367,10 +338,6 @@ theirs content
           favor: GitMergeFileFavor.ours,
         );
         expect(mergeIndex.conflicts, isEmpty);
-
-        mergeIndex.free();
-        ourCommit.free();
-        theirCommit.free();
       });
 
       test('merges with provided merge and file flags', () {
@@ -392,10 +359,6 @@ theirs content
           },
         );
         expect(mergeIndex.conflicts, isEmpty);
-
-        mergeIndex.free();
-        ourCommit.free();
-        theirCommit.free();
       });
 
       test('throws when error occurs', () {
@@ -489,15 +452,12 @@ theirs content
             commits: [ourCommit.oid, theirCommit.oid],
           ),
         );
-        final theirTree = theirCommit.tree;
-        final ourTree = ourCommit.tree;
-        final ancestorTree = baseCommit.tree;
 
         final mergeIndex = Merge.trees(
           repo: repo,
-          ancestorTree: ancestorTree,
-          ourTree: ourTree,
-          theirTree: theirTree,
+          ancestorTree: baseCommit.tree,
+          ourTree: ourCommit.tree,
+          theirTree: theirCommit.tree,
         );
         expect(mergeIndex.conflicts, isEmpty);
         final mergeTreesTree = mergeIndex.writeTree(repo);
@@ -509,16 +469,6 @@ theirs content
         final mergeTree = index.writeTree();
 
         expect(mergeTreesTree == mergeTree, true);
-
-        index.free();
-        mergeIndex.free();
-        ancestorTree.free();
-        ourTree.free();
-        theirTree.free();
-        baseCommit.free();
-        ourCommit.free();
-        theirCommitAnnotated.free();
-        theirCommit.free();
       });
 
       test('merges with provided favor', () {
@@ -531,26 +481,15 @@ theirs content
             commits: [ourCommit.oid, theirCommit.oid],
           ),
         );
-        final theirTree = theirCommit.tree;
-        final ourTree = ourCommit.tree;
-        final ancestorTree = baseCommit.tree;
 
         final mergeIndex = Merge.trees(
           repo: repo,
-          ancestorTree: ancestorTree,
-          ourTree: ourTree,
-          theirTree: theirTree,
+          ancestorTree: baseCommit.tree,
+          ourTree: ourCommit.tree,
+          theirTree: theirCommit.tree,
           favor: GitMergeFileFavor.ours,
         );
         expect(mergeIndex.conflicts, isEmpty);
-
-        mergeIndex.free();
-        ancestorTree.free();
-        ourTree.free();
-        theirTree.free();
-        baseCommit.free();
-        ourCommit.free();
-        theirCommit.free();
       });
 
       test('throws when error occurs', () {
@@ -580,8 +519,6 @@ theirs content
         () => repo.message,
         throwsA(isA<LibGit2Error>()),
       );
-
-      index.free();
     });
 
     test('throws when error occurs', () {

@@ -113,8 +113,9 @@ Pointer<git_repository> clone({
   required String url,
   required String localPath,
   required bool bare,
-  Remote Function(Repository, String, String)? remote,
-  Repository Function(String, bool)? repository,
+  RemoteCallback? remoteCallback,
+  // Repository Function(String, bool)? repository,
+  RepositoryCallback? repositoryCallback,
   String? checkoutBranch,
   required Callbacks callbacks,
 }) {
@@ -138,14 +139,14 @@ Pointer<git_repository> clone({
   const except = -1;
 
   git_remote_create_cb remoteCb = nullptr;
-  if (remote != null) {
-    RemoteCallbacks.remoteFunction = remote;
+  if (remoteCallback != null) {
+    RemoteCallbacks.remoteCbData = remoteCallback;
     remoteCb = Pointer.fromFunction(RemoteCallbacks.remoteCb, except);
   }
 
   git_repository_create_cb repositoryCb = nullptr;
-  if (repository != null) {
-    RemoteCallbacks.repositoryFunction = repository;
+  if (repositoryCallback != null) {
+    RemoteCallbacks.repositoryCbData = repositoryCallback;
     repositoryCb = Pointer.fromFunction(RemoteCallbacks.repositoryCb, except);
   }
 

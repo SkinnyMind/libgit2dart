@@ -111,13 +111,11 @@ class Repository {
   ///
   /// [bare] whether cloned repo should be bare.
   ///
-  /// [remote] is the callback function with
-  /// `Remote Function(Repository repo, String name, String url)` signature.
-  /// The [Remote] it returns will be used instead of default one.
+  /// [remoteCallback] is the [RemoteCallback] object values that will be used
+  /// in creation and customization process of remote instead of default ones.
   ///
-  /// [repository] is the callback function matching the
-  /// `Repository Function(String path, bool bare)` signature. The [Repository]
-  /// it returns will be used instead of creating a new one.
+  /// [repositoryCallback] is the [RepositoryCallback] object values that will
+  /// be used in creation and customization process of repository.
   ///
   /// [checkoutBranch] is the name of the branch to checkout after the clone.
   /// Defaults to using the remote's default branch.
@@ -132,8 +130,8 @@ class Repository {
     required String url,
     required String localPath,
     bool bare = false,
-    Remote Function(Repository, String, String)? remote,
-    Repository Function(String, bool)? repository,
+    RemoteCallback? remoteCallback,
+    RepositoryCallback? repositoryCallback,
     String? checkoutBranch,
     Callbacks callbacks = const Callbacks(),
   }) {
@@ -143,8 +141,8 @@ class Repository {
       url: url,
       localPath: localPath,
       bare: bare,
-      remote: remote,
-      repository: repository,
+      remoteCallback: remoteCallback,
+      repositoryCallback: repositoryCallback,
       checkoutBranch: checkoutBranch,
       callbacks: callbacks,
     );
@@ -375,8 +373,6 @@ class Repository {
   /// If a configuration file has not been set, the default config set for the
   /// repository will be returned, including global and system configurations
   /// (if they are available).
-  ///
-  /// **IMPORTANT**: Should be freed to release allocated memory.
   Config get config => Config(bindings.config(_repoPointer));
 
   /// Snapshot of the repository's configuration.
@@ -386,23 +382,15 @@ class Repository {
   ///
   /// The contents of this snapshot will not change, even if the underlying
   /// config files are modified.
-  ///
-  /// **IMPORTANT**: Should be freed to release allocated memory.
   Config get configSnapshot => Config(bindings.configSnapshot(_repoPointer));
 
   /// Repository's head.
-  ///
-  /// **IMPORTANT**: Should be freed to release allocated memory.
   Reference get head => Reference(bindings.head(_repoPointer));
 
   /// Index file for this repository.
-  ///
-  /// **IMPORTANT**: Should be freed to release allocated memory.
   Index get index => Index(bindings.index(_repoPointer));
 
   /// ODB for this repository.
-  ///
-  /// **IMPORTANT**: Should be freed to release allocated memory.
   ///
   /// Throws a [LibGit2Error] if error occured.
   Odb get odb => Odb(bindings.odb(_repoPointer));
@@ -419,22 +407,16 @@ class Repository {
 
   /// List of all branches that can be found in a repository.
   ///
-  /// **IMPORTANT**: Branches should be freed to release allocated memory.
-  ///
   /// Throws a [LibGit2Error] if error occured.
   List<Branch> get branches => Branch.list(repo: this);
 
   /// List of local branches that can be found in a repository.
-  ///
-  /// **IMPORTANT**: Branches should be freed to release allocated memory.
   ///
   /// Throws a [LibGit2Error] if error occured.
   List<Branch> get branchesLocal =>
       Branch.list(repo: this, type: GitBranch.local);
 
   /// List of remote branches that can be found in a repository.
-  ///
-  /// **IMPORTANT**: Branches should be freed to release allocated memory.
   ///
   /// Throws a [LibGit2Error] if error occured.
   List<Branch> get branchesRemote =>
@@ -465,8 +447,6 @@ class Repository {
   ///
   /// If [sorting] isn't provided default will be used (reverse chronological
   /// order, like in git).
-  ///
-  /// **IMPORTANT**: Commits should be freed to release allocated memory.
   List<Commit> log({
     required Oid oid,
     Set<GitSort> sorting = const {GitSort.none},
@@ -476,8 +456,6 @@ class Repository {
     walker.sorting(sorting);
     walker.push(oid);
     final result = walker.walk();
-
-    walker.free();
 
     return result;
   }
@@ -737,6 +715,7 @@ class Repository {
       }
     }
 
+    // ignore: no_leading_underscores_for_local_identifiers
     final _packDelegate = packDelegate ?? packAll;
 
     final packbuilder = PackBuilder(this);
@@ -745,10 +724,79 @@ class Repository {
     }
     _packDelegate(packbuilder);
     packbuilder.write(path);
-    final result = packbuilder.writtenLength;
 
-    packbuilder.free();
-
-    return result;
+    return packbuilder.writtenLength;
   }
+}
+
+class RepositoryCallback {
+  /// Values used to override the repository creation and customization process
+  /// during a clone operation.
+  ///
+  /// [path] is the path to the repository.
+  ///
+  /// [bare] whether new repository should be bare.
+  ///
+  /// [flags] is a combination of [GitRepositoryInit] flags. Defaults to
+  /// [GitRepositoryInit.mkdir].
+  ///
+  /// [mode] is the permissions for the folder. Default to 0 (permissions
+  /// configured by umask).
+  ///
+  /// [workdirPath] is the path to the working directory. Can be null for
+  /// default path.
+  ///
+  /// [description] if set will be used to initialize the "description" file in
+  /// the repository, instead of using the template content.
+  ///
+  /// [templatePath] is the the path to use for the template directory if
+  /// [GitRepositoryInit.externalTemplate] is set. Defaults to the config or
+  /// default directory options.
+  ///
+  /// [initialHead] is the name of the head to point HEAD at. If null, then
+  /// this will be treated as "master" and the HEAD ref will be set to
+  /// "refs/heads/master". If this begins with "refs/" it will be used
+  /// verbatim, otherwise "refs/heads/" will be prefixed.
+  ///
+  /// [originUrl] if set, then after the rest of the repository initialization
+  /// is completed, an "origin" remote will be added pointing to this URL.
+  const RepositoryCallback({
+    required this.path,
+    this.bare = false,
+    this.flags = const {GitRepositoryInit.mkpath},
+    this.mode = 0,
+    this.workdirPath,
+    this.description,
+    this.templatePath,
+    this.initialHead,
+    this.originUrl,
+  });
+
+  /// Path to the repository.
+  final String path;
+
+  /// Whether repository is bare.
+  final bool bare;
+
+  /// Combination of [GitRepositoryInit] flags.
+  final Set<GitRepositoryInit> flags;
+
+  /// Permissions for the repository folder.
+  final int mode;
+
+  /// Path to the working directory.
+  final String? workdirPath;
+
+  /// Description used to initialize the "description" file in the repository.
+  final String? description;
+
+  /// Path used for the template directory.
+  final String? templatePath;
+
+  /// Name of the head HEAD points at.
+  final String? initialHead;
+
+  /// "origin" remote URL that will be added after the rest of the repository
+  /// initialization is completed.
+  final String? originUrl;
 }

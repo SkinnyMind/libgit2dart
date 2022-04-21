@@ -43,7 +43,6 @@ void main() {
     test('throws when trying to describe and no reference found', () {
       final commit = Commit.lookup(repo: repo, oid: repo['f17d0d4']);
       expect(() => repo.describe(commit: commit), throwsA(isA<LibGit2Error>()));
-      commit.free();
     });
 
     test('returns oid when fallback argument is provided', () {
@@ -52,7 +51,6 @@ void main() {
         repo.describe(commit: commit, showCommitOidAsFallback: true),
         'f17d0d4',
       );
-      commit.free();
     });
 
     test('describes with provided strategy', () {
@@ -64,7 +62,6 @@ void main() {
         ),
         'heads/feature',
       );
-      commit.free();
     });
 
     test('describes with provided pattern', () {
@@ -87,9 +84,6 @@ void main() {
         repo.describe(commit: commit, pattern: 'test/*'),
         'test/tag1-2-gfc38877',
       );
-
-      commit.free();
-      signature.free();
     });
 
     test('describes and follows first parent only', () {
@@ -104,8 +98,6 @@ void main() {
         ),
         'v0.1-1-g821ed6e',
       );
-
-      commit.free();
     });
 
     test('describes with provided abbreviated size', () {
@@ -129,8 +121,6 @@ void main() {
         ),
         'v0.1',
       );
-
-      commit.free();
     });
 
     test('describes with long format', () {
@@ -138,21 +128,13 @@ void main() {
     });
 
     test('describes and appends dirty suffix', () {
-      final index = repo.index;
-      index.clear();
-
+      repo.index.clear();
       expect(repo.describe(dirtySuffix: '-dirty'), 'v0.2-dirty');
-
-      index.free();
     });
 
     test('describes with max candidates tags flag set', () {
-      final index = repo.index;
-      index.clear();
-
+      repo.index.clear();
       expect(repo.describe(maxCandidatesTags: 0), 'v0.2');
-
-      index.free();
     });
   });
 }

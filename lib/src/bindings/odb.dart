@@ -78,8 +78,7 @@ int _forEachCb(
   Pointer<git_oid> oid,
   Pointer<Void> payload,
 ) {
-  final _oid = oid_bindings.copy(oid);
-  _objects.add(Oid(_oid));
+  _objects.add(Oid(oid_bindings.copy(oid)));
   return 0;
 }
 

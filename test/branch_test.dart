@@ -34,8 +34,6 @@ void main() {
       for (var i = 0; i < branches.length; i++) {
         expect(branches[i].name, branchesExpected[i]);
         expect(aliasBranches[i].name, branchesExpected[i]);
-        branches[i].free();
-        aliasBranches[i].free();
       }
     });
 
@@ -47,8 +45,6 @@ void main() {
       for (var i = 0; i < branches.length; i++) {
         expect(branches[i].name, branchesExpected[i]);
         expect(aliasBranches[i].name, branchesExpected[i]);
-        branches[i].free();
-        aliasBranches[i].free();
       }
     });
 
@@ -60,8 +56,6 @@ void main() {
       for (var i = 0; i < branches.length; i++) {
         expect(branches[i].name, branchesExpected[i]);
         expect(aliasBranches[i].name, branchesExpected[i]);
-        branches[i].free();
-        aliasBranches[i].free();
       }
     });
 
@@ -75,7 +69,6 @@ void main() {
     test('returns a branch with provided name', () {
       final branch = Branch.lookup(repo: repo, name: 'master');
       expect(branch.target.sha, lastCommit.sha);
-      branch.free();
     });
 
     test('throws when provided name not found', () {
@@ -100,15 +93,11 @@ void main() {
 
       expect(masterBranch.isHead, true);
       expect(featureBranch.isHead, false);
-
-      masterBranch.free();
-      featureBranch.free();
     });
 
     test('throws when checking if branch is current head and error occurs', () {
-      final nullBranch = Branch(nullptr);
       expect(
-        () => nullBranch.isHead,
+        () => Branch(nullptr).isHead,
         throwsA(isA<LibGit2Error>()),
       );
     });
@@ -119,15 +108,11 @@ void main() {
 
       expect(masterBranch.isCheckedOut, true);
       expect(featureBranch.isCheckedOut, false);
-
-      masterBranch.free();
-      featureBranch.free();
     });
 
     test('throws when checking if branch is checked out and error occurs', () {
-      final nullBranch = Branch(nullptr);
       expect(
-        () => nullBranch.isCheckedOut,
+        () => Branch(nullptr).isCheckedOut,
         throwsA(isA<LibGit2Error>()),
       );
     });
@@ -135,18 +120,15 @@ void main() {
     test('returns name', () {
       final branch = Branch.lookup(repo: repo, name: 'master');
       expect(branch.name, 'master');
-      branch.free();
     });
 
     test('throws when getting name and error occurs', () {
-      final nullBranch = Branch(nullptr);
-      expect(() => nullBranch.name, throwsA(isA<LibGit2Error>()));
+      expect(() => Branch(nullptr).name, throwsA(isA<LibGit2Error>()));
     });
 
     test('returns remote name of a remote-tracking branch', () {
       final branch = Branch.list(repo: repo, type: GitBranch.remote).first;
       expect(branch.remoteName, 'origin');
-      branch.free();
     });
 
     test(
@@ -162,21 +144,16 @@ void main() {
 
       expect(upstream.isRemote, true);
       expect(upstream.name, 'refs/remotes/origin/master');
-
-      upstream.free();
-      branch.free();
     });
 
     test('throws when trying to get upstream of a remote branch', () {
       final branch = Branch.list(repo: repo, type: GitBranch.remote).first;
       expect(() => branch.upstream, throwsA(isA<LibGit2Error>()));
-      branch.free();
     });
 
     test('sets upstream of a branch', () {
       final branch = Branch.lookup(repo: repo, name: 'master');
-      var upstream = branch.upstream;
-      expect(upstream.name, 'refs/remotes/origin/master');
+      expect(branch.upstream.name, 'refs/remotes/origin/master');
 
       final ref = Reference.create(
         repo: repo,
@@ -185,24 +162,15 @@ void main() {
       );
       branch.setUpstream(ref.shorthand);
 
-      upstream = branch.upstream;
-      expect(upstream.name, 'refs/remotes/origin/new');
-
-      ref.free();
-      upstream.free();
-      branch.free();
+      expect(branch.upstream.name, 'refs/remotes/origin/new');
     });
 
     test('unsets upstream of a branch', () {
       final branch = Branch.lookup(repo: repo, name: 'master');
-      final upstream = branch.upstream;
-      expect(upstream.name, 'refs/remotes/origin/master');
+      expect(branch.upstream.name, 'refs/remotes/origin/master');
 
       branch.setUpstream(null);
       expect(() => branch.upstream, throwsA(isA<LibGit2Error>()));
-
-      upstream.free();
-      branch.free();
     });
 
     test('throws when trying to set upstream of a branch and error occurs', () {
@@ -211,64 +179,50 @@ void main() {
         () => branch.setUpstream('some/upstream'),
         throwsA(isA<LibGit2Error>()),
       );
-      branch.free();
     });
 
     test('returns upstream name of a local branch', () {
       final branch = Branch.lookup(repo: repo, name: 'master');
       expect(branch.upstreamName, 'refs/remotes/origin/master');
-      branch.free();
     });
 
     test('throws when trying to get upstream name of a branch and error occurs',
         () {
       final branch = Branch.lookup(repo: repo, name: 'feature');
       expect(() => branch.upstreamName, throwsA(isA<LibGit2Error>()));
-      branch.free();
     });
 
     test('returns upstream remote of a local branch', () {
       final branch = Branch.lookup(repo: repo, name: 'master');
       expect(branch.upstreamRemote, 'origin');
-      branch.free();
     });
 
     test('throws when trying to get upstream remote of a remote branch', () {
       final branch = Branch.list(repo: repo, type: GitBranch.remote).first;
       expect(() => branch.upstreamRemote, throwsA(isA<LibGit2Error>()));
-      branch.free();
     });
 
     test('returns upstream merge of a local branch', () {
       final branch = Branch.lookup(repo: repo, name: 'master');
       expect(branch.upstreamMerge, 'refs/heads/master');
-      branch.free();
     });
 
     test('throws when trying to get upstream merge of a remote branch', () {
       final branch = Branch.list(repo: repo, type: GitBranch.remote).first;
       expect(() => branch.upstreamMerge, throwsA(isA<LibGit2Error>()));
-      branch.free();
     });
 
     group('create()', () {
       test('creates branch', () {
-        final commit = Commit.lookup(repo: repo, oid: lastCommit);
         final branch = Branch.create(
           repo: repo,
           name: 'testing',
-          target: commit,
+          target: Commit.lookup(repo: repo, oid: lastCommit),
         );
         final branches = Branch.list(repo: repo);
 
         expect(branches.length, 4);
         expect(branch.target, lastCommit);
-
-        for (final branch in branches) {
-          branch.free();
-        }
-        branch.free();
-        commit.free();
       });
 
       test('throws when name already exists', () {
@@ -278,28 +232,19 @@ void main() {
           () => Branch.create(repo: repo, name: 'feature', target: commit),
           throwsA(isA<LibGit2Error>()),
         );
-
-        commit.free();
       });
 
       test('creates branch with force flag when name already exists', () {
-        final commit = Commit.lookup(repo: repo, oid: lastCommit);
         final branch = Branch.create(
           repo: repo,
           name: 'feature',
-          target: commit,
+          target: Commit.lookup(repo: repo, oid: lastCommit),
           force: true,
         );
         final localBranches = Branch.list(repo: repo, type: GitBranch.local);
 
         expect(localBranches.length, 2);
         expect(branch.target, lastCommit);
-
-        for (final branch in localBranches) {
-          branch.free();
-        }
-        branch.free();
-        commit.free();
       });
     });
 
@@ -333,11 +278,6 @@ void main() {
           throwsA(isA<LibGit2Error>()),
         );
         expect(branch.target, featureCommit);
-
-        for (final branch in branches) {
-          branch.free();
-        }
-        branch.free();
       });
 
       test('throws when name already exists', () {
@@ -361,8 +301,6 @@ void main() {
         final branch = Branch.lookup(repo: repo, name: 'feature');
 
         expect(branch.target, lastCommit);
-
-        branch.free();
       });
 
       test('throws when name is invalid', () {
@@ -377,10 +315,14 @@ void main() {
       });
     });
 
+    test('manually releases allocated memory', () {
+      final branch = Branch.lookup(repo: repo, name: 'master');
+      expect(() => branch.free(), returnsNormally);
+    });
+
     test('returns string representation of Branch object', () {
       final branch = Branch.lookup(repo: repo, name: 'master');
       expect(branch.toString(), contains('Branch{'));
-      branch.free();
     });
   });
 }
