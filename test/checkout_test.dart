@@ -72,8 +72,7 @@ void main() {
     });
 
     test('checkouts reference', () {
-      final masterHead = Commit.lookup(repo: repo, oid: repo['821ed6e']);
-      final masterTree = masterHead.tree;
+      final masterTree = Commit.lookup(repo: repo, oid: repo['821ed6e']).tree;
       expect(
         masterTree.entries.any((e) => e.name == 'another_feature_file'),
         false,
@@ -82,9 +81,8 @@ void main() {
       Checkout.reference(repo: repo, name: 'refs/heads/feature');
       final featureHead = Commit.lookup(repo: repo, oid: repo['5aecfa0']);
       final featureTree = featureHead.tree;
-      final repoHead = repo.head;
       // does not change HEAD
-      expect(repoHead.target, isNot(featureHead.oid));
+      expect(repo.head.target, isNot(featureHead.oid));
       expect(
         featureTree.entries.any((e) => e.name == 'another_feature_file'),
         true,
@@ -105,16 +103,14 @@ void main() {
     });
 
     test('checkouts commit', () {
-      final index = repo.index;
-      expect(index.find('another_feature_file'), equals(false));
+      expect(repo.index.find('another_feature_file'), equals(false));
 
       final featureHead = Commit.lookup(repo: repo, oid: repo['5aecfa0']);
       Checkout.commit(repo: repo, commit: featureHead);
 
-      final repoHead = repo.head;
       // does not change HEAD
-      expect(repoHead.target, isNot(featureHead.oid));
-      expect(index.find('another_feature_file'), equals(true));
+      expect(repo.head.target, isNot(featureHead.oid));
+      expect(repo.index.find('another_feature_file'), equals(true));
     });
 
     test('checkouts commit with provided path', () {
@@ -125,9 +121,8 @@ void main() {
         paths: ['another_feature_file'],
       );
 
-      final repoHead = repo.head;
       // does not change HEAD
-      expect(repoHead.target, isNot(featureHead.oid));
+      expect(repo.head.target, isNot(featureHead.oid));
       expect(
         repo.status,
         {
@@ -191,8 +186,7 @@ void main() {
     });
 
     test('performs dry run checkout', () {
-      final index = repo.index;
-      expect(index.length, 4);
+      expect(repo.index.length, 4);
       final file = File(p.join(repo.workdir, 'another_feature_file'));
       expect(file.existsSync(), false);
 
@@ -201,7 +195,7 @@ void main() {
         name: 'refs/heads/feature',
         strategy: {GitCheckout.dryRun},
       );
-      expect(index.length, 4);
+      expect(repo.index.length, 4);
       expect(file.existsSync(), false);
     });
   });

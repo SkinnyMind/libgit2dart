@@ -75,12 +75,7 @@ void main() {
     test('throws when trying to create with fetchspec with invalid remote name',
         () {
       expect(
-        () => Remote.create(
-          repo: repo,
-          name: '',
-          url: '',
-          fetch: '',
-        ),
+        () => Remote.create(repo: repo, name: '', url: '', fetch: ''),
         throwsA(isA<LibGit2Error>()),
       );
     });
@@ -110,13 +105,13 @@ void main() {
       final problems = Remote.rename(
         repo: repo,
         oldName: remoteName,
-        newName: 'new',
+        newName: 'renamed',
       );
       expect(problems, isEmpty);
-      expect(remote.name, isNot('new'));
+      expect(remote.name, isNot('renamed'));
 
-      final newRemote = Remote.lookup(repo: repo, name: 'new');
-      expect(newRemote.name, 'new');
+      final renamedRemote = Remote.lookup(repo: repo, name: 'renamed');
+      expect(renamedRemote.name, 'renamed');
     });
 
     test('returns list of non-default refspecs that cannot be renamed', () {
@@ -141,14 +136,12 @@ void main() {
     });
 
     test('sets url', () {
-      final remote = Remote.lookup(repo: repo, name: remoteName);
-      expect(remote.url, remoteUrl);
+      expect(Remote.lookup(repo: repo, name: remoteName).url, remoteUrl);
 
       const newUrl = 'git://new/url.git';
       Remote.setUrl(repo: repo, remote: remoteName, url: newUrl);
 
-      final newRemote = Remote.lookup(repo: repo, name: remoteName);
-      expect(newRemote.url, newUrl);
+      expect(Remote.lookup(repo: repo, name: remoteName).url, newUrl);
     });
 
     test('throws when trying to set invalid url name', () {
@@ -162,8 +155,7 @@ void main() {
       const newUrl = 'git://new/url.git';
       Remote.setPushUrl(repo: repo, remote: remoteName, url: newUrl);
 
-      final remote = Remote.lookup(repo: repo, name: remoteName);
-      expect(remote.pushUrl, newUrl);
+      expect(Remote.lookup(repo: repo, name: remoteName).pushUrl, newUrl);
     });
 
     test('throws when trying to set invalid push url name', () {
@@ -201,8 +193,7 @@ void main() {
 
     test('throws when trying to transform refspec with invalid reference name',
         () {
-      final remote = Remote.lookup(repo: repo, name: 'origin');
-      final refspec = remote.getRefspec(0);
+      final refspec = Remote.lookup(repo: repo, name: 'origin').getRefspec(0);
 
       expect(
         () => refspec.transform('invalid/name'),
@@ -404,9 +395,8 @@ void main() {
 
         TransferProgress? callbackStats;
         void tp(TransferProgress stats) => callbackStats = stats;
-        final callbacks = Callbacks(transferProgress: tp);
 
-        final stats = remote.fetch(callbacks: callbacks);
+        final stats = remote.fetch(callbacks: Callbacks(transferProgress: tp));
 
         expect(stats.totalObjects == callbackStats?.totalObjects, true);
         expect(stats.indexedObjects == callbackStats?.indexedObjects, true);
@@ -435,13 +425,9 @@ Total 69 (delta 0), reused 1 (delta 0), pack-reused 68
         final remote = Remote.lookup(repo: repo, name: 'libgit2');
 
         final sidebandOutput = StringBuffer();
-        void sideband(String message) {
-          sidebandOutput.write(message);
-        }
+        void sideband(String message) => sidebandOutput.write(message);
 
-        final callbacks = Callbacks(sidebandProgress: sideband);
-
-        remote.fetch(callbacks: callbacks);
+        remote.fetch(callbacks: Callbacks(sidebandProgress: sideband));
         expect(sidebandOutput.toString(), sidebandMessage);
       },
       tags: 'remote_fetch',
@@ -483,9 +469,7 @@ Total 69 (delta 0), reused 1 (delta 0), pack-reused 68
           });
         }
 
-        final callbacks = Callbacks(updateTips: updateTips);
-
-        remote.fetch(callbacks: callbacks);
+        remote.fetch(callbacks: Callbacks(updateTips: updateTips));
         expect(updateTipsOutput, tipsExpected);
       },
       tags: 'remote_fetch',
@@ -513,9 +497,10 @@ Total 69 (delta 0), reused 1 (delta 0), pack-reused 68
         updateRefOutput[refname] = message;
       }
 
-      final callbacks = Callbacks(pushUpdateReference: updateRef);
-
-      remote.push(refspecs: ['refs/heads/master'], callbacks: callbacks);
+      remote.push(
+        refspecs: ['refs/heads/master'],
+        callbacks: Callbacks(pushUpdateReference: updateRef),
+      );
       expect(
         Commit.lookup(repo: originRepo, oid: originRepo.head.target).oid.sha,
         '821ed6e80627b8769d170a293862f9fc60825226',

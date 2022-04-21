@@ -32,11 +32,10 @@ void main() {
 
     test('initializes tree builder with provided tree', () {
       final builder = TreeBuilder(repo: repo, tree: tree);
-      final oid = builder.write();
 
       expect(builder, isA<TreeBuilder>());
       expect(builder.length, tree.length);
-      expect(oid, tree.oid);
+      expect(builder.write(), tree.oid);
     });
 
     test('throws when trying to initialize and error occurs', () {

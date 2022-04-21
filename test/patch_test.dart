@@ -90,11 +90,9 @@ index e69de29..0000000
     });
 
     test('creates from blobs', () {
-      final oldBlob = Blob.lookup(repo: repo, oid: oldBlobOid);
-      final newBlob = Blob.lookup(repo: repo, oid: newBlobOid);
       final patch = Patch.fromBlobs(
-        oldBlob: oldBlob,
-        newBlob: newBlob,
+        oldBlob: Blob.lookup(repo: repo, oid: oldBlobOid),
+        newBlob: Blob.lookup(repo: repo, oid: newBlobOid),
         oldBlobPath: path,
         newBlobPath: path,
       );
@@ -103,10 +101,9 @@ index e69de29..0000000
     });
 
     test('creates from one blob (add)', () {
-      final newBlob = Blob.lookup(repo: repo, oid: newBlobOid);
       final patch = Patch.fromBlobs(
         oldBlob: null,
-        newBlob: newBlob,
+        newBlob: Blob.lookup(repo: repo, oid: newBlobOid),
         oldBlobPath: path,
         newBlobPath: path,
       );
@@ -115,9 +112,8 @@ index e69de29..0000000
     });
 
     test('creates from one blob (delete)', () {
-      final oldBlob = Blob.lookup(repo: repo, oid: oldBlobOid);
       final patch = Patch.fromBlobs(
-        oldBlob: oldBlob,
+        oldBlob: Blob.lookup(repo: repo, oid: oldBlobOid),
         newBlob: null,
         oldBlobPath: path,
         newBlobPath: path,
@@ -127,9 +123,8 @@ index e69de29..0000000
     });
 
     test('creates from blob and buffer', () {
-      final blob = Blob.lookup(repo: repo, oid: oldBlobOid);
       final patch = Patch.fromBlobAndBuffer(
-        blob: blob,
+        blob: Blob.lookup(repo: repo, oid: oldBlobOid),
         buffer: newBuffer,
         blobPath: path,
         bufferPath: path,

@@ -159,10 +159,9 @@ void main() {
 
     group('addFromBuffer()', () {
       test('updates index entry from a buffer', () {
-        final entry = index['file'];
         expect(repo.status, isEmpty);
 
-        index.addFromBuffer(entry: entry, buffer: 'updated');
+        index.addFromBuffer(entry: index['file'], buffer: 'updated');
         expect(repo.status, {
           'file': {GitStatus.indexModified, GitStatus.wtModified}
         });
@@ -282,9 +281,8 @@ void main() {
     });
 
     test('reads tree with provided SHA hex', () {
-      final tree = Tree.lookup(repo: repo, oid: repo['df2b8fc']);
       expect(index.length, 4);
-      index.readTree(tree);
+      index.readTree(Tree.lookup(repo: repo, oid: repo['df2b8fc']));
 
       expect(index.length, 1);
 
@@ -294,8 +292,7 @@ void main() {
     });
 
     test('writes tree', () {
-      final oid = index.writeTree();
-      expect(oid.sha, 'a8ae3dd59e6e1802c6f78e05e301bfd57c9f334f');
+      expect(index.writeTree().sha, 'a8ae3dd59e6e1802c6f78e05e301bfd57c9f334f');
     });
 
     test('throws when trying to write tree to invalid repository', () {
@@ -309,13 +306,13 @@ void main() {
       final tmpDir = setupRepo(Directory(mergeRepoPath));
       final repo = Repository.open(tmpDir.path);
 
-      final conflictBranch = Branch.lookup(repo: repo, name: 'conflict-branch');
-      final commit = AnnotatedCommit.lookup(
+      Merge.commit(
         repo: repo,
-        oid: conflictBranch.target,
+        commit: AnnotatedCommit.lookup(
+          repo: repo,
+          oid: Branch.lookup(repo: repo, name: 'conflict-branch').target,
+        ),
       );
-
-      Merge.commit(repo: repo, commit: commit);
 
       expect(() => repo.index.writeTree(), throwsA(isA<LibGit2Error>()));
 
@@ -341,19 +338,17 @@ void main() {
       final repoDir = setupRepo(Directory(mergeRepoPath));
       final conflictRepo = Repository.open(repoDir.path);
 
-      final conflictBranch = Branch.lookup(
-        repo: conflictRepo,
-        name: 'ancestor-conflict',
-      );
-      final commit = AnnotatedCommit.lookup(
-        repo: conflictRepo,
-        oid: conflictBranch.target,
-      );
-
       Checkout.reference(repo: conflictRepo, name: 'refs/heads/feature');
       conflictRepo.setHead('refs/heads/feature');
 
-      Merge.commit(repo: conflictRepo, commit: commit);
+      Merge.commit(
+        repo: conflictRepo,
+        commit: AnnotatedCommit.lookup(
+          repo: conflictRepo,
+          oid: Branch.lookup(repo: conflictRepo, name: 'ancestor-conflict')
+              .target,
+        ),
+      );
 
       final conflictedFile = conflictRepo.index.conflicts['feature_file']!;
       expect(conflictedFile.ancestor?.path, 'feature_file');
@@ -369,16 +364,16 @@ void main() {
       final repoDir = setupRepo(Directory(mergeRepoPath));
       final conflictRepo = Repository.open(repoDir.path);
 
-      final conflictBranch = Branch.lookup(
+      Merge.commit(
         repo: conflictRepo,
-        name: 'conflict-branch',
+        commit: AnnotatedCommit.lookup(
+          repo: conflictRepo,
+          oid: Branch.lookup(
+            repo: conflictRepo,
+            name: 'conflict-branch',
+          ).target,
+        ),
       );
-      final commit = AnnotatedCommit.lookup(
-        repo: conflictRepo,
-        oid: conflictBranch.target,
-      );
-
-      Merge.commit(repo: conflictRepo, commit: commit);
 
       final conflictedFile = conflictRepo.index.conflicts['conflict_file']!;
       expect(conflictedFile.ancestor?.path, null);
@@ -394,19 +389,17 @@ void main() {
       final repoDir = setupRepo(Directory(mergeRepoPath));
       final conflictRepo = Repository.open(repoDir.path);
 
-      final conflictBranch = Branch.lookup(
-        repo: conflictRepo,
-        name: 'ancestor-conflict',
-      );
-      final commit = AnnotatedCommit.lookup(
-        repo: conflictRepo,
-        oid: conflictBranch.target,
-      );
-
       Checkout.reference(repo: conflictRepo, name: 'refs/heads/our-conflict');
       conflictRepo.setHead('refs/heads/our-conflict');
 
-      Merge.commit(repo: conflictRepo, commit: commit);
+      Merge.commit(
+        repo: conflictRepo,
+        commit: AnnotatedCommit.lookup(
+          repo: conflictRepo,
+          oid: Branch.lookup(repo: conflictRepo, name: 'ancestor-conflict')
+              .target,
+        ),
+      );
 
       final conflictedFile = conflictRepo.index.conflicts['feature_file']!;
       expect(conflictedFile.ancestor?.path, 'feature_file');
@@ -422,19 +415,16 @@ void main() {
       final repoDir = setupRepo(Directory(mergeRepoPath));
       final conflictRepo = Repository.open(repoDir.path);
 
-      final conflictBranch = Branch.lookup(
-        repo: conflictRepo,
-        name: 'their-conflict',
-      );
-      final commit = AnnotatedCommit.lookup(
-        repo: conflictRepo,
-        oid: conflictBranch.target,
-      );
-
       Checkout.reference(repo: conflictRepo, name: 'refs/heads/feature');
       conflictRepo.setHead('refs/heads/feature');
 
-      Merge.commit(repo: conflictRepo, commit: commit);
+      Merge.commit(
+        repo: conflictRepo,
+        commit: AnnotatedCommit.lookup(
+          repo: conflictRepo,
+          oid: Branch.lookup(repo: conflictRepo, name: 'their-conflict').target,
+        ),
+      );
 
       final conflictedFile = conflictRepo.index.conflicts['feature_file']!;
       expect(conflictedFile.ancestor?.path, 'feature_file');
@@ -450,17 +440,18 @@ void main() {
       final repoDir = setupRepo(Directory(mergeRepoPath));
       final conflictRepo = Repository.open(repoDir.path);
 
-      final conflictBranch = Branch.lookup(
-        repo: conflictRepo,
-        name: 'conflict-branch',
-      );
-      final commit = AnnotatedCommit.lookup(
-        repo: conflictRepo,
-        oid: conflictBranch.target,
-      );
       final index = conflictRepo.index;
 
-      Merge.commit(repo: conflictRepo, commit: commit);
+      Merge.commit(
+        repo: conflictRepo,
+        commit: AnnotatedCommit.lookup(
+          repo: conflictRepo,
+          oid: Branch.lookup(
+            repo: conflictRepo,
+            name: 'conflict-branch',
+          ).target,
+        ),
+      );
 
       expect(index.hasConflicts, true);
       expect(index['.gitignore'].isConflict, false);
@@ -490,17 +481,18 @@ void main() {
       final repoDir = setupRepo(Directory(mergeRepoPath));
       final conflictRepo = Repository.open(repoDir.path);
 
-      final conflictBranch = Branch.lookup(
-        repo: conflictRepo,
-        name: 'conflict-branch',
-      );
-      final commit = AnnotatedCommit.lookup(
-        repo: conflictRepo,
-        oid: conflictBranch.target,
-      );
       final index = conflictRepo.index;
 
-      Merge.commit(repo: conflictRepo, commit: commit);
+      Merge.commit(
+        repo: conflictRepo,
+        commit: AnnotatedCommit.lookup(
+          repo: conflictRepo,
+          oid: Branch.lookup(
+            repo: conflictRepo,
+            name: 'conflict-branch',
+          ).target,
+        ),
+      );
 
       expect(index.hasConflicts, true);
       expect(index.conflicts.length, 1);

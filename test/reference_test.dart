@@ -47,9 +47,10 @@ void main() {
 
     test('returns correct type of reference', () {
       expect(repo.head.type, ReferenceType.direct);
-
-      final ref = Reference.lookup(repo: repo, name: 'HEAD');
-      expect(ref.type, ReferenceType.symbolic);
+      expect(
+        Reference.lookup(repo: repo, name: 'HEAD').type,
+        ReferenceType.symbolic,
+      );
     });
 
     test('returns SHA hex of direct reference', () {
@@ -57,8 +58,10 @@ void main() {
     });
 
     test('returns SHA hex of symbolic reference', () {
-      final ref = Reference.lookup(repo: repo, name: 'HEAD');
-      expect(ref.target.sha, lastCommit);
+      expect(
+        Reference.lookup(repo: repo, name: 'HEAD').target.sha,
+        lastCommit,
+      );
     });
 
     test('throws when trying to resolve invalid reference', () {
@@ -84,13 +87,17 @@ void main() {
     });
 
     test('checks if reference is a local branch', () {
-      final ref = Reference.lookup(repo: repo, name: 'refs/heads/feature');
-      expect(ref.isBranch, true);
+      expect(
+        Reference.lookup(repo: repo, name: 'refs/heads/feature').isBranch,
+        true,
+      );
     });
 
     test('checks if reference is a note', () {
-      final ref = Reference.lookup(repo: repo, name: 'refs/heads/master');
-      expect(ref.isNote, false);
+      expect(
+        Reference.lookup(repo: repo, name: 'refs/heads/master').isNote,
+        false,
+      );
     });
 
     test('checks if reference is a remote branch', () {
@@ -102,16 +109,22 @@ void main() {
     });
 
     test('checks if reference is a tag', () {
-      final ref = Reference.lookup(repo: repo, name: 'refs/tags/v0.1');
-      expect(ref.isTag, true);
+      expect(
+        Reference.lookup(repo: repo, name: 'refs/tags/v0.1').isTag,
+        true,
+      );
     });
 
     test('checks if reflog exists for the reference', () {
-      var ref = Reference.lookup(repo: repo, name: 'refs/heads/master');
-      expect(ref.hasLog, true);
+      expect(
+        Reference.lookup(repo: repo, name: 'refs/heads/master').hasLog,
+        true,
+      );
 
-      ref = Reference.lookup(repo: repo, name: 'refs/tags/v0.1');
-      expect(ref.hasLog, false);
+      expect(
+        Reference.lookup(repo: repo, name: 'refs/tags/v0.1').hasLog,
+        false,
+      );
     });
 
     test('ensures updates to the reference will append to its log', () {
@@ -148,12 +161,10 @@ void main() {
 
     group('create direct', () {
       test('creates with oid as target', () {
-        final ref = Reference.lookup(repo: repo, name: 'refs/heads/master');
-
         Reference.create(
           repo: repo,
           name: 'refs/tags/from.oid',
-          target: ref.target,
+          target: repo.head.target,
         );
 
         expect(repo.references, contains('refs/tags/from.oid'));
@@ -319,7 +330,6 @@ void main() {
 
     test('deletes reference', () {
       expect(repo.references, contains('refs/tags/v0.1'));
-
       Reference.delete(repo: repo, name: 'refs/tags/v0.1');
       expect(repo.references, isNot(contains('refs/tags/v0.1')));
     });
@@ -470,15 +480,13 @@ void main() {
 
     test('peels to object of provided type', () {
       final ref = Reference.lookup(repo: repo, name: 'refs/heads/master');
-      final blob = Blob.lookup(repo: repo, oid: repo['9c78c21']);
       final blobRef = Reference.create(
         repo: repo,
         name: 'refs/tags/blob',
-        target: blob.oid,
+        target: Blob.lookup(repo: repo, oid: repo['9c78c21']).oid,
       );
       final tagRef = Reference.lookup(repo: repo, name: 'refs/tags/v0.2');
       final commit = Commit.lookup(repo: repo, oid: ref.target);
-      final tree = commit.tree;
 
       final peeledCommit = ref.peel(GitObject.commit) as Commit;
       final peeledTree = ref.peel(GitObject.tree) as Tree;
@@ -486,7 +494,7 @@ void main() {
       final peeledTag = tagRef.peel(GitObject.tag) as Tag;
 
       expect(peeledCommit.oid, commit.oid);
-      expect(peeledTree.oid, tree.oid);
+      expect(peeledTree.oid, commit.tree.oid);
       expect(peeledBlob.content, 'Feature edit\n');
       expect(peeledTag.name, 'v0.2');
     });

@@ -68,8 +68,11 @@ void main() {
     });
 
     test('updates with provided init flag', () {
-      final submoduleFilePath =
-          p.join(repo.workdir, testSubmodule, 'master.txt');
+      final submoduleFilePath = p.join(
+        repo.workdir,
+        testSubmodule,
+        'master.txt',
+      );
       expect(File(submoduleFilePath).existsSync(), false);
 
       Submodule.update(repo: repo, name: testSubmodule, init: true);

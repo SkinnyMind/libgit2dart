@@ -25,33 +25,27 @@ void main() {
 
   group('Reset', () {
     test('resets with hard', () {
-      var contents = file.readAsStringSync();
-      expect(contents, 'Feature edit\n');
+      expect(file.readAsStringSync(), 'Feature edit\n');
 
       repo.reset(oid: repo[sha], resetType: GitReset.hard);
-      contents = file.readAsStringSync();
-      expect(contents, isEmpty);
+      expect(file.readAsStringSync(), isEmpty);
     });
 
     test('resets with soft', () {
-      var contents = file.readAsStringSync();
-      expect(contents, 'Feature edit\n');
+      expect(file.readAsStringSync(), 'Feature edit\n');
 
       repo.reset(oid: repo[sha], resetType: GitReset.soft);
-      contents = file.readAsStringSync();
-      expect(contents, 'Feature edit\n');
+      expect(file.readAsStringSync(), 'Feature edit\n');
 
       final diff = Diff.indexToWorkdir(repo: repo, index: repo.index);
       expect(diff.deltas, isEmpty);
     });
 
     test('resets with mixed', () {
-      var contents = file.readAsStringSync();
-      expect(contents, 'Feature edit\n');
+      expect(file.readAsStringSync(), 'Feature edit\n');
 
       repo.reset(oid: repo[sha], resetType: GitReset.mixed);
-      contents = file.readAsStringSync();
-      expect(contents, 'Feature edit\n');
+      expect(file.readAsStringSync(), 'Feature edit\n');
 
       final diff = Diff.indexToWorkdir(repo: repo, index: repo.index);
       expect(diff.deltas.length, 1);

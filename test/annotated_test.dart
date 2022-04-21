@@ -39,14 +39,15 @@ void main() {
     });
 
     test('creates annotated commit from provided reference', () {
-      final reference = Reference.lookup(repo: repo, name: 'refs/heads/master');
+      const refName = 'refs/heads/master';
+      final reference = Reference.lookup(repo: repo, name: refName);
       final annotated = AnnotatedCommit.fromReference(
         repo: repo,
         reference: reference,
       );
 
       expect(annotated.oid, reference.target);
-      expect(annotated.refName, 'refs/heads/master');
+      expect(annotated.refName, refName);
     });
 
     test(

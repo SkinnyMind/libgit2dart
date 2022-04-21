@@ -49,14 +49,13 @@ void main() {
         offset: 180,
       );
       final target = tag.target as Commit;
-      final tagger = tag.tagger;
 
       expect(tag.oid, tagOid);
       expect(tag.name, 'v0.2');
       expect(tag.message, 'annotated tag\n');
       expect(tag.targetType, GitObject.commit);
       expect(target.message, 'add subdirectory file\n');
-      expect(tagger, signature);
+      expect(tag.tagger, signature);
       expect(tag.toString(), contains('Tag{'));
     });
 
@@ -81,14 +80,13 @@ void main() {
       );
 
       final newTag = Tag.lookup(repo: repo, oid: oid);
-      final tagger = newTag.tagger;
       final newTagTarget = newTag.target as Commit;
 
       expect(newTag.oid, oid);
       expect(newTag.name, tagName);
       expect(newTag.message, message);
       expect(newTag.targetOid.sha, targetSHA);
-      expect(tagger, signature);
+      expect(newTag.tagger, signature);
       expect(newTagTarget.oid, target);
     });
 
@@ -129,13 +127,12 @@ void main() {
       );
 
       final newTag = Tag.lookup(repo: repo, oid: oid);
-      final tagger = newTag.tagger;
       final newTagTarget = newTag.target as Tree;
 
       expect(newTag.oid, oid);
       expect(newTag.name, tagName);
       expect(newTag.message, message);
-      expect(tagger, signature);
+      expect(newTag.tagger, signature);
       expect(newTagTarget.oid, target);
     });
 
@@ -176,13 +173,12 @@ void main() {
       );
 
       final newTag = Tag.lookup(repo: repo, oid: oid);
-      final tagger = newTag.tagger;
       final newTagTarget = newTag.target as Blob;
 
       expect(newTag.oid, oid);
       expect(newTag.name, tagName);
       expect(newTag.message, message);
-      expect(tagger, signature);
+      expect(newTag.tagger, signature);
       expect(newTagTarget.oid, target);
     });
 
@@ -222,13 +218,12 @@ void main() {
       );
 
       final newTag = Tag.lookup(repo: repo, oid: oid);
-      final tagger = newTag.tagger;
       final newTagTarget = newTag.target as Tag;
 
       expect(newTag.oid, oid);
       expect(newTag.name, tagName);
       expect(newTag.message, message);
-      expect(tagger, signature);
+      expect(newTag.tagger, signature);
       expect(newTagTarget.oid, tag.oid);
     });
 
@@ -275,14 +270,13 @@ void main() {
       );
 
       final newTag = Tag.lookup(repo: repo, oid: oid);
-      final tagger = newTag.tagger;
       final newTagTarget = newTag.target as Commit;
 
       expect(newTag.oid, oid);
       expect(newTag.name, tagName);
       expect(newTag.message, message);
       expect(newTag.targetOid.sha, targetSHA);
-      expect(tagger, signature);
+      expect(newTag.tagger, signature);
       expect(newTagTarget.oid, target);
       expect(repo.tags.length, equals(2));
     });

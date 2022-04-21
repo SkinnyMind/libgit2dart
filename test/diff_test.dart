@@ -144,10 +144,9 @@ index e69de29..c217c63 100644
     });
 
     test('returns diff between index and tree', () {
-      final commit = Commit.lookup(repo: repo, oid: repo.head.target);
       final diff = Diff.treeToIndex(
         repo: repo,
-        tree: commit.tree,
+        tree: Commit.lookup(repo: repo, oid: repo.head.target).tree,
         index: repo.index,
       );
 
@@ -167,8 +166,10 @@ index e69de29..c217c63 100644
     });
 
     test('returns diff between tree and workdir', () {
-      final commit = Commit.lookup(repo: repo, oid: repo.head.target);
-      final diff = Diff.treeToWorkdir(repo: repo, tree: commit.tree);
+      final diff = Diff.treeToWorkdir(
+        repo: repo,
+        tree: Commit.lookup(repo: repo, oid: repo.head.target).tree,
+      );
 
       expect(diff.length, 9);
       for (var i = 0; i < diff.deltas.length; i++) {
@@ -185,8 +186,10 @@ index e69de29..c217c63 100644
     });
 
     test('returns diff between tree and workdir with index', () {
-      final commit = Commit.lookup(repo: repo, oid: repo.head.target);
-      final diff = Diff.treeToWorkdirWithIndex(repo: repo, tree: commit.tree);
+      final diff = Diff.treeToWorkdirWithIndex(
+        repo: repo,
+        tree: Commit.lookup(repo: repo, oid: repo.head.target).tree,
+      );
 
       expect(diff.length, 11);
       for (var i = 0; i < diff.deltas.length; i++) {
@@ -207,12 +210,10 @@ index e69de29..c217c63 100644
     });
 
     test('returns diff between tree and tree', () {
-      final commit = Commit.lookup(repo: repo, oid: repo.head.target);
-      final newTree = Tree.lookup(repo: repo, oid: repo['b85d53c']);
       final diff = Diff.treeToTree(
         repo: repo,
-        oldTree: commit.tree,
-        newTree: newTree,
+        oldTree: Commit.lookup(repo: repo, oid: repo.head.target).tree,
+        newTree: Tree.lookup(repo: repo, oid: repo['b85d53c']),
       );
 
       expect(diff.length, 10);
@@ -222,10 +223,9 @@ index e69de29..c217c63 100644
     });
 
     test('returns diff between tree and empty tree', () {
-      final commit = Commit.lookup(repo: repo, oid: repo.head.target);
       final diff = Diff.treeToTree(
         repo: repo,
-        oldTree: commit.tree,
+        oldTree: Commit.lookup(repo: repo, oid: repo.head.target).tree,
         newTree: null,
       );
 
@@ -236,11 +236,10 @@ index e69de29..c217c63 100644
     });
 
     test('returns diff between empty tree and tree', () {
-      final commit = Commit.lookup(repo: repo, oid: repo.head.target);
       final diff = Diff.treeToTree(
         repo: repo,
         oldTree: null,
-        newTree: commit.tree,
+        newTree: Commit.lookup(repo: repo, oid: repo.head.target).tree,
       );
 
       expect(diff.length, 11);
@@ -295,11 +294,10 @@ index e69de29..c217c63 100644
 
     test('merges diffs', () {
       final commit = Commit.lookup(repo: repo, oid: repo.head.target);
-      final newTree = Tree.lookup(repo: repo, oid: repo['b85d53c']);
       final diff1 = Diff.treeToTree(
         repo: repo,
         oldTree: commit.tree,
-        newTree: newTree,
+        newTree: Tree.lookup(repo: repo, oid: repo['b85d53c']),
       );
       final diff2 = Diff.treeToWorkdir(repo: repo, tree: commit.tree);
 
@@ -358,13 +356,12 @@ index e69de29..c217c63 100644
       });
 
       test('applies diff to repository', () {
-        final diff = Diff.parse(patchText);
         final file = File(p.join(tmpDir.path, 'subdir', 'modified_file'));
 
         Checkout.head(repo: repo, strategy: {GitCheckout.force});
         expect(file.readAsStringSync(), '');
 
-        diff.apply(repo: repo);
+        Diff.parse(patchText).apply(repo: repo);
         expect(file.readAsStringSync(), 'Modified content\n');
       });
 
@@ -396,78 +393,83 @@ index e69de29..c217c63 100644
       });
 
       test('does not apply hunk with non existing index', () {
-        final diff = Diff.parse(patchText);
         final file = File(p.join(tmpDir.path, 'subdir', 'modified_file'));
 
         Checkout.head(repo: repo, strategy: {GitCheckout.force});
         expect(file.readAsStringSync(), '');
 
-        diff.apply(repo: repo, hunkIndex: 10);
+        Diff.parse(patchText).apply(repo: repo, hunkIndex: 10);
         expect(file.readAsStringSync(), '');
       });
 
       test('applies diff to tree', () {
         Checkout.head(repo: repo, strategy: {GitCheckout.force});
 
-        final oldBlob = Blob.lookup(
-          repo: repo,
-          oid: repo.index['subdir/modified_file'].oid,
+        expect(
+          Blob.lookup(
+            repo: repo,
+            oid: repo.index['subdir/modified_file'].oid,
+          ).content,
+          '',
         );
-        expect(oldBlob.content, '');
 
-        final diff = Diff.parse(patchText);
-        final commit = Commit.lookup(repo: repo, oid: repo.head.target);
-
-        final newIndex = diff.applyToTree(repo: repo, tree: commit.tree);
-        final newBlob = Blob.lookup(
+        final newIndex = Diff.parse(patchText).applyToTree(
           repo: repo,
-          oid: newIndex['subdir/modified_file'].oid,
+          tree: Commit.lookup(repo: repo, oid: repo.head.target).tree,
         );
-        expect(newBlob.content, 'Modified content\n');
+        expect(
+          Blob.lookup(
+            repo: repo,
+            oid: newIndex['subdir/modified_file'].oid,
+          ).content,
+          'Modified content\n',
+        );
       });
 
       test('applies hunk with provided index to tree', () {
         Checkout.head(repo: repo, strategy: {GitCheckout.force});
 
-        final oldBlob = Blob.lookup(
-          repo: repo,
-          oid: repo.index['subdir/modified_file'].oid,
+        expect(
+          Blob.lookup(
+            repo: repo,
+            oid: repo.index['subdir/modified_file'].oid,
+          ).content,
+          '',
         );
-        expect(oldBlob.content, '');
 
         final diff = Diff.parse(patchText);
         final hunk = diff.patches.first.hunks.first;
-        final commit = Commit.lookup(repo: repo, oid: repo.head.target);
 
         final newIndex = diff.applyToTree(
           repo: repo,
-          tree: commit.tree,
+          tree: Commit.lookup(repo: repo, oid: repo.head.target).tree,
           hunkIndex: hunk.index,
         );
-        final newBlob = Blob.lookup(
-          repo: repo,
-          oid: newIndex['subdir/modified_file'].oid,
+        expect(
+          Blob.lookup(
+            repo: repo,
+            oid: newIndex['subdir/modified_file'].oid,
+          ).content,
+          'Modified content\n',
         );
-        expect(newBlob.content, 'Modified content\n');
       });
 
       test('throws when trying to apply diff to tree and error occurs', () {
-        final diff = Diff.parse(patchText);
         expect(
-          () => diff.applyToTree(repo: repo, tree: Tree(nullptr)),
+          () => Diff.parse(patchText).applyToTree(
+            repo: repo,
+            tree: Tree(nullptr),
+          ),
           throwsA(isA<LibGit2Error>()),
         );
       });
     });
 
     test('finds similar entries', () {
-      final commit = Commit.lookup(repo: repo, oid: repo.head.target);
-      final newTree = Tree.lookup(repo: repo, oid: repo.index.writeTree());
-
       final diff = Diff.treeToTree(
         repo: repo,
-        oldTree: commit.tree,
-        newTree: newTree,
+        oldTree: Commit.lookup(repo: repo, oid: repo.head.target).tree,
+        newTree: Tree.lookup(repo: repo, oid: repo.index.writeTree()),
       );
       expect(
         diff.deltas.singleWhere((e) => e.newFile.path == 'staged_new').status,
@@ -554,13 +556,11 @@ index e69de29..c217c63 100644
     });
 
     test('returns patch diff string', () {
-      final diff = Diff.parse(patchText);
-      expect(diff.patch, patchText);
+      expect(Diff.parse(patchText).patch, patchText);
     });
 
     test('returns hunks in a patch', () {
-      final diff = Diff.parse(patchText);
-      final patch = Patch.fromDiff(diff: diff, index: 0);
+      final patch = Patch.fromDiff(diff: Diff.parse(patchText), index: 0);
       final hunk = patch.hunks[0];
 
       expect(patch.hunks.length, 1);
@@ -573,8 +573,7 @@ index e69de29..c217c63 100644
     });
 
     test('returns lines in a hunk', () {
-      final diff = Diff.parse(patchText);
-      final patch = Patch.fromDiff(diff: diff, index: 0);
+      final patch = Patch.fromDiff(diff: Diff.parse(patchText), index: 0);
       final hunk = patch.hunks[0];
       final line = hunk.lines[0];
 

@@ -27,8 +27,10 @@ void main() {
     });
 
     test('throws when trying to describe and error occurs', () {
-      final nullRepo = Repository(nullptr);
-      expect(() => nullRepo.describe(), throwsA(isA<LibGit2Error>()));
+      expect(
+        () => Repository(nullptr).describe(),
+        throwsA(isA<LibGit2Error>()),
+      );
     });
 
     test('describes commit', () {
@@ -41,23 +43,28 @@ void main() {
     });
 
     test('throws when trying to describe and no reference found', () {
-      final commit = Commit.lookup(repo: repo, oid: repo['f17d0d4']);
-      expect(() => repo.describe(commit: commit), throwsA(isA<LibGit2Error>()));
+      expect(
+        () => repo.describe(
+          commit: Commit.lookup(repo: repo, oid: repo['f17d0d4']),
+        ),
+        throwsA(isA<LibGit2Error>()),
+      );
     });
 
     test('returns oid when fallback argument is provided', () {
-      final commit = Commit.lookup(repo: repo, oid: repo['f17d0d4']);
       expect(
-        repo.describe(commit: commit, showCommitOidAsFallback: true),
+        repo.describe(
+          commit: Commit.lookup(repo: repo, oid: repo['f17d0d4']),
+          showCommitOidAsFallback: true,
+        ),
         'f17d0d4',
       );
     });
 
     test('describes with provided strategy', () {
-      final commit = Commit.lookup(repo: repo, oid: repo['5aecfa0']);
       expect(
         repo.describe(
-          commit: commit,
+          commit: Commit.lookup(repo: repo, oid: repo['5aecfa0']),
           describeStrategy: GitDescribeStrategy.all,
         ),
         'heads/feature',
@@ -70,7 +77,6 @@ void main() {
         email: 'author@email.com',
         time: 1234,
       );
-      final commit = Commit.lookup(repo: repo, oid: repo['fc38877']);
       Tag.createAnnotated(
         repo: repo,
         tagName: 'test/tag1',
@@ -81,18 +87,20 @@ void main() {
       );
 
       expect(
-        repo.describe(commit: commit, pattern: 'test/*'),
+        repo.describe(
+          commit: Commit.lookup(repo: repo, oid: repo['fc38877']),
+          pattern: 'test/*',
+        ),
         'test/tag1-2-gfc38877',
       );
     });
 
     test('describes and follows first parent only', () {
-      final commit = Commit.lookup(repo: repo, oid: repo['821ed6e']);
       Tag.delete(repo: repo, name: 'v0.2');
 
       expect(
         repo.describe(
-          commit: commit,
+          commit: Commit.lookup(repo: repo, oid: repo['821ed6e']),
           onlyFollowFirstParent: true,
           describeStrategy: GitDescribeStrategy.tags,
         ),

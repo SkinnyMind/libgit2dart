@@ -42,9 +42,8 @@ void main() {
 
     test('returns list of commits with default sorting', () {
       final walker = RevWalk(repo);
-      final start = Oid.fromSHA(repo: repo, sha: log.first);
 
-      walker.push(start);
+      walker.push(repo[log.first]);
       final commits = walker.walk();
 
       for (var i = 0; i < commits.length; i++) {
@@ -54,9 +53,8 @@ void main() {
 
     test('returns list of commits with reverse sorting', () {
       final walker = RevWalk(repo);
-      final start = Oid.fromSHA(repo: repo, sha: log.first);
 
-      walker.push(start);
+      walker.push(repo[log.first]);
       walker.sorting({GitSort.reverse});
       final commits = walker.walk();
 
@@ -67,9 +65,8 @@ void main() {
 
     test('changes sorting', () {
       final walker = RevWalk(repo);
-      final start = Oid.fromSHA(repo: repo, sha: log.first);
 
-      walker.push(start);
+      walker.push(repo[log.first]);
       final timeSortedCommits = walker.walk();
 
       for (var i = 0; i < timeSortedCommits.length; i++) {
@@ -161,28 +158,26 @@ void main() {
     });
 
     test('hides head', () {
-      final head = repo.head;
       final walker = RevWalk(repo);
 
-      walker.push(head.target);
+      walker.push(repo.head.target);
       final commits = walker.walk();
       expect(commits.length, 6);
 
-      walker.push(head.target);
+      walker.push(repo.head.target);
       walker.hideHead();
       final hiddenCommits = walker.walk();
       expect(hiddenCommits.length, 0);
     });
 
     test('hides oids of reference with provided name', () {
-      final head = repo.head;
       final walker = RevWalk(repo);
 
-      walker.push(head.target);
+      walker.push(repo.head.target);
       final commits = walker.walk();
       expect(commits.length, 6);
 
-      walker.push(head.target);
+      walker.push(repo.head.target);
       walker.hideReference('refs/heads/master');
       final hiddenCommits = walker.walk();
       expect(hiddenCommits.length, 0);
@@ -197,9 +192,8 @@ void main() {
 
     test('resets walker', () {
       final walker = RevWalk(repo);
-      final start = Oid.fromSHA(repo: repo, sha: log.first);
 
-      walker.push(start);
+      walker.push(repo[log.first]);
       walker.reset();
       final commits = walker.walk();
 
@@ -209,15 +203,12 @@ void main() {
     test('simplifies walker by enqueuing only first parent for each commit',
         () {
       final walker = RevWalk(repo);
-      final start = Oid.fromSHA(repo: repo, sha: log.first);
 
-      walker.push(start);
+      walker.push(repo[log.first]);
       walker.simplifyFirstParent();
       final commits = walker.walk();
 
-      for (var i = 0; i < commits.length; i++) {
-        expect(commits.length, 3);
-      }
+      expect(commits.length, 3);
     });
 
     test('throws when trying to add new root for traversal and error occurs',

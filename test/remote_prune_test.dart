@@ -40,7 +40,6 @@ void main() {
   group('Remote', () {
     test('fetch() does not prune branch by default', () {
       remote.fetch();
-
       expect(
         clonedRepo.branches.any((branch) => branch.name == 'origin/feature'),
         true,
@@ -49,7 +48,6 @@ void main() {
 
     test('fetch() prunes branch with provided flag', () {
       remote.fetch(prune: GitFetchPrune.prune);
-
       expect(
         clonedRepo.branches.any((branch) => branch.name == 'origin/feature'),
         false,
@@ -58,7 +56,6 @@ void main() {
 
     test('fetch() does not prune branch with provided flag', () {
       remote.fetch(prune: GitFetchPrune.noPrune);
-
       expect(
         clonedRepo.branches.any((branch) => branch.name == 'origin/feature'),
         true,

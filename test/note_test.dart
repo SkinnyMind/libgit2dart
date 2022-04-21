@@ -73,10 +73,12 @@ void main() {
         note: 'New note for HEAD',
         force: true,
       );
-      final noteBlob = Blob.lookup(repo: repo, oid: noteOid);
 
       expect(noteOid.sha, 'ffd6e2ceaf91c00ea6d29e2e897f906da720529f');
-      expect(noteBlob.content, 'New note for HEAD');
+      expect(
+        Blob.lookup(repo: repo, oid: noteOid).content,
+        'New note for HEAD',
+      );
     });
 
     test('throws when trying to create note and error occurs', () {

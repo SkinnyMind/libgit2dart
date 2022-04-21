@@ -73,9 +73,8 @@ void main() {
 
     test('adds commit', () {
       final packbuilder = PackBuilder(repo);
-      final oid = repo['f17d0d4'];
 
-      packbuilder.addCommit(oid);
+      packbuilder.addCommit(repo['f17d0d4']);
       expect(packbuilder.length, 3);
     });
 
@@ -90,9 +89,8 @@ void main() {
 
     test('adds tree', () {
       final packbuilder = PackBuilder(repo);
-      final oid = repo['df2b8fc'];
 
-      packbuilder.addTree(oid);
+      packbuilder.addTree(repo['df2b8fc']);
       expect(packbuilder.length, 2);
     });
 
@@ -106,11 +104,10 @@ void main() {
     });
 
     test('adds objects with walker', () {
-      final oid = repo['f17d0d4'];
       final packbuilder = PackBuilder(repo);
       final walker = RevWalk(repo);
       walker.sorting({GitSort.none});
-      walker.push(oid);
+      walker.push(repo['f17d0d4']);
 
       packbuilder.addWalk(walker);
       expect(packbuilder.length, 3);
@@ -134,20 +131,16 @@ void main() {
     test('packs with default arguments', () {
       final objectsCount = repo.odb.objects.length;
       Directory(packDirPath).createSync();
-
-      final writtenCount = repo.pack();
-
-      expect(writtenCount, objectsCount);
+      expect(repo.pack(), objectsCount);
     });
 
     test('packs into provided path with threads set', () {
-      final objectsCount = repo.odb.objects.length;
       final testPackPath = p.join(repo.workdir, 'test-pack');
       Directory(testPackPath).createSync();
 
       final writtenCount = repo.pack(path: testPackPath, threads: 1);
 
-      expect(writtenCount, objectsCount);
+      expect(writtenCount, repo.odb.objects.length);
       expect(Directory(testPackPath).listSync().isNotEmpty, true);
     });
 
@@ -167,8 +160,7 @@ void main() {
         }
       }
 
-      final writtenCount = repo.pack(packDelegate: packDelegate);
-      expect(writtenCount, 18);
+      expect(repo.pack(packDelegate: packDelegate), 18);
     });
 
     test('throws when trying to write pack into invalid path', () {

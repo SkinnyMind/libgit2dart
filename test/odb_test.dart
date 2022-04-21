@@ -45,10 +45,9 @@ void main() {
     });
 
     test('reads object', () {
-      final oid = repo[blobSha];
-      final object = repo.odb.read(oid);
+      final object = repo.odb.read(repo[blobSha]);
 
-      expect(object.oid, oid);
+      expect(object.oid, repo[blobSha]);
       expect(object.type, GitObject.blob);
       expect(object.data, blobContent);
       expect(object.size, 13);
