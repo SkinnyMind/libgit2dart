@@ -559,33 +559,6 @@ index e69de29..c217c63 100644
       expect(Diff.parse(patchText).patch, patchText);
     });
 
-    test('returns hunks in a patch', () {
-      final patch = Patch.fromDiff(diff: Diff.parse(patchText), index: 0);
-      final hunk = patch.hunks[0];
-
-      expect(patch.hunks.length, 1);
-      expect(hunk.linesCount, 1);
-      expect(hunk.oldStart, 0);
-      expect(hunk.oldLines, 0);
-      expect(hunk.newStart, 1);
-      expect(hunk.newLines, 1);
-      expect(hunk.header, '@@ -0,0 +1 @@\n');
-    });
-
-    test('returns lines in a hunk', () {
-      final patch = Patch.fromDiff(diff: Diff.parse(patchText), index: 0);
-      final hunk = patch.hunks[0];
-      final line = hunk.lines[0];
-
-      expect(hunk.lines.length, 1);
-      expect(line.origin, GitDiffLine.addition);
-      expect(line.oldLineNumber, -1);
-      expect(line.newLineNumber, 1);
-      expect(line.numLines, 1);
-      expect(line.contentOffset, 155);
-      expect(line.content, 'Modified content\n');
-    });
-
     test('manually releases allocated memory', () {
       final diff = Diff.parse(patchText);
       expect(() => diff.free(), returnsNormally);
@@ -597,8 +570,8 @@ index e69de29..c217c63 100644
     });
 
     test(
-        'returns string representation of Diff, DiffDelta, DiffFile, '
-        'DiffHunk, DiffLine and DiffStats objects', () {
+        'returns string representation of Diff, DiffDelta, DiffFile '
+        ' and DiffStats objects', () {
       final diff = Diff.parse(patchText);
       final patch = Patch.fromDiff(diff: diff, index: 0);
       final stats = diff.stats;
@@ -606,8 +579,6 @@ index e69de29..c217c63 100644
       expect(diff.toString(), contains('Diff{'));
       expect(patch.delta.toString(), contains('DiffDelta{'));
       expect(patch.delta.oldFile.toString(), contains('DiffFile{'));
-      expect(patch.hunks[0].toString(), contains('DiffHunk{'));
-      expect(patch.hunks[0].lines[0].toString(), contains('DiffLine{'));
       expect(stats.toString(), contains('DiffStats{'));
     });
   });

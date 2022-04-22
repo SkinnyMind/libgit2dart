@@ -155,6 +155,43 @@ index e69de29..0000000
       expect(() => Patch(nullptr).text, throwsA(isA<LibGit2Error>()));
     });
 
+    test('returns hunks in a patch', () {
+      final patch = Patch.fromBuffers(
+        oldBuffer: oldBuffer,
+        newBuffer: newBuffer,
+        oldBufferPath: path,
+        newBufferPath: path,
+      );
+      final hunk = patch.hunks[0];
+
+      expect(patch.hunks.length, 1);
+      expect(hunk.linesCount, 1);
+      expect(hunk.oldStart, 0);
+      expect(hunk.oldLines, 0);
+      expect(hunk.newStart, 1);
+      expect(hunk.newLines, 1);
+      expect(hunk.header, '@@ -0,0 +1 @@\n');
+    });
+
+    test('returns lines in a hunk', () {
+      final patch = Patch.fromBuffers(
+        oldBuffer: oldBuffer,
+        newBuffer: newBuffer,
+        oldBufferPath: path,
+        newBufferPath: path,
+      );
+      final hunk = patch.hunks[0];
+      final line = hunk.lines[0];
+
+      expect(hunk.lines.length, 1);
+      expect(line.origin, GitDiffLine.addition);
+      expect(line.oldLineNumber, -1);
+      expect(line.newLineNumber, 1);
+      expect(line.numLines, 1);
+      expect(line.contentOffset, 0);
+      expect(line.content, 'Feature edit\n');
+    });
+
     test('returns line counts of each type in a patch', () {
       final patch = Patch.fromBuffers(
         oldBuffer: oldBuffer,
@@ -180,7 +217,9 @@ index e69de29..0000000
       expect(() => patch.free(), returnsNormally);
     });
 
-    test('returns string representation of Patch object', () {
+    test(
+        'returns string representation of Patch, DiffHunk and DiffLine objects',
+        () {
       final patch = Patch.fromBuffers(
         oldBuffer: oldBuffer,
         newBuffer: newBuffer,
@@ -189,6 +228,8 @@ index e69de29..0000000
       );
 
       expect(patch.toString(), contains('Patch{'));
+      expect(patch.hunks[0].toString(), contains('DiffHunk{'));
+      expect(patch.hunks[0].lines[0].toString(), contains('DiffLine{'));
     });
   });
 }
