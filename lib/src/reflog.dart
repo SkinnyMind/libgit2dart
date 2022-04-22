@@ -46,7 +46,7 @@ class RefLog with IterableMixin<RefLogEntry> {
   /// Requesting the reflog entry with an index of 0 will return the most
   /// recently created entry.
   RefLogEntry operator [](int index) {
-    return RefLogEntry(
+    return RefLogEntry._(
       bindings.getByIndex(
         reflogPointer: _reflogPointer,
         index: index,
@@ -106,7 +106,7 @@ final _finalizer = Finalizer<Pointer<git_reflog>>(
 class RefLogEntry {
   /// Initializes a new instance of [RefLogEntry] class from provided
   /// pointer to RefLogEntry object in memory.
-  const RefLogEntry(this._entryPointer);
+  const RefLogEntry._(this._entryPointer);
 
   /// Pointer to memory address for allocated reflog entry object.
   final Pointer<git_reflog_entry> _entryPointer;
@@ -149,7 +149,7 @@ class _RefLogIterator implements Iterator<RefLogEntry> {
     if (_index == _count) {
       return false;
     } else {
-      _currentEntry = RefLogEntry(
+      _currentEntry = RefLogEntry._(
         bindings.getByIndex(
           reflogPointer: _reflogPointer,
           index: _index,

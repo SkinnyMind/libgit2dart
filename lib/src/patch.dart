@@ -154,7 +154,7 @@ class Patch {
   PatchStats get stats {
     final result = bindings.lineStats(_patchPointer);
 
-    return PatchStats(
+    return PatchStats._(
       context: result['context']!,
       insertions: result['insertions']!,
       deletions: result['deletions']!,
@@ -266,7 +266,7 @@ final _finalizer = Finalizer<Pointer<git_patch>>(
 
 /// Line counts of each type in a patch.
 class PatchStats {
-  const PatchStats({
+  const PatchStats._({
     required this.context,
     required this.insertions,
     required this.deletions,

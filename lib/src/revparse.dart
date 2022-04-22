@@ -75,7 +75,7 @@ class RevParse {
   ///
   /// Throws a [LibGit2Error] if error occured.
   static RevSpec range({required Repository repo, required String spec}) {
-    return RevSpec(
+    return RevSpec._(
       bindings.revParse(
         repoPointer: repo.pointer,
         spec: spec,
@@ -92,7 +92,7 @@ class RevParse {
 class RevSpec {
   /// Initializes a new instance of [RevSpec] class from provided
   /// pointer to revspec object in memory.
-  const RevSpec(this._revSpecPointer);
+  const RevSpec._(this._revSpecPointer);
 
   /// Pointer to memory address for allocated revspec object.
   final Pointer<git_revspec> _revSpecPointer;

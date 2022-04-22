@@ -83,7 +83,7 @@ class Blame with IterableMixin<BlameHunk> {
   ///
   /// Throws [RangeError] if index out of range.
   BlameHunk operator [](int index) {
-    return BlameHunk(
+    return BlameHunk._(
       bindings.getHunkByIndex(
         blamePointer: _blamePointer,
         index: index,
@@ -96,7 +96,7 @@ class Blame with IterableMixin<BlameHunk> {
   ///
   /// Throws [RangeError] if [lineNumber] is out of range.
   BlameHunk forLine(int lineNumber) {
-    return BlameHunk(
+    return BlameHunk._(
       bindings.getHunkByLine(
         blamePointer: _blamePointer,
         lineNumber: lineNumber,
@@ -123,7 +123,7 @@ final _finalizer = Finalizer<Pointer<git_blame>>(
 class BlameHunk {
   /// Initializes a new instance of the [BlameHunk] class from
   /// provided pointer to blame hunk object in memory.
-  const BlameHunk(this._blameHunkPointer);
+  const BlameHunk._(this._blameHunkPointer);
 
   /// Pointer to memory address for allocated blame hunk object.
   final Pointer<git_blame_hunk> _blameHunkPointer;
@@ -203,7 +203,7 @@ class _BlameIterator implements Iterator<BlameHunk> {
     if (index == count) {
       return false;
     } else {
-      currentHunk = BlameHunk(
+      currentHunk = BlameHunk._(
         bindings.getHunkByIndex(
           blamePointer: _blamePointer,
           index: index,

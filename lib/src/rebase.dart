@@ -55,7 +55,7 @@ class Rebase {
         rebase: _rebasePointer,
         index: i,
       );
-      result.add(RebaseOperation(operation));
+      result.add(RebaseOperation._(operation));
     }
 
     return result;
@@ -99,7 +99,7 @@ class Rebase {
   ///
   /// Throws a [LibGit2Error] if error occured.
   RebaseOperation next() {
-    return RebaseOperation(bindings.next(_rebasePointer));
+    return RebaseOperation._(bindings.next(_rebasePointer));
   }
 
   /// Commits the current patch. You must have resolved any conflicts that were
@@ -151,7 +151,7 @@ final _finalizer = Finalizer<Pointer<git_rebase>>(
 class RebaseOperation {
   /// Initializes a new instance of the [RebaseOperation] class from
   /// provided pointer to rebase operation object in memory.
-  const RebaseOperation(this._rebaseOperationPointer);
+  const RebaseOperation._(this._rebaseOperationPointer);
 
   /// Pointer to memory address for allocated rebase operation object.
   final Pointer<git_rebase_operation> _rebaseOperationPointer;

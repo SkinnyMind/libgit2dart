@@ -498,10 +498,10 @@ class DiffDelta {
   int get numberOfFiles => _diffDeltaPointer.ref.nfiles;
 
   /// Represents the "from" side of the diff.
-  DiffFile get oldFile => DiffFile(_diffDeltaPointer.ref.old_file);
+  DiffFile get oldFile => DiffFile._(_diffDeltaPointer.ref.old_file);
 
   /// Represents the "to" side of the diff.
-  DiffFile get newFile => DiffFile(_diffDeltaPointer.ref.new_file);
+  DiffFile get newFile => DiffFile._(_diffDeltaPointer.ref.new_file);
 
   @override
   String toString() {
@@ -518,7 +518,7 @@ class DiffDelta {
 class DiffFile {
   /// Initializes a new instance of [DiffFile] class from provided diff file
   /// object.
-  const DiffFile(this._diffFile);
+  const DiffFile._(this._diffFile);
 
   final git_diff_file _diffFile;
 

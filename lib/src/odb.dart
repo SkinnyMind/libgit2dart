@@ -60,7 +60,7 @@ class Odb {
   ///
   /// Throws a [LibGit2Error] if error occured.
   OdbObject read(Oid oid) {
-    return OdbObject(
+    return OdbObject._(
       bindings.read(
         odbPointer: _odbPointer,
         oidPointer: oid.pointer,
@@ -108,7 +108,7 @@ final _finalizer = Finalizer<Pointer<git_odb>>(
 class OdbObject {
   /// Initializes a new instance of the [OdbObject] class from
   /// provided pointer to odbObject object in memory.
-  OdbObject(this._odbObjectPointer) {
+  OdbObject._(this._odbObjectPointer) {
     _objectfinalizer.attach(this, _odbObjectPointer, detach: this);
   }
 
