@@ -13,7 +13,11 @@ Pointer<git_mailmap> init() {
   final out = calloc<Pointer<git_mailmap>>();
   libgit2.git_mailmap_new(out);
 
-  return out.value;
+  final result = out.value;
+
+  calloc.free(out);
+
+  return result;
 }
 
 /// Create a new mailmap instance containing a single mailmap file.
@@ -23,9 +27,12 @@ Pointer<git_mailmap> fromBuffer(String buffer) {
 
   libgit2.git_mailmap_from_buffer(out, bufferC, buffer.length);
 
+  final result = out.value;
+
+  calloc.free(out);
   calloc.free(bufferC);
 
-  return out.value;
+  return result;
 }
 
 /// Create a new mailmap instance from a repository, loading mailmap files based
@@ -43,11 +50,14 @@ Pointer<git_mailmap> fromRepository(Pointer<git_repository> repo) {
   final out = calloc<Pointer<git_mailmap>>();
   final error = libgit2.git_mailmap_from_repository(out, repo);
 
+  final result = out.value;
+
+  calloc.free(out);
+
   if (error < 0) {
-    calloc.free(out);
     throw LibGit2Error(libgit2.git_error_last());
   } else {
-    return out.value;
+    return result;
   }
 }
 
@@ -87,7 +97,11 @@ Pointer<git_signature> resolveSignature({
   final out = calloc<Pointer<git_signature>>();
   libgit2.git_mailmap_resolve_signature(out, mailmapPointer, signaturePointer);
 
-  return out.value;
+  final result = out.value;
+
+  calloc.free(out);
+
+  return result;
 }
 
 /// Add a single entry to the given mailmap object. If the entry already exists,

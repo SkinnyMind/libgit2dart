@@ -15,10 +15,13 @@ Pointer<git_credential> userPass({
 
   libgit2.git_credential_userpass_plaintext_new(out, usernameC, passwordC);
 
+  final result = out.value;
+
+  calloc.free(out);
   calloc.free(usernameC);
   calloc.free(passwordC);
 
-  return out.value;
+  return result;
 }
 
 /// Create a new passphrase-protected ssh key credential object.
@@ -42,12 +45,15 @@ Pointer<git_credential> sshKey({
     passPhraseC,
   );
 
+  final result = out.value;
+
+  calloc.free(out);
   calloc.free(usernameC);
   calloc.free(publicKeyC);
   calloc.free(privateKeyC);
   calloc.free(passPhraseC);
 
-  return out.value;
+  return result;
 }
 
 /// Create a new ssh key credential object used for querying an ssh-agent.
@@ -57,9 +63,12 @@ Pointer<git_credential> sshKeyFromAgent(String username) {
 
   libgit2.git_credential_ssh_key_from_agent(out, usernameC);
 
+  final result = out.value;
+
+  calloc.free(out);
   calloc.free(usernameC);
 
-  return out.value;
+  return result;
 }
 
 /// Create a new ssh key credential object reading the keys from memory.
@@ -83,10 +92,13 @@ Pointer<git_credential> sshKeyFromMemory({
     passPhraseC,
   );
 
+  final result = out.value;
+
+  calloc.free(out);
   calloc.free(usernameC);
   calloc.free(publicKeyC);
   calloc.free(privateKeyC);
   calloc.free(passPhraseC);
 
-  return out.value;
+  return result;
 }

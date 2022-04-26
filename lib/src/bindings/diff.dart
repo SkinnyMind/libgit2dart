@@ -31,13 +31,15 @@ Pointer<git_diff> indexToIndex({
     opts,
   );
 
+  final result = out.value;
+
+  calloc.free(out);
   calloc.free(opts);
 
   if (error < 0) {
-    calloc.free(out);
     throw LibGit2Error(libgit2.git_error_last());
   } else {
-    return out.value;
+    return result;
   }
 }
 
@@ -58,9 +60,12 @@ Pointer<git_diff> indexToWorkdir({
 
   libgit2.git_diff_index_to_workdir(out, repoPointer, indexPointer, opts);
 
+  final result = out.value;
+
+  calloc.free(out);
   calloc.free(opts);
 
-  return out.value;
+  return result;
 }
 
 /// Create a diff between a tree and repository index.
@@ -87,9 +92,12 @@ Pointer<git_diff> treeToIndex({
     opts,
   );
 
+  final result = out.value;
+
+  calloc.free(out);
   calloc.free(opts);
 
-  return out.value;
+  return result;
 }
 
 /// Create a diff between a tree and the working directory.
@@ -116,13 +124,15 @@ Pointer<git_diff> treeToWorkdir({
     opts,
   );
 
+  final result = out.value;
+
+  calloc.free(out);
   calloc.free(opts);
 
   if (error < 0) {
-    calloc.free(out);
     throw LibGit2Error(libgit2.git_error_last());
   } else {
-    return out.value;
+    return result;
   }
 }
 
@@ -155,13 +165,15 @@ Pointer<git_diff> treeToWorkdirWithIndex({
     opts,
   );
 
+  final result = out.value;
+
+  calloc.free(out);
   calloc.free(opts);
 
   if (error < 0) {
-    calloc.free(out);
     throw LibGit2Error(libgit2.git_error_last());
   } else {
-    return out.value;
+    return result;
   }
 }
 
@@ -191,13 +203,15 @@ Pointer<git_diff> treeToTree({
     opts,
   );
 
+  final result = out.value;
+
+  calloc.free(out);
   calloc.free(opts);
 
   if (error < 0) {
-    calloc.free(out);
     throw LibGit2Error(libgit2.git_error_last());
   } else {
-    return out.value;
+    return result;
   }
 }
 
@@ -235,9 +249,12 @@ Pointer<git_diff> parse(String content) {
   final contentC = content.toNativeUtf8().cast<Int8>();
   libgit2.git_diff_from_buffer(out, contentC, content.length);
 
+  final result = out.value;
+
+  calloc.free(out);
   calloc.free(contentC);
 
-  return out.value;
+  return result;
 }
 
 /// Transform a diff marking file renames, copies, etc.
@@ -324,11 +341,14 @@ Pointer<git_diff_stats> stats(Pointer<git_diff> diff) {
   final out = calloc<Pointer<git_diff_stats>>();
   final error = libgit2.git_diff_get_stats(out, diff);
 
+  final result = out.value;
+
+  calloc.free(out);
+
   if (error < 0) {
-    calloc.free(out);
     throw LibGit2Error(libgit2.git_error_last());
   } else {
-    return out.value;
+    return result;
   }
 }
 
@@ -355,12 +375,14 @@ String statsPrint({
   final out = calloc<git_buf>();
   final error = libgit2.git_diff_stats_to_buf(out, statsPointer, format, width);
 
+  final result = out.ref.ptr.cast<Utf8>().toDartString(length: out.ref.size);
+
+  libgit2.git_buf_dispose(out);
+  calloc.free(out);
+
   if (error < 0) {
-    calloc.free(out);
     throw LibGit2Error(libgit2.git_error_last());
   } else {
-    final result = out.ref.ptr.cast<Utf8>().toDartString(length: out.ref.size);
-    calloc.free(out);
     return result;
   }
 }
@@ -369,10 +391,14 @@ String statsPrint({
 String addToBuf(Pointer<git_diff> diff) {
   final out = calloc<git_buf>();
   libgit2.git_diff_to_buf(out, diff, git_diff_format_t.GIT_DIFF_FORMAT_PATCH);
+
   final result = out.ref.ptr == nullptr
       ? ''
       : out.ref.ptr.cast<Utf8>().toDartString(length: out.ref.size);
+
+  libgit2.git_buf_dispose(out);
   calloc.free(out);
+
   return result;
 }
 
@@ -462,14 +488,16 @@ Pointer<git_index> applyToTree({
     opts,
   );
 
+  final result = out.value;
+
+  calloc.free(out);
   calloc.free(payload);
   calloc.free(opts);
 
   if (error < 0) {
-    calloc.free(out);
     throw LibGit2Error(libgit2.git_error_last());
   } else {
-    return out.value;
+    return result;
   }
 }
 

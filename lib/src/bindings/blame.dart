@@ -47,14 +47,16 @@ Pointer<git_blame> file({
 
   final error = libgit2.git_blame_file(out, repoPointer, pathC, options);
 
+  final result = out.value;
+
+  calloc.free(out);
   calloc.free(pathC);
   calloc.free(options);
 
   if (error < 0) {
-    calloc.free(out);
     throw LibGit2Error(libgit2.git_error_last());
   } else {
-    return out.value;
+    return result;
   }
 }
 
@@ -80,13 +82,15 @@ Pointer<git_blame> buffer({
     buffer.length,
   );
 
+  final result = out.value;
+
+  calloc.free(out);
   calloc.free(bufferC);
 
   if (error < 0) {
-    calloc.free(out);
     throw LibGit2Error(libgit2.git_error_last());
   } else {
-    return out.value;
+    return result;
   }
 }
 

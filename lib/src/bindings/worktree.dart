@@ -33,15 +33,17 @@ Pointer<git_worktree> create({
 
   final error = libgit2.git_worktree_add(out, repoPointer, nameC, pathC, opts);
 
+  final result = out.value;
+
+  calloc.free(out);
   calloc.free(nameC);
   calloc.free(pathC);
   calloc.free(opts);
 
   if (error < 0) {
-    calloc.free(out);
     throw LibGit2Error(libgit2.git_error_last());
   } else {
-    return out.value;
+    return result;
   }
 }
 
@@ -56,13 +58,15 @@ Pointer<git_worktree> lookup({
   final nameC = name.toNativeUtf8().cast<Int8>();
   final error = libgit2.git_worktree_lookup(out, repoPointer, nameC);
 
+  final result = out.value;
+
+  calloc.free(out);
   calloc.free(nameC);
 
   if (error < 0) {
-    calloc.free(out);
     throw LibGit2Error(libgit2.git_error_last());
   } else {
-    return out.value;
+    return result;
   }
 }
 
@@ -80,7 +84,11 @@ bool isPrunable(Pointer<git_worktree> wt) {
     GIT_WORKTREE_PRUNE_OPTIONS_VERSION,
   );
 
-  return libgit2.git_worktree_is_prunable(wt, opts) > 0 || false;
+  final result = libgit2.git_worktree_is_prunable(wt, opts);
+
+  calloc.free(opts);
+
+  return result > 0 || false;
 }
 
 /// Prune working tree.

@@ -7,10 +7,10 @@ import 'package:libgit2dart/src/util.dart';
 /// Parse N characters of a hex formatted object id into a git_oid.
 Pointer<git_oid> fromStrN(String hex) {
   final out = calloc<git_oid>();
-  final str = hex.toNativeUtf8().cast<Int8>();
-  libgit2.git_oid_fromstrn(out, str, hex.length);
+  final hexC = hex.toNativeUtf8().cast<Int8>();
+  libgit2.git_oid_fromstrn(out, hexC, hex.length);
 
-  calloc.free(str);
+  calloc.free(hexC);
 
   return out;
 }
@@ -18,10 +18,10 @@ Pointer<git_oid> fromStrN(String hex) {
 /// Parse a hex formatted object id into a git_oid.
 Pointer<git_oid> fromSHA(String hex) {
   final out = calloc<git_oid>();
-  final str = hex.toNativeUtf8().cast<Int8>();
-  libgit2.git_oid_fromstr(out, str);
+  final hexC = hex.toNativeUtf8().cast<Int8>();
+  libgit2.git_oid_fromstr(out, hexC);
 
-  calloc.free(str);
+  calloc.free(hexC);
 
   return out;
 }

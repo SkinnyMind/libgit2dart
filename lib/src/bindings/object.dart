@@ -26,11 +26,14 @@ Pointer<git_object> lookup({
   final out = calloc<Pointer<git_object>>();
   final error = libgit2.git_object_lookup(out, repoPointer, oidPointer, type);
 
+  final result = out.value;
+
+  calloc.free(out);
+
   if (error < 0) {
-    calloc.free(out);
     throw LibGit2Error(libgit2.git_error_last());
   } else {
-    return out.value;
+    return result;
   }
 }
 

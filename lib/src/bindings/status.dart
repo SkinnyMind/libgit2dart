@@ -13,11 +13,14 @@ Pointer<git_status_list> listNew(Pointer<git_repository> repo) {
   final out = calloc<Pointer<git_status_list>>();
   final error = libgit2.git_status_list_new(out, repo, nullptr);
 
+  final result = out.value;
+
+  calloc.free(out);
+
   if (error < 0) {
-    calloc.free(out);
     throw LibGit2Error(libgit2.git_error_last());
   } else {
-    return out.value;
+    return result;
   }
 }
 
@@ -62,14 +65,14 @@ int file({required Pointer<git_repository> repoPointer, required String path}) {
   final pathC = path.toNativeUtf8().cast<Int8>();
   final error = libgit2.git_status_file(out, repoPointer, pathC);
 
+  final result = out.value;
+
+  calloc.free(out);
   calloc.free(pathC);
 
   if (error < 0) {
-    calloc.free(out);
     throw LibGit2Error(libgit2.git_error_last());
   } else {
-    final result = out.value;
-    calloc.free(out);
     return result;
   }
 }

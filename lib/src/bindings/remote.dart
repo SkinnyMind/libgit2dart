@@ -9,8 +9,6 @@ import 'package:libgit2dart/src/oid.dart';
 import 'package:libgit2dart/src/util.dart';
 
 /// Get a list of the configured remotes for a repo.
-///
-/// Throws a [LibGit2Error] if error occured.
 List<String> list(Pointer<git_repository> repo) {
   final out = calloc<git_strarray>();
   libgit2.git_remote_list(out, repo);
@@ -38,13 +36,15 @@ Pointer<git_remote> lookup({
   final nameC = name.toNativeUtf8().cast<Int8>();
   final error = libgit2.git_remote_lookup(out, repoPointer, nameC);
 
+  final result = out.value;
+
+  calloc.free(out);
   calloc.free(nameC);
 
   if (error < 0) {
-    calloc.free(out);
     throw LibGit2Error(libgit2.git_error_last());
   } else {
-    return out.value;
+    return result;
   }
 }
 
@@ -62,14 +62,16 @@ Pointer<git_remote> create({
   final urlC = url.toNativeUtf8().cast<Int8>();
   final error = libgit2.git_remote_create(out, repoPointer, nameC, urlC);
 
+  final result = out.value;
+
+  calloc.free(out);
   calloc.free(nameC);
   calloc.free(urlC);
 
   if (error < 0) {
-    calloc.free(out);
     throw LibGit2Error(libgit2.git_error_last());
   } else {
-    return out.value;
+    return result;
   }
 }
 
@@ -95,15 +97,17 @@ Pointer<git_remote> createWithFetchSpec({
     fetchC,
   );
 
+  final result = out.value;
+
+  calloc.free(out);
   calloc.free(nameC);
   calloc.free(urlC);
   calloc.free(fetchC);
 
   if (error < 0) {
-    calloc.free(out);
     throw LibGit2Error(libgit2.git_error_last());
   } else {
-    return out.value;
+    return result;
   }
 }
 

@@ -23,11 +23,14 @@ Pointer<git_revwalk> create(Pointer<git_repository> repo) {
   final out = calloc<Pointer<git_revwalk>>();
   final error = libgit2.git_revwalk_new(out, repo);
 
+  final result = out.value;
+
+  calloc.free(out);
+
   if (error < 0) {
-    calloc.free(out);
     throw LibGit2Error(libgit2.git_error_last());
   } else {
-    return out.value;
+    return result;
   }
 }
 
@@ -152,10 +155,10 @@ List<Pointer<git_commit>> walk({
         oidPointer: oid,
       );
       result.add(commit);
-      calloc.free(oid);
     } else {
       break;
     }
+    calloc.free(oid);
   }
 
   return result;

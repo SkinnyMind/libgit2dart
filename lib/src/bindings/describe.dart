@@ -32,13 +32,15 @@ Pointer<git_describe_result> commit({
 
   final error = libgit2.git_describe_commit(out, commitPointer.cast(), opts);
 
+  final result = out.value;
+
+  calloc.free(out);
   calloc.free(opts);
 
   if (error < 0) {
-    calloc.free(out);
     throw LibGit2Error(libgit2.git_error_last());
   } else {
-    return out.value;
+    return result;
   }
 }
 
@@ -68,13 +70,15 @@ Pointer<git_describe_result> workdir({
 
   final error = libgit2.git_describe_workdir(out, repo, opts);
 
+  final result = out.value;
+
+  calloc.free(out);
   calloc.free(opts);
 
   if (error < 0) {
-    calloc.free(out);
     throw LibGit2Error(libgit2.git_error_last());
   } else {
-    return out.value;
+    return result;
   }
 }
 
@@ -106,8 +110,9 @@ String format({
 
   final result = out.ref.ptr.cast<Utf8>().toDartString(length: out.ref.size);
 
-  calloc.free(opts);
+  libgit2.git_buf_dispose(out);
   calloc.free(out);
+  calloc.free(opts);
 
   return result;
 }

@@ -234,12 +234,16 @@ String mergeFileFromIndex({
     nullptr,
   );
 
+  late final String result;
+  if (out.ref.ptr != nullptr) {
+    result = out.ref.ptr.cast<Utf8>().toDartString(length: out.ref.len);
+  }
+
+  calloc.free(out);
+
   if (error < 0) {
-    calloc.free(out);
     throw LibGit2Error(libgit2.git_error_last());
   } else {
-    final result = out.ref.ptr.cast<Utf8>().toDartString(length: out.ref.len);
-    calloc.free(out);
     return result;
   }
 }
@@ -275,13 +279,15 @@ Pointer<git_index> mergeCommits({
     opts,
   );
 
+  final result = out.value;
+
+  calloc.free(out);
   calloc.free(opts);
 
   if (error < 0) {
-    calloc.free(out);
     throw LibGit2Error(libgit2.git_error_last());
   } else {
-    return out.value;
+    return result;
   }
 }
 
@@ -318,13 +324,15 @@ Pointer<git_index> mergeTrees({
     opts,
   );
 
+  final result = out.value;
+
+  calloc.free(out);
   calloc.free(opts);
 
   if (error < 0) {
-    calloc.free(out);
     throw LibGit2Error(libgit2.git_error_last());
   } else {
-    return out.value;
+    return result;
   }
 }
 

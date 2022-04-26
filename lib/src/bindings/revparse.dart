@@ -46,13 +46,15 @@ Pointer<git_object> revParseSingle({
 
   final error = libgit2.git_revparse_single(out, repoPointer, specC);
 
+  final result = out.value;
+
+  calloc.free(out);
   calloc.free(specC);
 
   if (error < 0) {
-    calloc.free(out);
     throw LibGit2Error(libgit2.git_error_last());
   } else {
-    return out.value;
+    return result;
   }
 }
 
@@ -83,18 +85,19 @@ List<Pointer> revParseExt({
     specC,
   );
 
+  final result = <Pointer>[];
+  result.add(objectOut.value);
+  if (referenceOut.value != nullptr) {
+    result.add(referenceOut.value);
+  }
+
+  calloc.free(objectOut);
+  calloc.free(referenceOut);
   calloc.free(specC);
 
   if (error < 0) {
-    calloc.free(objectOut);
-    calloc.free(referenceOut);
     throw LibGit2Error(libgit2.git_error_last());
   } else {
-    final result = <Pointer>[];
-    result.add(objectOut.value);
-    if (referenceOut.value != nullptr) {
-      result.add(referenceOut.value);
-    }
     return result;
   }
 }

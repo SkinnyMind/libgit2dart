@@ -16,11 +16,14 @@ Pointer<git_blob> lookup({
   final out = calloc<Pointer<git_blob>>();
   final error = libgit2.git_blob_lookup(out, repoPointer, oidPointer);
 
+  final result = out.value;
+
+  calloc.free(out);
+
   if (error < 0) {
-    calloc.free(out);
     throw LibGit2Error(libgit2.git_error_last());
   } else {
-    return out.value;
+    return result;
   }
 }
 
@@ -128,7 +131,11 @@ Pointer<git_oid> createFromDisk({
 Pointer<git_blob> duplicate(Pointer<git_blob> source) {
   final out = calloc<Pointer<git_blob>>();
   libgit2.git_blob_dup(out, source);
-  return out.value;
+  final result = out.value;
+
+  calloc.free(out);
+
+  return result;
 }
 
 /// Get a buffer with the filtered content of a blob.
@@ -156,15 +163,19 @@ String filterContent({
 
   final error = libgit2.git_blob_filter(out, blobPointer, asPathC, opts);
 
+  late final String result;
+  if (out.ref.ptr != nullptr) {
+    result = out.ref.ptr.cast<Utf8>().toDartString(length: out.ref.size);
+  }
+
+  libgit2.git_buf_dispose(out);
+  calloc.free(out);
   calloc.free(asPathC);
   calloc.free(opts);
 
   if (error < 0) {
-    calloc.free(out);
     throw LibGit2Error(libgit2.git_error_last());
   } else {
-    final result = out.ref.ptr.cast<Utf8>().toDartString(length: out.ref.size);
-    calloc.free(out);
     return result;
   }
 }

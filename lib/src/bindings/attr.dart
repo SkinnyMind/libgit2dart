@@ -19,27 +19,25 @@ Object? getAttribute({
   final nameC = name.toNativeUtf8().cast<Int8>();
   libgit2.git_attr_get(out, repoPointer, flags, pathC, nameC);
 
+  final result = out.value;
+
+  calloc.free(out);
   calloc.free(pathC);
   calloc.free(nameC);
 
-  final attributeValue = libgit2.git_attr_value(out.value);
+  final attributeValue = libgit2.git_attr_value(result);
 
   if (attributeValue == git_attr_value_t.GIT_ATTR_VALUE_UNSPECIFIED) {
-    calloc.free(out);
     return null;
   }
   if (attributeValue == git_attr_value_t.GIT_ATTR_VALUE_TRUE) {
-    calloc.free(out);
     return true;
   }
   if (attributeValue == git_attr_value_t.GIT_ATTR_VALUE_FALSE) {
-    calloc.free(out);
     return false;
   }
   if (attributeValue == git_attr_value_t.GIT_ATTR_VALUE_STRING) {
-    final result = out.value.cast<Utf8>().toDartString();
-    calloc.free(out);
-    return result;
+    return result.cast<Utf8>().toDartString();
   }
   return null;
 }
