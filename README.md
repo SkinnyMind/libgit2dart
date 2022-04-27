@@ -68,8 +68,6 @@ dart run libgit2dart:setup
 
 libgit2dart provides you ability to manage Git repository. You can read and write objects (commit, tag, tree and blob), walk a tree, access the staging area, manage config and lots more.
 
-**Important**: Most of the instantiated objects require to call `free()` method on them, when they are no longer needed, in order to release allocated memory and prevent memory leak.
-
 Let's look at some of the classes and methods.
 
 ### Repository
@@ -79,13 +77,17 @@ Let's look at some of the classes and methods.
 You can instantiate a `Repository` class with a path to open an existing repository:
 
 ```dart
-final repo = Repository.open('path/to/repository');
+final repo = Repository.open('path/to/repository'); // => Repository
+// Release memory allocated for Repository object when it's no longer needed
+repo.free();
 ```
 
 You can create new repository with provided path and optional `bare` argument if you want it to be bare:
 
 ```dart
-final repo = Repository.init(path: 'path/to/folder', bare: true);
+final repo = Repository.init(path: 'path/to/folder', bare: true); // => Repository
+// Release memory allocated for Repository object when it's no longer needed
+repo.free();
 ```
 
 You can clone the existing repository at provided url into local path:
@@ -94,7 +96,9 @@ You can clone the existing repository at provided url into local path:
 final repo = Repository.clone(
   url: 'https://some.url/',
   localPath: 'path/to/clone/into',
-);
+); // => Repository
+// Release memory allocated for Repository object when it's no longer needed
+repo.free();
 ```
 
 Also you can discover the path to the '.git' directory of repository if you provide a path to subdirectory:
@@ -126,15 +130,11 @@ final ref = repo.head; // => Reference
 ref.name; // => 'refs/heads/master'
 ref.target; // => Oid
 ref.target.sha; // => '821ed6e80627b8769d170a293862f9fc60825226'
-// Release memory allocated for Reference object when it's no longer needed
-ref.free();
 
 // Looking up object with oid
 final oid = repo['821ed6e80627b8769d170a293862f9fc60825226']; // => Oid
 final commit = Commit.lookup(repo: repo, oid: oid); // => Commit
 commit.message; // => 'initial commit'
-// Release memory allocated for Commit object when it's no longer needed
-commit.free();
 
 // Release memory allocated for Repository object when it's no longer needed
 repo.free();
@@ -161,8 +161,7 @@ Commit.create(
   parents: [], // empty list for initial commit, 1 parent for regular and 2+ for merge commits
 ); // => Oid
 
-tree.free();
-index.free();
+// Release memory allocated for Repository object when it's no longer needed
 repo.free();
 ```
 
@@ -195,9 +194,6 @@ commit.message; // => 'initial commit\n'
 commit.time; // => 1635869993 (seconds since epoch)
 commit.author; // => Signature
 commit.tree; // => Tree
-
-// Release memory allocated for Commit object when it's no longer needed
-commit.free();
 ```
 
 ### Tree and TreeEntry
@@ -223,9 +219,6 @@ final entry = tree['file.txt']; // => TreeEntry
 entry.oid; // => Oid
 entry.name // => 'file.txt'
 entry.filemode // => GitFilemode.blob
-
-// Release memory allocated for Tree object when it's no longer needed
-tree.free();
 ```
 
 You can also write trees with TreeBuilder:
@@ -238,10 +231,6 @@ builder.add(
   filemode: GitFilemode.blob,
 );
 final treeOid = builder.write(); // => Oid
-
-// Release memory allocated for TreeBuilder object and all the entries when
-// they are no longer needed
-builder.free();
 
 // Perform commit using that tree in arguments
 ...
@@ -278,9 +267,6 @@ repo.tags; // => ['v0.1', 'v0.2']
 
 tag.oid; // => Oid
 tag.name; // => 'v0.1'
-
-// Release memory allocated for Tag object when it's no longer needed
-tag.free();
 ```
 
 ### Blob
@@ -297,9 +283,6 @@ final blob = Blob.lookup(repo: repo, oid: repo['e69de29']); // => Blob
 blob.oid; // => Oid
 blob.content; // => 'content of the file'
 blob.size; // => 19
-
-// Release memory allocated for Blob object when it's no longer needed
-blob.free();
 ```
 
 ---
@@ -326,9 +309,6 @@ walker.hide(repo['c68ff54']);
 
 // Perform traversal
 final commits = walker.walk(); // => [Commit, Commit, ...]
-
-// Release memory allocated for Walker object when it's no longer needed
-walker.free();
 ```
 
 ---
@@ -363,9 +343,6 @@ index.add('new.txt');
 
 // Unstage entry from index
 index.remove('new.txt');
-
-// Release memory allocated for Index object when it's no longer needed
-index.free();
 ```
 
 ---
@@ -405,12 +382,6 @@ final entry = reflog.first; // RefLogEntry
 
 entry.message; // => 'commit (initial): init'
 entry.committer; // => Signature
-
-// Release memory allocated for RefLog object when it's no longer needed
-reflog.free();
-
-// Release memory allocated for Reference object when it's no longer needed
-ref.free();
 ```
 
 ---
@@ -434,16 +405,13 @@ branch.isHead; // => true
 branch.name; // => 'master'
 
 // Create branch
-final branch = Branch.create(repo: repo, name: 'feature', target: commit); // => Branch
+Branch.create(repo: repo, name: 'feature', target: commit); // => Branch
 
 // Rename branch
 Branch.rename(repo: repo, oldName: 'feature', newName: 'feature2');
 
 // Delete branch
 Branch.delete(repo: repo, name: 'feature2');
-
-// Release memory allocated for Branch object when it's no longer needed
-branch.free();
 ```
 
 ---
@@ -473,9 +441,6 @@ final diff = Diff.indexToIndex(repo: repo, oldIndex: repo.index, newIndex: index
 
 // Read the contents of a git patch file
 final diff = Diff.parse(patch.text); // => Diff
-
-// Release memory allocated for Diff object when it's no longer needed
-diff.free();
 ```
 
 Some methods for inspecting Diff object:
@@ -492,8 +457,6 @@ final stats = diff.stats; // => DiffStats
 stats.insertions; // => 69
 stats.deletions; // => 420
 stats.filesChanged; // => 1
-// Release memory allocated for DiffStats object when it's no longer needed
-stats.free();
 
 // Get the list of DiffDelta's containing file pairs with and old and new revisions
 final deltas = diff.deltas; // => [DiffDelta, DiffDelta, ...]
@@ -519,9 +482,6 @@ final patch = Patch.fromBlobs(
 
 // Patch from entry in the diff list at provided index position
 final patch = Patch.fromDiff(diff: diff, index: 0); // => Patch
-
-// Release memory allocated for Patch object when it's no longer needed
-patch.free();
 ```
 
 Some methods for inspecting Patch object:
@@ -535,7 +495,6 @@ patch.size(); // => 1337
 
 // Get the list of hunks in a patch
 patch.hunks; // => [DiffHunk, DiffHunk, ...]
-
 ```
 
 ---
@@ -559,9 +518,6 @@ config['user.name'] = 'Another Name';
 
 // Delete variable from the config
 config.delete('user.name');
-
-// Release memory allocated for Config object when it's no longer needed
-config.free();
 ```
 
 ---
@@ -620,7 +576,7 @@ Merge.cherryPick(repo: repo, commit: commit);
 
 ```dart
 // Get the list of all stashed states (first being the most recent)
-repo.stashes;
+repo.stashes; // => [Stash, Stash, ...]
 
 // Save local modifications to a new stash
 Stash.create(repo: repo, stasher: signature, message: 'WIP'); // => Oid
@@ -648,7 +604,7 @@ Stash.pop(repo: repo);
 repo.worktrees; // => ['worktree1', 'worktree2'];
 
 // Lookup existing worktree
-final worktree = Worktree.lookup(repo: repo, name: 'worktree1'); // => Worktree
+Worktree.lookup(repo: repo, name: 'worktree1'); // => Worktree
 
 // Create new worktree
 final worktree = Worktree.create(
@@ -682,18 +638,14 @@ Some API methods for submodule management:
 repo.submodules; // => ['Submodule1', 'Submodule2'];
 
 // Lookup submodule
-final submodule = Submodule.lookup(repo: repo, name: 'Submodule'); // => Submodule
+Submodule.lookup(repo: repo, name: 'Submodule'); // => Submodule
 
 // Init and update
 Submodule.init(repo: repo, name: 'Submodule');
 Submodule.update(repo: repo, name: 'Submodule');
 
 // Add submodule
-final submodule = Submodule.add(
-  repo: repo,
-  url: 'https://some.url',
-  path: 'submodule',
-); // => Submodule
+Submodule.add(repo: repo, url: 'https://some.url', path: 'submodule'); // => Submodule
 ```
 
 Some methods for inspecting Submodule object:
