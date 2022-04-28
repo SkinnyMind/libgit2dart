@@ -26,23 +26,19 @@ void main() {
   group('Merge', () {
     group('analysis', () {
       test('is up to date when no reference is provided', () {
-        expect(
-          Merge.analysis(repo: repo, theirHead: repo['c68ff54']),
-          [
-            {GitMergeAnalysis.upToDate},
-            GitMergePreference.none,
-          ],
-        );
+        final analysis = Merge.analysis(repo: repo, theirHead: repo['c68ff54']);
+        expect(analysis.result, {GitMergeAnalysis.upToDate});
+        expect(analysis.mergePreference, GitMergePreference.none);
         expect(repo.status, isEmpty);
       });
 
       test('is up to date for provided ref', () {
-        final result = Merge.analysis(
+        final analysis = Merge.analysis(
           repo: repo,
           theirHead: repo['c68ff54'],
           ourRef: 'refs/tags/v0.1',
         );
-        expect(result[0], {GitMergeAnalysis.upToDate});
+        expect(analysis.result, {GitMergeAnalysis.upToDate});
         expect(repo.status, isEmpty);
       });
 
@@ -53,21 +49,21 @@ void main() {
           target: Commit.lookup(repo: repo, oid: repo['f17d0d4']),
         );
 
-        final result = Merge.analysis(
+        final analysis = Merge.analysis(
           repo: repo,
           theirHead: repo['6cbc22e'],
           ourRef: 'refs/heads/${ffBranch.name}',
         );
         expect(
-          result[0],
+          analysis.result,
           {GitMergeAnalysis.fastForward, GitMergeAnalysis.normal},
         );
         expect(repo.status, isEmpty);
       });
 
       test('is not fast forward and there is no conflicts', () {
-        final result = Merge.analysis(repo: repo, theirHead: repo['5aecfa0']);
-        expect(result[0], {GitMergeAnalysis.normal});
+        final analysis = Merge.analysis(repo: repo, theirHead: repo['5aecfa0']);
+        expect(analysis.result, {GitMergeAnalysis.normal});
         expect(repo.status, isEmpty);
       });
     });
@@ -76,11 +72,11 @@ void main() {
       final conflictBranch = Branch.lookup(repo: repo, name: 'conflict-branch');
       final index = repo.index;
 
-      final result = Merge.analysis(
+      final analysis = Merge.analysis(
         repo: repo,
         theirHead: conflictBranch.target,
       );
-      expect(result[0], {GitMergeAnalysis.normal});
+      expect(analysis.result, {GitMergeAnalysis.normal});
 
       Merge.commit(
         repo: repo,
