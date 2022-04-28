@@ -46,11 +46,10 @@ class Merge {
   /// opportunities for merging them into [ourRef] reference (default is
   /// 'HEAD').
   ///
-  /// Returns list with analysis result and preference for fast forward merge
-  /// values respectively.
+  /// Returns analysis result and preference for fast forward merge.
   ///
   /// Throws a [LibGit2Error] if error occured.
-  static List<Object> analysis({
+  static MergeAnalysis analysis({
     required Repository repo,
     required Oid theirHead,
     String ourRef = 'HEAD',
@@ -67,14 +66,14 @@ class Merge {
       theirHeadsLen: 1,
     );
 
-    final analysisSet = GitMergeAnalysis.values
+    final result = GitMergeAnalysis.values
         .where((e) => analysisInt[0] & e.value == e.value)
         .toSet();
-    final mergePreference = GitMergePreference.values.singleWhere(
+    final preference = GitMergePreference.values.singleWhere(
       (e) => analysisInt[1] == e.value,
     );
 
-    return <Object>[analysisSet, mergePreference];
+    return MergeAnalysis._(result: result, mergePreference: preference);
   }
 
   /// Merges the given [commit] into HEAD, writing the results into the
@@ -295,4 +294,14 @@ class Merge {
       commitPointer: commit.pointer,
     );
   }
+}
+
+class MergeAnalysis {
+  const MergeAnalysis._({required this.result, required this.mergePreference});
+
+  /// Merge opportunities.
+  final Set<GitMergeAnalysis> result;
+
+  /// The user's stated preference for merges.
+  final GitMergePreference mergePreference;
 }
