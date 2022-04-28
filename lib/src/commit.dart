@@ -8,6 +8,8 @@ import 'package:libgit2dart/src/bindings/libgit2_bindings.dart';
 class Commit {
   /// Initializes a new instance of [Commit] class from provided pointer to
   /// commit object in memory.
+  ///
+  /// Note: For internal use. Use [Commit.lookup] instead.
   Commit(this._commitPointer) {
     _finalizer.attach(this, _commitPointer, detach: this);
   }
@@ -24,6 +26,8 @@ class Commit {
   late final Pointer<git_commit> _commitPointer;
 
   /// Pointer to memory address for allocated commit object.
+  ///
+  /// Note: For internal use.
   Pointer<git_commit> get pointer => _commitPointer;
 
   /// Creates new commit in the [repo]sitory.
@@ -45,7 +49,9 @@ class Commit {
   /// represented with a standard encoding name. E.g. "UTF-8". If null, no
   /// encoding header is written and UTF-8 is assumed.
   ///
-  /// [message] is the full message for this commit.
+  /// [message] is the full message for this commit. It will not be cleaned up
+  /// automatically. I.e. excess whitespace will not be removed and no trailing
+  /// newline will be added.
   ///
   /// [tree] is an instance of a [Tree] object that will be used as the tree
   /// for the commit. This tree object must also be owned by the given [repo].
@@ -208,8 +214,10 @@ class Commit {
     );
   }
 
-  /// Wncoding for the message of a commit, as a string representing a standard
+  /// Encoding for the message of a commit, as a string representing a standard
   /// encoding name.
+  ///
+  /// If the encoding header in the commit is missing UTF-8 is assumed.
   String get messageEncoding => bindings.messageEncoding(_commitPointer);
 
   /// Full message of a commit.

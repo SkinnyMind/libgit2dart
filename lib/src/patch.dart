@@ -9,6 +9,12 @@ import 'package:libgit2dart/src/util.dart';
 class Patch {
   /// Initializes a new instance of [Patch] class from provided
   /// pointer to patch object in memory and pointers to old and new blobs/buffers.
+  ///
+  /// Note: For internal use. Instead, use one of:
+  /// - [Patch.fromBlobs]
+  /// - [Patch.fromBlobAndBuffer]
+  /// - [Patch.fromBuffers]
+  /// - [Patch.fromDiff]
   Patch(this._patchPointer) {
     _finalizer.attach(this, _patchPointer, detach: this);
   }
@@ -151,6 +157,8 @@ class Patch {
   late final Pointer<git_patch> _patchPointer;
 
   /// Line counts of each type in a patch.
+  ///
+  /// This helps imitate a `diff --numstat` type of output.
   PatchStats get stats {
     final result = bindings.lineStats(_patchPointer);
 

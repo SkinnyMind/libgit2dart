@@ -119,6 +119,10 @@ List<int> analysis({
 /// directory. Any changes are staged for commit and any conflicts are written
 /// to the index. Callers should inspect the repository's index after this
 /// completes, resolve any conflicts and prepare a commit.
+///
+/// For compatibility with git, the repository is put into a merging state.
+/// Once the commit is done (or if the user wishes to abort), that state should
+/// be cleared by calling relative method.
 void merge({
   required Pointer<git_repository> repoPointer,
   required Pointer<git_annotated_commit> theirHeadPointer,
@@ -248,12 +252,12 @@ String mergeFileFromIndex({
   }
 }
 
-/// Merge two commits, producing a git_index that reflects the result of the
+/// Merge two commits, producing a git index that reflects the result of the
 /// merge. The index may be written as-is to the working directory or checked
 /// out. If the index is to be converted to a tree, the caller should resolve
 /// any conflicts that arose as part of the merge.
 ///
-/// The returned index must be freed explicitly.
+/// The returned index must be freed.
 ///
 /// Throws a [LibGit2Error] if error occured.
 Pointer<git_index> mergeCommits({
@@ -296,7 +300,7 @@ Pointer<git_index> mergeCommits({
 /// out. If the index is to be converted to a tree, the caller should resolve
 /// any conflicts that arose as part of the merge.
 ///
-/// The returned index must be freed explicitly.
+/// The returned index must be freed.
 ///
 /// Throws a [LibGit2Error] if error occured.
 Pointer<git_index> mergeTrees({

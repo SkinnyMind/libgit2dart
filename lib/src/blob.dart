@@ -7,6 +7,8 @@ import 'package:libgit2dart/src/bindings/libgit2_bindings.dart';
 class Blob {
   /// Initializes a new instance of [Blob] class from provided pointer to
   /// blob object in memory.
+  ///
+  /// Note: For internal use. Use [Blob.lookup] instead.
   Blob(this._blobPointer) {
     _finalizer.attach(this, _blobPointer, detach: this);
   }
@@ -23,6 +25,8 @@ class Blob {
   late final Pointer<git_blob> _blobPointer;
 
   /// Pointer to memory address for allocated blob object.
+  ///
+  /// Note: For internal use.
   Pointer<git_blob> get pointer => _blobPointer;
 
   /// Creates a new blob from a [content] string and writes it to ODB.

@@ -5,12 +5,9 @@ import 'package:libgit2dart/src/bindings/libgit2_bindings.dart';
 import 'package:libgit2dart/src/error.dart';
 import 'package:libgit2dart/src/util.dart';
 
-/// Describe a commit.
+/// Describe a commit. The returned describe result must be freed with [free].
 ///
 /// Perform the describe operation on the given committish object.
-///
-/// Returned object should be freed with `describeResultFree()` once no longer
-/// needed.
 ///
 /// Throws a [LibGit2Error] if error occured.
 Pointer<git_describe_result> commit({
@@ -44,7 +41,7 @@ Pointer<git_describe_result> commit({
   }
 }
 
-/// Describe a commit.
+/// Describe a commit. The returned describe result must be freed with [free].
 ///
 /// Perform the describe operation on the current commit and the worktree.
 /// After peforming describe on HEAD, a status is run and the description is
@@ -118,7 +115,7 @@ String format({
 }
 
 /// Free the describe result.
-void describeResultFree(Pointer<git_describe_result> result) {
+void free(Pointer<git_describe_result> result) {
   libgit2.git_describe_result_free(result);
 }
 

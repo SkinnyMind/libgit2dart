@@ -7,7 +7,8 @@ import 'package:libgit2dart/src/bindings/reference.dart' as reference_bindings;
 import 'package:libgit2dart/src/error.dart';
 import 'package:libgit2dart/src/util.dart';
 
-/// Return a list of branches.
+/// Return a list of branches. The returned references must be freed with
+/// [free].
 ///
 /// Throws a [LibGit2Error] if error occured.
 List<Pointer<git_reference>> list({
@@ -47,10 +48,10 @@ List<Pointer<git_reference>> list({
   return result;
 }
 
-/// Lookup a branch by its name in a repository.
+/// Lookup a branch by its name in a repository. The returned reference must be
+/// freed with [free].
 ///
-/// The generated reference must be freed by the user. The branch name will be
-/// checked for validity.
+/// The branch name will be checked for validity.
 ///
 /// Throws a [LibGit2Error] if error occured.
 Pointer<git_reference> lookup({
@@ -79,13 +80,12 @@ Pointer<git_reference> lookup({
   }
 }
 
-/// Create a new branch pointing at a target commit.
+/// Create a new branch pointing at a target commit. The returned reference
+/// must be freed with [free].
 ///
 /// A new direct reference will be created pointing to this target commit.
 /// If force is true and a reference already exists with the given name, it'll
 /// be replaced.
-///
-/// The returned reference must be freed by the user.
 ///
 /// The branch name will be checked for validity.
 ///
@@ -121,6 +121,9 @@ Pointer<git_reference> create({
 
 /// Delete an existing branch reference.
 ///
+/// Note that if the deletion succeeds, the reference object will not be valid
+/// anymore, and should be freed immediately with [free].
+///
 /// Throws a [LibGit2Error] if error occured.
 void delete(Pointer<git_reference> branch) {
   final error = libgit2.git_branch_delete(branch);
@@ -133,6 +136,9 @@ void delete(Pointer<git_reference> branch) {
 /// Move/rename an existing local branch reference.
 ///
 /// The new branch name will be checked for validity.
+///
+/// Note that if the move succeeds, the old reference object will not be valid
+/// anymore, and should be freed immediately with [free].
 ///
 /// Throws a [LibGit2Error] if error occured.
 void rename({
@@ -191,7 +197,8 @@ bool isCheckedOut(Pointer<git_reference> branch) {
 /// Get the branch name.
 ///
 /// Given a reference object, this will check that it really is a branch
-/// (ie. it lives under "refs/heads/" or "refs/remotes/"), and return the branch part of it.
+/// (ie. it lives under "refs/heads/" or "refs/remotes/"), and return the
+/// branch part of it.
 ///
 /// Throws a [LibGit2Error] if error occured.
 String name(Pointer<git_reference> ref) {
@@ -238,7 +245,8 @@ String remoteName({
   }
 }
 
-/// Get the upstream of a branch.
+/// Get the upstream of a branch. The returned reference must be freed with
+/// [free].
 ///
 /// Given a reference, this will return a new reference object corresponding to
 /// its remote tracking branch. The reference must be a local branch.
@@ -262,7 +270,8 @@ Pointer<git_reference> getUpstream(Pointer<git_reference> branch) {
 /// Set a branch's upstream branch.
 ///
 /// This will update the configuration to set the branch named [branchName] as
-/// the upstream of branch. Pass a null name to unset the upstream information.
+/// the upstream of branch. Pass a null [branchName] to unset the upstream
+/// information.
 ///
 /// **Note**: The actual tracking reference must have been already created for
 /// the operation to succeed.

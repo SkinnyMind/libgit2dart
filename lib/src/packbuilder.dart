@@ -7,6 +7,8 @@ class PackBuilder {
   /// Initializes a new instance of [PackBuilder] class.
   ///
   /// Throws a [LibGit2Error] if error occured.
+  ///
+  /// Note: For internal use.
   PackBuilder(Repository repo) {
     _packbuilderPointer = bindings.init(repo.pointer);
     _finalizer.attach(this, _packbuilderPointer, detach: this);

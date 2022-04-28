@@ -7,7 +7,8 @@ import 'package:libgit2dart/src/error.dart';
 import 'package:libgit2dart/src/oid.dart';
 import 'package:libgit2dart/src/util.dart';
 
-/// Create a new object database with no backends.
+/// Create a new object database with no backends. The returned odb must be
+/// freed with [free].
 ///
 /// Before the ODB can be used for read/writing, a custom database backend must be
 /// manually added.
@@ -110,12 +111,10 @@ List<Oid> objects(Pointer<git_odb> odb) {
   return result;
 }
 
-/// Read an object from the database.
+/// Read an object from the database. The returned object must be freed with
+/// [freeObject].
 ///
 /// This method queries all available ODB backends trying to read the given OID.
-///
-/// The returned object is reference counted and internally cached, so it
-/// should be closed by the user once it's no longer in use.
 ///
 /// Throws a [LibGit2Error] if error occured.
 Pointer<git_odb_object> read({
@@ -164,14 +163,6 @@ int objectSize(Pointer<git_odb_object> object) {
   return libgit2.git_odb_object_size(object);
 }
 
-/// Close an ODB object.
-///
-/// This method must always be called once a odb object is no longer needed,
-/// otherwise memory will leak.
-void objectFree(Pointer<git_odb_object> object) {
-  libgit2.git_odb_object_free(object);
-}
-
 /// Write raw data into the object database.
 ///
 /// Throws a [LibGit2Error] if error occured.
@@ -208,3 +199,11 @@ Pointer<git_oid> write({
 
 /// Close an open object database.
 void free(Pointer<git_odb> db) => libgit2.git_odb_free(db);
+
+/// Close an ODB object.
+///
+/// This method must always be called once a odb object is no longer needed,
+/// otherwise memory will leak.
+void freeObject(Pointer<git_odb_object> object) {
+  libgit2.git_odb_object_free(object);
+}

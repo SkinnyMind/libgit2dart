@@ -7,6 +7,8 @@ import 'package:libgit2dart/src/bindings/tree.dart' as bindings;
 class Tree {
   /// Initializes a new instance of [Tree] class from provided pointer to
   /// tree object in memory.
+  ///
+  /// Note: For internal use. Use [Tree.lookup] instead.
   Tree(this._treePointer) {
     _finalizer.attach(this, _treePointer, detach: this);
   }
@@ -23,6 +25,8 @@ class Tree {
   late final Pointer<git_tree> _treePointer;
 
   /// Pointer to memory address for allocated tree object.
+  ///
+  /// Note: For internal use.
   Pointer<git_tree> get pointer => _treePointer;
 
   /// List with tree entries of a tree.
@@ -109,6 +113,8 @@ final _finalizer = Finalizer<Pointer<git_tree>>(
 class TreeEntry {
   /// Initializes a new instance of [TreeEntry] class from provided pointer to
   /// tree entry object in memory.
+  ///
+  /// Note: For internal use.
   TreeEntry(this._treeEntryPointer);
 
   /// Initializes a new instance of [TreeEntry] class from provided pointer to
@@ -138,7 +144,7 @@ class TreeEntry {
   ///
   /// **IMPORTANT**: Only tree entries looked up by path should be freed.
   void free() {
-    bindings.entryFree(_treeEntryPointer);
+    bindings.freeEntry(_treeEntryPointer);
     _entryFinalizer.detach(this);
   }
 
@@ -148,6 +154,6 @@ class TreeEntry {
 
 // coverage:ignore-start
 final _entryFinalizer = Finalizer<Pointer<git_tree_entry>>(
-  (pointer) => bindings.entryFree(pointer),
+  (pointer) => bindings.freeEntry(pointer),
 );
 // coverage:ignore-end

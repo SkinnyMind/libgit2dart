@@ -7,7 +7,8 @@ import 'package:libgit2dart/src/bindings/libgit2_bindings.dart';
 import 'package:libgit2dart/src/error.dart';
 import 'package:libgit2dart/src/util.dart';
 
-/// Create a new config instance containing a single on-disk file
+/// Create a new config instance containing a single on-disk file. The returned
+/// config must be freed with [free].
 Pointer<git_config> open(String path) {
   final out = calloc<Pointer<git_config>>();
   final pathC = path.toNativeUtf8().cast<Int8>();
@@ -18,11 +19,13 @@ Pointer<git_config> open(String path) {
   return out.value;
 }
 
-/// Open the global, XDG and system configuration files
+/// Open the global, XDG and system configuration files.
 ///
 /// Utility wrapper that finds the global, XDG and system configuration
 /// files and opens them into a single prioritized config object that can
 /// be used when accessing default config data outside a repository.
+///
+/// The returned config must be freed with [free].
 ///
 /// Throws a [LibGit2Error] if error occured.
 Pointer<git_config> openDefault() {
@@ -40,14 +43,13 @@ Pointer<git_config> openDefault() {
   }
 }
 
-/// Locate the path to the global configuration file
+/// Locate the path to the global configuration file.
 ///
 /// The user or global configuration file is usually located in
 /// `$HOME/.gitconfig`.
 ///
 /// This method will try to guess the full path to that file, if the file
-/// exists. The returned path may be used on any method call to load
-/// the global configuration file.
+/// exists. The returned path may be used to load the global configuration file.
 ///
 /// This method will not guess the path to the xdg compatible config file
 /// (`.config/git/config`).
@@ -69,9 +71,10 @@ String findGlobal() {
   }
 }
 
-/// Locate the path to the system configuration file
+/// Locate the path to the system configuration file.
 ///
-/// If /etc/gitconfig doesn't exist, it will look for %PROGRAMFILES%\Git\etc\gitconfig
+/// If `/etc/gitconfig` doesn't exist, it will look for
+/// `%PROGRAMFILES%\Git\etc\gitconfig`
 ///
 /// Throws a [LibGit2Error] if error occured.
 String findSystem() {
@@ -90,10 +93,14 @@ String findSystem() {
   }
 }
 
-/// Locate the path to the global xdg compatible configuration file
+/// Locate the path to the global xdg compatible configuration file.
 ///
 /// The xdg compatible configuration file is usually located in
 /// `$HOME/.config/git/config`.
+///
+/// This method will try to guess the full path to that file, if the file
+/// exists. The returned path may be used to load the xdg compatible
+/// configuration file.
 ///
 /// Throws a [LibGit2Error] if error occured.
 String findXdg() {
@@ -112,7 +119,8 @@ String findXdg() {
   }
 }
 
-/// Create a snapshot of the configuration.
+/// Create a snapshot of the configuration. The returned config must be freed
+/// with [free].
 ///
 /// Create a snapshot of the current state of a configuration, which allows you
 /// to look into a consistent view of the configuration for looking up complex
@@ -128,7 +136,8 @@ Pointer<git_config> snapshot(Pointer<git_config> config) {
   return result;
 }
 
-/// Get the config entry of a config variable.
+/// Get the config entry of a config variable. The returned config entry must
+/// be freed with [freeEntry].
 ///
 /// Throws a [LibGit2Error] if error occured.
 Pointer<git_config_entry> getEntry({
@@ -190,7 +199,8 @@ void setString({
   calloc.free(valueC);
 }
 
-/// Iterate over all the config variables.
+/// Iterate over all the config variables. The returned iterator must be freed
+/// with [freeIterator].
 Pointer<git_config_iterator> iterator(Pointer<git_config> cfg) {
   final out = calloc<Pointer<git_config_iterator>>();
   libgit2.git_config_iterator_new(out, cfg);
@@ -220,10 +230,14 @@ void delete({
   }
 }
 
-/// Iterate over the values of a multivar
+/// Iterate over the values of a multivar.
 ///
-/// If regexp is present, then the iterator will only iterate over all
+/// If [regexp] is present, then the iterator will only iterate over all
 /// values which match the pattern.
+///
+/// The regular expression is applied case-sensitively on the normalized form
+/// of the variable name: the section and variable parts are lower-cased. The
+/// subsection is left unchanged.
 List<String> multivarValues({
   required Pointer<git_config> configPointer,
   required String variable,
@@ -265,7 +279,7 @@ List<String> multivarValues({
 /// Set the value of a multivar config variable in the config file with the
 /// highest level (usually the local one).
 ///
-/// The regexp is applied case-sensitively on the value.
+/// The [regexp] is applied case-sensitively on the value.
 void setMultivar({
   required Pointer<git_config> configPointer,
   required String variable,
@@ -286,7 +300,7 @@ void setMultivar({
 /// Deletes one or several values from a multivar in the config file
 /// with the highest level (usually the local one).
 ///
-/// The regexp is applied case-sensitively on the value.
+/// The [regexp] is applied case-sensitively on the value.
 void deleteMultivar({
   required Pointer<git_config> configPointer,
   required String variable,

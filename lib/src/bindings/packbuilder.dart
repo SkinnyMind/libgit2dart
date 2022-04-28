@@ -5,7 +5,8 @@ import 'package:libgit2dart/src/bindings/libgit2_bindings.dart';
 import 'package:libgit2dart/src/error.dart';
 import 'package:libgit2dart/src/util.dart';
 
-/// Initialize a new packbuilder.
+/// Initialize a new packbuilder. The returned packbuilder must be freed with
+/// [free].
 ///
 /// Throws a [LibGit2Error] if error occured.
 Pointer<git_packbuilder> init(Pointer<git_repository> repo) {

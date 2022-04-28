@@ -5,7 +5,8 @@ import 'package:libgit2dart/src/error.dart';
 import 'package:libgit2dart/src/oid.dart';
 import 'package:libgit2dart/src/util.dart';
 
-/// Get the blame for a single file.
+/// Get the blame for a single file. The returned blame must be freed with
+/// [free].
 ///
 /// Throws a [LibGit2Error] if error occured.
 Pointer<git_blame> file({
@@ -67,6 +68,8 @@ Pointer<git_blame> file({
 ///
 /// Lines that differ between the buffer and the committed version are marked
 /// as having a zero OID for their finalCommitOid.
+///
+/// The returned blame must be freed with [free].
 ///
 /// Throws a [LibGit2Error] if error occured.
 Pointer<git_blame> buffer({

@@ -34,7 +34,7 @@ Pointer<git_revspec> revParse({
 /// See `man gitrevisions`, or https://git-scm.com/docs/git-rev-parse.html#_specifying_revisions
 /// for information on the syntax accepted.
 ///
-/// The returned object should be released when no longer needed.
+/// The returned object should be freed.
 ///
 /// Throws a [LibGit2Error] if error occured.
 Pointer<git_object> revParseSingle({
@@ -67,7 +67,7 @@ Pointer<git_object> revParseSingle({
 /// point to an intermediate reference. When such expressions are being passed
 /// in, reference_out will be valued as well.
 ///
-/// The returned object and reference should be released when no longer needed.
+/// The returned object and reference should be freed.
 ///
 /// Throws a [LibGit2Error] if error occured.
 List<Pointer> revParseExt({

@@ -23,10 +23,10 @@ Pointer<git_oid> target(Pointer<git_reference> ref) =>
 /// This method iteratively peels a symbolic reference until it resolves
 /// to a direct reference to an OID.
 ///
-/// The peeled reference must be freed manually once it's no longer needed.
-///
 /// If a direct reference is passed as an argument, a copy of that reference is
-/// returned. This copy must be manually freed too.
+/// returned.
+///
+/// The returned reference must be freed with [free].
 ///
 /// Throws a [LibGit2Error] if error occured.
 Pointer<git_reference> resolve(Pointer<git_reference> ref) {
@@ -44,9 +44,8 @@ Pointer<git_reference> resolve(Pointer<git_reference> ref) {
   }
 }
 
-/// Lookup a reference by name in a repository.
-///
-/// The returned reference must be freed by the user.
+/// Lookup a reference by name in a repository. The returned reference must be
+/// freed with [free].
 ///
 /// The name will be checked for validity.
 ///
@@ -84,7 +83,8 @@ String shorthand(Pointer<git_reference> ref) {
   return libgit2.git_reference_shorthand(ref).cast<Utf8>().toDartString();
 }
 
-/// Rename an existing reference.
+/// Rename an existing reference. The returned reference must be freed with
+/// [free].
 ///
 /// This method works for both direct and symbolic references.
 ///
@@ -203,16 +203,14 @@ bool isTag(Pointer<git_reference> ref) {
   return libgit2.git_reference_is_tag(ref) == 1 || false;
 }
 
-/// Create a new direct reference.
+/// Create a new direct reference and write it to the disk. The returned
+/// reference must be freed with [free].
 ///
 /// A direct reference (also called an object id reference) refers directly to a
 /// specific object id (a.k.a. OID or SHA) in the repository. The id
 /// permanently refers to the object (although the reference itself can be
 /// moved). For example, in libgit2 the direct ref "refs/tags/v0.17.0" refers
 /// to OID 5b9fac39d8a76b9139667c26a63e6b3f204b3977.
-///
-/// The direct reference will be created in the repository and written to the
-/// disk. The generated reference object must be freed by the user.
 ///
 /// Valid reference names must follow one of two patterns:
 ///
@@ -264,15 +262,13 @@ Pointer<git_reference> createDirect({
   }
 }
 
-/// Create a new symbolic reference.
+/// Create a new symbolic reference and write it to the disk. The returned
+/// reference must be freed with [free].
 ///
 /// A symbolic reference is a reference name that refers to another reference
 /// name. If the other name moves, the symbolic name will move, too. As a
 /// simple example, the "HEAD" reference might refer to "refs/heads/master"
 /// while on the "master" branch of a repository.
-///
-/// The symbolic reference will be created in the repository and written to the
-/// disk. The generated reference object must be freed by the user.
 ///
 /// Valid reference names must follow one of two patterns:
 ///
@@ -343,6 +339,7 @@ Pointer<git_repository> owner(Pointer<git_reference> ref) {
 /// reference, otherwise this will fail.
 ///
 /// The new reference will be written to disk, overwriting the given reference.
+/// The returned reference must be freed with [free].
 ///
 /// Throws a [LibGit2Error] if error occured.
 Pointer<git_reference> setTarget({
@@ -376,6 +373,7 @@ Pointer<git_reference> setTarget({
 /// otherwise this will fail.
 ///
 /// The new reference will be written to disk, overwriting the given reference.
+/// The returned reference must be freed with [free].
 ///
 /// The target name will be checked for validity.
 ///
@@ -447,7 +445,8 @@ Pointer<git_object> peel({
   }
 }
 
-/// Create a copy of an existing reference.
+/// Create a copy of an existing reference. The returned reference must be
+/// freed with [free].
 Pointer<git_reference> duplicate(Pointer<git_reference> source) {
   final out = calloc<Pointer<git_reference>>();
   libgit2.git_reference_dup(out, source);

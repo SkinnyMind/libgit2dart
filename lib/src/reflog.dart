@@ -85,6 +85,8 @@ class RefLog with IterableMixin<RefLogEntry> {
 
   /// Writes an existing in-memory reflog object back to disk using an atomic
   /// file lock.
+  ///
+  /// Throws a [LibGit2Error] if error occured.
   void write() => bindings.write(_reflogPointer);
 
   /// Releases memory allocated for reflog object.

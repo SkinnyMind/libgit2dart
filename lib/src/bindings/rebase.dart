@@ -7,8 +7,8 @@ import 'package:libgit2dart/src/util.dart';
 
 /// Initializes a rebase operation to rebase the changes in [branchPointer]
 /// relative to [upstreamPointer] onto [ontoPointer] another branch. To begin
-/// the rebase process, call [next]. When you have finished with this object,
-/// call [free].
+/// the rebase process, call [next]. The returned rebase must be freed with
+/// [free].
 ///
 /// [branchPointer] is the terminal commit to rebase, or null to rebase the
 /// current branch.
@@ -53,7 +53,8 @@ Pointer<git_rebase> init({
 }
 
 /// Opens an existing rebase that was previously started by either an
-/// invocation of [init] or by another client.
+/// invocation of [init] or by another client. The returned rebase must be
+/// freed with [free].
 ///
 /// Throws a [LibGit2Error] if error occured.
 Pointer<git_rebase> open(Pointer<git_repository> repo) {

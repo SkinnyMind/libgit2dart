@@ -317,6 +317,8 @@ final _finalizer = Finalizer<Pointer<git_remote>>(
 class TransferProgress {
   /// Initializes a new instance of [TransferProgress] class from provided
   /// pointer to transfer progress object in memory.
+  ///
+  /// Note: For internal use.
   const TransferProgress(this._transferProgressPointer);
 
   /// Pointer to memory address for allocated transfer progress object.

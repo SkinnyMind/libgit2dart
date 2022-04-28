@@ -5,10 +5,8 @@ import 'package:libgit2dart/src/bindings/libgit2_bindings.dart';
 import 'package:libgit2dart/src/error.dart';
 import 'package:libgit2dart/src/util.dart';
 
-/// Directly generate a patch from the difference between two buffers.
-///
-/// You can use the standard patch accessor functions to read the patch data,
-/// and you must free the patch when done.
+/// Directly generate a patch from the difference between two buffers. The
+/// returned patch must be freed with [free].
 Pointer<git_patch> fromBuffers({
   String? oldBuffer,
   String? oldAsPath,
@@ -55,10 +53,8 @@ Pointer<git_patch> fromBuffers({
   return result;
 }
 
-/// Directly generate a patch from the difference between two blobs.
-///
-/// You can use the standard patch accessor functions to read the patch data,
-/// and you must free the patch when done.
+/// Directly generate a patch from the difference between two blobs. The
+/// returned patch must be freed with [free].
 Pointer<git_patch> fromBlobs({
   required Pointer<git_blob>? oldBlobPointer,
   String? oldAsPath,
@@ -97,9 +93,7 @@ Pointer<git_patch> fromBlobs({
 }
 
 /// Directly generate a patch from the difference between a blob and a buffer.
-///
-/// You can use the standard patch accessor functions to read the patch data,
-/// and you must free the patch when done.
+/// The returned patch must be freed with [free].
 Pointer<git_patch> fromBlobAndBuffer({
   Pointer<git_blob>? oldBlobPointer,
   String? oldAsPath,
@@ -143,11 +137,8 @@ Pointer<git_patch> fromBlobAndBuffer({
   return result;
 }
 
-/// Return a patch for an entry in the diff list.
-///
-/// The newly created patch object contains the text diffs for the delta. You
-/// have to call [free] when you are done with it. You can use the patch object
-/// to loop over all the hunks and lines in the diff of the one delta.
+/// Return a patch for an entry in the diff list. The returned patch must be
+/// freed with [free].
 ///
 /// Throws a [LibGit2Error] if error occured.
 Pointer<git_patch> fromDiff({

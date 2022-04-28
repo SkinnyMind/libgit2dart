@@ -6,7 +6,7 @@ import 'package:libgit2dart/src/bindings/libgit2_bindings.dart';
 import 'package:libgit2dart/src/error.dart';
 import 'package:libgit2dart/src/util.dart';
 
-/// Add a new working tree.
+/// Add a new working tree. The returned worktree must be freed with [free].
 ///
 /// Add a new working tree for the repository, that is create the required
 /// data structures inside the repository and check out the current HEAD at
@@ -47,7 +47,8 @@ Pointer<git_worktree> create({
   }
 }
 
-/// Lookup a working tree by its name for a given repository.
+/// Lookup a working tree by its name for a given repository. The returned
+/// worktree must be freed with [free].
 ///
 /// Throws a [LibGit2Error] if error occured.
 Pointer<git_worktree> lookup({

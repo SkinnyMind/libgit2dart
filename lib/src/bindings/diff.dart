@@ -5,7 +5,8 @@ import 'package:libgit2dart/src/bindings/libgit2_bindings.dart';
 import 'package:libgit2dart/src/error.dart';
 import 'package:libgit2dart/src/util.dart';
 
-/// Create a diff with the difference between two index objects.
+/// Create a diff with the difference between two index objects. The returned
+/// diff must be freed with [free].
 ///
 /// Throws a [LibGit2Error] if error occured.
 Pointer<git_diff> indexToIndex({
@@ -43,7 +44,8 @@ Pointer<git_diff> indexToIndex({
   }
 }
 
-/// Create a diff between the repository index and the workdir directory.
+/// Create a diff between the repository index and the workdir directory. The
+/// returned diff must be freed with [free].
 Pointer<git_diff> indexToWorkdir({
   required Pointer<git_repository> repoPointer,
   required Pointer<git_index> indexPointer,
@@ -68,7 +70,8 @@ Pointer<git_diff> indexToWorkdir({
   return result;
 }
 
-/// Create a diff between a tree and repository index.
+/// Create a diff between a tree and repository index. The returned diff must
+/// be freed with [free].
 Pointer<git_diff> treeToIndex({
   required Pointer<git_repository> repoPointer,
   required Pointer<git_tree>? treePointer,
@@ -100,7 +103,8 @@ Pointer<git_diff> treeToIndex({
   return result;
 }
 
-/// Create a diff between a tree and the working directory.
+/// Create a diff between a tree and the working directory. The returned
+/// diff must be freed with [free].
 ///
 /// Throws a [LibGit2Error] if error occured.
 Pointer<git_diff> treeToWorkdir({
@@ -137,7 +141,8 @@ Pointer<git_diff> treeToWorkdir({
 }
 
 /// Create a diff between a tree and the working directory using index data to
-/// account for staged deletes, tracked files, etc.
+/// account for staged deletes, tracked files, etc. The returned diff must be
+/// freed with [free].
 ///
 /// This emulates `git diff <tree>` by diffing the tree to the index and the
 /// index to the working directory and blending the results into a single diff
@@ -177,7 +182,8 @@ Pointer<git_diff> treeToWorkdirWithIndex({
   }
 }
 
-/// Create a diff with the difference between two tree objects.
+/// Create a diff with the difference between two tree objects. The returned
+/// diff must be freed with [free].
 ///
 /// Throws a [LibGit2Error] if error occured.
 Pointer<git_diff> treeToTree({
@@ -233,7 +239,8 @@ void merge({
   libgit2.git_diff_merge(ontoPointer, fromPointer);
 }
 
-/// Read the contents of a git patch file into a git diff object.
+/// Read the contents of a git patch file into a git diff object. The returned
+/// diff must be freed with [free].
 ///
 /// The diff object produced is similar to the one that would be produced if
 /// you actually produced it computationally by comparing two trees, however
@@ -334,7 +341,8 @@ String statusChar(int status) {
   return String.fromCharCode(libgit2.git_diff_status_char(status));
 }
 
-/// Accumulate diff statistics for all patches.
+/// Accumulate diff statistics for all patches. The returned diff stats must be
+/// freed with [freeStats].
 ///
 /// Throws a [LibGit2Error] if error occured.
 Pointer<git_diff_stats> stats(Pointer<git_diff> diff) {
@@ -458,7 +466,8 @@ bool apply({
   }
 }
 
-/// Apply a diff to a tree, and return the resulting image as an index.
+/// Apply a diff to a tree, and return the resulting image as an index. The
+/// returned index must be freed.
 ///
 /// Throws a [LibGit2Error] if error occured.
 Pointer<git_index> applyToTree({
@@ -502,7 +511,7 @@ Pointer<git_index> applyToTree({
 }
 
 /// Free a previously allocated diff stats.
-void statsFree(Pointer<git_diff_stats> stats) =>
+void freeStats(Pointer<git_diff_stats> stats) =>
     libgit2.git_diff_stats_free(stats);
 
 /// Free a previously allocated diff.

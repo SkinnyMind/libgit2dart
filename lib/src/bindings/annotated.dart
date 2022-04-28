@@ -5,7 +5,7 @@ import 'package:libgit2dart/src/bindings/libgit2_bindings.dart';
 import 'package:libgit2dart/src/error.dart';
 import 'package:libgit2dart/src/util.dart';
 
-/// Creates an annotated commit from the given commit id. The resulting
+/// Creates an annotated commit from the given commit id. The returned
 /// annotated commit must be freed with [annotatedFree].
 ///
 /// An annotated commit contains information about how it was looked up, which
@@ -38,7 +38,8 @@ Pointer<git_annotated_commit> lookup({
   }
 }
 
-/// Creates an annotated commit from the given reference.
+/// Creates an annotated commit from the given reference. The returned
+/// annotated commit must be freed with [annotatedFree].
 ///
 /// Throws a [LibGit2Error] if error occured.
 Pointer<git_annotated_commit> fromRef({
@@ -63,7 +64,8 @@ Pointer<git_annotated_commit> fromRef({
   }
 }
 
-/// Creates an annotated commit from a revision string.
+/// Creates an annotated commit from a revision string. The returned
+/// annotated commit must be freed with [annotatedFree].
 ///
 /// See `man gitrevisions`, or http://git-scm.com/docs/git-rev-parse.html#_specifying_revisions
 /// for information on the syntax accepted.
@@ -93,7 +95,8 @@ Pointer<git_annotated_commit> fromRevSpec({
   }
 }
 
-/// Creates an annotated commit from the given fetch head data.
+/// Creates an annotated commit from the given fetch head data. The returned
+/// annotated commit must be freed with [annotatedFree].
 ///
 /// Throws a [LibGit2Error] if error occured.
 Pointer<git_annotated_commit> fromFetchHead({

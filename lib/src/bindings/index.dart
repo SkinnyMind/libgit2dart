@@ -10,7 +10,7 @@ import 'package:libgit2dart/src/util.dart';
 /// This index object cannot be read/written to the filesystem, but may be
 /// used to perform in-memory index operations.
 ///
-/// The index must be freed once it's no longer in use.
+/// The returned index must be freed with [free].
 Pointer<git_index> newInMemory() {
   final out = calloc<Pointer<git_index>>();
   libgit2.git_index_new(out);
@@ -51,12 +51,12 @@ String path(Pointer<git_index> index) {
 /// Update the contents of an existing index object in memory by reading from
 /// the hard disk.
 ///
-/// If force is true, this performs a "hard" read that discards in-memory
+/// If [force] is true, this performs a "hard" read that discards in-memory
 /// changes and always reloads the on-disk index data. If there is no on-disk
 /// version, the index will be cleared.
 ///
-/// If force is false, this does a "soft" read that reloads the index data from
-/// disk only if it has changed since the last time it was loaded. Purely
+/// If [force] is false, this does a "soft" read that reloads the index data
+/// from disk only if it has changed since the last time it was loaded. Purely
 /// in-memory index data will be untouched. Be aware: if there are changes on
 /// disk, unwritten in-memory changes are discarded.
 void read({required Pointer<git_index> indexPointer, required bool force}) {
@@ -156,7 +156,7 @@ Pointer<git_index_entry> getByIndex({
 
 /// Get a pointer to one of the entries in the index based on path.
 ///
-///The entry is not modifiable and should not be freed.
+/// The entry is not modifiable and should not be freed.
 ///
 /// Throws [ArgumentError] if nothing found for provided path.
 Pointer<git_index_entry> getByPath({
@@ -214,7 +214,7 @@ void add({
 
 /// Add or update an index entry from a file on disk.
 ///
-/// The file path must be relative to the repository's working folder and must
+/// The file [path] must be relative to the repository's working folder and must
 /// be readable.
 ///
 /// This method will fail in bare index instances.
@@ -282,7 +282,7 @@ void addFromBuffer({
 ///
 /// This method will fail in bare index instances.
 ///
-/// The `pathspec` is a list of file names or shell glob patterns that will be
+/// The [pathspec] is a list of file names or shell glob patterns that will be
 /// matched against files in the repository's working directory. Each file that
 /// matches will be added to the index (either updating an existing entry or
 /// adding a new entry).

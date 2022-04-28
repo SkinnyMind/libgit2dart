@@ -5,9 +5,8 @@ import 'package:libgit2dart/src/bindings/libgit2_bindings.dart';
 import 'package:libgit2dart/src/error.dart';
 import 'package:libgit2dart/src/util.dart';
 
-/// Lookup a commit object from a repository.
-///
-/// The returned object should be released with `free()` when no longer needed.
+/// Lookup a commit object from a repository. The returned commit must be
+/// freed with [free].
 ///
 /// Throws a [LibGit2Error] if error occured.
 Pointer<git_commit> lookup({
@@ -29,6 +28,9 @@ Pointer<git_commit> lookup({
 }
 
 /// Create new commit in the repository.
+///
+/// The [message] will not be cleaned up automatically. I.e. excess whitespace
+/// will not be removed and no trailing newline will be added.
 ///
 /// Throws a [LibGit2Error] if error occured.
 Pointer<git_oid> create({
@@ -195,8 +197,8 @@ Pointer<git_oid> amend({
   }
 }
 
-/// Create an in-memory copy of a commit. The copy must be explicitly free'd or
-/// it will leak.
+/// Create an in-memory copy of a commit. The returned copy must be
+/// freed with [free].
 Pointer<git_commit> duplicate(Pointer<git_commit> source) {
   final out = calloc<Pointer<git_commit>>();
   libgit2.git_commit_dup(out, source);
@@ -211,8 +213,7 @@ Pointer<git_commit> duplicate(Pointer<git_commit> source) {
 /// Get the encoding for the message of a commit, as a string representing a
 /// standard encoding name.
 ///
-/// The encoding may be NULL if the encoding header in the commit is missing;
-/// in that case UTF-8 is assumed.
+/// If the encoding header in the commit is missing UTF-8 is assumed.
 String messageEncoding(Pointer<git_commit> commit) {
   final result = libgit2.git_commit_message_encoding(commit);
   return result == nullptr ? 'utf-8' : result.cast<Utf8>().toDartString();
@@ -313,9 +314,9 @@ Pointer<git_commit> parent({
   }
 }
 
-/// Get the commit object that is the th generation ancestor of the named
-/// commit object, following only the first parents. The returned commit has to
-/// be freed by the caller.
+/// Get the commit object that is the nth generation ancestor of the named
+/// commit object, following only the first parents. The returned commit must
+/// be freed with [free].
 ///
 /// Passing 0 as the generation number returns another instance of the base
 /// commit itself.
@@ -353,6 +354,8 @@ Pointer<git_signature> committer(Pointer<git_commit> commit) {
 }
 
 /// Get the author of a commit.
+///
+/// The returned signature must be freed.
 Pointer<git_signature> author(Pointer<git_commit> commit) {
   return libgit2.git_commit_author(commit);
 }
@@ -363,6 +366,8 @@ Pointer<git_oid> treeOid(Pointer<git_commit> commit) {
 }
 
 /// Get the tree pointed to by a commit.
+///
+/// The returned tree must be freed.
 Pointer<git_tree> tree(Pointer<git_commit> commit) {
   final out = calloc<Pointer<git_tree>>();
   libgit2.git_commit_tree(out, commit);
@@ -392,7 +397,7 @@ void revert({
 /// Reverts the given commit against the given "our" commit, producing an index
 /// that reflects the result of the revert.
 ///
-/// The returned index must be freed explicitly with [free].
+/// The returned index must be freed.
 ///
 /// Throws a [LibGit2Error] if error occured.
 Pointer<git_index> revertCommit({

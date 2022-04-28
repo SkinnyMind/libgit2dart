@@ -8,10 +8,8 @@ import 'package:libgit2dart/src/util.dart';
 /// Get the object type of an object.
 int type(Pointer<git_object> obj) => libgit2.git_object_type(obj);
 
-/// Lookup a reference to one of the objects in a repository.
-///
-/// The generated reference is owned by the repository and should be closed with
-/// the `free()` method instead of free'd manually.
+/// Lookup a reference to one of the objects in a repository. The returned
+/// reference must be freed with [free].
 ///
 /// The 'type' parameter must match the type of the object in the odb; the
 /// method will fail otherwise. The special value 'GIT_OBJECT_ANY' may be

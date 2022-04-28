@@ -6,6 +6,8 @@ import 'package:libgit2dart/src/bindings/note.dart' as bindings;
 class Note {
   /// Initializes a new instance of the [Note] class from provided
   /// pointer to note and annotatedOid objects in memory.
+  ///
+  /// Note: For internal use. Use [Note.lookup] instead.
   Note(this._notePointer, this._annotatedOidPointer) {
     _finalizer.attach(this, _notePointer, detach: this);
   }
@@ -100,6 +102,7 @@ class Note {
   }) {
     bindings.delete(
       repoPointer: repo.pointer,
+      notesRef: notesRef,
       authorPointer: author.pointer,
       committerPointer: committer.pointer,
       oidPointer: annotatedOid.pointer,

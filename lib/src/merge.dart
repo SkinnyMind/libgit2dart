@@ -82,6 +82,10 @@ class Merge {
   /// are written to the index. Callers should inspect the repository's index
   /// after this completes, resolve any conflicts and prepare a commit.
   ///
+  /// For compatibility with git, the repository is put into a merging state.
+  /// Once the commit is done (or if the user wishes to abort), that state
+  /// should be cleared by calling [stateCleanup] method of [Repository] object.
+  ///
   /// [repo] is the repository to merge.
   ///
   /// [commit] is the commit to merge.

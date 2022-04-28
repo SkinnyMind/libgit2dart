@@ -10,6 +10,10 @@ import 'package:meta/meta.dart';
 class Signature {
   /// Initializes a new instance of [Signature] class from provided pointer to
   /// signature object in memory.
+  ///
+  /// Note: For internal use. Instead, use one of:
+  /// - [Signature.create]
+  /// - [Signature.defaultSignature]
   Signature(Pointer<git_signature> pointer) {
     _signaturePointer = bindings.duplicate(pointer);
     _finalizer.attach(this, _signaturePointer, detach: this);
@@ -54,6 +58,8 @@ class Signature {
   late final Pointer<git_signature> _signaturePointer;
 
   /// Pointer to memory address for allocated signature object.
+  ///
+  /// Note: For internal use.
   Pointer<git_signature> get pointer => _signaturePointer;
 
   /// Full name of the author.

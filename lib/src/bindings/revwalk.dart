@@ -6,7 +6,8 @@ import 'package:libgit2dart/src/bindings/libgit2_bindings.dart';
 import 'package:libgit2dart/src/error.dart';
 import 'package:libgit2dart/src/util.dart';
 
-/// Allocate a new revision walker to iterate through a repo.
+/// Allocate a new revision walker to iterate through a repo. The returned
+/// revision walker must be freed with [free].
 ///
 /// This revision walker uses a custom memory pool and an internal commit cache,
 /// so it is relatively expensive to allocate.
@@ -128,7 +129,8 @@ void pushRange({
   }
 }
 
-/// Get the list of commits from the revision walk.
+/// Get the list of commits from the revision walk. The returned commits must
+/// be freed.
 ///
 /// The initial call to this method is not blocking when iterating through a
 /// repo with a time-sorting mode.

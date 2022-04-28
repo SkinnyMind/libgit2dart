@@ -5,12 +5,11 @@ import 'package:libgit2dart/src/bindings/libgit2_bindings.dart';
 import 'package:libgit2dart/src/error.dart';
 import 'package:libgit2dart/src/util.dart';
 
-/// Read the reflog for the given reference.
+/// Read the reflog for the given reference. The returned reflog must be
+/// freed with [free].
 ///
 /// If there is no reflog file for the given reference yet, an empty reflog
 /// object will be returned.
-///
-/// The reflog must be freed manually.
 Pointer<git_reflog> read({
   required Pointer<git_repository> repoPointer,
   required String name,
@@ -29,6 +28,8 @@ Pointer<git_reflog> read({
 
 /// Write an existing in-memory reflog object back to disk using an atomic file
 /// lock.
+///
+/// Throws a [LibGit2Error] if error occured.
 void write(Pointer<git_reflog> reflog) {
   final error = libgit2.git_reflog_write(reflog);
 
@@ -132,7 +133,7 @@ String entryMessage(Pointer<git_reflog_entry> entry) {
   return result == nullptr ? '' : result.cast<Utf8>().toDartString();
 }
 
-/// Get the committer of this entry.
+/// Get the committer of this entry. The returned signature must be freed.
 Pointer<git_signature> entryCommiter(Pointer<git_reflog_entry> entry) {
   return libgit2.git_reflog_entry_committer(entry);
 }

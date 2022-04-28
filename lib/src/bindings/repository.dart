@@ -9,7 +9,8 @@ import 'package:libgit2dart/src/remote.dart';
 import 'package:libgit2dart/src/repository.dart';
 import 'package:libgit2dart/src/util.dart';
 
-/// Attempt to open an already-existing repository at [path].
+/// Attempt to open an already-existing repository at [path]. The returned
+/// repository must be freed with [free].
 ///
 /// The [path] can point to either a normal or bare repository.
 ///
@@ -59,7 +60,8 @@ String discover({
   return result;
 }
 
-/// Creates a new Git repository in the given folder.
+/// Creates a new Git repository in the given folder. The returned repository
+/// must be freed with [free].
 ///
 /// Throws a [LibGit2Error] if error occured.
 Pointer<git_repository> init({
@@ -113,7 +115,8 @@ Pointer<git_repository> init({
   }
 }
 
-/// Clone a remote repository.
+/// Clone a remote repository. The returned repository must be freed with
+/// [free].
 ///
 /// Throws a [LibGit2Error] if error occured.
 Pointer<git_repository> clone({
@@ -247,10 +250,8 @@ bool isEmpty(Pointer<git_repository> repo) {
   }
 }
 
-/// Retrieve and resolve the reference pointed at by HEAD.
-///
-/// The returned `git_reference` will be owned by caller and must be freed
-/// to release the allocated memory and prevent a leak.
+/// Retrieve and resolve the reference pointed at by HEAD. The returned
+/// reference must be freed.
 ///
 /// Throws a [LibGit2Error] if error occured.
 Pointer<git_reference> head(Pointer<git_repository> repo) {
@@ -339,14 +340,12 @@ Map<String, String> identity(Pointer<git_repository> repo) {
   return identity;
 }
 
-/// Get the configuration file for this repository.
+/// Get the configuration file for this repository. The returned config must be
+/// freed.
 ///
 /// If a configuration file has not been set, the default config set for the
 /// repository will be returned, including global and system configurations (if
 /// they are available).
-///
-/// The configuration file must be freed once it's no longer being used by the
-/// user.
 Pointer<git_config> config(Pointer<git_repository> repo) {
   final out = calloc<Pointer<git_config>>();
   libgit2.git_repository_config(out, repo);
@@ -358,14 +357,12 @@ Pointer<git_config> config(Pointer<git_repository> repo) {
   return result;
 }
 
-/// Get a snapshot of the repository's configuration.
+/// Get a snapshot of the repository's configuration. The returned config must
+/// be freed.
 ///
 /// Convenience function to take a snapshot from the repository's configuration.
 /// The contents of this snapshot will not change, even if the underlying
 /// config files are modified.
-///
-/// The configuration file must be freed once it's no longer being used by the
-/// user.
 Pointer<git_config> configSnapshot(Pointer<git_repository> repo) {
   final out = calloc<Pointer<git_config>>();
   libgit2.git_repository_config_snapshot(out, repo);
@@ -377,12 +374,10 @@ Pointer<git_config> configSnapshot(Pointer<git_repository> repo) {
   return result;
 }
 
-/// Get the Index file for this repository.
+/// Get the Index file for this repository. The returned index must be freed.
 ///
 /// If a custom index has not been set, the default index for the repository
 /// will be returned (the one located in `.git/index`).
-///
-/// The index must be freed once it's no longer being used.
 Pointer<git_index> index(Pointer<git_repository> repo) {
   final out = calloc<Pointer<git_index>>();
   libgit2.git_repository_index(out, repo);
@@ -437,12 +432,10 @@ void removeMessage(Pointer<git_repository> repo) {
   libgit2.git_repository_message_remove(repo);
 }
 
-/// Get the Object Database for this repository.
+/// Get the Object Database for this repository. The returned odb must be freed.
 ///
 /// If a custom ODB has not been set, the default database for the repository
 /// will be returned (the one located in `.git/objects`).
-///
-/// The ODB must be freed once it's no longer being used.
 ///
 /// Throws a [LibGit2Error] if error occured.
 Pointer<git_odb> odb(Pointer<git_repository> repo) {
@@ -460,13 +453,12 @@ Pointer<git_odb> odb(Pointer<git_repository> repo) {
   }
 }
 
-/// Get the Reference Database Backend for this repository.
+/// Get the Reference Database Backend for this repository. The returned refdb
+/// must be freed.
 ///
 /// If a custom refsdb has not been set, the default database for the repository
 /// will be returned (the one that manipulates loose and packed references in
 /// the `.git` directory).
-///
-/// The refdb must be freed once it's no longer being used.
 ///
 /// Throws a [LibGit2Error] if error occured.
 Pointer<git_refdb> refdb(Pointer<git_repository> repo) {

@@ -9,6 +9,15 @@ import 'package:libgit2dart/src/util.dart';
 class Diff {
   /// Initializes a new instance of [Diff] class from provided
   /// pointer to diff object in memory.
+  ///
+  /// Note: For internal use. Instead, use one of:
+  /// - [Diff.indexToWorkdir]
+  /// - [Diff.indexToIndex]
+  /// - [Diff.treeToIndex]
+  /// - [Diff.treeToWorkdir]
+  /// - [Diff.treeToWorkdirWithIndex]
+  /// - [Diff.treeToTree]
+  /// - [Diff.parse]
   Diff(this._diffPointer) {
     _finalizer.attach(this, _diffPointer, detach: this);
   }
@@ -262,6 +271,8 @@ class Diff {
   late final Pointer<git_diff> _diffPointer;
 
   /// Pointer to memory address for allocated diff object.
+  ///
+  /// Note: For internal use.
   Pointer<git_diff> get pointer => _diffPointer;
 
   /// How many diff records are there in a diff.
@@ -554,6 +565,8 @@ class DiffFile {
 class DiffStats {
   /// Initializes a new instance of [DiffStats] class from provided
   /// pointer to diff stats object in memory.
+  ///
+  /// Note: For internal use.
   DiffStats(this._diffStatsPointer) {
     _statsFinalizer.attach(this, _diffStatsPointer, detach: this);
   }
@@ -585,7 +598,7 @@ class DiffStats {
 
   /// Releases memory allocated for diff stats object.
   void free() {
-    bindings.statsFree(_diffStatsPointer);
+    bindings.freeStats(_diffStatsPointer);
     _statsFinalizer.detach(this);
   }
 
@@ -598,6 +611,6 @@ class DiffStats {
 
 // coverage:ignore-start
 final _statsFinalizer = Finalizer<Pointer<git_diff_stats>>(
-  (pointer) => bindings.statsFree(pointer),
+  (pointer) => bindings.freeStats(pointer),
 );
 // coverage:ignore-end

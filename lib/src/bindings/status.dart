@@ -6,7 +6,8 @@ import 'package:libgit2dart/src/bindings/libgit2_bindings.dart';
 import 'package:libgit2dart/src/error.dart';
 import 'package:libgit2dart/src/util.dart';
 
-/// Gather file status information and populate the git_status_list.
+/// Gather file status information and populate the git_status_list. The
+/// returned list must be freed with [listFree].
 ///
 /// Throws a [LibGit2Error] if error occured.
 Pointer<git_status_list> listNew(Pointer<git_repository> repo) {

@@ -7,6 +7,8 @@ import 'package:libgit2dart/src/util.dart';
 class Odb {
   /// Initializes a new instance of [Odb] class from provided
   /// pointer to Odb object in memory.
+  ///
+  /// Note: For internal use.
   Odb(this._odbPointer) {
     _finalizer.attach(this, _odbPointer, detach: this);
   }
@@ -25,6 +27,8 @@ class Odb {
   late final Pointer<git_odb> _odbPointer;
 
   /// Pointer to memory address for allocated oid object.
+  ///
+  /// Note: For internal use.
   Pointer<git_odb> get pointer => _odbPointer;
 
   /// Adds an on-disk alternate to an existing Object DB.
@@ -132,7 +136,7 @@ class OdbObject {
 
   /// Releases memory allocated for odbObject object.
   void free() {
-    bindings.objectFree(_odbObjectPointer);
+    bindings.freeObject(_odbObjectPointer);
     _objectfinalizer.detach(this);
   }
 
@@ -144,6 +148,6 @@ class OdbObject {
 
 // coverage:ignore-start
 final _objectfinalizer = Finalizer<Pointer<git_odb_object>>(
-  (pointer) => bindings.objectFree(pointer),
+  (pointer) => bindings.freeObject(pointer),
 );
 // coverage:ignore-end

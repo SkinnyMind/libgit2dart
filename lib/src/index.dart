@@ -9,6 +9,8 @@ import 'package:libgit2dart/src/bindings/libgit2_bindings.dart';
 class Index with IterableMixin<IndexEntry> {
   /// Initializes a new instance of [Index] class from provided
   /// pointer to index object in memory.
+  ///
+  /// Note: For internal use.
   Index(this._indexPointer) {
     _finalizer.attach(this, _indexPointer, detach: this);
   }
@@ -25,6 +27,8 @@ class Index with IterableMixin<IndexEntry> {
   late final Pointer<git_index> _indexPointer;
 
   /// Pointer to memory address for allocated index object.
+  ///
+  /// Note: For internal use.
   Pointer<git_index> get pointer => _indexPointer;
 
   /// Full path to the index file on disk.
@@ -321,11 +325,15 @@ final _finalizer = Finalizer<Pointer<git_index>>(
 
 class IndexEntry {
   /// Initializes a new instance of [IndexEntry] class.
+  ///
+  /// Note: For internal use.
   const IndexEntry(this._indexEntryPointer);
 
   final Pointer<git_index_entry> _indexEntryPointer;
 
   /// Pointer to memory address for allocated index entry object.
+  ///
+  /// Note: For internal use.
   Pointer<git_index_entry> get pointer => _indexEntryPointer;
 
   /// [Oid] of the index entry.
@@ -363,6 +371,8 @@ class IndexEntry {
 
 class ConflictEntry {
   /// Initializes a new instance of [ConflictEntry] class.
+  ///
+  /// Note: For internal use.
   const ConflictEntry(
     this._indexPointer,
     this._path,

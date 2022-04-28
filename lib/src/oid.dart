@@ -11,6 +11,8 @@ import 'package:meta/meta.dart';
 class Oid {
   /// Initializes a new instance of [Oid] class from provided
   /// pointer to Oid object in memory.
+  ///
+  /// Note: For internal use. Use [Oid.fromSHA] instead.
   Oid(this._oidPointer);
 
   /// Initializes a new instance of [Oid] class by determining if an object can
@@ -45,6 +47,8 @@ class Oid {
   late final Pointer<git_oid> _oidPointer;
 
   /// Pointer to memory address for allocated oid object.
+  ///
+  /// Note: For internal use.
   Pointer<git_oid> get pointer => _oidPointer;
 
   /// Hexadecimal SHA string.

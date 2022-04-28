@@ -10,6 +10,10 @@ import 'package:libgit2dart/src/bindings/repository.dart'
 
 class Reference {
   /// Initializes a new instance of the [Reference] class.
+  ///
+  /// Note: For internal use. Instead, use one of:
+  /// - [Reference.create]
+  /// - [Reference.lookup]
   Reference(this._refPointer) {
     _finalizer.attach(this, _refPointer, detach: this);
   }
@@ -78,6 +82,8 @@ class Reference {
   late Pointer<git_reference> _refPointer;
 
   /// Pointer to memory address for allocated reference object.
+  ///
+  /// Note: For internal use.
   Pointer<git_reference> get pointer => _refPointer;
 
   /// Deletes an existing reference with provided [name].

@@ -23,7 +23,8 @@ List<String> list(Pointer<git_repository> repo) {
   return result;
 }
 
-/// Get the information for a particular remote.
+/// Get the information for a particular remote. The returned remote must be
+/// freed with [free].
 ///
 /// The name will be checked for validity.
 ///
@@ -49,7 +50,7 @@ Pointer<git_remote> lookup({
 }
 
 /// Add a remote with the default fetch refspec to the repository's
-/// configuration.
+/// configuration. The returned remote must be freed with [free].
 ///
 /// Throws a [LibGit2Error] if error occured.
 Pointer<git_remote> create({
@@ -76,7 +77,7 @@ Pointer<git_remote> create({
 }
 
 /// Add a remote with the provided fetch refspec to the repository's
-/// configuration.
+/// configuration. The returned remote must be freed with [free].
 ///
 /// Throws a [LibGit2Error] if error occured.
 Pointer<git_remote> createWithFetchSpec({
@@ -551,7 +552,7 @@ void prune({
 /// Free the memory associated with a remote.
 ///
 /// This also disconnects from the remote, if the connection has not been closed
-/// yet (using `disconnect()`).
+/// yet (using [disconnect]).
 void free(Pointer<git_remote> remote) => libgit2.git_remote_free(remote);
 
 /// Initializes git_proxy_options structure.

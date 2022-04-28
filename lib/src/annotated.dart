@@ -83,6 +83,8 @@ class AnnotatedCommit {
   late final Pointer<git_annotated_commit> _annotatedCommitPointer;
 
   /// Pointer to pointer to memory address for allocated commit object.
+  ///
+  /// Note: For internal use.
   Pointer<git_annotated_commit> get pointer => _annotatedCommitPointer;
 
   /// Commit oid that the given annotated commit refers to.

@@ -11,6 +11,12 @@ import 'package:libgit2dart/src/util.dart';
 class Config with IterableMixin<ConfigEntry> {
   /// Initializes a new instance of [Config] class from provided
   /// pointer to config object in memory.
+  ///
+  /// Note: For internal use. Instead, use one of:
+  /// - [Config.open]
+  /// - [Config.system]
+  /// - [Config.global]
+  /// - [Config.xdg]
   Config(this._configPointer) {
     _finalizer.attach(this, _configPointer, detach: this);
   }
@@ -145,6 +151,10 @@ class Config with IterableMixin<ConfigEntry> {
   ///
   /// If [regexp] is present, then the iterator will only iterate over all
   /// values which match the pattern.
+  ///
+  /// The regular expression is applied case-sensitively on the normalized form
+  /// of the variable name: the section and variable parts are lower-cased. The
+  /// subsection is left unchanged.
   List<String> multivar({required String variable, String? regexp}) {
     return bindings.multivarValues(
       configPointer: _configPointer,

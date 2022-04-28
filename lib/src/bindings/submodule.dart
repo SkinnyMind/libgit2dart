@@ -38,12 +38,11 @@ List<String> list(Pointer<git_repository> repo) {
   return result;
 }
 
-/// Lookup submodule information by name or path.
+/// Lookup submodule information by name or path. The returned submodule must
+/// be freed with [free].
 ///
 /// Given either the submodule name or path (they are usually the same), this
 /// returns a structure describing the submodule.
-///
-/// You must call [free] when done with the submodule.
 ///
 /// Throws a [LibGit2Error] if error occured.
 Pointer<git_submodule> lookup({
@@ -67,7 +66,7 @@ Pointer<git_submodule> lookup({
   }
 }
 
-/// Copy submodule info into ".git/config" file.
+/// Copy submodule info into `.git/config` file.
 ///
 /// Just like `git submodule init`, this copies information about the
 /// submodule into `.git/config`.
@@ -143,7 +142,8 @@ Pointer<git_repository> open(Pointer<git_submodule> submodule) {
   }
 }
 
-/// Set up a new git submodule for checkout.
+/// Set up a new git submodule for checkout. The returned submodule must be
+/// freed with [free].
 ///
 /// This does `git submodule add` up to the fetch and checkout of the submodule
 /// contents. It preps a new submodule, creates an entry in `.gitmodules` and

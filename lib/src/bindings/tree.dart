@@ -8,7 +8,8 @@ import 'package:libgit2dart/src/util.dart';
 /// Get the id of a tree.
 Pointer<git_oid> id(Pointer<git_tree> tree) => libgit2.git_tree_id(tree);
 
-/// Lookup a tree object from the repository.
+/// Lookup a tree object from the repository. The returned tree must be freed
+/// with [free].
 ///
 /// Throws a [LibGit2Error] if error occured.
 Pointer<git_tree> lookup({
@@ -74,7 +75,7 @@ Pointer<git_tree_entry> getByName({
 /// its relative path.
 ///
 /// Unlike the other lookup functions, the returned tree entry is owned by the
-/// user and must be freed explicitly with [entryFree].
+/// user and must be freed explicitly with [freeEntry].
 ///
 /// Throws a [LibGit2Error] if error occured.
 Pointer<git_tree_entry> getByPath({
@@ -116,7 +117,7 @@ int entryFilemode(Pointer<git_tree_entry> entry) =>
 ///
 /// IMPORTANT: This function is only needed for tree entries owned by the user,
 /// such as [getByPath].
-void entryFree(Pointer<git_tree_entry> entry) =>
+void freeEntry(Pointer<git_tree_entry> entry) =>
     libgit2.git_tree_entry_free(entry);
 
 /// Close an open tree to release memory.

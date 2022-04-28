@@ -6,6 +6,8 @@ import 'package:libgit2dart/src/bindings/refspec.dart' as bindings;
 class Refspec {
   /// Initializes a new instance of the [Refspec] class
   /// from provided pointer to refspec object in memory.
+  ///
+  /// Note: For internal use.
   const Refspec(this._refspecPointer);
 
   /// Pointer to memory address for allocated refspec object.

@@ -13,6 +13,8 @@ class RevWalk {
   late final Pointer<git_revwalk> _revWalkPointer;
 
   /// Pointer to memory address for allocated [RevWalk] object.
+  ///
+  /// Note: For internal use.
   Pointer<git_revwalk> get pointer => _revWalkPointer;
 
   /// Returns the list of commits from the revision walk.

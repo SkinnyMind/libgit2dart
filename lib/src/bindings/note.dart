@@ -5,9 +5,8 @@ import 'package:libgit2dart/src/bindings/libgit2_bindings.dart';
 import 'package:libgit2dart/src/error.dart';
 import 'package:libgit2dart/src/util.dart';
 
-/// Returns list of notes for repository.
-///
-/// Notes must be freed manually by the user.
+/// Returns list of notes for repository. The returned notes must be freed with
+/// [free].
 ///
 /// Throws a [LibGit2Error] if error occured.
 List<Map<String, Pointer>> list(Pointer<git_repository> repo) {
@@ -49,9 +48,7 @@ List<Map<String, Pointer>> list(Pointer<git_repository> repo) {
   return result;
 }
 
-/// Read the note for an object.
-///
-/// The note must be freed manually by the user.
+/// Read the note for an object. The returned note must be freed with [free].
 ///
 /// Throws a [LibGit2Error] if error occured.
 Pointer<git_note> lookup({
@@ -80,7 +77,7 @@ Pointer<git_note> lookup({
 /// Throws a [LibGit2Error] if error occured.
 Pointer<git_oid> create({
   required Pointer<git_repository> repoPointer,
-  String notesRef = 'refs/notes/commits',
+  required String notesRef,
   required Pointer<git_signature> authorPointer,
   required Pointer<git_signature> committerPointer,
   required Pointer<git_oid> oidPointer,
@@ -118,7 +115,7 @@ Pointer<git_oid> create({
 /// Throws a [LibGit2Error] if error occured.
 void delete({
   required Pointer<git_repository> repoPointer,
-  String notesRef = 'refs/notes/commits',
+  required String notesRef,
   required Pointer<git_signature> authorPointer,
   required Pointer<git_signature> committerPointer,
   required Pointer<git_oid> oidPointer,

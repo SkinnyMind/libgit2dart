@@ -5,16 +5,11 @@ import 'package:libgit2dart/src/bindings/libgit2_bindings.dart';
 import 'package:libgit2dart/src/error.dart';
 import 'package:libgit2dart/src/util.dart';
 
-/// Create a new tree builder.
+/// Create a new tree builder. The returned tree builder must be freed with
+/// [free].
 ///
 /// The tree builder can be used to create or modify trees in memory and write
 /// them as tree objects to the database.
-///
-/// If the source parameter is not null, the tree builder will be initialized
-/// with the entries of the given tree.
-///
-/// If the source parameter is null, the tree builder will start with no entries
-/// and will have to be filled manually.
 ///
 /// Throws a [LibGit2Error] if error occured.
 Pointer<git_treebuilder> create({

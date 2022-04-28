@@ -6,7 +6,8 @@ import 'package:libgit2dart/src/bindings/libgit2_bindings.dart';
 import 'package:libgit2dart/src/error.dart';
 import 'package:libgit2dart/src/util.dart';
 
-/// Lookup a blob object from a repository.
+/// Lookup a blob object from a repository. The returned blob must be freed
+/// with [free].
 ///
 /// Throws a [LibGit2Error] if error occured.
 Pointer<git_blob> lookup({
@@ -40,10 +41,6 @@ bool isBinary(Pointer<git_blob> blob) {
 }
 
 /// Get a read-only buffer with the raw content of a blob.
-///
-/// A pointer to the raw content of a blob is returned; this pointer is owned
-/// internally by the object and shall not be free'd. The pointer may be
-/// invalidated at a later time.
 String content(Pointer<git_blob> blob) {
   return libgit2.git_blob_rawcontent(blob).cast<Utf8>().toDartString();
 }
@@ -126,8 +123,8 @@ Pointer<git_oid> createFromDisk({
   }
 }
 
-/// Create an in-memory copy of a blob. The copy must be explicitly free'd or
-/// it will leak.
+/// Create an in-memory copy of a blob. The returned copy must be freed with
+/// [free].
 Pointer<git_blob> duplicate(Pointer<git_blob> source) {
   final out = calloc<Pointer<git_blob>>();
   libgit2.git_blob_dup(out, source);

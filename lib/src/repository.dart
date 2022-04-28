@@ -18,6 +18,11 @@ class Repository {
   /// pointer to repository object in memory.
   ///
   /// **IMPORTANT**: Should be freed to release allocated memory.
+  ///
+  /// Note: For internal use. Instead, use one of:
+  /// - [Repository.init]
+  /// - [Repository.open]
+  /// - [Repository.clone]
   Repository(this._repoPointer);
 
   /// Creates new git repository at the provided [path].
@@ -151,6 +156,8 @@ class Repository {
   late final Pointer<git_repository> _repoPointer;
 
   /// Pointer to memory address for allocated repository object.
+  ///
+  /// Note: For internal use.
   Pointer<git_repository> get pointer => _repoPointer;
 
   /// Looks for a git repository and return its path. The lookup start from
@@ -686,7 +693,7 @@ class Repository {
       dirtySuffix: dirtySuffix,
     );
 
-    describe_bindings.describeResultFree(describeResult);
+    describe_bindings.free(describeResult);
 
     return result;
   }

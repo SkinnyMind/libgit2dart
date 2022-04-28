@@ -5,10 +5,11 @@ import 'package:libgit2dart/src/bindings/libgit2_bindings.dart';
 import 'package:libgit2dart/src/error.dart';
 import 'package:libgit2dart/src/util.dart';
 
-/// Allocate a new mailmap object.
+/// Allocate a new mailmap object. The returned mailmap must be freed with
+/// [free].
 ///
 /// This object is empty, so you'll have to add a mailmap file before you can
-/// do anything with it. The mailmap must be freed with `free()`.
+/// do anything with it.
 Pointer<git_mailmap> init() {
   final out = calloc<Pointer<git_mailmap>>();
   libgit2.git_mailmap_new(out);
@@ -20,7 +21,8 @@ Pointer<git_mailmap> init() {
   return result;
 }
 
-/// Create a new mailmap instance containing a single mailmap file.
+/// Create a new mailmap instance containing a single mailmap file. The
+/// returned mailmap must be freed with [free].
 Pointer<git_mailmap> fromBuffer(String buffer) {
   final out = calloc<Pointer<git_mailmap>>();
   final bufferC = buffer.toNativeUtf8().cast<Int8>();
@@ -36,7 +38,8 @@ Pointer<git_mailmap> fromBuffer(String buffer) {
 }
 
 /// Create a new mailmap instance from a repository, loading mailmap files based
-/// on the repository's configuration.
+/// on the repository's configuration. The returned mailmap must be freed with
+/// [free].
 ///
 /// Mailmaps are loaded in the following order:
 ///
@@ -89,7 +92,8 @@ List<String> resolve({
   return [realName, realEmail];
 }
 
-/// Resolve a signature to use real names and emails with a mailmap.
+/// Resolve a signature to use real names and emails with a mailmap. The
+/// returned signature must be freed.
 Pointer<git_signature> resolveSignature({
   required Pointer<git_mailmap> mailmapPointer,
   required Pointer<git_signature> signaturePointer,

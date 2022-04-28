@@ -8,6 +8,8 @@ import 'package:libgit2dart/src/bindings/tag.dart' as bindings;
 class Tag {
   /// Initializes a new instance of [Tag] class from provided pointer to
   /// tag object in memory.
+  ///
+  /// Note: For internal use. Use [Tag.lookup] instead.
   Tag(this._tagPointer) {
     _finalizer.attach(this, _tagPointer, detach: this);
   }

@@ -8,6 +8,10 @@ import 'package:libgit2dart/src/bindings/reference.dart' as reference_bindings;
 class Branch {
   /// Initializes a new instance of [Branch] class from provided pointer to
   /// branch object in memory.
+  ///
+  /// Note: For internal use. Instead, use one of:
+  /// - [Branch.create]
+  /// - [Branch.lookup]
   Branch(this._branchPointer) {
     _finalizer.attach(this, _branchPointer, detach: this);
   }
@@ -65,6 +69,8 @@ class Branch {
   late final Pointer<git_reference> _branchPointer;
 
   /// Pointer to memory address for allocated branch object.
+  ///
+  /// Note: For internal use.
   Pointer<git_reference> get pointer => _branchPointer;
 
   /// Returns a list of branches that can be found in a [repo]sitory for

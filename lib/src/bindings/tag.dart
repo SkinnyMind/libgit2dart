@@ -26,7 +26,8 @@ List<String> list(Pointer<git_repository> repo) {
   }
 }
 
-/// Lookup a tag object from the repository.
+/// Lookup a tag object from the repository. The returned tag must be freed
+/// with [free].
 ///
 /// Throws a [LibGit2Error] if error occured.
 Pointer<git_tag> lookup({
@@ -88,7 +89,7 @@ String message(Pointer<git_tag> tag) {
   return result == nullptr ? '' : result.cast<Utf8>().toDartString();
 }
 
-/// Get the tagger (author) of a tag.
+/// Get the tagger (author) of a tag. The returned signature must be freed.
 Pointer<git_signature> tagger(Pointer<git_tag> tag) =>
     libgit2.git_tag_tagger(tag);
 
