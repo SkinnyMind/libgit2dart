@@ -26,11 +26,13 @@ void main() {
   group('Merge', () {
     group('analysis', () {
       test('is up to date when no reference is provided', () {
-        final result = Merge.analysis(repo: repo, theirHead: repo['c68ff54']);
-        expect(result, [
-          {GitMergeAnalysis.upToDate},
-          GitMergePreference.none,
-        ]);
+        expect(
+          Merge.analysis(repo: repo, theirHead: repo['c68ff54']),
+          [
+            {GitMergeAnalysis.upToDate},
+            GitMergePreference.none,
+          ],
+        );
         expect(repo.status, isEmpty);
       });
 
@@ -45,11 +47,10 @@ void main() {
       });
 
       test('is fast forward', () {
-        final ffCommit = Commit.lookup(repo: repo, oid: repo['f17d0d4']);
         final ffBranch = Branch.create(
           repo: repo,
           name: 'ff-branch',
-          target: ffCommit,
+          target: Commit.lookup(repo: repo, oid: repo['f17d0d4']),
         );
 
         final result = Merge.analysis(
@@ -62,9 +63,6 @@ void main() {
           {GitMergeAnalysis.fastForward, GitMergeAnalysis.normal},
         );
         expect(repo.status, isEmpty);
-
-        ffBranch.free();
-        ffCommit.free();
       });
 
       test('is not fast forward and there is no conflicts', () {
@@ -76,10 +74,6 @@ void main() {
 
     test('writes conflicts to index', () {
       final conflictBranch = Branch.lookup(repo: repo, name: 'conflict-branch');
-      final commit = AnnotatedCommit.lookup(
-        repo: repo,
-        oid: conflictBranch.target,
-      );
       final index = repo.index;
 
       final result = Merge.analysis(
@@ -88,7 +82,10 @@ void main() {
       );
       expect(result[0], {GitMergeAnalysis.normal});
 
-      Merge.commit(repo: repo, commit: commit);
+      Merge.commit(
+        repo: repo,
+        commit: AnnotatedCommit.lookup(repo: repo, oid: conflictBranch.target),
+      );
       expect(index.hasConflicts, true);
       expect(index.conflicts.length, 1);
       expect(repo.state, GitRepositoryState.merge);
@@ -114,10 +111,6 @@ void main() {
           'conflict_file': {GitStatus.indexModified}
         },
       );
-
-      index.free();
-      commit.free();
-      conflictBranch.free();
     });
 
     group('merge file from index', () {
@@ -129,19 +122,16 @@ master conflict edit
 conflict branch edit
 >>>>>>> conflict_file
 """;
-        final conflictBranch = Branch.lookup(
-          repo: repo,
-          name: 'conflict-branch',
-        );
-        final commit = AnnotatedCommit.lookup(
-          repo: repo,
-          oid: conflictBranch.target,
-        );
-        final index = repo.index;
 
-        Merge.commit(repo: repo, commit: commit);
+        Merge.commit(
+          repo: repo,
+          commit: AnnotatedCommit.lookup(
+            repo: repo,
+            oid: Branch.lookup(repo: repo, name: 'conflict-branch').target,
+          ),
+        );
 
-        final conflictedFile = index.conflicts['conflict_file']!;
+        final conflictedFile = repo.index.conflicts['conflict_file']!;
         final diff = Merge.fileFromIndex(
           repo: repo,
           ancestor: null,
@@ -150,10 +140,6 @@ conflict branch edit
         );
 
         expect(diff, diffExpected);
-
-        index.free();
-        commit.free();
-        conflictBranch.free();
       });
 
       test('merges with ancestor', () {
@@ -164,21 +150,19 @@ Feature edit on feature branch
 Another feature edit
 >>>>>>> feature_file
 """;
-        final conflictBranch = Branch.lookup(
-          repo: repo,
-          name: 'ancestor-conflict',
-        );
-        final commit = AnnotatedCommit.lookup(
-          repo: repo,
-          oid: conflictBranch.target,
-        );
+
         Checkout.reference(repo: repo, name: 'refs/heads/feature');
         repo.setHead('refs/heads/feature');
-        final index = repo.index;
 
-        Merge.commit(repo: repo, commit: commit);
+        Merge.commit(
+          repo: repo,
+          commit: AnnotatedCommit.lookup(
+            repo: repo,
+            oid: Branch.lookup(repo: repo, name: 'ancestor-conflict').target,
+          ),
+        );
 
-        final conflictedFile = index.conflicts['feature_file']!;
+        final conflictedFile = repo.index.conflicts['feature_file']!;
         final diff = Merge.fileFromIndex(
           repo: repo,
           ancestor: conflictedFile.ancestor,
@@ -187,10 +171,6 @@ Another feature edit
         );
 
         expect(diff, diffExpected);
-
-        index.free();
-        commit.free();
-        conflictBranch.free();
       });
 
       test('merges with provided merge flags and file flags', () {
@@ -201,24 +181,18 @@ master conflict edit
 conflict branch edit
 >>>>>>> conflict_file
 """;
-        final conflictBranch = Branch.lookup(
-          repo: repo,
-          name: 'conflict-branch',
-        );
-        final commit = AnnotatedCommit.lookup(
-          repo: repo,
-          oid: conflictBranch.target,
-        );
-        final index = repo.index;
 
         Merge.commit(
           repo: repo,
-          commit: commit,
+          commit: AnnotatedCommit.lookup(
+            repo: repo,
+            oid: Branch.lookup(repo: repo, name: 'conflict-branch').target,
+          ),
           mergeFlags: {GitMergeFlag.noRecursive},
           fileFlags: {GitMergeFileFlag.ignoreWhitespaceEOL},
         );
 
-        final conflictedFile = index.conflicts['conflict_file']!;
+        final conflictedFile = repo.index.conflicts['conflict_file']!;
         final diff = Merge.fileFromIndex(
           repo: repo,
           ancestor: null,
@@ -227,34 +201,23 @@ conflict branch edit
         );
 
         expect(diff, diffExpected);
-
-        index.free();
-        commit.free();
-        conflictBranch.free();
       });
 
       test('merges with provided merge favor', () {
-        final conflictBranch = Branch.lookup(
+        Merge.commit(
           repo: repo,
-          name: 'conflict-branch',
+          commit: AnnotatedCommit.lookup(
+            repo: repo,
+            oid: Branch.lookup(repo: repo, name: 'conflict-branch').target,
+          ),
+          favor: GitMergeFileFavor.ours,
         );
-        final commit = AnnotatedCommit.lookup(
-          repo: repo,
-          oid: conflictBranch.target,
-        );
-        final index = repo.index;
 
-        Merge.commit(repo: repo, commit: commit, favor: GitMergeFileFavor.ours);
-
-        expect(index.conflicts, isEmpty);
+        expect(repo.index.conflicts, isEmpty);
         expect(
           File(p.join(repo.workdir, 'conflict_file')).readAsStringSync(),
           'master conflict edit\n',
         );
-
-        index.free();
-        commit.free();
-        conflictBranch.free();
       });
 
       test('throws when error occurs', () {
@@ -328,59 +291,40 @@ theirs content
     group('merge commits', () {
       test('merges with default values', () {
         final theirCommit = Commit.lookup(repo: repo, oid: repo['5aecfa0']);
-        final theirCommitAnnotated = AnnotatedCommit.lookup(
-          repo: repo,
-          oid: theirCommit.oid,
-        );
-        final ourCommit = Commit.lookup(repo: repo, oid: repo['1490545']);
 
         final mergeIndex = Merge.commits(
           repo: repo,
-          ourCommit: ourCommit,
+          ourCommit: Commit.lookup(repo: repo, oid: repo['1490545']),
           theirCommit: theirCommit,
         );
         expect(mergeIndex.conflicts, isEmpty);
         final mergeCommitsTree = mergeIndex.writeTree(repo);
 
-        Merge.commit(repo: repo, commit: theirCommitAnnotated);
-        final index = repo.index;
-        expect(index.conflicts, isEmpty);
-        final mergeTree = index.writeTree();
+        Merge.commit(
+          repo: repo,
+          commit: AnnotatedCommit.lookup(repo: repo, oid: theirCommit.oid),
+        );
+        expect(repo.index.conflicts, isEmpty);
+        final mergeTree = repo.index.writeTree();
 
         expect(mergeCommitsTree == mergeTree, true);
-
-        index.free();
-        mergeIndex.free();
-        ourCommit.free();
-        theirCommitAnnotated.free();
-        theirCommit.free();
       });
 
       test('merges with provided favor', () {
-        final theirCommit = Commit.lookup(repo: repo, oid: repo['5aecfa0']);
-        final ourCommit = Commit.lookup(repo: repo, oid: repo['1490545']);
-
         final mergeIndex = Merge.commits(
           repo: repo,
-          ourCommit: ourCommit,
-          theirCommit: theirCommit,
+          ourCommit: Commit.lookup(repo: repo, oid: repo['1490545']),
+          theirCommit: Commit.lookup(repo: repo, oid: repo['5aecfa0']),
           favor: GitMergeFileFavor.ours,
         );
         expect(mergeIndex.conflicts, isEmpty);
-
-        mergeIndex.free();
-        ourCommit.free();
-        theirCommit.free();
       });
 
       test('merges with provided merge and file flags', () {
-        final theirCommit = Commit.lookup(repo: repo, oid: repo['5aecfa0']);
-        final ourCommit = Commit.lookup(repo: repo, oid: repo['1490545']);
-
         final mergeIndex = Merge.commits(
           repo: repo,
-          ourCommit: ourCommit,
-          theirCommit: theirCommit,
+          ourCommit: Commit.lookup(repo: repo, oid: repo['1490545']),
+          theirCommit: Commit.lookup(repo: repo, oid: repo['5aecfa0']),
           mergeFlags: {
             GitMergeFlag.findRenames,
             GitMergeFlag.noRecursive,
@@ -392,10 +336,6 @@ theirs content
           },
         );
         expect(mergeIndex.conflicts, isEmpty);
-
-        mergeIndex.free();
-        ourCommit.free();
-        theirCommit.free();
       });
 
       test('throws when error occurs', () {
@@ -411,31 +351,33 @@ theirs content
     });
 
     test('finds merge base for two commits', () {
-      var base = Merge.base(
-        repo: repo,
-        commits: [repo['1490545'], repo['5aecfa0']],
+      expect(
+        Merge.base(repo: repo, commits: [repo['1490545'], repo['5aecfa0']]).sha,
+        'fc38877b2552ab554752d9a77e1f48f738cca79b',
       );
-      expect(base.sha, 'fc38877b2552ab554752d9a77e1f48f738cca79b');
 
-      base = Merge.base(
-        repo: repo,
-        commits: [repo['f17d0d4'], repo['5aecfa0']],
+      expect(
+        Merge.base(repo: repo, commits: [repo['f17d0d4'], repo['5aecfa0']]).sha,
+        'f17d0d48eae3aa08cecf29128a35e310c97b3521',
       );
-      expect(base.sha, 'f17d0d48eae3aa08cecf29128a35e310c97b3521');
     });
 
     test('finds merge base for many commits', () {
-      var base = Merge.base(
-        repo: repo,
-        commits: [repo['1490545'], repo['0e409d6'], repo['5aecfa0']],
+      expect(
+        Merge.base(
+          repo: repo,
+          commits: [repo['1490545'], repo['0e409d6'], repo['5aecfa0']],
+        ).sha,
+        'fc38877b2552ab554752d9a77e1f48f738cca79b',
       );
-      expect(base.sha, 'fc38877b2552ab554752d9a77e1f48f738cca79b');
 
-      base = Merge.base(
-        repo: repo,
-        commits: [repo['f17d0d4'], repo['5aecfa0'], repo['0e409d6']],
+      expect(
+        Merge.base(
+          repo: repo,
+          commits: [repo['f17d0d4'], repo['5aecfa0'], repo['0e409d6']],
+        ).sha,
+        'f17d0d48eae3aa08cecf29128a35e310c97b3521',
       );
-      expect(base.sha, 'f17d0d48eae3aa08cecf29128a35e310c97b3521');
     });
 
     test('throws when trying to find merge base for invalid oid', () {
@@ -457,11 +399,13 @@ theirs content
     });
 
     test('finds octopus merge base', () {
-      final base = Merge.octopusBase(
-        repo: repo,
-        commits: [repo['1490545'], repo['0e409d6'], repo['5aecfa0']],
+      expect(
+        Merge.octopusBase(
+          repo: repo,
+          commits: [repo['1490545'], repo['0e409d6'], repo['5aecfa0']],
+        ).sha,
+        'fc38877b2552ab554752d9a77e1f48f738cca79b',
       );
-      expect(base.sha, 'fc38877b2552ab554752d9a77e1f48f738cca79b');
     });
 
     test('throws when trying to find octopus merge base for invalid oid', () {
@@ -477,10 +421,6 @@ theirs content
     group('merge trees', () {
       test('merges with default values', () {
         final theirCommit = Commit.lookup(repo: repo, oid: repo['5aecfa0']);
-        final theirCommitAnnotated = AnnotatedCommit.lookup(
-          repo: repo,
-          oid: theirCommit.oid,
-        );
         final ourCommit = Commit.lookup(repo: repo, oid: repo['1490545']);
         final baseCommit = Commit.lookup(
           repo: repo,
@@ -489,36 +429,25 @@ theirs content
             commits: [ourCommit.oid, theirCommit.oid],
           ),
         );
-        final theirTree = theirCommit.tree;
-        final ourTree = ourCommit.tree;
-        final ancestorTree = baseCommit.tree;
 
         final mergeIndex = Merge.trees(
           repo: repo,
-          ancestorTree: ancestorTree,
-          ourTree: ourTree,
-          theirTree: theirTree,
+          ancestorTree: baseCommit.tree,
+          ourTree: ourCommit.tree,
+          theirTree: theirCommit.tree,
         );
         expect(mergeIndex.conflicts, isEmpty);
         final mergeTreesTree = mergeIndex.writeTree(repo);
 
         repo.setHead(ourCommit.oid);
-        Merge.commit(repo: repo, commit: theirCommitAnnotated);
-        final index = repo.index;
-        expect(index.conflicts, isEmpty);
-        final mergeTree = index.writeTree();
+        Merge.commit(
+          repo: repo,
+          commit: AnnotatedCommit.lookup(repo: repo, oid: theirCommit.oid),
+        );
+        expect(repo.index.conflicts, isEmpty);
 
+        final mergeTree = repo.index.writeTree();
         expect(mergeTreesTree == mergeTree, true);
-
-        index.free();
-        mergeIndex.free();
-        ancestorTree.free();
-        ourTree.free();
-        theirTree.free();
-        baseCommit.free();
-        ourCommit.free();
-        theirCommitAnnotated.free();
-        theirCommit.free();
       });
 
       test('merges with provided favor', () {
@@ -531,26 +460,15 @@ theirs content
             commits: [ourCommit.oid, theirCommit.oid],
           ),
         );
-        final theirTree = theirCommit.tree;
-        final ourTree = ourCommit.tree;
-        final ancestorTree = baseCommit.tree;
 
         final mergeIndex = Merge.trees(
           repo: repo,
-          ancestorTree: ancestorTree,
-          ourTree: ourTree,
-          theirTree: theirTree,
+          ancestorTree: baseCommit.tree,
+          ourTree: ourCommit.tree,
+          theirTree: theirCommit.tree,
           favor: GitMergeFileFavor.ours,
         );
         expect(mergeIndex.conflicts, isEmpty);
-
-        mergeIndex.free();
-        ancestorTree.free();
-        ourTree.free();
-        theirTree.free();
-        baseCommit.free();
-        ourCommit.free();
-        theirCommit.free();
       });
 
       test('throws when error occurs', () {
@@ -567,21 +485,17 @@ theirs content
     });
 
     test('cherry-picks commit', () {
-      final cherry = Commit.lookup(repo: repo, oid: repo['5aecfa0']);
-      Merge.cherryPick(repo: repo, commit: cherry);
+      Merge.cherryPick(
+        repo: repo,
+        commit: Commit.lookup(repo: repo, oid: repo['5aecfa0']),
+      );
       expect(repo.state, GitRepositoryState.cherrypick);
       expect(repo.message, 'add another feature file\n');
-      final index = repo.index;
-      expect(index.conflicts, isEmpty);
+      expect(repo.index.conflicts, isEmpty);
 
       // pretend we've done commit
       repo.removeMessage();
-      expect(
-        () => repo.message,
-        throwsA(isA<LibGit2Error>()),
-      );
-
-      index.free();
+      expect(() => repo.message, throwsA(isA<LibGit2Error>()));
     });
 
     test('throws when error occurs', () {

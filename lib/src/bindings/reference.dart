@@ -33,11 +33,14 @@ Pointer<git_reference> resolve(Pointer<git_reference> ref) {
   final out = calloc<Pointer<git_reference>>();
   final error = libgit2.git_reference_resolve(out, ref);
 
+  final result = out.value;
+
+  calloc.free(out);
+
   if (error < 0) {
-    calloc.free(out);
     throw LibGit2Error(libgit2.git_error_last());
   } else {
-    return out.value;
+    return result;
   }
 }
 
@@ -56,13 +59,15 @@ Pointer<git_reference> lookup({
   final nameC = name.toNativeUtf8().cast<Int8>();
   final error = libgit2.git_reference_lookup(out, repoPointer, nameC);
 
+  final result = out.value;
+
+  calloc.free(out);
   calloc.free(nameC);
 
   if (error < 0) {
-    calloc.free(out);
     throw LibGit2Error(libgit2.git_error_last());
   } else {
-    return out.value;
+    return result;
   }
 }
 
@@ -110,14 +115,16 @@ Pointer<git_reference> rename({
     logMessageC,
   );
 
+  final result = out.value;
+
+  calloc.free(out);
   calloc.free(newNameC);
   calloc.free(logMessageC);
 
   if (error < 0) {
-    calloc.free(out);
     throw LibGit2Error(libgit2.git_error_last());
   } else {
-    return out.value;
+    return result;
   }
 }
 
@@ -149,10 +156,10 @@ bool hasLog({
   required Pointer<git_repository> repoPointer,
   required String name,
 }) {
-  final refname = name.toNativeUtf8().cast<Int8>();
-  final result = libgit2.git_reference_has_log(repoPointer, refname);
+  final nameC = name.toNativeUtf8().cast<Int8>();
+  final result = libgit2.git_reference_has_log(repoPointer, nameC);
 
-  calloc.free(refname);
+  calloc.free(nameC);
 
   return result == 1 || false;
 }
@@ -244,14 +251,16 @@ Pointer<git_reference> createDirect({
     logMessageC,
   );
 
+  final result = out.value;
+
+  calloc.free(out);
   calloc.free(nameC);
   calloc.free(logMessageC);
 
   if (error < 0) {
-    calloc.free(out);
     throw LibGit2Error(libgit2.git_error_last());
   } else {
-    return out.value;
+    return result;
   }
 }
 
@@ -303,15 +312,17 @@ Pointer<git_reference> createSymbolic({
     logMessageC,
   );
 
+  final result = out.value;
+
+  calloc.free(out);
   calloc.free(nameC);
   calloc.free(targetC);
   calloc.free(logMessageC);
 
   if (error < 0) {
-    calloc.free(out);
     throw LibGit2Error(libgit2.git_error_last());
   } else {
-    return out.value;
+    return result;
   }
 }
 
@@ -348,13 +359,15 @@ Pointer<git_reference> setTarget({
     logMessageC,
   );
 
+  final result = out.value;
+
+  calloc.free(out);
   calloc.free(logMessageC);
 
   if (error < 0) {
-    calloc.free(out);
     throw LibGit2Error(libgit2.git_error_last());
   } else {
-    return out.value;
+    return result;
   }
 }
 
@@ -386,14 +399,16 @@ Pointer<git_reference> setTargetSymbolic({
     logMessageC,
   );
 
+  final result = out.value;
+
+  calloc.free(out);
   calloc.free(targetC);
   calloc.free(logMessageC);
 
   if (error < 0) {
-    calloc.free(out);
     throw LibGit2Error(libgit2.git_error_last());
   } else {
-    return out.value;
+    return result;
   }
 }
 
@@ -421,11 +436,14 @@ Pointer<git_object> peel({
   final out = calloc<Pointer<git_object>>();
   final error = libgit2.git_reference_peel(out, refPointer, type);
 
+  final result = out.value;
+
+  calloc.free(out);
+
   if (error < 0) {
-    calloc.free(out);
     throw LibGit2Error(libgit2.git_error_last());
   } else {
-    return out.value;
+    return result;
   }
 }
 
@@ -433,7 +451,12 @@ Pointer<git_object> peel({
 Pointer<git_reference> duplicate(Pointer<git_reference> source) {
   final out = calloc<Pointer<git_reference>>();
   libgit2.git_reference_dup(out, source);
-  return out.value;
+
+  final result = out.value;
+
+  calloc.free(out);
+
+  return result;
 }
 
 /// Free the given reference.

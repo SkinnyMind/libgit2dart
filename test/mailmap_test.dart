@@ -142,10 +142,7 @@ Santa Claus <santa.claus@northpole.xx> <me@company.xx>
 
   group('Mailmap', () {
     test('initializes empty mailmap object', () {
-      final empty = Mailmap.empty();
-      expect(empty, isA<Mailmap>());
-
-      empty.free();
+      expect(Mailmap.empty(), isA<Mailmap>());
     });
 
     test('initializes from provided buffer', () {
@@ -158,8 +155,6 @@ Santa Claus <santa.claus@northpole.xx> <me@company.xx>
           [entry['realName'], entry['realEmail']],
         );
       }
-
-      mailmap.free();
     });
 
     test('initializes from repository', () {
@@ -172,8 +167,6 @@ Santa Claus <santa.claus@northpole.xx> <me@company.xx>
           [entry['realName'], entry['realEmail']],
         );
       }
-
-      mailmap.free();
     });
 
     test('throws when initializing from repository and error occurs', () {
@@ -192,8 +185,6 @@ Santa Claus <santa.claus@northpole.xx> <me@company.xx>
           [entry['name'], entry['email']],
         );
       }
-
-      mailmap.free();
     });
 
     test('adds entries and resolves them', () {
@@ -214,21 +205,15 @@ Santa Claus <santa.claus@northpole.xx> <me@company.xx>
           [entry['realName'], entry['realEmail']],
         );
       }
-
-      mailmap.free();
     });
 
     test('throws when trying to add entry with empty replace email', () {
-      final mailmap = Mailmap.empty();
-
       expect(
-        () => mailmap.addEntry(
+        () => Mailmap.empty().addEntry(
           replaceEmail: ' ',
         ),
         throwsA(isA<ArgumentError>()),
       );
-
-      mailmap.free();
     });
 
     test('resolves signature', () {
@@ -249,8 +234,10 @@ Santa Claus <santa.claus@northpole.xx> <me@company.xx>
       );
 
       expect(mailmap.resolveSignature(signature), realSignature);
+    });
 
-      mailmap.free();
+    test('manually releases allocated memory', () {
+      expect(() => Mailmap.empty().free(), returnsNormally);
     });
   });
 }

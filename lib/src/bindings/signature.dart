@@ -22,14 +22,16 @@ Pointer<git_signature> create({
   final emailC = email.toNativeUtf8().cast<Int8>();
   final error = libgit2.git_signature_new(out, nameC, emailC, time, offset);
 
+  final result = out.value;
+
+  calloc.free(out);
   calloc.free(nameC);
   calloc.free(emailC);
 
   if (error < 0) {
-    calloc.free(out);
     throw LibGit2Error(libgit2.git_error_last());
   } else {
-    return out.value;
+    return result;
   }
 }
 
@@ -42,14 +44,16 @@ Pointer<git_signature> now({required String name, required String email}) {
   final emailC = email.toNativeUtf8().cast<Int8>();
   final error = libgit2.git_signature_now(out, nameC, emailC);
 
+  final result = out.value;
+
+  calloc.free(out);
   calloc.free(nameC);
   calloc.free(emailC);
 
   if (error < 0) {
-    calloc.free(out);
     throw LibGit2Error(libgit2.git_error_last());
   } else {
-    return out.value;
+    return result;
   }
 }
 
@@ -61,7 +65,24 @@ Pointer<git_signature> now({required String name, required String email}) {
 Pointer<git_signature> defaultSignature(Pointer<git_repository> repo) {
   final out = calloc<Pointer<git_signature>>();
   libgit2.git_signature_default(out, repo);
-  return out.value;
+
+  final result = out.value;
+
+  calloc.free(out);
+
+  return result;
+}
+
+/// Create a copy of an existing signature.
+Pointer<git_signature> duplicate(Pointer<git_signature> sig) {
+  final out = calloc<Pointer<git_signature>>();
+  libgit2.git_signature_dup(out, sig);
+
+  final result = out.value;
+
+  calloc.free(out);
+
+  return result;
 }
 
 /// Free an existing signature.

@@ -74,9 +74,6 @@ class Merge {
       (e) => analysisInt[1] == e.value,
     );
 
-    head.free();
-    ref.free();
-
     return <Object>[analysisSet, mergePreference];
   }
 
@@ -140,8 +137,6 @@ class Merge {
   /// [fileFlags] is a combination of [GitMergeFileFlag] flags. Defaults to
   /// [GitMergeFileFlag.defaults].
   ///
-  /// **IMPORTANT**: returned index should be freed to release allocated memory.
-  ///
   /// Throws a [LibGit2Error] if error occured.
   static Index commits({
     required Repository repo,
@@ -187,8 +182,6 @@ class Merge {
   ///
   /// [fileFlags] is a combination of [GitMergeFileFlag] flags. Defaults to
   /// [GitMergeFileFlag.defaults].
-  ///
-  /// **IMPORTANT**: returned index should be freed to release allocated memory.
   ///
   /// Throws a [LibGit2Error] if error occured.
   static Index trees({

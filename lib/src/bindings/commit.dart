@@ -17,11 +17,14 @@ Pointer<git_commit> lookup({
   final out = calloc<Pointer<git_commit>>();
   final error = libgit2.git_commit_lookup(out, repoPointer, oidPointer);
 
+  final result = out.value;
+
+  calloc.free(out);
+
   if (error < 0) {
-    calloc.free(out);
     throw LibGit2Error(libgit2.git_error_last());
   } else {
-    return out.value;
+    return result;
   }
 }
 
@@ -124,17 +127,18 @@ String createBuffer({
     parentsC,
   );
 
+  final result = out.ref.ptr.cast<Utf8>().toDartString(length: out.ref.size);
+
+  libgit2.git_buf_dispose(out);
+  calloc.free(out);
   calloc.free(updateRefC);
   calloc.free(messageEncodingC);
   calloc.free(messageC);
   calloc.free(parentsC);
 
   if (error < 0) {
-    calloc.free(out);
     throw LibGit2Error(libgit2.git_error_last());
   } else {
-    final result = out.ref.ptr.cast<Utf8>().toDartString(length: out.ref.size);
-    calloc.free(out);
     return result;
   }
 }
@@ -196,7 +200,12 @@ Pointer<git_oid> amend({
 Pointer<git_commit> duplicate(Pointer<git_commit> source) {
   final out = calloc<Pointer<git_commit>>();
   libgit2.git_commit_dup(out, source);
-  return out.value;
+
+  final result = out.value;
+
+  calloc.free(out);
+
+  return result;
 }
 
 /// Get the encoding for the message of a commit, as a string representing a
@@ -254,14 +263,15 @@ String headerField({
   final fieldC = field.toNativeUtf8().cast<Int8>();
   final error = libgit2.git_commit_header_field(out, commitPointer, fieldC);
 
+  final result = out.ref.ptr.cast<Utf8>().toDartString(length: out.ref.size);
+
+  libgit2.git_buf_dispose(out);
+  calloc.free(out);
   calloc.free(fieldC);
 
   if (error < 0) {
-    calloc.free(out);
     throw LibGit2Error(libgit2.git_error_last());
   } else {
-    final result = out.ref.ptr.cast<Utf8>().toDartString(length: out.ref.size);
-    calloc.free(out);
     return result;
   }
 }
@@ -292,11 +302,14 @@ Pointer<git_commit> parent({
   final out = calloc<Pointer<git_commit>>();
   final error = libgit2.git_commit_parent(out, commitPointer, position);
 
+  final result = out.value;
+
+  calloc.free(out);
+
   if (error < 0) {
-    calloc.free(out);
     throw LibGit2Error(libgit2.git_error_last());
   } else {
-    return out.value;
+    return result;
   }
 }
 
@@ -315,11 +328,14 @@ Pointer<git_commit> nthGenAncestor({
   final out = calloc<Pointer<git_commit>>();
   final error = libgit2.git_commit_nth_gen_ancestor(out, commitPointer, n);
 
+  final result = out.value;
+
+  calloc.free(out);
+
   if (error < 0) {
-    calloc.free(out);
     throw LibGit2Error(libgit2.git_error_last());
   } else {
-    return out.value;
+    return result;
   }
 }
 
@@ -350,7 +366,12 @@ Pointer<git_oid> treeOid(Pointer<git_commit> commit) {
 Pointer<git_tree> tree(Pointer<git_commit> commit) {
   final out = calloc<Pointer<git_tree>>();
   libgit2.git_commit_tree(out, commit);
-  return out.value;
+
+  final result = out.value;
+
+  calloc.free(out);
+
+  return result;
 }
 
 /// Reverts the given commit, producing changes in the index and working
@@ -393,13 +414,15 @@ Pointer<git_index> revertCommit({
     opts,
   );
 
+  final result = out.value;
+
+  calloc.free(out);
   calloc.free(opts);
 
   if (error < 0) {
-    calloc.free(out);
     throw LibGit2Error(libgit2.git_error_last());
   } else {
-    return out.value;
+    return result;
   }
 }
 

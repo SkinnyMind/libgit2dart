@@ -8,7 +8,7 @@ import 'package:libgit2dart/src/util.dart';
 class Libgit2 {
   Libgit2._(); // coverage:ignore-line
 
-  /// Returns libgit2 version number.
+  /// Libgit2 version number.
   static String get version {
     libgit2.git_libgit2_init();
 
@@ -26,7 +26,7 @@ class Libgit2 {
     return version;
   }
 
-  /// Returns list of options libgit2 was compiled with.
+  /// Options libgit2 was compiled with.
   static Set<GitFeature> get features {
     libgit2.git_libgit2_init();
     final featuresInt = libgit2.git_libgit2_features();
@@ -35,15 +35,19 @@ class Libgit2 {
         .toSet();
   }
 
-  /// Returns owner validation setting for repository directories.
+  /// Owner validation setting for repository directories.
   static bool get ownerValidation {
     libgit2.git_libgit2_init();
+
     final out = calloc<Int8>();
     libgit2.git_libgit2_opts(
       git_libgit2_opt_t.GIT_OPT_GET_OWNER_VALIDATION,
       out,
     );
-    return out.value == 1 || false;
+    final result = out.value;
+    calloc.free(out);
+
+    return result == 1 || false;
   }
 
   /// Sets owner validation setting for repository directories.

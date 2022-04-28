@@ -65,8 +65,6 @@ index e69de29..0000000
 
       expect(patch.size(), 14);
       expect(patch.text, blobPatch);
-
-      patch.free();
     });
 
     test('creates from one buffer (add)', () {
@@ -78,8 +76,6 @@ index e69de29..0000000
       );
 
       expect(patch.text, blobPatchAdd);
-
-      patch.free();
     });
 
     test('creates from one buffer (delete)', () {
@@ -91,65 +87,50 @@ index e69de29..0000000
       );
 
       expect(patch.text, blobPatchDelete);
-
-      patch.free();
     });
 
     test('creates from blobs', () {
-      final oldBlob = Blob.lookup(repo: repo, oid: oldBlobOid);
-      final newBlob = Blob.lookup(repo: repo, oid: newBlobOid);
       final patch = Patch.fromBlobs(
-        oldBlob: oldBlob,
-        newBlob: newBlob,
+        oldBlob: Blob.lookup(repo: repo, oid: oldBlobOid),
+        newBlob: Blob.lookup(repo: repo, oid: newBlobOid),
         oldBlobPath: path,
         newBlobPath: path,
       );
 
       expect(patch.text, blobPatch);
-
-      patch.free();
     });
 
     test('creates from one blob (add)', () {
-      final newBlob = Blob.lookup(repo: repo, oid: newBlobOid);
       final patch = Patch.fromBlobs(
         oldBlob: null,
-        newBlob: newBlob,
+        newBlob: Blob.lookup(repo: repo, oid: newBlobOid),
         oldBlobPath: path,
         newBlobPath: path,
       );
 
       expect(patch.text, blobPatchAdd);
-
-      patch.free();
     });
 
     test('creates from one blob (delete)', () {
-      final oldBlob = Blob.lookup(repo: repo, oid: oldBlobOid);
       final patch = Patch.fromBlobs(
-        oldBlob: oldBlob,
+        oldBlob: Blob.lookup(repo: repo, oid: oldBlobOid),
         newBlob: null,
         oldBlobPath: path,
         newBlobPath: path,
       );
 
       expect(patch.text, blobPatchDelete);
-
-      patch.free();
     });
 
     test('creates from blob and buffer', () {
-      final blob = Blob.lookup(repo: repo, oid: oldBlobOid);
       final patch = Patch.fromBlobAndBuffer(
-        blob: blob,
+        blob: Blob.lookup(repo: repo, oid: oldBlobOid),
         buffer: newBuffer,
         blobPath: path,
         bufferPath: path,
       );
 
       expect(patch.text, blobPatch);
-
-      patch.free();
     });
 
     test('creates from empty blob and buffer', () {
@@ -161,8 +142,6 @@ index e69de29..0000000
       );
 
       expect(patch.text, blobPatchAdd);
-
-      patch.free();
     });
 
     test('throws when trying to create from diff and error occurs', () {
@@ -174,6 +153,43 @@ index e69de29..0000000
 
     test('throws when trying to get text of patch and error occurs', () {
       expect(() => Patch(nullptr).text, throwsA(isA<LibGit2Error>()));
+    });
+
+    test('returns hunks in a patch', () {
+      final patch = Patch.fromBuffers(
+        oldBuffer: oldBuffer,
+        newBuffer: newBuffer,
+        oldBufferPath: path,
+        newBufferPath: path,
+      );
+      final hunk = patch.hunks[0];
+
+      expect(patch.hunks.length, 1);
+      expect(hunk.linesCount, 1);
+      expect(hunk.oldStart, 0);
+      expect(hunk.oldLines, 0);
+      expect(hunk.newStart, 1);
+      expect(hunk.newLines, 1);
+      expect(hunk.header, '@@ -0,0 +1 @@\n');
+    });
+
+    test('returns lines in a hunk', () {
+      final patch = Patch.fromBuffers(
+        oldBuffer: oldBuffer,
+        newBuffer: newBuffer,
+        oldBufferPath: path,
+        newBufferPath: path,
+      );
+      final hunk = patch.hunks[0];
+      final line = hunk.lines[0];
+
+      expect(hunk.lines.length, 1);
+      expect(line.origin, GitDiffLine.addition);
+      expect(line.oldLineNumber, -1);
+      expect(line.newLineNumber, 1);
+      expect(line.numLines, 1);
+      expect(line.contentOffset, 0);
+      expect(line.content, 'Feature edit\n');
     });
 
     test('returns line counts of each type in a patch', () {
@@ -189,11 +205,21 @@ index e69de29..0000000
       expect(stats.insertions, equals(1));
       expect(stats.deletions, equals(0));
       expect(stats.toString(), contains('PatchStats{'));
-
-      patch.free();
     });
 
-    test('returns string representation of Patch object', () {
+    test('manually releases allocated memory', () {
+      final patch = Patch.fromBuffers(
+        oldBuffer: oldBuffer,
+        newBuffer: newBuffer,
+        oldBufferPath: path,
+        newBufferPath: path,
+      );
+      expect(() => patch.free(), returnsNormally);
+    });
+
+    test(
+        'returns string representation of Patch, DiffHunk and DiffLine objects',
+        () {
       final patch = Patch.fromBuffers(
         oldBuffer: oldBuffer,
         newBuffer: newBuffer,
@@ -202,8 +228,8 @@ index e69de29..0000000
       );
 
       expect(patch.toString(), contains('Patch{'));
-
-      patch.free();
+      expect(patch.hunks[0].toString(), contains('DiffHunk{'));
+      expect(patch.hunks[0].lines[0].toString(), contains('DiffLine{'));
     });
   });
 }

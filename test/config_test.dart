@@ -32,7 +32,6 @@ void main() {
   });
 
   tearDown(() {
-    config.free();
     File(filePath).deleteSync();
   });
 
@@ -45,9 +44,7 @@ void main() {
         'opens the global, XDG and system configuration files '
         '(if they are present) if no path provided', () {
       try {
-        final config = Config.open();
-        expect(config, isA<Config>());
-        config.free();
+        expect(Config.open(), isA<Config>());
       } catch (e) {
         expect(() => Config.open(), throwsA(isA<LibGit2Error>()));
       }
@@ -59,9 +56,7 @@ void main() {
 
     test('opens system file or throws is there is none', () {
       try {
-        final config = Config.system();
-        expect(config, isA<Config>());
-        config.free();
+        expect(Config.system(), isA<Config>());
       } catch (e) {
         expect(() => Config.system(), throwsA(isA<LibGit2Error>()));
       }
@@ -69,9 +64,7 @@ void main() {
 
     test('opens global file or throws is there is none', () {
       try {
-        final config = Config.global();
-        expect(config, isA<Config>());
-        config.free();
+        expect(Config.global(), isA<Config>());
       } catch (e) {
         expect(() => Config.global(), throwsA(isA<LibGit2Error>()));
       }
@@ -79,18 +72,14 @@ void main() {
 
     test('opens xdg file or throws is there is none', () {
       try {
-        final config = Config.xdg();
-        expect(config, isA<Config>());
-        config.free();
+        expect(Config.xdg(), isA<Config>());
       } catch (e) {
         expect(() => Config.xdg(), throwsA(isA<LibGit2Error>()));
       }
     });
 
     test('returns config snapshot', () {
-      final snapshot = config.snapshot;
-      expect(snapshot, isA<Config>());
-      snapshot.free();
+      expect(config.snapshot, isA<Config>());
     });
 
     test('returns config entries and their values', () {
@@ -217,6 +206,11 @@ void main() {
           <String>[],
         );
       });
+    });
+
+    test('manually releases allocated memory', () {
+      final config = Config.open(filePath);
+      expect(() => config.free(), returnsNormally);
     });
 
     test('returns string representation of ConfigEntry object', () {

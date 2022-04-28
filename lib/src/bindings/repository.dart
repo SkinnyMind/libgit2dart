@@ -19,13 +19,15 @@ Pointer<git_repository> open(String path) {
   final pathC = path.toNativeUtf8().cast<Int8>();
   final error = libgit2.git_repository_open(out, pathC);
 
+  final result = out.value;
+
+  calloc.free(out);
   calloc.free(pathC);
 
   if (error < 0) {
-    calloc.free(out);
     throw LibGit2Error(libgit2.git_error_last());
   } else {
-    return out.value;
+    return result;
   }
 }
 
@@ -50,7 +52,10 @@ String discover({
   calloc.free(ceilingDirsC);
 
   final result = out.ref.ptr.cast<Utf8>().toDartString(length: out.ref.size);
+
+  libgit2.git_buf_dispose(out);
   calloc.free(out);
+
   return result;
 }
 
@@ -90,6 +95,9 @@ Pointer<git_repository> init({
 
   final error = libgit2.git_repository_init_ext(out, pathC, opts);
 
+  final result = out.value;
+
+  calloc.free(out);
   calloc.free(pathC);
   calloc.free(workdirPathC);
   calloc.free(descriptionC);
@@ -99,10 +107,9 @@ Pointer<git_repository> init({
   calloc.free(opts);
 
   if (error < 0) {
-    calloc.free(out);
     throw LibGit2Error(libgit2.git_error_last());
   } else {
-    return out.value;
+    return result;
   }
 }
 
@@ -113,8 +120,9 @@ Pointer<git_repository> clone({
   required String url,
   required String localPath,
   required bool bare,
-  Remote Function(Repository, String, String)? remote,
-  Repository Function(String, bool)? repository,
+  RemoteCallback? remoteCallback,
+  // Repository Function(String, bool)? repository,
+  RepositoryCallback? repositoryCallback,
   String? checkoutBranch,
   required Callbacks callbacks,
 }) {
@@ -138,14 +146,14 @@ Pointer<git_repository> clone({
   const except = -1;
 
   git_remote_create_cb remoteCb = nullptr;
-  if (remote != null) {
-    RemoteCallbacks.remoteFunction = remote;
+  if (remoteCallback != null) {
+    RemoteCallbacks.remoteCbData = remoteCallback;
     remoteCb = Pointer.fromFunction(RemoteCallbacks.remoteCb, except);
   }
 
   git_repository_create_cb repositoryCb = nullptr;
-  if (repository != null) {
-    RemoteCallbacks.repositoryFunction = repository;
+  if (repositoryCallback != null) {
+    RemoteCallbacks.repositoryCbData = repositoryCallback;
     repositoryCb = Pointer.fromFunction(RemoteCallbacks.repositoryCb, except);
   }
 
@@ -157,6 +165,9 @@ Pointer<git_repository> clone({
 
   final error = libgit2.git_clone(out, urlC, localPathC, cloneOptions);
 
+  final result = out.value;
+
+  calloc.free(out);
   calloc.free(urlC);
   calloc.free(localPathC);
   calloc.free(checkoutBranchC);
@@ -165,10 +176,9 @@ Pointer<git_repository> clone({
   RemoteCallbacks.reset();
 
   if (error < 0) {
-    calloc.free(out);
     throw LibGit2Error(libgit2.git_error_last());
   } else {
-    return out.value;
+    return result;
   }
 }
 
@@ -211,9 +221,9 @@ void setNamespace({
   required Pointer<git_repository> repoPointer,
   String? namespace,
 }) {
-  final nmspace = namespace?.toNativeUtf8().cast<Int8>() ?? nullptr;
-  libgit2.git_repository_set_namespace(repoPointer, nmspace);
-  calloc.free(nmspace);
+  final namespaceC = namespace?.toNativeUtf8().cast<Int8>() ?? nullptr;
+  libgit2.git_repository_set_namespace(repoPointer, namespaceC);
+  calloc.free(namespaceC);
 }
 
 /// Check if a repository is bare or not.
@@ -247,11 +257,14 @@ Pointer<git_reference> head(Pointer<git_repository> repo) {
   final out = calloc<Pointer<git_reference>>();
   final error = libgit2.git_repository_head(out, repo);
 
+  final result = out.value;
+
+  calloc.free(out);
+
   if (error < 0) {
-    calloc.free(out);
     throw LibGit2Error(libgit2.git_error_last());
   } else {
-    return out.value;
+    return result;
   }
 }
 
@@ -337,7 +350,12 @@ Map<String, String> identity(Pointer<git_repository> repo) {
 Pointer<git_config> config(Pointer<git_repository> repo) {
   final out = calloc<Pointer<git_config>>();
   libgit2.git_repository_config(out, repo);
-  return out.value;
+
+  final result = out.value;
+
+  calloc.free(out);
+
+  return result;
 }
 
 /// Get a snapshot of the repository's configuration.
@@ -351,7 +369,12 @@ Pointer<git_config> config(Pointer<git_repository> repo) {
 Pointer<git_config> configSnapshot(Pointer<git_repository> repo) {
   final out = calloc<Pointer<git_config>>();
   libgit2.git_repository_config_snapshot(out, repo);
-  return out.value;
+
+  final result = out.value;
+
+  calloc.free(out);
+
+  return result;
 }
 
 /// Get the Index file for this repository.
@@ -363,7 +386,12 @@ Pointer<git_config> configSnapshot(Pointer<git_repository> repo) {
 Pointer<git_index> index(Pointer<git_repository> repo) {
   final out = calloc<Pointer<git_index>>();
   libgit2.git_repository_index(out, repo);
-  return out.value;
+
+  final result = out.value;
+
+  calloc.free(out);
+
+  return result;
 }
 
 /// Determine if the repository was a shallow clone.
@@ -392,12 +420,14 @@ String message(Pointer<git_repository> repo) {
   final out = calloc<git_buf>();
   final error = libgit2.git_repository_message(out, repo);
 
+  final result = out.ref.ptr.cast<Utf8>().toDartString(length: out.ref.size);
+
+  libgit2.git_buf_dispose(out);
+  calloc.free(out);
+
   if (error < 0) {
-    calloc.free(out);
     throw LibGit2Error(libgit2.git_error_last());
   } else {
-    final result = out.ref.ptr.cast<Utf8>().toDartString(length: out.ref.size);
-    calloc.free(out);
     return result;
   }
 }
@@ -419,11 +449,14 @@ Pointer<git_odb> odb(Pointer<git_repository> repo) {
   final out = calloc<Pointer<git_odb>>();
   final error = libgit2.git_repository_odb(out, repo);
 
+  final result = out.value;
+
+  calloc.free(out);
+
   if (error < 0) {
-    calloc.free(out);
     throw LibGit2Error(libgit2.git_error_last());
   } else {
-    return out.value;
+    return result;
   }
 }
 
@@ -440,11 +473,14 @@ Pointer<git_refdb> refdb(Pointer<git_repository> repo) {
   final out = calloc<Pointer<git_refdb>>();
   final error = libgit2.git_repository_refdb(out, repo);
 
+  final result = out.value;
+
+  calloc.free(out);
+
   if (error < 0) {
-    calloc.free(out);
     throw LibGit2Error(libgit2.git_error_last());
   } else {
-    return out.value;
+    return result;
   }
 }
 
@@ -516,15 +552,15 @@ void setWorkdir({
   required String path,
   required bool updateGitlink,
 }) {
-  final workdir = path.toNativeUtf8().cast<Int8>();
+  final workdirC = path.toNativeUtf8().cast<Int8>();
   final updateGitlinkC = updateGitlink ? 1 : 0;
   final error = libgit2.git_repository_set_workdir(
     repoPointer,
-    workdir,
+    workdirC,
     updateGitlinkC,
   );
 
-  calloc.free(workdir);
+  calloc.free(workdirC);
 
   if (error < 0) {
     throw LibGit2Error(libgit2.git_error_last());

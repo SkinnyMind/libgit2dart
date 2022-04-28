@@ -6,7 +6,9 @@ import 'package:libgit2dart/src/bindings/note.dart' as bindings;
 class Note {
   /// Initializes a new instance of the [Note] class from provided
   /// pointer to note and annotatedOid objects in memory.
-  Note(this._notePointer, this._annotatedOidPointer);
+  Note(this._notePointer, this._annotatedOidPointer) {
+    _finalizer.attach(this, _notePointer, detach: this);
+  }
 
   /// Lookups the note for an [annotatedOid].
   ///
@@ -15,8 +17,6 @@ class Note {
   /// [annotatedOid] is the [Oid] of the git object to read the note from.
   ///
   /// [notesRef] is the canonical name of the reference to use. Defaults to "refs/notes/commits".
-  ///
-  /// **IMPORTANT**: Notes must be freed to release allocated memory.
   ///
   /// Throws a [LibGit2Error] if error occured.
   Note.lookup({
@@ -30,6 +30,7 @@ class Note {
       notesRef: notesRef,
     );
     _annotatedOidPointer = annotatedOid.pointer;
+    _finalizer.attach(this, _notePointer, detach: this);
   }
 
   /// Pointer to memory address for allocated note object.
@@ -107,8 +108,6 @@ class Note {
 
   /// Returns list of notes for [repo]sitory.
   ///
-  /// **IMPORTANT**: Notes must be freed to release allocated memory.
-  ///
   /// Throws a [LibGit2Error] if error occured.
   static List<Note> list(Repository repo) {
     final notesPointers = bindings.list(repo.pointer);
@@ -132,10 +131,19 @@ class Note {
   Oid get annotatedOid => Oid(_annotatedOidPointer);
 
   /// Releases memory allocated for note object.
-  void free() => bindings.free(_notePointer);
+  void free() {
+    bindings.free(_notePointer);
+    _finalizer.detach(this);
+  }
 
   @override
   String toString() {
     return 'Note{oid: $oid, message: $message, annotatedOid: $annotatedOid}';
   }
 }
+
+// coverage:ignore-start
+final _finalizer = Finalizer<Pointer<git_note>>(
+  (pointer) => bindings.free(pointer),
+);
+// coverage:ignore-end

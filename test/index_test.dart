@@ -20,7 +20,6 @@ void main() {
   });
 
   tearDown(() {
-    index.free();
     repo.free();
     tmpDir.deleteSync(recursive: true);
   });
@@ -152,30 +151,25 @@ void main() {
         final bare = Repository.open(
           p.join('test', 'assets', 'empty_bare.git'),
         );
-        final bareIndex = bare.index;
+        expect(() => bare.index.add('config'), throwsA(isA<LibGit2Error>()));
 
-        expect(() => bareIndex.add('config'), throwsA(isA<LibGit2Error>()));
-
-        bareIndex.free();
         bare.free();
       });
     });
 
     group('addFromBuffer()', () {
       test('updates index entry from a buffer', () {
-        final entry = index['file'];
         expect(repo.status, isEmpty);
 
-        index.addFromBuffer(entry: entry, buffer: 'updated');
+        index.addFromBuffer(entry: index['file'], buffer: 'updated');
         expect(repo.status, {
           'file': {GitStatus.indexModified, GitStatus.wtModified}
         });
       });
 
       test('throws when trying to update entry and error occurs', () {
-        final nullEntry = IndexEntry(nullptr);
         expect(
-          () => index.addFromBuffer(entry: nullEntry, buffer: ''),
+          () => index.addFromBuffer(entry: IndexEntry(nullptr), buffer: ''),
           throwsA(isA<LibGit2Error>()),
         );
       });
@@ -208,11 +202,8 @@ void main() {
         final bare = Repository.open(
           p.join('test', 'assets', 'empty_bare.git'),
         );
-        final bareIndex = bare.index;
+        expect(() => bare.index.addAll([]), throwsA(isA<LibGit2Error>()));
 
-        expect(() => bareIndex.addAll([]), throwsA(isA<LibGit2Error>()));
-
-        bareIndex.free();
         bare.free();
       });
     });
@@ -234,14 +225,11 @@ void main() {
         final bare = Repository.open(
           p.join('test', 'assets', 'empty_bare.git'),
         );
-        final bareIndex = bare.index;
-
         expect(
-          () => bareIndex.updateAll(['not_there']),
+          () => bare.index.updateAll(['not_there']),
           throwsA(isA<LibGit2Error>()),
         );
 
-        bareIndex.free();
         bare.free();
       });
     });
@@ -293,9 +281,8 @@ void main() {
     });
 
     test('reads tree with provided SHA hex', () {
-      final tree = Tree.lookup(repo: repo, oid: repo['df2b8fc']);
       expect(index.length, 4);
-      index.readTree(tree);
+      index.readTree(Tree.lookup(repo: repo, oid: repo['df2b8fc']));
 
       expect(index.length, 1);
 
@@ -305,8 +292,7 @@ void main() {
     });
 
     test('writes tree', () {
-      final oid = index.writeTree();
-      expect(oid.sha, 'a8ae3dd59e6e1802c6f78e05e301bfd57c9f334f');
+      expect(index.writeTree().sha, 'a8ae3dd59e6e1802c6f78e05e301bfd57c9f334f');
     });
 
     test('throws when trying to write tree to invalid repository', () {
@@ -320,20 +306,16 @@ void main() {
       final tmpDir = setupRepo(Directory(mergeRepoPath));
       final repo = Repository.open(tmpDir.path);
 
-      final conflictBranch = Branch.lookup(repo: repo, name: 'conflict-branch');
-      final index = repo.index;
-      final commit = AnnotatedCommit.lookup(
+      Merge.commit(
         repo: repo,
-        oid: conflictBranch.target,
+        commit: AnnotatedCommit.lookup(
+          repo: repo,
+          oid: Branch.lookup(repo: repo, name: 'conflict-branch').target,
+        ),
       );
 
-      Merge.commit(repo: repo, commit: commit);
+      expect(() => repo.index.writeTree(), throwsA(isA<LibGit2Error>()));
 
-      expect(() => index.writeTree(), throwsA(isA<LibGit2Error>()));
-
-      commit.free();
-      conflictBranch.free();
-      index.free();
       repo.free();
       tmpDir.deleteSync(recursive: true);
     });
@@ -356,30 +338,24 @@ void main() {
       final repoDir = setupRepo(Directory(mergeRepoPath));
       final conflictRepo = Repository.open(repoDir.path);
 
-      final conflictBranch = Branch.lookup(
-        repo: conflictRepo,
-        name: 'ancestor-conflict',
-      );
-      final commit = AnnotatedCommit.lookup(
-        repo: conflictRepo,
-        oid: conflictBranch.target,
-      );
-
       Checkout.reference(repo: conflictRepo, name: 'refs/heads/feature');
       conflictRepo.setHead('refs/heads/feature');
 
-      Merge.commit(repo: conflictRepo, commit: commit);
+      Merge.commit(
+        repo: conflictRepo,
+        commit: AnnotatedCommit.lookup(
+          repo: conflictRepo,
+          oid: Branch.lookup(repo: conflictRepo, name: 'ancestor-conflict')
+              .target,
+        ),
+      );
 
-      final index = conflictRepo.index;
-      final conflictedFile = index.conflicts['feature_file']!;
+      final conflictedFile = conflictRepo.index.conflicts['feature_file']!;
       expect(conflictedFile.ancestor?.path, 'feature_file');
       expect(conflictedFile.our?.path, 'feature_file');
       expect(conflictedFile.their?.path, 'feature_file');
       expect(conflictedFile.toString(), contains('ConflictEntry{'));
 
-      index.free();
-      commit.free();
-      conflictBranch.free();
       conflictRepo.free();
       repoDir.deleteSync(recursive: true);
     });
@@ -388,27 +364,23 @@ void main() {
       final repoDir = setupRepo(Directory(mergeRepoPath));
       final conflictRepo = Repository.open(repoDir.path);
 
-      final conflictBranch = Branch.lookup(
+      Merge.commit(
         repo: conflictRepo,
-        name: 'conflict-branch',
-      );
-      final commit = AnnotatedCommit.lookup(
-        repo: conflictRepo,
-        oid: conflictBranch.target,
+        commit: AnnotatedCommit.lookup(
+          repo: conflictRepo,
+          oid: Branch.lookup(
+            repo: conflictRepo,
+            name: 'conflict-branch',
+          ).target,
+        ),
       );
 
-      Merge.commit(repo: conflictRepo, commit: commit);
-
-      final index = conflictRepo.index;
-      final conflictedFile = index.conflicts['conflict_file']!;
+      final conflictedFile = conflictRepo.index.conflicts['conflict_file']!;
       expect(conflictedFile.ancestor?.path, null);
       expect(conflictedFile.our?.path, 'conflict_file');
       expect(conflictedFile.their?.path, 'conflict_file');
       expect(conflictedFile.toString(), contains('ConflictEntry{'));
 
-      index.free();
-      commit.free();
-      conflictBranch.free();
       conflictRepo.free();
       repoDir.deleteSync(recursive: true);
     });
@@ -417,30 +389,24 @@ void main() {
       final repoDir = setupRepo(Directory(mergeRepoPath));
       final conflictRepo = Repository.open(repoDir.path);
 
-      final conflictBranch = Branch.lookup(
-        repo: conflictRepo,
-        name: 'ancestor-conflict',
-      );
-      final commit = AnnotatedCommit.lookup(
-        repo: conflictRepo,
-        oid: conflictBranch.target,
-      );
-
       Checkout.reference(repo: conflictRepo, name: 'refs/heads/our-conflict');
       conflictRepo.setHead('refs/heads/our-conflict');
 
-      Merge.commit(repo: conflictRepo, commit: commit);
+      Merge.commit(
+        repo: conflictRepo,
+        commit: AnnotatedCommit.lookup(
+          repo: conflictRepo,
+          oid: Branch.lookup(repo: conflictRepo, name: 'ancestor-conflict')
+              .target,
+        ),
+      );
 
-      final index = conflictRepo.index;
-      final conflictedFile = index.conflicts['feature_file']!;
+      final conflictedFile = conflictRepo.index.conflicts['feature_file']!;
       expect(conflictedFile.ancestor?.path, 'feature_file');
       expect(conflictedFile.our?.path, null);
       expect(conflictedFile.their?.path, 'feature_file');
       expect(conflictedFile.toString(), contains('ConflictEntry{'));
 
-      index.free();
-      commit.free();
-      conflictBranch.free();
       conflictRepo.free();
       repoDir.deleteSync(recursive: true);
     });
@@ -449,30 +415,23 @@ void main() {
       final repoDir = setupRepo(Directory(mergeRepoPath));
       final conflictRepo = Repository.open(repoDir.path);
 
-      final conflictBranch = Branch.lookup(
-        repo: conflictRepo,
-        name: 'their-conflict',
-      );
-      final commit = AnnotatedCommit.lookup(
-        repo: conflictRepo,
-        oid: conflictBranch.target,
-      );
-
       Checkout.reference(repo: conflictRepo, name: 'refs/heads/feature');
       conflictRepo.setHead('refs/heads/feature');
 
-      Merge.commit(repo: conflictRepo, commit: commit);
+      Merge.commit(
+        repo: conflictRepo,
+        commit: AnnotatedCommit.lookup(
+          repo: conflictRepo,
+          oid: Branch.lookup(repo: conflictRepo, name: 'their-conflict').target,
+        ),
+      );
 
-      final index = conflictRepo.index;
-      final conflictedFile = index.conflicts['feature_file']!;
+      final conflictedFile = conflictRepo.index.conflicts['feature_file']!;
       expect(conflictedFile.ancestor?.path, 'feature_file');
       expect(conflictedFile.our?.path, 'feature_file');
       expect(conflictedFile.their?.path, null);
       expect(conflictedFile.toString(), contains('ConflictEntry{'));
 
-      index.free();
-      commit.free();
-      conflictBranch.free();
       conflictRepo.free();
       repoDir.deleteSync(recursive: true);
     });
@@ -481,17 +440,19 @@ void main() {
       final repoDir = setupRepo(Directory(mergeRepoPath));
       final conflictRepo = Repository.open(repoDir.path);
 
-      final conflictBranch = Branch.lookup(
-        repo: conflictRepo,
-        name: 'conflict-branch',
-      );
-      final commit = AnnotatedCommit.lookup(
-        repo: conflictRepo,
-        oid: conflictBranch.target,
-      );
       final index = conflictRepo.index;
 
-      Merge.commit(repo: conflictRepo, commit: commit);
+      Merge.commit(
+        repo: conflictRepo,
+        commit: AnnotatedCommit.lookup(
+          repo: conflictRepo,
+          oid: Branch.lookup(
+            repo: conflictRepo,
+            name: 'conflict-branch',
+          ).target,
+        ),
+      );
+
       expect(index.hasConflicts, true);
       expect(index['.gitignore'].isConflict, false);
       expect(index.conflicts['conflict_file']!.our!.isConflict, true);
@@ -499,13 +460,11 @@ void main() {
 
       final conflictedFile = index.conflicts['conflict_file']!;
       conflictedFile.remove();
+
       expect(index.hasConflicts, false);
       expect(index.conflicts, isEmpty);
       expect(index.conflicts['conflict_file'], null);
 
-      index.free();
-      commit.free();
-      conflictBranch.free();
       conflictRepo.free();
       repoDir.deleteSync(recursive: true);
     });
@@ -522,27 +481,27 @@ void main() {
       final repoDir = setupRepo(Directory(mergeRepoPath));
       final conflictRepo = Repository.open(repoDir.path);
 
-      final conflictBranch = Branch.lookup(
-        repo: conflictRepo,
-        name: 'conflict-branch',
-      );
-      final commit = AnnotatedCommit.lookup(
-        repo: conflictRepo,
-        oid: conflictBranch.target,
-      );
       final index = conflictRepo.index;
 
-      Merge.commit(repo: conflictRepo, commit: commit);
+      Merge.commit(
+        repo: conflictRepo,
+        commit: AnnotatedCommit.lookup(
+          repo: conflictRepo,
+          oid: Branch.lookup(
+            repo: conflictRepo,
+            name: 'conflict-branch',
+          ).target,
+        ),
+      );
+
       expect(index.hasConflicts, true);
       expect(index.conflicts.length, 1);
 
       index.cleanupConflict();
+
       expect(index.hasConflicts, false);
       expect(index.conflicts, isEmpty);
 
-      index.free();
-      commit.free();
-      conflictBranch.free();
       conflictRepo.free();
       repoDir.deleteSync(recursive: true);
     });
@@ -554,13 +513,15 @@ void main() {
       );
     });
 
+    test('manually releases allocated memory', () {
+      expect(() => repo.index.free(), returnsNormally);
+    });
+
     test('returns string representation of Index and IndexEntry objects', () {
       final index = repo.index;
 
       expect(index.toString(), contains('Index{'));
       expect(index['file'].toString(), contains('IndexEntry{'));
-
-      index.free();
     });
   });
 }

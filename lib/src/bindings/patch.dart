@@ -42,14 +42,17 @@ Pointer<git_patch> fromBuffers({
     opts,
   );
 
+  final result = out.value;
+
+  calloc.free(out);
   calloc.free(oldAsPathC);
   calloc.free(newAsPathC);
   calloc.free(opts);
-  // We are not freeing buffers because patch object does not have reference to
-  // underlying buffers. So if the buffer is freed the patch text becomes
-  // corrupted.
+  // We are not freeing buffers `oldBufferC` and `newBufferC` because patch
+  // object does not have reference to underlying buffers. So if the buffer is
+  // freed the patch text becomes corrupted.
 
-  return out.value;
+  return result;
 }
 
 /// Directly generate a patch from the difference between two blobs.
@@ -83,11 +86,14 @@ Pointer<git_patch> fromBlobs({
     opts,
   );
 
+  final result = out.value;
+
+  calloc.free(out);
   calloc.free(oldAsPathC);
   calloc.free(newAsPathC);
   calloc.free(opts);
 
-  return out.value;
+  return result;
 }
 
 /// Directly generate a patch from the difference between a blob and a buffer.
@@ -124,11 +130,17 @@ Pointer<git_patch> fromBlobAndBuffer({
     opts,
   );
 
+  final result = out.value;
+
+  calloc.free(out);
   calloc.free(oldAsPathC);
   calloc.free(bufferAsPathC);
   calloc.free(opts);
+  // We are not freeing buffer `bufferC` because patch object does not have
+  // reference to underlying buffers. So if the buffer is freed the patch text
+  // becomes corrupted.
 
-  return out.value;
+  return result;
 }
 
 /// Return a patch for an entry in the diff list.
@@ -145,11 +157,14 @@ Pointer<git_patch> fromDiff({
   final out = calloc<Pointer<git_patch>>();
   final error = libgit2.git_patch_from_diff(out, diffPointer, index);
 
+  final result = out.value;
+
+  calloc.free(out);
+
   if (error < 0) {
-    calloc.free(out);
     throw LibGit2Error(libgit2.git_error_last());
   } else {
-    return out.value;
+    return result;
   }
 }
 
@@ -172,9 +187,13 @@ Map<String, Object> hunk({
   final linesInHunk = calloc<Int64>();
   libgit2.git_patch_get_hunk(out, linesInHunk.cast(), patchPointer, hunkIndex);
 
+  final hunk = out.value;
   final linesN = linesInHunk.value;
+
+  calloc.free(out);
   calloc.free(linesInHunk);
-  return {'hunk': out.value, 'linesN': linesN};
+
+  return {'hunk': hunk, 'linesN': linesN};
 }
 
 /// Get line counts of each type in a patch.
@@ -211,7 +230,11 @@ Pointer<git_diff_line> lines({
   final out = calloc<Pointer<git_diff_line>>();
   libgit2.git_patch_get_line_in_hunk(out, patchPointer, hunkIndex, lineOfHunk);
 
-  return out.value;
+  final result = out.value;
+
+  calloc.free(out);
+
+  return result;
 }
 
 /// Get the content of a patch as a single diff text.
@@ -221,12 +244,14 @@ String text(Pointer<git_patch> patch) {
   final out = calloc<git_buf>();
   final error = libgit2.git_patch_to_buf(out, patch);
 
+  final result = out.ref.ptr.cast<Utf8>().toDartString(length: out.ref.size);
+
+  libgit2.git_buf_dispose(out);
+  calloc.free(out);
+
   if (error < 0) {
-    calloc.free(out);
     throw LibGit2Error(libgit2.git_error_last());
   } else {
-    final result = out.ref.ptr.cast<Utf8>().toDartString(length: out.ref.size);
-    calloc.free(out);
     return result;
   }
 }

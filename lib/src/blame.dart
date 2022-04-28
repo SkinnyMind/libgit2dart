@@ -34,8 +34,6 @@ class Blame with IterableMixin<BlameHunk> {
   /// [maxLine] is the last line in the file to blame. The default is the last
   /// line of the file.
   ///
-  /// **IMPORTANT**: Should be freed to release allocated memory.
-  ///
   /// Throws a [LibGit2Error] if error occured.
   Blame.file({
     required Repository repo,
@@ -57,6 +55,7 @@ class Blame with IterableMixin<BlameHunk> {
       minLine: minLine,
       maxLine: maxLine,
     );
+    _finalizer.attach(this, _blamePointer, detach: this);
   }
 
   /// Returns blame data for a file that has been modified in memory. The
@@ -74,6 +73,7 @@ class Blame with IterableMixin<BlameHunk> {
       reference: reference._blamePointer,
       buffer: buffer,
     );
+    _finalizer.attach(this, _blamePointer, detach: this);
   }
 
   /// Pointer to memory address for allocated blame object.
@@ -83,7 +83,7 @@ class Blame with IterableMixin<BlameHunk> {
   ///
   /// Throws [RangeError] if index out of range.
   BlameHunk operator [](int index) {
-    return BlameHunk(
+    return BlameHunk._(
       bindings.getHunkByIndex(
         blamePointer: _blamePointer,
         index: index,
@@ -96,7 +96,7 @@ class Blame with IterableMixin<BlameHunk> {
   ///
   /// Throws [RangeError] if [lineNumber] is out of range.
   BlameHunk forLine(int lineNumber) {
-    return BlameHunk(
+    return BlameHunk._(
       bindings.getHunkByLine(
         blamePointer: _blamePointer,
         lineNumber: lineNumber,
@@ -105,16 +105,25 @@ class Blame with IterableMixin<BlameHunk> {
   }
 
   /// Releases memory allocated for blame object.
-  void free() => bindings.free(_blamePointer);
+  void free() {
+    bindings.free(_blamePointer);
+    _finalizer.detach(this);
+  }
 
   @override
   Iterator<BlameHunk> get iterator => _BlameIterator(_blamePointer);
 }
 
+// coverage:ignore-start
+final _finalizer = Finalizer<Pointer<git_blame>>(
+  (pointer) => bindings.free(pointer),
+);
+// coverage:ignore-end
+
 class BlameHunk {
   /// Initializes a new instance of the [BlameHunk] class from
   /// provided pointer to blame hunk object in memory.
-  const BlameHunk(this._blameHunkPointer);
+  const BlameHunk._(this._blameHunkPointer);
 
   /// Pointer to memory address for allocated blame hunk object.
   final Pointer<git_blame_hunk> _blameHunkPointer;
@@ -194,7 +203,7 @@ class _BlameIterator implements Iterator<BlameHunk> {
     if (index == count) {
       return false;
     } else {
-      currentHunk = BlameHunk(
+      currentHunk = BlameHunk._(
         bindings.getHunkByIndex(
           blamePointer: _blamePointer,
           index: index,

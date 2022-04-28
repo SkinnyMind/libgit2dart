@@ -9,19 +9,20 @@ import 'package:libgit2dart/src/bindings/libgit2_bindings.dart';
 class Index with IterableMixin<IndexEntry> {
   /// Initializes a new instance of [Index] class from provided
   /// pointer to index object in memory.
-  ///
-  /// **IMPORTANT**: Should be freed to release allocated memory.
-  const Index(this._indexPointer);
+  Index(this._indexPointer) {
+    _finalizer.attach(this, _indexPointer, detach: this);
+  }
 
   /// Creates an in-memory index object.
   ///
   /// This index object cannot be read/written to the filesystem, but may be
   /// used to perform in-memory index operations.
-  ///
-  /// **IMPORTANT**: Should be freed to release allocated memory.
-  Index.newInMemory() : _indexPointer = bindings.newInMemory();
+  Index.newInMemory() {
+    _indexPointer = bindings.newInMemory();
+    _finalizer.attach(this, _indexPointer, detach: this);
+  }
 
-  final Pointer<git_index> _indexPointer;
+  late final Pointer<git_index> _indexPointer;
 
   /// Pointer to memory address for allocated index object.
   Pointer<git_index> get pointer => _indexPointer;
@@ -300,7 +301,10 @@ class Index with IterableMixin<IndexEntry> {
       bindings.removeAll(indexPointer: _indexPointer, pathspec: path);
 
   /// Releases memory allocated for index object.
-  void free() => bindings.free(_indexPointer);
+  void free() {
+    bindings.free(_indexPointer);
+    _finalizer.detach(this);
+  }
 
   @override
   String toString() => 'Index{hasConflicts: $hasConflicts}';
@@ -308,6 +312,12 @@ class Index with IterableMixin<IndexEntry> {
   @override
   Iterator<IndexEntry> get iterator => _IndexIterator(_indexPointer);
 }
+
+// coverage:ignore-start
+final _finalizer = Finalizer<Pointer<git_index>>(
+  (pointer) => bindings.free(pointer),
+);
+// coverage:ignore-end
 
 class IndexEntry {
   /// Initializes a new instance of [IndexEntry] class.

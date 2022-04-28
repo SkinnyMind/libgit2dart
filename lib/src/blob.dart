@@ -7,18 +7,17 @@ import 'package:libgit2dart/src/bindings/libgit2_bindings.dart';
 class Blob {
   /// Initializes a new instance of [Blob] class from provided pointer to
   /// blob object in memory.
-  ///
-  /// **IMPORTANT**: Should be freed to release allocated memory.
-  Blob(this._blobPointer);
+  Blob(this._blobPointer) {
+    _finalizer.attach(this, _blobPointer, detach: this);
+  }
 
   /// Lookups a blob object for provided [oid] in a [repo]sitory.
-  ///
-  /// **IMPORTANT**: Should be freed to release allocated memory.
   Blob.lookup({required Repository repo, required Oid oid}) {
     _blobPointer = bindings.lookup(
       repoPointer: repo.pointer,
       oidPointer: oid.pointer,
     );
+    _finalizer.attach(this, _blobPointer, detach: this);
   }
 
   late final Pointer<git_blob> _blobPointer;
@@ -80,8 +79,6 @@ class Blob {
   int get size => bindings.size(_blobPointer);
 
   /// Creates an in-memory copy of a blob.
-  ///
-  /// **IMPORTANT**: Should be freed to release allocated memory.
   Blob duplicate() => Blob(bindings.duplicate(_blobPointer));
 
   /// Returns filtered content of a blob.
@@ -114,10 +111,19 @@ class Blob {
   }
 
   /// Releases memory allocated for blob object.
-  void free() => bindings.free(_blobPointer);
+  void free() {
+    bindings.free(_blobPointer);
+    _finalizer.detach(this);
+  }
 
   @override
   String toString() {
     return 'Blob{oid: $oid, isBinary: $isBinary, size: $size}';
   }
 }
+
+// coverage:ignore-start
+final _finalizer = Finalizer<Pointer<git_blob>>(
+  (pointer) => bindings.free(pointer),
+);
+// coverage:ignore-end

@@ -1,5 +1,6 @@
 import 'dart:ffi';
 
+import 'package:ffi/ffi.dart';
 import 'package:libgit2dart/libgit2dart.dart';
 import 'package:libgit2dart/src/bindings/libgit2_bindings.dart';
 import 'package:libgit2dart/src/bindings/patch.dart' as bindings;
@@ -8,9 +9,9 @@ import 'package:libgit2dart/src/util.dart';
 class Patch {
   /// Initializes a new instance of [Patch] class from provided
   /// pointer to patch object in memory and pointers to old and new blobs/buffers.
-  ///
-  /// **IMPORTANT**: Should be freed to release allocated memory.
-  Patch(this._patchPointer);
+  Patch(this._patchPointer) {
+    _finalizer.attach(this, _patchPointer, detach: this);
+  }
 
   /// Directly generates a [Patch] from the difference between two blobs.
   ///
@@ -29,8 +30,6 @@ class Patch {
   ///
   /// [interhunkLines] is the maximum number of unchanged lines between hunk
   /// boundaries before the hunks will be merged into one. Defaults to 0.
-  ///
-  /// **IMPORTANT**: Should be freed to release allocated memory.
   ///
   /// Throws a [LibGit2Error] if error occured.
   Patch.fromBlobs({
@@ -51,6 +50,7 @@ class Patch {
       contextLines: contextLines,
       interhunkLines: interhunkLines,
     );
+    _finalizer.attach(this, _patchPointer, detach: this);
   }
 
   /// Directly generates a [Patch] from the difference between the blob and a
@@ -72,8 +72,6 @@ class Patch {
   /// [interhunkLines] is the maximum number of unchanged lines between hunk
   /// boundaries before the hunks will be merged into one. Defaults to 0.
   ///
-  /// **IMPORTANT**: Should be freed to release allocated memory.
-  ///
   /// Throws a [LibGit2Error] if error occured.
   Patch.fromBlobAndBuffer({
     required Blob? blob,
@@ -93,6 +91,7 @@ class Patch {
       contextLines: contextLines,
       interhunkLines: interhunkLines,
     );
+    _finalizer.attach(this, _patchPointer, detach: this);
   }
 
   /// Directly generates a [Patch] from the difference between two buffers
@@ -112,8 +111,6 @@ class Patch {
   ///
   /// [interhunkLines] is the maximum number of unchanged lines between hunk
   /// boundaries before the hunks will be merged into one. Defaults to 0.
-  ///
-  /// **IMPORTANT**: Should be freed to release allocated memory.
   ///
   /// Throws a [LibGit2Error] if error occured.
   Patch.fromBuffers({
@@ -136,6 +133,7 @@ class Patch {
       contextLines: contextLines,
       interhunkLines: interhunkLines,
     );
+    _finalizer.attach(this, _patchPointer, detach: this);
   }
 
   /// Creates a patch for an entry in the diff list.
@@ -144,11 +142,10 @@ class Patch {
   ///
   /// [index] is the position of an entry in diff list.
   ///
-  /// **IMPORTANT**: Should be freed to release allocated memory.
-  ///
   /// Throws a [LibGit2Error] if error occured.
   Patch.fromDiff({required Diff diff, required int index}) {
     _patchPointer = bindings.fromDiff(diffPointer: diff.pointer, index: index);
+    _finalizer.attach(this, _patchPointer, detach: this);
   }
 
   late final Pointer<git_patch> _patchPointer;
@@ -157,7 +154,7 @@ class Patch {
   PatchStats get stats {
     final result = bindings.lineStats(_patchPointer);
 
-    return PatchStats(
+    return PatchStats._(
       context: result['context']!,
       insertions: result['insertions']!,
       deletions: result['deletions']!,
@@ -201,14 +198,49 @@ class Patch {
     final length = bindings.numHunks(_patchPointer);
     final hunks = <DiffHunk>[];
 
-    for (var i = 0; i < length; i++) {
-      final hunk = bindings.hunk(patchPointer: _patchPointer, hunkIndex: i);
+    for (var index = 0; index < length; index++) {
+      final hunk = bindings.hunk(patchPointer: _patchPointer, hunkIndex: index);
+      final hunkPointer = hunk['hunk']! as Pointer<git_diff_hunk>;
+      final linesCount = hunk['linesN']! as int;
+
+      final lines = <DiffLine>[];
+      for (var i = 0; i < linesCount; i++) {
+        final linePointer = bindings.lines(
+          patchPointer: _patchPointer,
+          hunkIndex: index,
+          lineOfHunk: i,
+        );
+        lines.add(
+          DiffLine._(
+            origin: GitDiffLine.values.singleWhere(
+              (e) => linePointer.ref.origin == e.value,
+            ),
+            oldLineNumber: linePointer.ref.old_lineno,
+            newLineNumber: linePointer.ref.new_lineno,
+            numLines: linePointer.ref.num_lines,
+            contentOffset: linePointer.ref.content_offset,
+            content: linePointer.ref.content
+                .cast<Utf8>()
+                .toDartString(length: linePointer.ref.content_len),
+          ),
+        );
+      }
+
+      final intHeader = <int>[];
+      for (var i = 0; i < hunkPointer.ref.header_len; i++) {
+        intHeader.add(hunkPointer.ref.header[i]);
+      }
+
       hunks.add(
-        DiffHunk(
-          _patchPointer,
-          hunk['hunk']! as Pointer<git_diff_hunk>,
-          hunk['linesN']! as int,
-          i,
+        DiffHunk._(
+          linesCount: linesCount,
+          index: index,
+          oldStart: hunkPointer.ref.old_start,
+          oldLines: hunkPointer.ref.old_lines,
+          newStart: hunkPointer.ref.new_start,
+          newLines: hunkPointer.ref.new_lines,
+          header: String.fromCharCodes(intHeader),
+          lines: lines,
         ),
       );
     }
@@ -217,15 +249,24 @@ class Patch {
   }
 
   /// Releases memory allocated for patch object.
-  void free() => bindings.free(_patchPointer);
+  void free() {
+    bindings.free(_patchPointer);
+    _finalizer.detach(this);
+  }
 
   @override
   String toString() => 'Patch{size: ${size()}, delta: $delta}';
 }
 
+// coverage:ignore-start
+final _finalizer = Finalizer<Pointer<git_patch>>(
+  (pointer) => bindings.free(pointer),
+);
+// coverage:ignore-end
+
 /// Line counts of each type in a patch.
 class PatchStats {
-  const PatchStats({
+  const PatchStats._({
     required this.context,
     required this.insertions,
     required this.deletions,
@@ -244,5 +285,85 @@ class PatchStats {
   String toString() {
     return 'PatchStats{context: $context, insertions: $insertions, '
         'deletions: $deletions}';
+  }
+}
+
+class DiffHunk {
+  const DiffHunk._({
+    required this.linesCount,
+    required this.index,
+    required this.oldStart,
+    required this.oldLines,
+    required this.newStart,
+    required this.newLines,
+    required this.header,
+    required this.lines,
+  });
+
+  /// Number of total lines in this hunk.
+  final int linesCount;
+
+  /// Index of this hunk in the patch.
+  final int index;
+
+  /// Starting line number in 'old file'.
+  final int oldStart;
+
+  /// Number of lines in 'old file'.
+  final int oldLines;
+
+  /// Starting line number in 'new file'.
+  final int newStart;
+
+  /// Number of lines in 'new file'.
+  final int newLines;
+
+  /// Header of a hunk.
+  final String header;
+
+  /// List of lines in a hunk of a patch.
+  final List<DiffLine> lines;
+
+  @override
+  String toString() {
+    return 'DiffHunk{linesCount: $linesCount, index: $index, '
+        'oldStart: $oldStart, oldLines: $oldLines, newStart: $newStart, '
+        'newLines: $newLines, header: $header}';
+  }
+}
+
+class DiffLine {
+  const DiffLine._({
+    required this.origin,
+    required this.oldLineNumber,
+    required this.newLineNumber,
+    required this.numLines,
+    required this.contentOffset,
+    required this.content,
+  });
+
+  /// Type of the line.
+  final GitDiffLine origin;
+
+  /// Line number in old file or -1 for added line.
+  final int oldLineNumber;
+
+  /// Line number in new file or -1 for deleted line.
+  final int newLineNumber;
+
+  /// Number of newline characters in content.
+  final int numLines;
+
+  /// Offset in the original file to the content.
+  final int contentOffset;
+
+  /// Content of the diff line.
+  final String content;
+
+  @override
+  String toString() {
+    return 'DiffLine{oldLineNumber: $oldLineNumber, '
+        'newLineNumber: $newLineNumber, numLines: $numLines, '
+        'contentOffset: $contentOffset, content: $content}';
   }
 }

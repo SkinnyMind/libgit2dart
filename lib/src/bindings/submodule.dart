@@ -55,13 +55,15 @@ Pointer<git_submodule> lookup({
 
   final error = libgit2.git_submodule_lookup(out, repoPointer, nameC);
 
+  final result = out.value;
+
+  calloc.free(out);
   calloc.free(nameC);
 
   if (error < 0) {
-    calloc.free(out);
     throw LibGit2Error(libgit2.git_error_last());
   } else {
-    return out.value;
+    return result;
   }
 }
 
@@ -130,11 +132,14 @@ Pointer<git_repository> open(Pointer<git_submodule> submodule) {
   final out = calloc<Pointer<git_repository>>();
   final error = libgit2.git_submodule_open(out, submodule);
 
+  final result = out.value;
+
+  calloc.free(out);
+
   if (error < 0) {
-    calloc.free(out);
     throw LibGit2Error(libgit2.git_error_last());
   } else {
-    return out.value;
+    return result;
   }
 }
 
@@ -165,14 +170,16 @@ Pointer<git_submodule> addSetup({
     useGitlinkC,
   );
 
+  final result = out.value;
+
+  calloc.free(out);
   calloc.free(urlC);
   calloc.free(pathC);
 
   if (error < 0) {
-    calloc.free(out);
     throw LibGit2Error(libgit2.git_error_last());
   } else {
-    return out.value;
+    return result;
   }
 }
 
@@ -229,10 +236,11 @@ int status({
   final nameC = name.toNativeUtf8().cast<Int8>();
   libgit2.git_submodule_status(out, repoPointer, nameC, ignore);
 
+  final result = out.value;
+
+  calloc.free(out);
   calloc.free(nameC);
 
-  final result = out.value;
-  calloc.free(out);
   return result;
 }
 

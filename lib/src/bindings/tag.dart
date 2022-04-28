@@ -36,11 +36,14 @@ Pointer<git_tag> lookup({
   final out = calloc<Pointer<git_tag>>();
   final error = libgit2.git_tag_lookup(out, repoPointer, oidPointer);
 
+  final result = out.value;
+
+  calloc.free(out);
+
   if (error < 0) {
-    calloc.free(out);
     throw LibGit2Error(libgit2.git_error_last());
   } else {
-    return out.value;
+    return result;
   }
 }
 
@@ -54,11 +57,14 @@ Pointer<git_object> target(Pointer<git_tag> tag) {
   final out = calloc<Pointer<git_object>>();
   final error = libgit2.git_tag_target(out, tag);
 
+  final result = out.value;
+
+  calloc.free(out);
+
   if (error < 0) {
-    calloc.free(out);
     throw LibGit2Error(libgit2.git_error_last());
   } else {
-    return out.value;
+    return result;
   }
 }
 
@@ -77,8 +83,10 @@ String name(Pointer<git_tag> tag) =>
     libgit2.git_tag_name(tag).cast<Utf8>().toDartString();
 
 /// Get the message of a tag.
-String message(Pointer<git_tag> tag) =>
-    libgit2.git_tag_message(tag).cast<Utf8>().toDartString();
+String message(Pointer<git_tag> tag) {
+  final result = libgit2.git_tag_message(tag);
+  return result == nullptr ? '' : result.cast<Utf8>().toDartString();
+}
 
 /// Get the tagger (author) of a tag.
 Pointer<git_signature> tagger(Pointer<git_tag> tag) =>

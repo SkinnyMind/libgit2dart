@@ -14,19 +14,16 @@ class AnnotatedCommit {
   /// It is preferable to use [AnnotatedCommit.fromReference] instead of this
   /// one, for commit to contain more information about how it was looked up.
   ///
-  /// **IMPORTANT**: Should be freed to release allocated memory.
-  ///
   /// Throws a [LibGit2Error] if error occured.
   AnnotatedCommit.lookup({required Repository repo, required Oid oid}) {
     _annotatedCommitPointer = bindings.lookup(
       repoPointer: repo.pointer,
       oidPointer: oid.pointer,
     );
+    _finalizer.attach(this, _annotatedCommitPointer, detach: this);
   }
 
   /// Creates an annotated commit from the given [reference].
-  ///
-  /// **IMPORTANT**: Should be freed to release allocated memory.
   ///
   /// Throws a [LibGit2Error] if error occured.
   AnnotatedCommit.fromReference({
@@ -37,14 +34,13 @@ class AnnotatedCommit {
       repoPointer: repo.pointer,
       referencePointer: reference.pointer,
     );
+    _finalizer.attach(this, _annotatedCommitPointer, detach: this);
   }
 
   /// Creates an annotated commit from a revision string.
   ///
   /// See `man gitrevisions`, or http://git-scm.com/docs/git-rev-parse.html#_specifying_revisions
   /// for information on the syntax accepted.
-  ///
-  /// **IMPORTANT**: Should be freed to release allocated memory.
   ///
   /// Throws a [LibGit2Error] if error occured.
   AnnotatedCommit.fromRevSpec({
@@ -55,6 +51,7 @@ class AnnotatedCommit {
       repoPointer: repo.pointer,
       revspec: spec,
     );
+    _finalizer.attach(this, _annotatedCommitPointer, detach: this);
   }
 
   /// Creates an annotated commit from the given fetch head data.
@@ -66,8 +63,6 @@ class AnnotatedCommit {
   /// [remoteUrl] is url of the remote.
   ///
   /// [oid] is the commit object id of the remote branch.
-  ///
-  /// **IMPORTANT**: Should be freed to release allocated memory.
   ///
   /// Throws a [LibGit2Error] if error occured.
   AnnotatedCommit.fromFetchHead({
@@ -82,6 +77,7 @@ class AnnotatedCommit {
       remoteUrl: remoteUrl,
       oid: oid.pointer,
     );
+    _finalizer.attach(this, _annotatedCommitPointer, detach: this);
   }
 
   late final Pointer<git_annotated_commit> _annotatedCommitPointer;
@@ -98,5 +94,14 @@ class AnnotatedCommit {
   String get refName => bindings.refName(_annotatedCommitPointer);
 
   /// Releases memory allocated for commit object.
-  void free() => bindings.free(_annotatedCommitPointer);
+  void free() {
+    bindings.free(_annotatedCommitPointer);
+    _finalizer.detach(this);
+  }
 }
+
+// coverage:ignore-start
+final _finalizer = Finalizer<Pointer<git_annotated_commit>>(
+  (pointer) => bindings.free(pointer),
+);
+// coverage:ignore-end

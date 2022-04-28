@@ -17,8 +17,6 @@ class Rebase {
   /// [onto] is the branch to rebase onto, default is to rebase onto the given
   /// [upstream].
   ///
-  /// **IMPORTANT**: Should be freed to release allocated memory.
-  ///
   /// Throws a [LibGit2Error] if error occured.
   Rebase.init({
     required Repository repo,
@@ -32,16 +30,16 @@ class Rebase {
       upstreamPointer: upstream?.pointer,
       ontoPointer: onto?.pointer,
     );
+    _finalizer.attach(this, _rebasePointer, detach: this);
   }
 
   /// Opens an existing rebase that was previously started by either an
   /// invocation of [Rebase.init] or by another client.
   ///
-  /// **IMPORTANT**: Should be freed to release allocated memory.
-  ///
   /// Throws a [LibGit2Error] if error occured.
   Rebase.open(Repository repo) {
     _rebasePointer = bindings.open(repo.pointer);
+    _finalizer.attach(this, _rebasePointer, detach: this);
   }
 
   /// Pointer to memory address for allocated rebase object.
@@ -57,7 +55,7 @@ class Rebase {
         rebase: _rebasePointer,
         index: i,
       );
-      result.add(RebaseOperation(operation));
+      result.add(RebaseOperation._(operation));
     }
 
     return result;
@@ -101,7 +99,7 @@ class Rebase {
   ///
   /// Throws a [LibGit2Error] if error occured.
   RebaseOperation next() {
-    return RebaseOperation(bindings.next(_rebasePointer));
+    return RebaseOperation._(bindings.next(_rebasePointer));
   }
 
   /// Commits the current patch. You must have resolved any conflicts that were
@@ -138,13 +136,22 @@ class Rebase {
   void abort() => bindings.abort(_rebasePointer);
 
   /// Releases memory allocated for rebase object.
-  void free() => bindings.free(_rebasePointer);
+  void free() {
+    bindings.free(_rebasePointer);
+    _finalizer.detach(this);
+  }
 }
+
+// coverage:ignore-start
+final _finalizer = Finalizer<Pointer<git_rebase>>(
+  (pointer) => bindings.free(pointer),
+);
+// coverage:ignore-end
 
 class RebaseOperation {
   /// Initializes a new instance of the [RebaseOperation] class from
   /// provided pointer to rebase operation object in memory.
-  const RebaseOperation(this._rebaseOperationPointer);
+  const RebaseOperation._(this._rebaseOperationPointer);
 
   /// Pointer to memory address for allocated rebase operation object.
   final Pointer<git_rebase_operation> _rebaseOperationPointer;

@@ -14,7 +14,12 @@ import 'package:libgit2dart/src/util.dart';
 Pointer<git_odb> create() {
   final out = calloc<Pointer<git_odb>>();
   libgit2.git_odb_new(out);
-  return out.value;
+
+  final result = out.value;
+
+  calloc.free(out);
+
+  return result;
 }
 
 /// Add an on-disk alternate to an existing Object DB.
@@ -78,8 +83,7 @@ int _forEachCb(
   Pointer<git_oid> oid,
   Pointer<Void> payload,
 ) {
-  final _oid = oid_bindings.copy(oid);
-  _objects.add(Oid(_oid));
+  _objects.add(Oid(oid_bindings.copy(oid)));
   return 0;
 }
 
@@ -121,11 +125,14 @@ Pointer<git_odb_object> read({
   final out = calloc<Pointer<git_odb_object>>();
   final error = libgit2.git_odb_read(out, odbPointer, oidPointer);
 
+  final result = out.value;
+
+  calloc.free(out);
+
   if (error < 0) {
-    calloc.free(out);
     throw LibGit2Error(libgit2.git_error_last());
   } else {
-    return out.value;
+    return result;
   }
 }
 
@@ -186,14 +193,15 @@ Pointer<git_oid> write({
     throw LibGit2Error(libgit2.git_error_last());
   }
 
-  final buffer = data.toNativeUtf8().cast<Int8>();
-  libgit2.git_odb_stream_write(stream.value, buffer, data.length);
+  final bufferC = data.toNativeUtf8().cast<Int8>();
+  libgit2.git_odb_stream_write(stream.value, bufferC, data.length);
 
   final out = calloc<git_oid>();
   libgit2.git_odb_stream_finalize_write(out, stream.value);
 
-  calloc.free(buffer);
+  calloc.free(bufferC);
   libgit2.git_odb_stream_free(stream.value);
+  calloc.free(stream);
 
   return out;
 }

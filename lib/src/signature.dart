@@ -10,17 +10,16 @@ import 'package:meta/meta.dart';
 class Signature {
   /// Initializes a new instance of [Signature] class from provided pointer to
   /// signature object in memory.
-  ///
-  /// **IMPORTANT**: Should be freed to release allocated memory.
-  Signature(this._signaturePointer);
+  Signature(Pointer<git_signature> pointer) {
+    _signaturePointer = bindings.duplicate(pointer);
+    _finalizer.attach(this, _signaturePointer, detach: this);
+  }
 
   /// Creates new [Signature] from provided [name], [email], and optional [time]
   /// in seconds from epoch and [offset] in minutes.
   ///
   /// If [time] isn't provided [Signature] will be created with a timestamp of
   /// 'now'.
-  ///
-  /// **IMPORTANT**: Should be freed to release allocated memory.
   Signature.create({
     required String name,
     required String email,
@@ -39,6 +38,7 @@ class Signature {
         offset: offset,
       );
     }
+    _finalizer.attach(this, _signaturePointer, detach: this);
   }
 
   /// Creates a new action signature with default user and now timestamp.
@@ -48,6 +48,7 @@ class Signature {
   /// on that information.
   Signature.defaultSignature(Repository repo) {
     _signaturePointer = bindings.defaultSignature(repo.pointer);
+    _finalizer.attach(this, _signaturePointer, detach: this);
   }
 
   late final Pointer<git_signature> _signaturePointer;
@@ -79,7 +80,10 @@ class Signature {
   }
 
   /// Releases memory allocated for signature object.
-  void free() => bindings.free(_signaturePointer);
+  void free() {
+    bindings.free(_signaturePointer);
+    _finalizer.detach(this);
+  }
 
   @override // coverage:ignore-line
   int get hashCode =>
@@ -91,3 +95,9 @@ class Signature {
         'offset: $offset}';
   }
 }
+
+// coverage:ignore-start
+final _finalizer = Finalizer<Pointer<git_signature>>(
+  (pointer) => bindings.free(pointer),
+);
+// coverage:ignore-end

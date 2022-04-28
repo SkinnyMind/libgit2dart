@@ -35,13 +35,15 @@ List<Pointer<git_reference>> list({
     error = libgit2.git_branch_next(reference, refType, iterator.value);
     if (error == 0) {
       result.add(reference.value);
-      calloc.free(refType);
     } else {
       break;
     }
+    calloc.free(reference);
+    calloc.free(refType);
   }
 
   libgit2.git_branch_iterator_free(iterator.value);
+  calloc.free(iterator);
   return result;
 }
 
@@ -65,13 +67,15 @@ Pointer<git_reference> lookup({
     branchType,
   );
 
+  final result = out.value;
+
+  calloc.free(out);
   calloc.free(branchNameC);
 
   if (error < 0) {
-    calloc.free(out);
     throw LibGit2Error(libgit2.git_error_last());
   } else {
-    return out.value;
+    return result;
   }
 }
 
@@ -103,13 +107,15 @@ Pointer<git_reference> create({
     forceC,
   );
 
+  final result = out.value;
+
+  calloc.free(out);
   calloc.free(branchNameC);
 
   if (error < 0) {
-    calloc.free(out);
     throw LibGit2Error(libgit2.git_error_last());
   } else {
-    return out.value;
+    return result;
   }
 }
 
@@ -192,13 +198,14 @@ String name(Pointer<git_reference> ref) {
   final out = calloc<Pointer<Int8>>();
   final error = libgit2.git_branch_name(out, ref);
 
+  final result = out.value;
+
+  calloc.free(out);
+
   if (error < 0) {
-    calloc.free(out);
     throw LibGit2Error(libgit2.git_error_last());
   } else {
-    final result = out.value.cast<Utf8>().toDartString();
-    calloc.free(out);
-    return result;
+    return result.cast<Utf8>().toDartString();
   }
 }
 
@@ -218,14 +225,15 @@ String remoteName({
   final branchNameC = branchName.toNativeUtf8().cast<Int8>();
   final error = libgit2.git_branch_remote_name(out, repoPointer, branchNameC);
 
+  final result = out.ref.ptr.cast<Utf8>().toDartString(length: out.ref.size);
+
+  libgit2.git_buf_dispose(out);
+  calloc.free(out);
   calloc.free(branchNameC);
 
   if (error < 0) {
-    calloc.free(out);
     throw LibGit2Error(libgit2.git_error_last());
   } else {
-    final result = out.ref.ptr.cast<Utf8>().toDartString(length: out.ref.size);
-    calloc.free(out);
     return result;
   }
 }
@@ -240,11 +248,14 @@ Pointer<git_reference> getUpstream(Pointer<git_reference> branch) {
   final out = calloc<Pointer<git_reference>>();
   final error = libgit2.git_branch_upstream(out, branch);
 
+  final result = out.value;
+
+  calloc.free(out);
+
   if (error < 0) {
-    calloc.free(out);
     throw LibGit2Error(libgit2.git_error_last());
   } else {
-    return out.value;
+    return result;
   }
 }
 
@@ -286,14 +297,15 @@ String upstreamName({
   final branchNameC = branchName.toNativeUtf8().cast<Int8>();
   final error = libgit2.git_branch_upstream_name(out, repoPointer, branchNameC);
 
+  final result = out.ref.ptr.cast<Utf8>().toDartString(length: out.ref.size);
+
+  libgit2.git_buf_dispose(out);
+  calloc.free(out);
   calloc.free(branchNameC);
 
   if (error < 0) {
-    calloc.free(out);
     throw LibGit2Error(libgit2.git_error_last());
   } else {
-    final result = out.ref.ptr.cast<Utf8>().toDartString(length: out.ref.size);
-    calloc.free(out);
     return result;
   }
 }
@@ -316,14 +328,15 @@ String upstreamRemote({
     branchNameC,
   );
 
+  final result = out.ref.ptr.cast<Utf8>().toDartString(length: out.ref.size);
+
+  libgit2.git_buf_dispose(out);
+  calloc.free(out);
   calloc.free(branchNameC);
 
   if (error < 0) {
-    calloc.free(out);
     throw LibGit2Error(libgit2.git_error_last());
   } else {
-    final result = out.ref.ptr.cast<Utf8>().toDartString(length: out.ref.size);
-    calloc.free(out);
     return result;
   }
 }
@@ -346,12 +359,15 @@ String upstreamMerge({
     branchNameC,
   );
 
+  final result = out.ref.ptr.cast<Utf8>().toDartString(length: out.ref.size);
+
+  libgit2.git_buf_dispose(out);
+  calloc.free(out);
+  calloc.free(branchNameC);
+
   if (error < 0) {
-    calloc.free(out);
     throw LibGit2Error(libgit2.git_error_last());
   } else {
-    final result = out.ref.ptr.cast<Utf8>().toDartString(length: out.ref.size);
-    calloc.free(out);
     return result;
   }
 }

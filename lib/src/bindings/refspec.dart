@@ -66,14 +66,15 @@ String transform({
   final nameC = name.toNativeUtf8().cast<Int8>();
   final error = libgit2.git_refspec_transform(out, refspecPointer, nameC);
 
+  final result = out.ref.ptr.cast<Utf8>().toDartString(length: out.ref.size);
+
+  libgit2.git_buf_dispose(out);
+  calloc.free(out);
   calloc.free(nameC);
 
   if (error < 0) {
-    calloc.free(out);
     throw LibGit2Error(libgit2.git_error_last());
   } else {
-    final result = out.ref.ptr.cast<Utf8>().toDartString(length: out.ref.size);
-    calloc.free(out);
     return result;
   }
 }
@@ -90,14 +91,15 @@ String rTransform({
   final nameC = name.toNativeUtf8().cast<Int8>();
   final error = libgit2.git_refspec_rtransform(out, refspecPointer, nameC);
 
+  final result = out.ref.ptr.cast<Utf8>().toDartString(length: out.ref.size);
+
+  libgit2.git_buf_dispose(out);
+  calloc.free(out);
   calloc.free(nameC);
 
   if (error < 0) {
-    calloc.free(out);
     throw LibGit2Error(libgit2.git_error_last());
   } else {
-    final result = out.ref.ptr.cast<Utf8>().toDartString(length: out.ref.size);
-    calloc.free(out);
     return result;
   }
 }

@@ -40,13 +40,15 @@ Pointer<git_rebase> init({
     opts,
   );
 
+  final result = out.value;
+
+  calloc.free(out);
   calloc.free(opts);
 
   if (error < 0) {
-    calloc.free(out);
     throw LibGit2Error(libgit2.git_error_last());
   } else {
-    return out.value;
+    return result;
   }
 }
 
@@ -61,11 +63,14 @@ Pointer<git_rebase> open(Pointer<git_repository> repo) {
 
   final error = libgit2.git_rebase_open(out, repo, opts);
 
+  final result = out.value;
+
+  calloc.free(out);
+
   if (error < 0) {
-    calloc.free(out);
     throw LibGit2Error(libgit2.git_error_last());
   } else {
-    return out.value;
+    return result;
   }
 }
 
@@ -100,11 +105,14 @@ Pointer<git_rebase_operation> next(Pointer<git_rebase> rebase) {
   final out = calloc<Pointer<git_rebase_operation>>();
   final error = libgit2.git_rebase_next(out, rebase);
 
+  final result = out.value;
+
+  calloc.free(out);
+
   if (error < 0) {
-    calloc.free(out);
     throw LibGit2Error(libgit2.git_error_last());
   } else {
-    return out.value;
+    return result;
   }
 }
 

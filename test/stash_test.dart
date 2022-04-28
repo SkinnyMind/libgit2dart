@@ -24,7 +24,6 @@ void main() {
   });
 
   tearDown(() {
-    stasher.free();
     repo.free();
     tmpDir.deleteSync(recursive: true);
   });
@@ -62,14 +61,11 @@ void main() {
 
     test('leaves changes added to index intact', () {
       File(filePath).writeAsStringSync('edit', mode: FileMode.append);
-      final index = repo.index;
-      index.add('file');
+      repo.index.add('file');
 
       Stash.create(repo: repo, stasher: stasher, flags: {GitStash.keepIndex});
       expect(repo.status.isEmpty, false);
       expect(repo.stashes.length, 1);
-
-      index.free();
     });
 
     test('applies changes from stash', () {
@@ -109,8 +105,6 @@ void main() {
       Stash.apply(repo: repo, reinstateIndex: true);
       expect(repo.status, contains('stash.this'));
       expect(index.find('stash.this'), true);
-
-      index.free();
     });
 
     test('throws when trying to apply with wrong index', () {
@@ -182,8 +176,6 @@ void main() {
       Stash.pop(repo: repo, reinstateIndex: true);
       expect(repo.status, contains('stash.this'));
       expect(index.find('stash.this'), true);
-
-      index.free();
     });
 
     test('throws when trying to pop with wrong index', () {

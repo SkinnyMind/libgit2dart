@@ -9,21 +9,19 @@ class Mailmap {
   ///
   /// This object is empty, so you'll have to add a mailmap file before you can
   /// do anything with it.
-  ///
-  /// **IMPORTANT**: Should be freed to release allocated memory.
   Mailmap.empty() {
     libgit2.git_libgit2_init();
 
     _mailmapPointer = bindings.init();
+    _finalizer.attach(this, _mailmapPointer, detach: this);
   }
 
   /// Initializes a new instance of [Mailmap] class from provided buffer.
-  ///
-  /// **IMPORTANT**: Should be freed to release allocated memory.
   Mailmap.fromBuffer(String buffer) {
     libgit2.git_libgit2_init();
 
     _mailmapPointer = bindings.fromBuffer(buffer);
+    _finalizer.attach(this, _mailmapPointer, detach: this);
   }
 
   /// Initializes a new instance of [Mailmap] class from a [repo]sitory, loading
@@ -34,14 +32,13 @@ class Mailmap {
   /// 1. `.mailmap` in the root of the repository's working directory, if
   /// present.
   /// 2. The blob object identified by the `mailmap.blob` config entry, if set.
-  ///   NOTE: `mailmap.blob` defaults to `HEAD:.mailmap` in bare repositories
+  ///   NOTE: `mailmap.blob` defaults to `HEAD:.mailmap` in bare repositories.
   /// 3. The path in the `mailmap.file` config entry, if set.
-  ///
-  /// **IMPORTANT**: Should be freed to release allocated memory.
   ///
   /// Throws a [LibGit2Error] if error occured.
   Mailmap.fromRepository(Repository repo) {
     _mailmapPointer = bindings.fromRepository(repo.pointer);
+    _finalizer.attach(this, _mailmapPointer, detach: this);
   }
 
   /// Pointer to memory address for allocated mailmap object.
@@ -94,5 +91,14 @@ class Mailmap {
   }
 
   /// Releases memory allocated for mailmap object.
-  void free() => bindings.free(_mailmapPointer);
+  void free() {
+    bindings.free(_mailmapPointer);
+    _finalizer.detach(this);
+  }
 }
+
+// coverage:ignore-start
+final _finalizer = Finalizer<Pointer<git_mailmap>>(
+  (pointer) => bindings.free(pointer),
+);
+// coverage:ignore-end

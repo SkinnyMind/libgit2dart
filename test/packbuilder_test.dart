@@ -29,8 +29,6 @@ void main() {
 
       expect(packbuilder, isA<PackBuilder>());
       expect(packbuilder.length, 0);
-
-      packbuilder.free();
     });
 
     test('throws when trying to initialize and error occurs', () {
@@ -49,20 +47,13 @@ void main() {
 
       packbuilder.add(odb.objects[1]);
       expect(packbuilder.length, 2);
-
-      odb.free();
-      packbuilder.free();
     });
 
     test('throws when trying to add object and error occurs', () {
-      final packbuilder = PackBuilder(repo);
-
       expect(
-        () => packbuilder.add(Oid(nullptr)),
+        () => PackBuilder(repo).add(Oid(nullptr)),
         throwsA(isA<LibGit2Error>()),
       );
-
-      packbuilder.free();
     });
 
     test('adds object recursively', () {
@@ -71,119 +62,86 @@ void main() {
 
       packbuilder.addRecursively(oid);
       expect(packbuilder.length, 3);
-
-      packbuilder.free();
     });
 
     test('throws when trying to add object recursively and error occurs', () {
-      final packbuilder = PackBuilder(repo);
-
       expect(
-        () => packbuilder.addRecursively(Oid(nullptr)),
+        () => PackBuilder(repo).addRecursively(Oid(nullptr)),
         throwsA(isA<LibGit2Error>()),
       );
-
-      packbuilder.free();
     });
 
     test('adds commit', () {
       final packbuilder = PackBuilder(repo);
-      final oid = repo['f17d0d4'];
 
-      packbuilder.addCommit(oid);
+      packbuilder.addCommit(repo['f17d0d4']);
       expect(packbuilder.length, 3);
-
-      packbuilder.free();
     });
 
     test('throws when trying to add commit with invalid oid', () {
-      final packbuilder = PackBuilder(repo);
       final oid = Oid.fromSHA(repo: repo, sha: '0' * 40);
 
-      expect(() => packbuilder.addCommit(oid), throwsA(isA<LibGit2Error>()));
-
-      packbuilder.free();
+      expect(
+        () => PackBuilder(repo).addCommit(oid),
+        throwsA(isA<LibGit2Error>()),
+      );
     });
 
     test('adds tree', () {
       final packbuilder = PackBuilder(repo);
-      final oid = repo['df2b8fc'];
 
-      packbuilder.addTree(oid);
+      packbuilder.addTree(repo['df2b8fc']);
       expect(packbuilder.length, 2);
-
-      packbuilder.free();
     });
 
     test('throws when trying to add tree with invalid oid', () {
-      final packbuilder = PackBuilder(repo);
       final oid = Oid.fromSHA(repo: repo, sha: '0' * 40);
 
-      expect(() => packbuilder.addTree(oid), throwsA(isA<LibGit2Error>()));
-
-      packbuilder.free();
+      expect(
+        () => PackBuilder(repo).addTree(oid),
+        throwsA(isA<LibGit2Error>()),
+      );
     });
 
     test('adds objects with walker', () {
-      final oid = repo['f17d0d4'];
       final packbuilder = PackBuilder(repo);
       final walker = RevWalk(repo);
       walker.sorting({GitSort.none});
-      walker.push(oid);
+      walker.push(repo['f17d0d4']);
 
       packbuilder.addWalk(walker);
       expect(packbuilder.length, 3);
-
-      walker.free();
-      packbuilder.free();
     });
 
     test('sets number of threads', () {
-      final packbuilder = PackBuilder(repo);
-
-      expect(packbuilder.setThreads(1), 1);
-
-      packbuilder.free();
+      expect(PackBuilder(repo).setThreads(1), 1);
     });
 
     test('returns name of packfile', () {
       final packbuilder = PackBuilder(repo);
-      final odb = repo.odb;
 
-      packbuilder.add(odb.objects[0]);
+      packbuilder.add(repo.odb.objects[0]);
       Directory(packDirPath).createSync();
 
       expect(packbuilder.name, isEmpty);
       packbuilder.write(null);
       expect(packbuilder.name, isNotEmpty);
-
-      packbuilder.free();
     });
 
     test('packs with default arguments', () {
-      final odb = repo.odb;
-      final objectsCount = odb.objects.length;
+      final objectsCount = repo.odb.objects.length;
       Directory(packDirPath).createSync();
-
-      final writtenCount = repo.pack();
-
-      expect(writtenCount, objectsCount);
-
-      odb.free();
+      expect(repo.pack(), objectsCount);
     });
 
     test('packs into provided path with threads set', () {
-      final odb = repo.odb;
-      final objectsCount = odb.objects.length;
       final testPackPath = p.join(repo.workdir, 'test-pack');
       Directory(testPackPath).createSync();
 
       final writtenCount = repo.pack(path: testPackPath, threads: 1);
 
-      expect(writtenCount, objectsCount);
+      expect(writtenCount, repo.odb.objects.length);
       expect(Directory(testPackPath).listSync().isNotEmpty, true);
-
-      odb.free();
     });
 
     test('packs with provided packDelegate', () {
@@ -198,32 +156,26 @@ void main() {
           );
           for (final commit in repo.log(oid: ref.target)) {
             packBuilder.addRecursively(commit.oid);
-            commit.free();
           }
-          ref.free();
-          branch.free();
         }
       }
 
-      final writtenCount = repo.pack(packDelegate: packDelegate);
-      expect(writtenCount, 18);
+      expect(repo.pack(packDelegate: packDelegate), 18);
     });
 
     test('throws when trying to write pack into invalid path', () {
-      final packbuilder = PackBuilder(repo);
-
       expect(
-        () => packbuilder.write('invalid/path'),
+        () => PackBuilder(repo).write('invalid/path'),
         throwsA(isA<LibGit2Error>()),
       );
+    });
 
-      packbuilder.free();
+    test('manually releases allocated memory', () {
+      expect(() => PackBuilder(repo).free(), returnsNormally);
     });
 
     test('returns string representation of PackBuilder object', () {
-      final packbuilder = PackBuilder(repo);
-      expect(packbuilder.toString(), contains('PackBuilder{'));
-      packbuilder.free();
+      expect(PackBuilder(repo).toString(), contains('PackBuilder{'));
     });
   });
 }

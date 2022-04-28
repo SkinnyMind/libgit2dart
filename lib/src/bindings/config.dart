@@ -29,11 +29,14 @@ Pointer<git_config> openDefault() {
   final out = calloc<Pointer<git_config>>();
   final error = libgit2.git_config_open_default(out);
 
+  final result = out.value;
+
+  calloc.free(out);
+
   if (error < 0) {
-    calloc.free(out);
     throw LibGit2Error(libgit2.git_error_last());
   } else {
-    return out.value;
+    return result;
   }
 }
 
@@ -54,12 +57,14 @@ String findGlobal() {
   final out = calloc<git_buf>();
   final error = libgit2.git_config_find_global(out);
 
+  final result = out.ref.ptr.cast<Utf8>().toDartString(length: out.ref.size);
+
+  libgit2.git_buf_dispose(out);
+  calloc.free(out);
+
   if (error < 0) {
-    calloc.free(out);
     throw LibGit2Error(libgit2.git_error_last());
   } else {
-    final result = out.ref.ptr.cast<Utf8>().toDartString(length: out.ref.size);
-    calloc.free(out);
     return result;
   }
 }
@@ -73,12 +78,14 @@ String findSystem() {
   final out = calloc<git_buf>();
   final error = libgit2.git_config_find_system(out);
 
+  final result = out.ref.ptr.cast<Utf8>().toDartString(length: out.ref.size);
+
+  libgit2.git_buf_dispose(out);
+  calloc.free(out);
+
   if (error < 0) {
-    calloc.free(out);
     throw LibGit2Error(libgit2.git_error_last());
   } else {
-    final result = out.ref.ptr.cast<Utf8>().toDartString(length: out.ref.size);
-    calloc.free(out);
     return result;
   }
 }
@@ -93,12 +100,14 @@ String findXdg() {
   final out = calloc<git_buf>();
   final error = libgit2.git_config_find_xdg(out);
 
+  final result = out.ref.ptr.cast<Utf8>().toDartString(length: out.ref.size);
+
+  libgit2.git_buf_dispose(out);
+  calloc.free(out);
+
   if (error < 0) {
-    calloc.free(out);
     throw LibGit2Error(libgit2.git_error_last());
   } else {
-    final result = out.ref.ptr.cast<Utf8>().toDartString(length: out.ref.size);
-    calloc.free(out);
     return result;
   }
 }
@@ -111,7 +120,12 @@ String findXdg() {
 Pointer<git_config> snapshot(Pointer<git_config> config) {
   final out = calloc<Pointer<git_config>>();
   libgit2.git_config_snapshot(out, config);
-  return out.value;
+
+  final result = out.value;
+
+  calloc.free(out);
+
+  return result;
 }
 
 /// Get the config entry of a config variable.
@@ -122,16 +136,18 @@ Pointer<git_config_entry> getEntry({
   required String variable,
 }) {
   final out = calloc<Pointer<git_config_entry>>();
-  final name = variable.toNativeUtf8().cast<Int8>();
-  final error = libgit2.git_config_get_entry(out, configPointer, name);
+  final nameC = variable.toNativeUtf8().cast<Int8>();
+  final error = libgit2.git_config_get_entry(out, configPointer, nameC);
 
-  calloc.free(name);
+  final result = out.value;
+
+  calloc.free(out);
+  calloc.free(nameC);
 
   if (error < 0) {
-    calloc.free(out);
     throw LibGit2Error(libgit2.git_error_last());
   } else {
-    return out.value;
+    return result;
   }
 }
 
@@ -142,10 +158,10 @@ void setBool({
   required String variable,
   required bool value,
 }) {
-  final name = variable.toNativeUtf8().cast<Int8>();
+  final nameC = variable.toNativeUtf8().cast<Int8>();
   final valueC = value ? 1 : 0;
-  libgit2.git_config_set_bool(configPointer, name, valueC);
-  calloc.free(name);
+  libgit2.git_config_set_bool(configPointer, nameC, valueC);
+  calloc.free(nameC);
 }
 
 /// Set the value of an integer config variable in the config file with the
@@ -155,9 +171,9 @@ void setInt({
   required String variable,
   required int value,
 }) {
-  final name = variable.toNativeUtf8().cast<Int8>();
-  libgit2.git_config_set_int64(configPointer, name, value);
-  calloc.free(name);
+  final nameC = variable.toNativeUtf8().cast<Int8>();
+  libgit2.git_config_set_int64(configPointer, nameC, value);
+  calloc.free(nameC);
 }
 
 /// Set the value of a string config variable in the config file with the
@@ -167,10 +183,10 @@ void setString({
   required String variable,
   required String value,
 }) {
-  final name = variable.toNativeUtf8().cast<Int8>();
+  final nameC = variable.toNativeUtf8().cast<Int8>();
   final valueC = value.toNativeUtf8().cast<Int8>();
-  libgit2.git_config_set_string(configPointer, name, valueC);
-  calloc.free(name);
+  libgit2.git_config_set_string(configPointer, nameC, valueC);
+  calloc.free(nameC);
   calloc.free(valueC);
 }
 
@@ -178,7 +194,12 @@ void setString({
 Pointer<git_config_iterator> iterator(Pointer<git_config> cfg) {
   final out = calloc<Pointer<git_config_iterator>>();
   libgit2.git_config_iterator_new(out, cfg);
-  return out.value;
+
+  final result = out.value;
+
+  calloc.free(out);
+
+  return result;
 }
 
 /// Delete a config variable from the config file with the highest level
@@ -189,10 +210,10 @@ void delete({
   required Pointer<git_config> configPointer,
   required String variable,
 }) {
-  final name = variable.toNativeUtf8().cast<Int8>();
-  final error = libgit2.git_config_delete_entry(configPointer, name);
+  final nameC = variable.toNativeUtf8().cast<Int8>();
+  final error = libgit2.git_config_delete_entry(configPointer, nameC);
 
-  calloc.free(name);
+  calloc.free(nameC);
 
   if (error < 0) {
     throw LibGit2Error(libgit2.git_error_last());
@@ -208,7 +229,7 @@ List<String> multivarValues({
   required String variable,
   String? regexp,
 }) {
-  final name = variable.toNativeUtf8().cast<Int8>();
+  final nameC = variable.toNativeUtf8().cast<Int8>();
   final regexpC = regexp?.toNativeUtf8().cast<Int8>() ?? nullptr;
   final iterator = calloc<Pointer<git_config_iterator>>();
   final entry = calloc<Pointer<git_config_entry>>();
@@ -216,7 +237,7 @@ List<String> multivarValues({
   libgit2.git_config_multivar_iterator_new(
     iterator,
     configPointer,
-    name,
+    nameC,
     regexpC,
   );
 
@@ -232,8 +253,9 @@ List<String> multivarValues({
     }
   }
 
-  calloc.free(name);
+  calloc.free(nameC);
   calloc.free(regexpC);
+  libgit2.git_config_iterator_free(iterator.value);
   calloc.free(iterator);
   calloc.free(entry);
 
@@ -250,13 +272,13 @@ void setMultivar({
   required String regexp,
   required String value,
 }) {
-  final name = variable.toNativeUtf8().cast<Int8>();
+  final nameC = variable.toNativeUtf8().cast<Int8>();
   final regexpC = regexp.toNativeUtf8().cast<Int8>();
   final valueC = value.toNativeUtf8().cast<Int8>();
 
-  libgit2.git_config_set_multivar(configPointer, name, regexpC, valueC);
+  libgit2.git_config_set_multivar(configPointer, nameC, regexpC, valueC);
 
-  calloc.free(name);
+  calloc.free(nameC);
   calloc.free(regexpC);
   calloc.free(valueC);
 }
@@ -270,14 +292,22 @@ void deleteMultivar({
   required String variable,
   required String regexp,
 }) {
-  final name = variable.toNativeUtf8().cast<Int8>();
+  final nameC = variable.toNativeUtf8().cast<Int8>();
   final regexpC = regexp.toNativeUtf8().cast<Int8>();
 
-  libgit2.git_config_delete_multivar(configPointer, name, regexpC);
+  libgit2.git_config_delete_multivar(configPointer, nameC, regexpC);
 
-  calloc.free(name);
+  calloc.free(nameC);
   calloc.free(regexpC);
 }
 
 /// Free the configuration and its associated memory and files.
 void free(Pointer<git_config> cfg) => libgit2.git_config_free(cfg);
+
+/// Free a config entry.
+void freeEntry(Pointer<git_config_entry> entry) =>
+    libgit2.git_config_entry_free(entry);
+
+/// Free a config iterator.
+void freeIterator(Pointer<git_config_iterator> iter) =>
+    libgit2.git_config_iterator_free(iter);

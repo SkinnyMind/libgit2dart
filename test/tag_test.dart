@@ -21,7 +21,6 @@ void main() {
   });
 
   tearDown(() {
-    tag.free();
     repo.free();
     tmpDir.deleteSync(recursive: true);
   });
@@ -50,18 +49,14 @@ void main() {
         offset: 180,
       );
       final target = tag.target as Commit;
-      final tagger = tag.tagger;
 
       expect(tag.oid, tagOid);
       expect(tag.name, 'v0.2');
       expect(tag.message, 'annotated tag\n');
       expect(tag.targetType, GitObject.commit);
       expect(target.message, 'add subdirectory file\n');
-      expect(tagger, signature);
+      expect(tag.tagger, signature);
       expect(tag.toString(), contains('Tag{'));
-
-      signature.free();
-      target.free();
     });
 
     test('creates new annotated tag with commit as target', () {
@@ -85,19 +80,14 @@ void main() {
       );
 
       final newTag = Tag.lookup(repo: repo, oid: oid);
-      final tagger = newTag.tagger;
       final newTagTarget = newTag.target as Commit;
 
       expect(newTag.oid, oid);
       expect(newTag.name, tagName);
       expect(newTag.message, message);
       expect(newTag.targetOid.sha, targetSHA);
-      expect(tagger, signature);
+      expect(newTag.tagger, signature);
       expect(newTagTarget.oid, target);
-
-      newTag.free();
-      newTagTarget.free();
-      signature.free();
     });
 
     test('creates new lightweight tag with commit as target', () {
@@ -115,8 +105,6 @@ void main() {
 
       expect(newTag.shorthand, tagName);
       expect(newTag.target, target);
-
-      newTag.free();
     });
 
     test('creates new annotated tag with tree as target', () {
@@ -139,18 +127,13 @@ void main() {
       );
 
       final newTag = Tag.lookup(repo: repo, oid: oid);
-      final tagger = newTag.tagger;
       final newTagTarget = newTag.target as Tree;
 
       expect(newTag.oid, oid);
       expect(newTag.name, tagName);
       expect(newTag.message, message);
-      expect(tagger, signature);
+      expect(newTag.tagger, signature);
       expect(newTagTarget.oid, target);
-
-      newTag.free();
-      newTagTarget.free();
-      signature.free();
     });
 
     test('creates new lightweight tag with tree as target', () {
@@ -168,8 +151,6 @@ void main() {
 
       expect(newTag.shorthand, tagName);
       expect(newTag.target, target);
-
-      newTag.free();
     });
 
     test('creates new annotated tag with blob as target', () {
@@ -192,18 +173,13 @@ void main() {
       );
 
       final newTag = Tag.lookup(repo: repo, oid: oid);
-      final tagger = newTag.tagger;
       final newTagTarget = newTag.target as Blob;
 
       expect(newTag.oid, oid);
       expect(newTag.name, tagName);
       expect(newTag.message, message);
-      expect(tagger, signature);
+      expect(newTag.tagger, signature);
       expect(newTagTarget.oid, target);
-
-      newTag.free();
-      newTagTarget.free();
-      signature.free();
     });
 
     test('creates new lightweight tag with blob as target', () {
@@ -221,8 +197,6 @@ void main() {
 
       expect(newTag.shorthand, tagName);
       expect(newTag.target, target);
-
-      newTag.free();
     });
 
     test('creates new annotated tag with tag as target', () {
@@ -244,18 +218,13 @@ void main() {
       );
 
       final newTag = Tag.lookup(repo: repo, oid: oid);
-      final tagger = newTag.tagger;
       final newTagTarget = newTag.target as Tag;
 
       expect(newTag.oid, oid);
       expect(newTag.name, tagName);
       expect(newTag.message, message);
-      expect(tagger, signature);
+      expect(newTag.tagger, signature);
       expect(newTagTarget.oid, tag.oid);
-
-      newTag.free();
-      newTagTarget.free();
-      signature.free();
     });
 
     test('creates new lightweight tag with tag as target', () {
@@ -272,8 +241,6 @@ void main() {
 
       expect(newTag.shorthand, tagName);
       expect(newTag.target, tag.oid);
-
-      newTag.free();
     });
 
     test(
@@ -303,20 +270,15 @@ void main() {
       );
 
       final newTag = Tag.lookup(repo: repo, oid: oid);
-      final tagger = newTag.tagger;
       final newTagTarget = newTag.target as Commit;
 
       expect(newTag.oid, oid);
       expect(newTag.name, tagName);
       expect(newTag.message, message);
       expect(newTag.targetOid.sha, targetSHA);
-      expect(tagger, signature);
+      expect(newTag.tagger, signature);
       expect(newTagTarget.oid, target);
       expect(repo.tags.length, equals(2));
-
-      newTag.free();
-      newTagTarget.free();
-      signature.free();
     });
 
     test(
@@ -342,8 +304,6 @@ void main() {
       expect(newTag.shorthand, tagName);
       expect(newTag.target, target);
       expect(repo.tags.length, equals(2));
-
-      newTag.free();
     });
 
     test('throws when trying to create annotated tag with invalid name', () {
@@ -419,6 +379,11 @@ void main() {
         () => Tag.delete(repo: repo, name: 'not.there'),
         throwsA(isA<LibGit2Error>()),
       );
+    });
+
+    test('manually releases allocated memory', () {
+      tag = Tag.lookup(repo: repo, oid: tagOid);
+      expect(() => tag.free(), returnsNormally);
     });
   });
 }

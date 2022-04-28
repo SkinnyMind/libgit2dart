@@ -15,8 +15,6 @@ class Worktree {
   ///
   /// [path] is the path to create working tree at.
   ///
-  /// **IMPORTANT**: Should be freed to release allocated memory.
-  ///
   /// Throws a [LibGit2Error] if error occured.
   Worktree.create({
     required Repository repo,
@@ -30,15 +28,15 @@ class Worktree {
       path: path,
       refPointer: ref?.pointer,
     );
+    _finalizer.attach(this, _worktreePointer, detach: this);
   }
 
   /// Lookups existing worktree in [repo] with provided [name].
   ///
-  /// **IMPORTANT**: Should be freed to release allocated memory.
-  ///
   /// Throws a [LibGit2Error] if error occured.
   Worktree.lookup({required Repository repo, required String name}) {
     _worktreePointer = bindings.lookup(repoPointer: repo.pointer, name: name);
+    _finalizer.attach(this, _worktreePointer, detach: this);
   }
 
   /// Pointer to memory address for allocated branch object.
@@ -88,10 +86,19 @@ class Worktree {
   bool get isValid => bindings.isValid(_worktreePointer);
 
   /// Releases memory allocated for worktree object.
-  void free() => bindings.free(_worktreePointer);
+  void free() {
+    bindings.free(_worktreePointer);
+    _finalizer.detach(this);
+  }
 
   @override
   String toString() {
     return 'Worktree{name: $name, path: $path}';
   }
 }
+
+// coverage:ignore-start
+final _finalizer = Finalizer<Pointer<git_worktree>>(
+  (pointer) => bindings.free(pointer),
+);
+// coverage:ignore-end

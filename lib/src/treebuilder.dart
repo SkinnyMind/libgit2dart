@@ -7,14 +7,13 @@ class TreeBuilder {
   /// Initializes a new instance of [TreeBuilder] class from provided
   /// [repo]sitory and optional [tree] objects.
   ///
-  /// **IMPORTANT**: Should be freed to release allocated memory.
-  ///
   /// Throws a [LibGit2Error] if error occured.
   TreeBuilder({required Repository repo, Tree? tree}) {
     _treeBuilderPointer = bindings.create(
       repoPointer: repo.pointer,
       sourcePointer: tree?.pointer ?? nullptr,
     );
+    _finalizer.attach(this, _treeBuilderPointer, detach: this);
   }
 
   /// Pointer to memory address for allocated tree builder object.
@@ -30,9 +29,6 @@ class TreeBuilder {
   void clear() => bindings.clear(_treeBuilderPointer);
 
   /// Returns an entry from the tree builder with provided [filename].
-  ///
-  /// **IMPORTANT**: the returned entry is owned by the tree builder and
-  /// should not be freed manually.
   ///
   /// Throws [ArgumentError] if nothing found for provided [filename].
   TreeEntry operator [](String filename) {
@@ -83,10 +79,19 @@ class TreeBuilder {
   }
 
   /// Releases memory allocated for tree builder object and all the entries.
-  void free() => bindings.free(_treeBuilderPointer);
+  void free() {
+    bindings.free(_treeBuilderPointer);
+    _finalizer.detach(this);
+  }
 
   @override
   String toString() {
     return 'TreeBuilder{length: $length}';
   }
 }
+
+// coverage:ignore-start
+final _finalizer = Finalizer<Pointer<git_treebuilder>>(
+  (pointer) => bindings.free(pointer),
+);
+// coverage:ignore-end

@@ -10,16 +10,13 @@ import 'package:libgit2dart/src/bindings/repository.dart'
 
 class Reference {
   /// Initializes a new instance of the [Reference] class.
-  ///
-  /// **IMPORTANT**: Should be freed to release allocated memory.
-  Reference(this._refPointer);
+  Reference(this._refPointer) {
+    _finalizer.attach(this, _refPointer, detach: this);
+  }
 
   /// Creates a new reference for provided [target].
   ///
   /// The reference will be created in the [repo]sitory and written to the disk.
-  ///
-  /// **IMPORTANT**: The generated [Reference] object should be freed to release
-  /// allocated memory.
   ///
   /// Valid reference [name]s must follow one of two patterns:
   /// - Top-level names must contain only capital letters and underscores, and
@@ -65,17 +62,17 @@ class Reference {
         '$target must be either Oid or String reference name',
       );
     }
+    _finalizer.attach(this, _refPointer, detach: this);
   }
 
   /// Lookups reference [name] in a [repo]sitory.
-  ///
-  /// **IMPORTANT**: Should be freed to release allocated memory.
   ///
   /// The [name] will be checked for validity.
   ///
   /// Throws a [LibGit2Error] if error occured.
   Reference.lookup({required Repository repo, required String name}) {
     _refPointer = bindings.lookup(repoPointer: repo.pointer, name: name);
+    _finalizer.attach(this, _refPointer, detach: this);
   }
 
   late Pointer<git_reference> _refPointer;
@@ -89,7 +86,6 @@ class Reference {
   static void delete({required Repository repo, required String name}) {
     final ref = Reference.lookup(repo: repo, name: name);
     bindings.delete(ref.pointer);
-    ref.free();
   }
 
   /// Renames an existing reference with provided [oldName].
@@ -120,7 +116,6 @@ class Reference {
       force: force,
       logMessage: logMessage,
     );
-    ref.free();
   }
 
   /// List of all the references names that can be found in a [repo]sitory.
@@ -153,8 +148,6 @@ class Reference {
   }
 
   /// Creates a copy of an existing reference.
-  ///
-  /// **IMPORTANT**: Should be freed to release allocated memory.
   Reference duplicate() => Reference(bindings.duplicate(_refPointer));
 
   /// Type of the reference.
@@ -192,7 +185,6 @@ class Reference {
         oidPointer: target.pointer,
         logMessage: logMessage,
       );
-      free();
       _refPointer = newPointer;
     } else if (target is String) {
       final newPointer = bindings.setTargetSymbolic(
@@ -200,7 +192,6 @@ class Reference {
         target: target,
         logMessage: logMessage,
       );
-      free();
       _refPointer = newPointer;
     } else {
       throw ArgumentError.value(
@@ -261,8 +252,6 @@ class Reference {
   }
 
   /// [RefLog] object.
-  ///
-  /// **IMPORTANT**: Should be freed to release allocated memory.
   RefLog get log => RefLog(this);
 
   /// Whether reference is a local branch.
@@ -292,7 +281,10 @@ class Reference {
   bool notEquals(Reference other) => !equals(other);
 
   /// Releases memory allocated for reference object.
-  void free() => bindings.free(_refPointer);
+  void free() {
+    bindings.free(_refPointer);
+    _finalizer.detach(this);
+  }
 
   @override
   String toString() {
@@ -301,3 +293,9 @@ class Reference {
         'isTag: $isTag}';
   }
 }
+
+// coverage:ignore-start
+final _finalizer = Finalizer<Pointer<git_reference>>(
+  (pointer) => bindings.free(pointer),
+);
+// coverage:ignore-end

@@ -30,15 +30,21 @@ List<Map<String, Pointer>> list(Pointer<git_repository> repo) {
     if (nextError >= 0) {
       final out = calloc<Pointer<git_note>>();
       libgit2.git_note_read(out, repo, notesRef, annotatedOid);
-      calloc.free(noteOid);
-      result.add({'note': out.value, 'annotatedOid': annotatedOid});
+
+      final note = out.value;
+
+      calloc.free(out);
+
+      result.add({'note': note, 'annotatedOid': annotatedOid});
     } else {
       break;
     }
+    calloc.free(noteOid);
   }
 
   calloc.free(notesRef);
   libgit2.git_note_iterator_free(iterator.value);
+  calloc.free(iterator);
 
   return result;
 }
@@ -57,13 +63,15 @@ Pointer<git_note> lookup({
   final notesRefC = notesRef.toNativeUtf8().cast<Int8>();
   final error = libgit2.git_note_read(out, repoPointer, notesRefC, oidPointer);
 
+  final result = out.value;
+
+  calloc.free(out);
   calloc.free(notesRefC);
 
   if (error < 0) {
-    calloc.free(out);
     throw LibGit2Error(libgit2.git_error_last());
   } else {
-    return out.value;
+    return result;
   }
 }
 

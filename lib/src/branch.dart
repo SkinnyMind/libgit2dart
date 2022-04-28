@@ -8,9 +8,9 @@ import 'package:libgit2dart/src/bindings/reference.dart' as reference_bindings;
 class Branch {
   /// Initializes a new instance of [Branch] class from provided pointer to
   /// branch object in memory.
-  ///
-  /// **IMPORTANT**: Should be freed to release allocated memory.
-  Branch(this._branchPointer);
+  Branch(this._branchPointer) {
+    _finalizer.attach(this, _branchPointer, detach: this);
+  }
 
   /// Creates a new branch pointing at a [target] commit.
   ///
@@ -23,8 +23,6 @@ class Branch {
   ///
   /// [target] is the commit to which this branch should point. This object must
   /// belong to the given [repo].
-  ///
-  /// **IMPORTANT**: Should be freed to release allocated memory.
   ///
   /// Throws a [LibGit2Error] if error occured.
   Branch.create({
@@ -39,6 +37,7 @@ class Branch {
       targetPointer: target.pointer,
       force: force,
     );
+    _finalizer.attach(this, _branchPointer, detach: this);
   }
 
   /// Lookups a branch by its [name] and [type] in a [repo]sitory. Lookups in
@@ -48,8 +47,6 @@ class Branch {
   ///
   /// If branch [type] is [GitBranch.remote] you must include the remote name
   /// in the [name] (e.g. "origin/master").
-  ///
-  /// **IMPORTANT**: Should be freed to release allocated memory.
   ///
   /// Throws a [LibGit2Error] if error occured.
   Branch.lookup({
@@ -62,6 +59,7 @@ class Branch {
       branchName: name,
       branchType: type.value,
     );
+    _finalizer.attach(this, _branchPointer, detach: this);
   }
 
   late final Pointer<git_reference> _branchPointer;
@@ -71,9 +69,6 @@ class Branch {
 
   /// Returns a list of branches that can be found in a [repo]sitory for
   /// provided [type]. Default is all branches (local and remote).
-  ///
-  /// **IMPORTANT**: Branches must be freed manually when no longer needed to
-  /// prevent memory leak.
   ///
   /// Throws a [LibGit2Error] if error occured.
   static List<Branch> list({
@@ -94,7 +89,6 @@ class Branch {
   static void delete({required Repository repo, required String name}) {
     final branch = Branch.lookup(repo: repo, name: name);
     bindings.delete(branch.pointer);
-    branch.free();
   }
 
   /// Renames an existing local branch reference with provided [oldName].
@@ -117,8 +111,6 @@ class Branch {
       newBranchName: newName,
       force: force,
     );
-
-    branch.free();
   }
 
   /// [Oid] pointed to by a branch.
@@ -163,8 +155,6 @@ class Branch {
   }
 
   /// Upstream [Reference] of a local branch.
-  ///
-  /// **IMPORTANT**: Should be freed to release allocated memory.
   ///
   /// Throws a [LibGit2Error] if error occured.
   Reference get upstream => Reference(bindings.getUpstream(_branchPointer));
@@ -222,7 +212,10 @@ class Branch {
   }
 
   /// Releases memory allocated for branch object.
-  void free() => bindings.free(_branchPointer);
+  void free() {
+    bindings.free(_branchPointer);
+    _finalizer.detach(this);
+  }
 
   @override
   String toString() {
@@ -230,3 +223,9 @@ class Branch {
         'isCheckedOut: $isCheckedOut}';
   }
 }
+
+// coverage:ignore-start
+final _finalizer = Finalizer<Pointer<git_reference>>(
+  (pointer) => bindings.free(pointer),
+);
+// coverage:ignore-end

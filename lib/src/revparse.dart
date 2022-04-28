@@ -15,8 +15,6 @@ class RevParse {
   /// point to an intermediate reference. When such expressions are being
   /// passed in, reference_out will be valued as well.
   ///
-  /// **IMPORTANT**: Should be freed to release allocated memory.
-  ///
   /// Throws a [LibGit2Error] if error occured.
   RevParse.ext({required Repository repo, required String spec}) {
     final pointers = bindings.revParseExt(
@@ -51,8 +49,6 @@ class RevParse {
   /// final tag = RevParse.single(repo: repo, spec: 'v1.0') as Tag;
   /// ```
   ///
-  /// **IMPORTANT**: Should be freed to release allocated memory.
-  ///
   /// Throws a [LibGit2Error] if error occured.
   static Object single({required Repository repo, required String spec}) {
     final object = bindings.revParseSingle(
@@ -79,7 +75,7 @@ class RevParse {
   ///
   /// Throws a [LibGit2Error] if error occured.
   static RevSpec range({required Repository repo, required String spec}) {
-    return RevSpec(
+    return RevSpec._(
       bindings.revParse(
         repoPointer: repo.pointer,
         spec: spec,
@@ -96,19 +92,15 @@ class RevParse {
 class RevSpec {
   /// Initializes a new instance of [RevSpec] class from provided
   /// pointer to revspec object in memory.
-  const RevSpec(this._revSpecPointer);
+  const RevSpec._(this._revSpecPointer);
 
   /// Pointer to memory address for allocated revspec object.
   final Pointer<git_revspec> _revSpecPointer;
 
   /// Left element of the revspec.
-  ///
-  /// **IMPORTANT**: Should be freed to release allocated memory.
   Commit get from => Commit(_revSpecPointer.ref.from.cast());
 
   /// Right element of the revspec.
-  ///
-  /// **IMPORTANT**: Should be freed to release allocated memory.
   Commit? get to {
     return _revSpecPointer.ref.to == nullptr
         ? null

@@ -18,11 +18,14 @@ Pointer<git_tree> lookup({
   final out = calloc<Pointer<git_tree>>();
   final error = libgit2.git_tree_lookup(out, repoPointer, oidPointer);
 
+  final result = out.value;
+
+  calloc.free(out);
+
   if (error < 0) {
-    calloc.free(out);
     throw LibGit2Error(libgit2.git_error_last());
   } else {
-    return out.value;
+    return result;
   }
 }
 
@@ -82,13 +85,15 @@ Pointer<git_tree_entry> getByPath({
   final pathC = path.toNativeUtf8().cast<Int8>();
   final error = libgit2.git_tree_entry_bypath(out, rootPointer, pathC);
 
+  final result = out.value;
+
+  calloc.free(out);
   calloc.free(pathC);
 
   if (error < 0) {
-    calloc.free(out);
     throw LibGit2Error(libgit2.git_error_last());
   } else {
-    return out.value;
+    return result;
   }
 }
 

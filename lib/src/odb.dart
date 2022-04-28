@@ -7,20 +7,19 @@ import 'package:libgit2dart/src/util.dart';
 class Odb {
   /// Initializes a new instance of [Odb] class from provided
   /// pointer to Odb object in memory.
-  ///
-  /// **IMPORTANT**: Should be freed to release allocated memory.
-  Odb(this._odbPointer);
+  Odb(this._odbPointer) {
+    _finalizer.attach(this, _odbPointer, detach: this);
+  }
 
   /// Creates a new object database with no backends.
   ///
   /// Before the ODB can be used for read/writing, a custom database backend must be
   /// manually added.
-  ///
-  /// **IMPORTANT**: Should be freed to release allocated memory.
   Odb.create() {
     libgit2.git_libgit2_init();
 
     _odbPointer = bindings.create();
+    _finalizer.attach(this, _odbPointer, detach: this);
   }
 
   late final Pointer<git_odb> _odbPointer;
@@ -59,12 +58,9 @@ class Odb {
   /// This method queries all available ODB backends trying to read the given
   /// [oid].
   ///
-  /// **IMPORTANT**: Returned object should be freed to release allocated
-  /// memory.
-  ///
   /// Throws a [LibGit2Error] if error occured.
   OdbObject read(Oid oid) {
-    return OdbObject(
+    return OdbObject._(
       bindings.read(
         odbPointer: _odbPointer,
         oidPointer: oid.pointer,
@@ -97,13 +93,24 @@ class Odb {
   }
 
   /// Releases memory allocated for odb object.
-  void free() => bindings.free(_odbPointer);
+  void free() {
+    bindings.free(_odbPointer);
+    _finalizer.detach(this);
+  }
 }
+
+// coverage:ignore-start
+final _finalizer = Finalizer<Pointer<git_odb>>(
+  (pointer) => bindings.free(pointer),
+);
+// coverage:ignore-end
 
 class OdbObject {
   /// Initializes a new instance of the [OdbObject] class from
   /// provided pointer to odbObject object in memory.
-  const OdbObject(this._odbObjectPointer);
+  OdbObject._(this._odbObjectPointer) {
+    _objectfinalizer.attach(this, _odbObjectPointer, detach: this);
+  }
 
   /// Pointer to memory address for allocated odbObject object.
   final Pointer<git_odb_object> _odbObjectPointer;
@@ -124,10 +131,19 @@ class OdbObject {
   int get size => bindings.objectSize(_odbObjectPointer);
 
   /// Releases memory allocated for odbObject object.
-  void free() => bindings.objectFree(_odbObjectPointer);
+  void free() {
+    bindings.objectFree(_odbObjectPointer);
+    _objectfinalizer.detach(this);
+  }
 
   @override
   String toString() {
     return 'OdbObject{oid: $oid, type: $type, size: $size}';
   }
 }
+
+// coverage:ignore-start
+final _objectfinalizer = Finalizer<Pointer<git_odb_object>>(
+  (pointer) => bindings.objectFree(pointer),
+);
+// coverage:ignore-end

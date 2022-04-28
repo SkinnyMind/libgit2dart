@@ -19,9 +19,12 @@ Pointer<git_reflog> read({
   final nameC = name.toNativeUtf8().cast<Int8>();
   libgit2.git_reflog_read(out, repoPointer, nameC);
 
+  final result = out.value;
+
+  calloc.free(out);
   calloc.free(nameC);
 
-  return out.value;
+  return result;
 }
 
 /// Write an existing in-memory reflog object back to disk using an atomic file

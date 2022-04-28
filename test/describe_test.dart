@@ -27,8 +27,10 @@ void main() {
     });
 
     test('throws when trying to describe and error occurs', () {
-      final nullRepo = Repository(nullptr);
-      expect(() => nullRepo.describe(), throwsA(isA<LibGit2Error>()));
+      expect(
+        () => Repository(nullptr).describe(),
+        throwsA(isA<LibGit2Error>()),
+      );
     });
 
     test('describes commit', () {
@@ -41,30 +43,32 @@ void main() {
     });
 
     test('throws when trying to describe and no reference found', () {
-      final commit = Commit.lookup(repo: repo, oid: repo['f17d0d4']);
-      expect(() => repo.describe(commit: commit), throwsA(isA<LibGit2Error>()));
-      commit.free();
+      expect(
+        () => repo.describe(
+          commit: Commit.lookup(repo: repo, oid: repo['f17d0d4']),
+        ),
+        throwsA(isA<LibGit2Error>()),
+      );
     });
 
     test('returns oid when fallback argument is provided', () {
-      final commit = Commit.lookup(repo: repo, oid: repo['f17d0d4']);
       expect(
-        repo.describe(commit: commit, showCommitOidAsFallback: true),
+        repo.describe(
+          commit: Commit.lookup(repo: repo, oid: repo['f17d0d4']),
+          showCommitOidAsFallback: true,
+        ),
         'f17d0d4',
       );
-      commit.free();
     });
 
     test('describes with provided strategy', () {
-      final commit = Commit.lookup(repo: repo, oid: repo['5aecfa0']);
       expect(
         repo.describe(
-          commit: commit,
+          commit: Commit.lookup(repo: repo, oid: repo['5aecfa0']),
           describeStrategy: GitDescribeStrategy.all,
         ),
         'heads/feature',
       );
-      commit.free();
     });
 
     test('describes with provided pattern', () {
@@ -73,7 +77,6 @@ void main() {
         email: 'author@email.com',
         time: 1234,
       );
-      final commit = Commit.lookup(repo: repo, oid: repo['fc38877']);
       Tag.createAnnotated(
         repo: repo,
         tagName: 'test/tag1',
@@ -84,28 +87,25 @@ void main() {
       );
 
       expect(
-        repo.describe(commit: commit, pattern: 'test/*'),
+        repo.describe(
+          commit: Commit.lookup(repo: repo, oid: repo['fc38877']),
+          pattern: 'test/*',
+        ),
         'test/tag1-2-gfc38877',
       );
-
-      commit.free();
-      signature.free();
     });
 
     test('describes and follows first parent only', () {
-      final commit = Commit.lookup(repo: repo, oid: repo['821ed6e']);
       Tag.delete(repo: repo, name: 'v0.2');
 
       expect(
         repo.describe(
-          commit: commit,
+          commit: Commit.lookup(repo: repo, oid: repo['821ed6e']),
           onlyFollowFirstParent: true,
           describeStrategy: GitDescribeStrategy.tags,
         ),
         'v0.1-1-g821ed6e',
       );
-
-      commit.free();
     });
 
     test('describes with provided abbreviated size', () {
@@ -129,8 +129,6 @@ void main() {
         ),
         'v0.1',
       );
-
-      commit.free();
     });
 
     test('describes with long format', () {
@@ -138,21 +136,13 @@ void main() {
     });
 
     test('describes and appends dirty suffix', () {
-      final index = repo.index;
-      index.clear();
-
+      repo.index.clear();
       expect(repo.describe(dirtySuffix: '-dirty'), 'v0.2-dirty');
-
-      index.free();
     });
 
     test('describes with max candidates tags flag set', () {
-      final index = repo.index;
-      index.clear();
-
+      repo.index.clear();
       expect(repo.describe(maxCandidatesTags: 0), 'v0.2');
-
-      index.free();
     });
   });
 }

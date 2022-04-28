@@ -47,8 +47,6 @@ void main() {
       expect(submodule.ignore, GitSubmoduleIgnore.none);
       expect(submodule.updateRule, GitSubmoduleUpdate.checkout);
       expect(submodule.toString(), contains('Submodule{'));
-
-      submodule.free();
     });
 
     test('throws when trying to lookup and submodule not found', () {
@@ -70,8 +68,11 @@ void main() {
     });
 
     test('updates with provided init flag', () {
-      final submoduleFilePath =
-          p.join(repo.workdir, testSubmodule, 'master.txt');
+      final submoduleFilePath = p.join(
+        repo.workdir,
+        testSubmodule,
+        'master.txt',
+      );
       expect(File(submoduleFilePath).existsSync(), false);
 
       Submodule.update(repo: repo, name: testSubmodule, init: true);
@@ -92,24 +93,20 @@ void main() {
       Submodule.update(repo: repo, name: testSubmodule);
 
       final submoduleRepo = submodule.open();
-      final subHead = submoduleRepo.head;
       expect(submoduleRepo, isA<Repository>());
-      expect(subHead.target.sha, submoduleHeadSha);
+      expect(submoduleRepo.head.target.sha, submoduleHeadSha);
       expect(
         submodule.workdirOid?.sha,
         '49322bb17d3acc9146f98c97d078513228bbf3c0',
       );
 
-      subHead.free();
       submoduleRepo.free();
-      submodule.free();
     });
 
     test('throws when trying to open repository for not initialized submodule',
         () {
       final submodule = Submodule.lookup(repo: repo, name: testSubmodule);
       expect(() => submodule.open(), throwsA(isA<LibGit2Error>()));
-      submodule.free();
     });
 
     test('adds submodule', () {
@@ -125,7 +122,6 @@ void main() {
       expect(submoduleRepo.isEmpty, false);
 
       submoduleRepo.free();
-      submodule.free();
     });
 
     test('throws when trying to add submodule with wrong url', () {
@@ -170,9 +166,6 @@ void main() {
       expect(updatedSubmodule.branch, 'updated');
       expect(updatedSubmodule.ignore, GitSubmoduleIgnore.all);
       expect(updatedSubmodule.updateRule, GitSubmoduleUpdate.rebase);
-
-      updatedSubmodule.free();
-      submodule.free();
     });
 
     test('syncs', () {
@@ -205,13 +198,8 @@ void main() {
         'https://updated.com/',
       );
 
-      updatedSubmRepoConfig.free();
       submRepo.free();
       updatedSubmRepo.free();
-      updatedSubmodule.free();
-      submRepoConfig.free();
-      repoConfig.free();
-      submodule.free();
     });
 
     test('reloads info', () {
@@ -222,8 +210,6 @@ void main() {
       submodule.reload();
 
       expect(submodule.url, 'updated');
-
-      submodule.free();
     });
 
     test('returns status for a submodule', () {
@@ -259,8 +245,11 @@ void main() {
           GitSubmoduleStatus.inWorkdir,
         },
       );
+    });
 
-      submodule.free();
+    test('manually releases allocated memory', () {
+      final submodule = Submodule.lookup(repo: repo, name: testSubmodule);
+      expect(() => submodule.free(), returnsNormally);
     });
   });
 }

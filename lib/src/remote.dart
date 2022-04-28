@@ -8,17 +8,14 @@ class Remote {
   ///
   /// The [name] will be checked for validity.
   ///
-  /// **IMPORTANT**: Should be freed to release allocated memory.
-  ///
   /// Throws a [LibGit2Error] if error occured.
   Remote.lookup({required Repository repo, required String name}) {
     _remotePointer = bindings.lookup(repoPointer: repo.pointer, name: name);
+    _finalizer.attach(this, _remotePointer, detach: this);
   }
 
   /// Adds remote with provided [name] and [url] to the [repo]sitory's
   /// configuration with the default [fetch] refspec if none provided.
-  ///
-  /// **IMPORTANT**: Should be freed to release allocated memory.
   ///
   /// Throws a [LibGit2Error] if error occured.
   Remote.create({
@@ -41,12 +38,11 @@ class Remote {
         fetch: fetch,
       );
     }
+    _finalizer.attach(this, _remotePointer, detach: this);
   }
 
-  late final Pointer<git_remote> _remotePointer;
-
   /// Pointer to memory address for allocated remote object.
-  Pointer<git_remote> get pointer => _remotePointer;
+  late final Pointer<git_remote> _remotePointer;
 
   /// Deletes an existing persisted remote with provided [name].
   ///
@@ -298,7 +294,10 @@ class Remote {
   }
 
   /// Releases memory allocated for remote object.
-  void free() => bindings.free(_remotePointer);
+  void free() {
+    bindings.free(_remotePointer);
+    _finalizer.detach(this);
+  }
 
   @override
   String toString() {
@@ -306,6 +305,12 @@ class Remote {
         'refspecCount: $refspecCount}';
   }
 }
+
+// coverage:ignore-start
+final _finalizer = Finalizer<Pointer<git_remote>>(
+  (pointer) => bindings.free(pointer),
+);
+// coverage:ignore-end
 
 /// Provides callers information about the progress of indexing a packfile,
 /// either directly or part of a fetch or clone that downloads a packfile.
@@ -345,4 +350,22 @@ class TransferProgress {
         'localObjects: $localObjects, totalDeltas: $totalDeltas, '
         'indexedDeltas: $indexedDeltas, receivedBytes: $receivedBytes}';
   }
+}
+
+class RemoteCallback {
+  /// Values used to override the remote creation and customization process
+  /// during a repository clone operation.
+  ///
+  /// Remote will have provided [name] and [url] with the default [fetch]
+  /// refspec if none provided.
+  const RemoteCallback({required this.name, required this.url, this.fetch});
+
+  /// Remote's name.
+  final String name;
+
+  /// Remote's url.
+  final String url;
+
+  /// Remote's fetch refspec.
+  final String? fetch;
 }

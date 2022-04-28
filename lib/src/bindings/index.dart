@@ -14,7 +14,12 @@ import 'package:libgit2dart/src/util.dart';
 Pointer<git_index> newInMemory() {
   final out = calloc<Pointer<git_index>>();
   libgit2.git_index_new(out);
-  return out.value;
+
+  final result = out.value;
+
+  calloc.free(out);
+
+  return result;
 }
 
 /// Read index capabilities flags.
@@ -266,6 +271,8 @@ void addFromBuffer({
     buffer.length,
   );
 
+  calloc.free(bufferC);
+
   if (error < 0) {
     throw LibGit2Error(libgit2.git_error_last());
   }
@@ -452,12 +459,12 @@ List<Map<String, Pointer<git_index_entry>>> conflictList(
         'our': ourOut.value,
         'their': theirOut.value,
       });
-      calloc.free(ancestorOut);
-      calloc.free(ourOut);
-      calloc.free(theirOut);
     } else {
       break;
     }
+    calloc.free(ancestorOut);
+    calloc.free(ourOut);
+    calloc.free(theirOut);
   }
 
   libgit2.git_index_conflict_iterator_free(iterator.value);

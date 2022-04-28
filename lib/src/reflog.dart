@@ -6,13 +6,12 @@ import 'package:libgit2dart/src/bindings/reflog.dart' as bindings;
 
 class RefLog with IterableMixin<RefLogEntry> {
   /// Initializes a new instance of [RefLog] class from provided [Reference].
-  ///
-  /// **IMPORTANT**: Should be freed to release allocated memory.
   RefLog(Reference ref) {
     _reflogPointer = bindings.read(
       repoPointer: ref.owner.pointer,
       name: ref.name,
     );
+    _finalizer.attach(this, _reflogPointer, detach: this);
   }
 
   /// Pointer to memory address for allocated reflog object.
@@ -47,7 +46,7 @@ class RefLog with IterableMixin<RefLogEntry> {
   /// Requesting the reflog entry with an index of 0 will return the most
   /// recently created entry.
   RefLogEntry operator [](int index) {
-    return RefLogEntry(
+    return RefLogEntry._(
       bindings.getByIndex(
         reflogPointer: _reflogPointer,
         index: index,
@@ -89,16 +88,25 @@ class RefLog with IterableMixin<RefLogEntry> {
   void write() => bindings.write(_reflogPointer);
 
   /// Releases memory allocated for reflog object.
-  void free() => bindings.free(_reflogPointer);
+  void free() {
+    bindings.free(_reflogPointer);
+    _finalizer.detach(this);
+  }
 
   @override
   Iterator<RefLogEntry> get iterator => _RefLogIterator(_reflogPointer);
 }
 
+// coverage:ignore-start
+final _finalizer = Finalizer<Pointer<git_reflog>>(
+  (pointer) => bindings.free(pointer),
+);
+// coverage:ignore-end
+
 class RefLogEntry {
   /// Initializes a new instance of [RefLogEntry] class from provided
   /// pointer to RefLogEntry object in memory.
-  const RefLogEntry(this._entryPointer);
+  const RefLogEntry._(this._entryPointer);
 
   /// Pointer to memory address for allocated reflog entry object.
   final Pointer<git_reflog_entry> _entryPointer;
@@ -141,7 +149,7 @@ class _RefLogIterator implements Iterator<RefLogEntry> {
     if (_index == _count) {
       return false;
     } else {
-      _currentEntry = RefLogEntry(
+      _currentEntry = RefLogEntry._(
         bindings.getByIndex(
           reflogPointer: _reflogPointer,
           index: _index,

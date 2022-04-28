@@ -16,9 +16,6 @@ void main() {
     );
   });
 
-  tearDown(() {
-    signature.free();
-  });
   group('Signature', () {
     test('creates with provided time and offset', () {
       expect(signature, isA<Signature>());
@@ -50,7 +47,6 @@ void main() {
         lessThan(5),
       );
       expect(sig.offset, isA<int>());
-      sig.free();
     });
 
     test('returns correct values', () {
@@ -66,9 +62,16 @@ void main() {
         email: email,
         time: time,
       );
-      expect(signature == otherSignature, true);
+      expect(signature, equals(otherSignature));
+    });
 
-      otherSignature.free();
+    test('manually releases allocated memory', () {
+      final signature = Signature.create(
+        name: name,
+        email: email,
+        time: time,
+      );
+      expect(() => signature.free(), returnsNormally);
     });
 
     test('returns string representation of Signature object', () {

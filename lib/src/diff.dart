@@ -4,15 +4,14 @@ import 'package:ffi/ffi.dart';
 import 'package:libgit2dart/libgit2dart.dart';
 import 'package:libgit2dart/src/bindings/diff.dart' as bindings;
 import 'package:libgit2dart/src/bindings/libgit2_bindings.dart';
-import 'package:libgit2dart/src/bindings/patch.dart' as patch_bindings;
 import 'package:libgit2dart/src/util.dart';
 
 class Diff {
   /// Initializes a new instance of [Diff] class from provided
   /// pointer to diff object in memory.
-  ///
-  /// **IMPORTANT**: Should be freed to release allocated memory.
-  Diff(this._diffPointer);
+  Diff(this._diffPointer) {
+    _finalizer.attach(this, _diffPointer, detach: this);
+  }
 
   /// Creates a diff between the [repo]sitory [index] and the workdir directory.
   ///
@@ -30,8 +29,6 @@ class Diff {
   /// [interhunkLines] is the maximum number of unchanged lines between hunk
   /// boundaries before the hunks will be merged into one. Defaults to 0.
   ///
-  /// **IMPORTANT**: Should be freed to release allocated memory.
-  ///
   /// Throws a [LibGit2Error] if error occured.
   Diff.indexToWorkdir({
     required Repository repo,
@@ -47,6 +44,7 @@ class Diff {
       contextLines: contextLines,
       interhunkLines: interhunkLines,
     );
+    _finalizer.attach(this, _diffPointer, detach: this);
   }
 
   /// Creates a diff between a [tree] and [repo]sitory [index].
@@ -83,6 +81,7 @@ class Diff {
       contextLines: contextLines,
       interhunkLines: interhunkLines,
     );
+    _finalizer.attach(this, _diffPointer, detach: this);
   }
 
   /// Creates a diff between a [tree] and the working directory.
@@ -124,6 +123,7 @@ class Diff {
       contextLines: contextLines,
       interhunkLines: interhunkLines,
     );
+    _finalizer.attach(this, _diffPointer, detach: this);
   }
 
   /// Creates a diff between a [tree] and the working directory using index
@@ -145,8 +145,6 @@ class Diff {
   /// [interhunkLines] is the maximum number of unchanged lines between hunk
   /// boundaries before the hunks will be merged into one. Defaults to 0.
   ///
-  /// **IMPORTANT**: Should be freed to release allocated memory.
-  ///
   /// Throws a [LibGit2Error] if error occured.
   Diff.treeToWorkdirWithIndex({
     required Repository repo,
@@ -162,6 +160,7 @@ class Diff {
       contextLines: contextLines,
       interhunkLines: interhunkLines,
     );
+    _finalizer.attach(this, _diffPointer, detach: this);
   }
 
   /// Creates a diff with the difference between two [Tree] objects.
@@ -204,6 +203,7 @@ class Diff {
       contextLines: contextLines,
       interhunkLines: interhunkLines,
     );
+    _finalizer.attach(this, _diffPointer, detach: this);
   }
 
   /// Creates a diff with the difference between two [Index] objects.
@@ -239,6 +239,7 @@ class Diff {
       contextLines: contextLines,
       interhunkLines: interhunkLines,
     );
+    _finalizer.attach(this, _diffPointer, detach: this);
   }
 
   /// Reads the [content]s of a git patch file into a git diff object.
@@ -255,6 +256,7 @@ class Diff {
   Diff.parse(String content) {
     libgit2.git_libgit2_init();
     _diffPointer = bindings.parse(content);
+    _finalizer.attach(this, _diffPointer, detach: this);
   }
 
   late final Pointer<git_diff> _diffPointer;
@@ -441,13 +443,22 @@ class Diff {
   Oid get patchOid => Oid(bindings.patchOid(_diffPointer));
 
   /// Releases memory allocated for diff object.
-  void free() => bindings.free(_diffPointer);
+  void free() {
+    bindings.free(_diffPointer);
+    _finalizer.detach(this);
+  }
 
   @override
   String toString() {
     return 'Diff{length: $length}';
   }
 }
+
+// coverage:ignore-start
+final _finalizer = Finalizer<Pointer<git_diff>>(
+  (pointer) => bindings.free(pointer),
+);
+// coverage:ignore-end
 
 class DiffDelta {
   /// Initializes a new instance of [DiffDelta] class from provided
@@ -487,10 +498,10 @@ class DiffDelta {
   int get numberOfFiles => _diffDeltaPointer.ref.nfiles;
 
   /// Represents the "from" side of the diff.
-  DiffFile get oldFile => DiffFile(_diffDeltaPointer.ref.old_file);
+  DiffFile get oldFile => DiffFile._(_diffDeltaPointer.ref.old_file);
 
   /// Represents the "to" side of the diff.
-  DiffFile get newFile => DiffFile(_diffDeltaPointer.ref.new_file);
+  DiffFile get newFile => DiffFile._(_diffDeltaPointer.ref.new_file);
 
   @override
   String toString() {
@@ -507,7 +518,7 @@ class DiffDelta {
 class DiffFile {
   /// Initializes a new instance of [DiffFile] class from provided diff file
   /// object.
-  const DiffFile(this._diffFile);
+  const DiffFile._(this._diffFile);
 
   final git_diff_file _diffFile;
 
@@ -543,9 +554,9 @@ class DiffFile {
 class DiffStats {
   /// Initializes a new instance of [DiffStats] class from provided
   /// pointer to diff stats object in memory.
-  ///
-  /// **IMPORTANT**: Should be freed to release allocated memory.
-  const DiffStats(this._diffStatsPointer);
+  DiffStats(this._diffStatsPointer) {
+    _statsFinalizer.attach(this, _diffStatsPointer, detach: this);
+  }
 
   /// Pointer to memory address for allocated diff delta object.
   final Pointer<git_diff_stats> _diffStatsPointer;
@@ -573,7 +584,10 @@ class DiffStats {
   }
 
   /// Releases memory allocated for diff stats object.
-  void free() => bindings.statsFree(_diffStatsPointer);
+  void free() {
+    bindings.statsFree(_diffStatsPointer);
+    _statsFinalizer.detach(this);
+  }
 
   @override
   String toString() {
@@ -582,111 +596,8 @@ class DiffStats {
   }
 }
 
-class DiffHunk {
-  /// Initializes a new instance of [DiffHunk] class from provided
-  /// pointers to patch object and diff hunk object in memory and number of
-  /// lines in hunk.
-  const DiffHunk(
-    this._patchPointer,
-    this._diffHunkPointer,
-    this.linesCount,
-    this.index,
-  );
-
-  /// Pointer to memory address for allocated diff hunk object.
-  final Pointer<git_diff_hunk> _diffHunkPointer;
-
-  /// Pointer to memory address for allocated patch object.
-  final Pointer<git_patch> _patchPointer;
-
-  /// Number of total lines in this hunk.
-  final int linesCount;
-
-  /// Index of this hunk in the patch.
-  final int index;
-
-  /// Starting line number in 'old file'.
-  int get oldStart => _diffHunkPointer.ref.old_start;
-
-  /// Number of lines in 'old file'.
-  int get oldLines => _diffHunkPointer.ref.old_lines;
-
-  /// Starting line number in 'new file'.
-  int get newStart => _diffHunkPointer.ref.new_start;
-
-  /// Number of lines in 'new file'.
-  int get newLines => _diffHunkPointer.ref.new_lines;
-
-  /// Header of a hunk.
-  String get header {
-    final list = <int>[];
-    for (var i = 0; i < _diffHunkPointer.ref.header_len; i++) {
-      list.add(_diffHunkPointer.ref.header[i]);
-    }
-    return String.fromCharCodes(list);
-  }
-
-  /// List of lines in a hunk of a patch.
-  List<DiffLine> get lines {
-    final lines = <DiffLine>[];
-    for (var i = 0; i < linesCount; i++) {
-      lines.add(
-        DiffLine(
-          patch_bindings.lines(
-            patchPointer: _patchPointer,
-            hunkIndex: index,
-            lineOfHunk: i,
-          ),
-        ),
-      );
-    }
-    return lines;
-  }
-
-  @override
-  String toString() {
-    return 'DiffHunk{linesCount: $linesCount, index: $index, '
-        'oldStart: $oldStart, oldLines: $oldLines, newStart: $newStart, '
-        'newLines: $newLines, header: $header}';
-  }
-}
-
-class DiffLine {
-  /// Initializes a new instance of [DiffLine] class from provided
-  /// pointer to diff line object in memory.
-  const DiffLine(this._diffLinePointer);
-
-  /// Pointer to memory address for allocated diff line object.
-  final Pointer<git_diff_line> _diffLinePointer;
-
-  /// Type of the line.
-  GitDiffLine get origin {
-    return GitDiffLine.values.singleWhere(
-      (e) => _diffLinePointer.ref.origin == e.value,
-    );
-  }
-
-  /// Line number in old file or -1 for added line.
-  int get oldLineNumber => _diffLinePointer.ref.old_lineno;
-
-  /// Line number in new file or -1 for deleted line.
-  int get newLineNumber => _diffLinePointer.ref.new_lineno;
-
-  /// Number of newline characters in content.
-  int get numLines => _diffLinePointer.ref.num_lines;
-
-  /// Offset in the original file to the content.
-  int get contentOffset => _diffLinePointer.ref.content_offset;
-
-  /// Content of the diff line.
-  String get content => _diffLinePointer.ref.content
-      .cast<Utf8>()
-      .toDartString(length: _diffLinePointer.ref.content_len);
-
-  @override
-  String toString() {
-    return 'DiffLine{oldLineNumber: $oldLineNumber, '
-        'newLineNumber: $newLineNumber, numLines: $numLines, '
-        'contentOffset: $contentOffset, content: $content}';
-  }
-}
+// coverage:ignore-start
+final _statsFinalizer = Finalizer<Pointer<git_diff_stats>>(
+  (pointer) => bindings.statsFree(pointer),
+);
+// coverage:ignore-end

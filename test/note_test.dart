@@ -43,7 +43,6 @@ void main() {
         expect(notes[i].oid.sha, notesExpected[i]['oid']);
         expect(notes[i].message, notesExpected[i]['message']);
         expect(notes[i].annotatedOid.sha, notesExpected[i]['annotatedOid']);
-        notes[i].free();
       }
     });
 
@@ -53,15 +52,11 @@ void main() {
     });
 
     test('lookups note', () {
-      final head = repo.head;
-      final note = Note.lookup(repo: repo, annotatedOid: head.target);
+      final note = Note.lookup(repo: repo, annotatedOid: repo.head.target);
 
       expect(note.oid.sha, notesExpected[1]['oid']);
       expect(note.message, notesExpected[1]['message']);
       expect(note.annotatedOid.sha, notesExpected[1]['annotatedOid']);
-
-      note.free();
-      head.free();
     });
 
     test('creates note', () {
@@ -70,23 +65,20 @@ void main() {
         email: 'author@email.com',
         time: 1234,
       );
-      final head = repo.head;
       final noteOid = Note.create(
         repo: repo,
         author: signature,
         committer: signature,
-        annotatedOid: head.target,
+        annotatedOid: repo.head.target,
         note: 'New note for HEAD',
         force: true,
       );
-      final noteBlob = Blob.lookup(repo: repo, oid: noteOid);
 
       expect(noteOid.sha, 'ffd6e2ceaf91c00ea6d29e2e897f906da720529f');
-      expect(noteBlob.content, 'New note for HEAD');
-
-      noteBlob.free();
-      head.free();
-      signature.free();
+      expect(
+        Blob.lookup(repo: repo, oid: noteOid).content,
+        'New note for HEAD',
+      );
     });
 
     test('throws when trying to create note and error occurs', () {
@@ -108,7 +100,6 @@ void main() {
         email: 'author@email.com',
         time: 1234,
       );
-      final head = repo.head;
 
       Note.delete(
         repo: repo,
@@ -118,12 +109,9 @@ void main() {
       );
 
       expect(
-        () => Note.lookup(repo: repo, annotatedOid: head.target),
+        () => Note.lookup(repo: repo, annotatedOid: repo.head.target),
         throwsA(isA<LibGit2Error>()),
       );
-
-      head.free();
-      signature.free();
     });
 
     test('throws when trying to delete note and error occurs', () {
@@ -138,10 +126,14 @@ void main() {
       );
     });
 
+    test('manually releases allocated memory', () {
+      final note = Note.lookup(repo: repo, annotatedOid: repo['821ed6e']);
+      expect(() => note.free(), returnsNormally);
+    });
+
     test('returns string representation of Note object', () {
       final note = Note.lookup(repo: repo, annotatedOid: repo['821ed6e']);
       expect(note.toString(), contains('Note{'));
-      note.free();
     });
   });
 }

@@ -42,11 +42,6 @@ void main() {
       final tag = RevParse.single(repo: repo, spec: 'v0.2') as Tag;
       expect(tag, isA<Tag>());
       expect(tag.message, 'annotated tag\n');
-
-      commit.free();
-      tree.free();
-      blob.free();
-      tag.free();
     });
 
     test('.single() throws when spec string not found or invalid', () {
@@ -68,10 +63,6 @@ void main() {
       expect(headParse.reference?.equals(masterRef), true);
       expect(headParse.toString(), contains('RevParse{'));
 
-      masterRef.free();
-      headParse.object.free();
-      headParse.reference?.free();
-
       final featureRef = Reference.lookup(
         repo: repo,
         name: 'refs/heads/feature',
@@ -83,10 +74,6 @@ void main() {
         '5aecfa0fb97eadaac050ccb99f03c3fb65460ad4',
       );
       expect(headParse.reference?.equals(featureRef), true);
-
-      featureRef.free();
-      headParse.object.free();
-      headParse.reference?.free();
     });
 
     test('.ext() returns only commit when no intermidiate reference found', () {
@@ -94,8 +81,6 @@ void main() {
 
       expect(headParse.object.oid.sha, parentSHA);
       expect(headParse.reference, isNull);
-
-      headParse.object.free();
     });
 
     test('.ext() throws when spec string not found or invalid', () {
@@ -119,16 +104,11 @@ void main() {
       expect(revspec.flags, {GitRevSpec.single});
       expect(revspec.toString(), contains('RevSpec{'));
 
-      revspec.from.free();
-
       revspec = RevParse.range(repo: repo, spec: 'HEAD^1..5aecfa');
 
       expect(revspec.from.oid.sha, parentSHA);
       expect(revspec.to?.oid.sha, '5aecfa0fb97eadaac050ccb99f03c3fb65460ad4');
       expect(revspec.flags, {GitRevSpec.range});
-
-      revspec.from.free();
-      revspec.to?.free();
 
       revspec = RevParse.range(repo: repo, spec: 'HEAD...feature');
 
@@ -139,9 +119,6 @@ void main() {
         Merge.base(repo: repo, commits: [revspec.from.oid, revspec.to!.oid]),
         isA<Oid>(),
       );
-
-      revspec.from.free();
-      revspec.to?.free();
     });
 
     test('throws on invalid range spec', () {

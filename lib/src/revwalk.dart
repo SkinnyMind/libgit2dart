@@ -5,10 +5,9 @@ import 'package:libgit2dart/src/bindings/revwalk.dart' as bindings;
 
 class RevWalk {
   /// Initializes a new instance of the [RevWalk] class.
-  ///
-  /// **IMPORTANT**: Should be freed to release allocated memory.
   RevWalk(Repository repo) {
     _revWalkPointer = bindings.create(repo.pointer);
+    _finalizer.attach(this, _revWalkPointer, detach: this);
   }
 
   late final Pointer<git_revwalk> _revWalkPointer;
@@ -150,5 +149,14 @@ class RevWalk {
   void simplifyFirstParent() => bindings.simplifyFirstParent(_revWalkPointer);
 
   /// Releases memory allocated for [RevWalk] object.
-  void free() => bindings.free(_revWalkPointer);
+  void free() {
+    bindings.free(_revWalkPointer);
+    _finalizer.detach(this);
+  }
 }
+
+// coverage:ignore-start
+final _finalizer = Finalizer<Pointer<git_revwalk>>(
+  (pointer) => bindings.free(pointer),
+);
+// coverage:ignore-end

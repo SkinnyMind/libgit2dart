@@ -8,18 +8,17 @@ import 'package:libgit2dart/src/bindings/libgit2_bindings.dart';
 class Commit {
   /// Initializes a new instance of [Commit] class from provided pointer to
   /// commit object in memory.
-  ///
-  /// **IMPORTANT**: Should be freed to release allocated memory.
-  Commit(this._commitPointer);
+  Commit(this._commitPointer) {
+    _finalizer.attach(this, _commitPointer, detach: this);
+  }
 
   /// Lookups commit object for provided [oid] in the [repo]sitory.
-  ///
-  /// **IMPORTANT**: Should be freed to release allocated memory.
   Commit.lookup({required Repository repo, required Oid oid}) {
     _commitPointer = bindings.lookup(
       repoPointer: repo.pointer,
       oidPointer: oid.pointer,
     );
+    _finalizer.attach(this, _commitPointer, detach: this);
   }
 
   late final Pointer<git_commit> _commitPointer;
@@ -194,8 +193,6 @@ class Commit {
   ///
   /// [mainline] is parent of the commit if it is a merge (i.e. 1, 2).
   ///
-  /// **IMPORTANT**: produced index should be freed to release allocated memory.
-  ///
   /// Throws a [LibGit2Error] if error occured.
   Index revertTo({
     required Commit commit,
@@ -221,7 +218,7 @@ class Commit {
   /// leading newlines.
   String get message => bindings.message(_commitPointer);
 
-  /// Returns the short "summary" of the git commit message.
+  /// Short "summary" of the git commit message.
   ///
   /// The returned message is the summary of the commit, comprising the first
   /// paragraph of the message with whitespace trimmed and squashed.
@@ -229,7 +226,7 @@ class Commit {
   /// Throws a [LibGit2Error] if error occured.
   String get summary => bindings.summary(_commitPointer);
 
-  /// Returns the long "body" of the commit message.
+  /// Long "body" of the commit message.
   ///
   /// The returned message is the body of the commit, comprising everything but
   /// the first paragraph of the message. Leading and trailing whitespaces are
@@ -272,8 +269,6 @@ class Commit {
 
   /// Returns the specified parent of the commit at provided 0-based [position].
   ///
-  /// **IMPORTANT**: Should be freed to release allocated memory.
-  ///
   /// Throws a [LibGit2Error] if error occured.
   Commit parent(int position) {
     return Commit(
@@ -303,8 +298,6 @@ class Commit {
   /// Passing 0 as the generation number returns another instance of the base
   /// commit itself.
   ///
-  /// **IMPORTANT**: Should be freed to release allocated memory.
-  ///
   /// Throws a [LibGit2Error] if error occured.
   Commit nthGenAncestor(int n) {
     return Commit(bindings.nthGenAncestor(commitPointer: _commitPointer, n: n));
@@ -323,12 +316,13 @@ class Commit {
   }
 
   /// Creates an in-memory copy of a commit.
-  ///
-  /// **IMPORTANT**: Should be freed to release allocated memory.
   Commit duplicate() => Commit(bindings.duplicate(_commitPointer));
 
   /// Releases memory allocated for commit object.
-  void free() => bindings.free(_commitPointer);
+  void free() {
+    bindings.free(_commitPointer);
+    _finalizer.detach(this);
+  }
 
   @override
   String toString() {
@@ -337,3 +331,9 @@ class Commit {
         ' author: $author}';
   }
 }
+
+// coverage:ignore-start
+final _finalizer = Finalizer<Pointer<git_commit>>(
+  (pointer) => bindings.free(pointer),
+);
+// coverage:ignore-end
