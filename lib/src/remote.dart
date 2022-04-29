@@ -194,16 +194,8 @@ class Remote {
   /// [callbacks] is the combination of callback functions from [Callbacks]
   /// object.
   ///
-  /// Returned map keys:
-  /// - `local` is true if remote head is available locally, false otherwise.
-  /// - `loid` is the oid of the object the local copy of the remote head is
-  /// currently pointing to. null if there is no local copy of the remote head.
-  /// - `name` is the name of the reference.
-  /// - `oid` is the oid of the object the remote head is currently pointing to.
-  /// - `symref` is the target of the symbolic reference or empty string.
-  ///
   /// Throws a [LibGit2Error] if error occured.
-  List<Map<String, Object?>> ls({
+  List<RemoteReference> ls({
     String? proxy,
     Callbacks callbacks = const Callbacks(),
   }) {
@@ -213,8 +205,22 @@ class Remote {
       callbacks: callbacks,
       proxyOption: proxy,
     );
-    final result = bindings.lsRemotes(_remotePointer);
+    final refs = bindings.lsRemotes(_remotePointer);
     bindings.disconnect(_remotePointer);
+
+    final result = <RemoteReference>[];
+    for (final ref in refs) {
+      result.add(
+        RemoteReference._(
+          isLocal: ref['local']! as bool,
+          localId: ref['loid'] as Oid?,
+          name: ref['name']! as String,
+          oid: ref['oid']! as Oid,
+          symRef: ref['symref']! as String,
+        ),
+      );
+    }
+
     return result;
   }
 
@@ -370,4 +376,36 @@ class RemoteCallback {
 
   /// Remote's fetch refspec.
   final String? fetch;
+}
+
+class RemoteReference {
+  const RemoteReference._({
+    required this.isLocal,
+    required this.localId,
+    required this.name,
+    required this.oid,
+    required this.symRef,
+  });
+
+  /// Whether remote head is available locally.
+  final bool isLocal;
+
+  /// Oid of the object the local copy of the remote head is currently pointing
+  /// to. Null if there is no local copy of the remote head.
+  final Oid? localId;
+
+  /// Name of the reference.
+  final String name;
+
+  /// Oid of the object the remote head is currently pointing to.
+  final Oid oid;
+
+  /// Target of the symbolic reference or empty string if reference is direct.
+  final String symRef;
+
+  @override
+  String toString() {
+    return 'RemoteReference{isLocal: $isLocal, localId: $localId, '
+        'name: $name, oid: $oid, symRef: $symRef}';
+  }
 }

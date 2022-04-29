@@ -265,14 +265,12 @@ void main() {
       final remote = Remote.lookup(repo: repo, name: 'libgit2');
 
       final refs = remote.ls();
-      expect(refs.first['local'], false);
-      expect(refs.first['loid'], null);
-      expect(refs.first['name'], 'HEAD');
-      expect(refs.first['symref'], 'refs/heads/master');
-      expect(
-        (refs.first['oid']! as Oid).sha,
-        '49322bb17d3acc9146f98c97d078513228bbf3c0',
-      );
+      expect(refs.first.isLocal, false);
+      expect(refs.first.localId, null);
+      expect(refs.first.name, 'HEAD');
+      expect(refs.first.symRef, 'refs/heads/master');
+      expect((refs.first.oid).sha, '49322bb17d3acc9146f98c97d078513228bbf3c0');
+      expect(refs.first.toString(), contains('RemoteReference{'));
     });
 
     test(
