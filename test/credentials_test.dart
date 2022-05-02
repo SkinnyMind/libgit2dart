@@ -10,13 +10,13 @@ void main() {
   );
 
   setUp(() {
-    if (cloneDir.existsSync()) {
+    if (cloneDir.existsSync() && (Platform.isLinux || Platform.isMacOS)) {
       cloneDir.deleteSync(recursive: true);
     }
   });
 
   tearDown(() {
-    if (cloneDir.existsSync()) {
+    if (cloneDir.existsSync() && (Platform.isLinux || Platform.isMacOS)) {
       cloneDir.deleteSync(recursive: true);
     }
   });
