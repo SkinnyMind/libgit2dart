@@ -504,7 +504,7 @@ Total 69 (delta 0), reused 1 (delta 0), pack-reused 68
       );
       expect(updateRefOutput, {'refs/heads/master': ''});
 
-      originDir.delete(recursive: true);
+      originDir.deleteSync(recursive: true);
     });
 
     test('throws when trying to push to invalid url', () {
