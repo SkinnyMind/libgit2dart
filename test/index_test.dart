@@ -20,7 +20,6 @@ void main() {
   });
 
   tearDown(() {
-    repo.free();
     tmpDir.deleteSync(recursive: true);
   });
 
@@ -152,8 +151,6 @@ void main() {
           p.join('test', 'assets', 'empty_bare.git'),
         );
         expect(() => bare.index.add('config'), throwsA(isA<LibGit2Error>()));
-
-        bare.free();
       });
     });
 
@@ -203,8 +200,6 @@ void main() {
           p.join('test', 'assets', 'empty_bare.git'),
         );
         expect(() => bare.index.addAll([]), throwsA(isA<LibGit2Error>()));
-
-        bare.free();
       });
     });
 
@@ -229,8 +224,6 @@ void main() {
           () => bare.index.updateAll(['not_there']),
           throwsA(isA<LibGit2Error>()),
         );
-
-        bare.free();
       });
     });
 
@@ -316,7 +309,6 @@ void main() {
 
       expect(() => repo.index.writeTree(), throwsA(isA<LibGit2Error>()));
 
-      repo.free();
       tmpDir.deleteSync(recursive: true);
     });
 
@@ -356,7 +348,6 @@ void main() {
       expect(conflictedFile.their?.path, 'feature_file');
       expect(conflictedFile.toString(), contains('ConflictEntry{'));
 
-      conflictRepo.free();
       repoDir.deleteSync(recursive: true);
     });
 
@@ -381,7 +372,6 @@ void main() {
       expect(conflictedFile.their?.path, 'conflict_file');
       expect(conflictedFile.toString(), contains('ConflictEntry{'));
 
-      conflictRepo.free();
       repoDir.deleteSync(recursive: true);
     });
 
@@ -407,7 +397,6 @@ void main() {
       expect(conflictedFile.their?.path, 'feature_file');
       expect(conflictedFile.toString(), contains('ConflictEntry{'));
 
-      conflictRepo.free();
       repoDir.deleteSync(recursive: true);
     });
 
@@ -432,7 +421,6 @@ void main() {
       expect(conflictedFile.their?.path, null);
       expect(conflictedFile.toString(), contains('ConflictEntry{'));
 
-      conflictRepo.free();
       repoDir.deleteSync(recursive: true);
     });
 
@@ -465,7 +453,6 @@ void main() {
       expect(index.conflicts, isEmpty);
       expect(index.conflicts['conflict_file'], null);
 
-      conflictRepo.free();
       repoDir.deleteSync(recursive: true);
     });
 
@@ -502,7 +489,6 @@ void main() {
       expect(index.hasConflicts, false);
       expect(index.conflicts, isEmpty);
 
-      conflictRepo.free();
       repoDir.deleteSync(recursive: true);
     });
 

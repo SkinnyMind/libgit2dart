@@ -19,7 +19,6 @@ void main() {
   });
 
   tearDown(() {
-    repo.free();
     tmpDir.deleteSync(recursive: true);
   });
 
@@ -165,8 +164,6 @@ void main() {
       final bare = Repository.open(p.join('test', 'assets', 'empty_bare.git'));
 
       expect(() => bare.status, throwsA(isA<LibGit2Error>()));
-
-      bare.free();
     });
 
     test('cleans up state', () {

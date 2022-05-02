@@ -5,21 +5,6 @@ import 'package:path/path.dart' as p;
 import 'package:test/test.dart';
 
 void main() {
-  final cloneDir = Directory(
-    p.join(Directory.systemTemp.path, 'credentials_cloned'),
-  );
-
-  setUp(() {
-    if (cloneDir.existsSync()) {
-      cloneDir.deleteSync(recursive: true);
-    }
-  });
-
-  tearDown(() {
-    if (cloneDir.existsSync()) {
-      cloneDir.deleteSync(recursive: true);
-    }
-  });
   group('Credentials', () {
     test('initializes username/password credentials', () {
       final credentials = const UserPass(
@@ -78,6 +63,7 @@ void main() {
     });
 
     test('throws when provided username and password are incorrect', () {
+      final cloneDir = Directory.systemTemp.createTempSync('clone');
       final callbacks = const Callbacks(
         credentials: UserPass(
           username: 'libgit2',
@@ -93,11 +79,14 @@ void main() {
         ),
         throwsA(isA<LibGit2Error>()),
       );
+
+      cloneDir.deleteSync(recursive: true);
     });
 
     test(
       'clones repository with provided keypair',
       () {
+        final cloneDir = Directory.systemTemp.createTempSync('clone');
         final keypair = Keypair(
           username: 'git',
           pubKey: p.join('test', 'assets', 'keys', 'id_rsa.pub'),
@@ -114,12 +103,16 @@ void main() {
 
         expect(repo.isEmpty, false);
 
-        repo.free();
+        if (Platform.isLinux || Platform.isMacOS) {
+          cloneDir.deleteSync(recursive: true);
+        }
       },
       testOn: '!linux',
     );
 
     test('throws when no credentials is provided', () {
+      final cloneDir = Directory.systemTemp.createTempSync('clone');
+
       expect(
         () => Repository.clone(
           url: 'ssh://git@github.com/libgit2/TestGitRepository',
@@ -127,9 +120,12 @@ void main() {
         ),
         throwsA(isA<LibGit2Error>()),
       );
+
+      cloneDir.deleteSync(recursive: true);
     });
 
     test('throws when provided keypair is invalid', () {
+      final cloneDir = Directory.systemTemp.createTempSync('clone');
       final keypair = const Keypair(
         username: 'git',
         pubKey: 'invalid.pub',
@@ -146,9 +142,12 @@ void main() {
         ),
         throwsA(isA<LibGit2Error>()),
       );
+
+      cloneDir.deleteSync(recursive: true);
     });
 
     test('throws when provided keypair is incorrect', () {
+      final cloneDir = Directory.systemTemp.createTempSync('clone');
       final keypair = Keypair(
         username: 'git',
         pubKey: p.join('test', 'assets', 'keys', 'id_rsa.pub'),
@@ -165,9 +164,12 @@ void main() {
         ),
         throwsA(isA<LibGit2Error>()),
       );
+
+      cloneDir.deleteSync(recursive: true);
     });
 
     test('throws when provided credential type is invalid', () {
+      final cloneDir = Directory.systemTemp.createTempSync('clone');
       final callbacks = const Callbacks(
         credentials: UserPass(
           username: 'libgit2',
@@ -183,11 +185,14 @@ void main() {
         ),
         throwsA(isA<LibGit2Error>()),
       );
+
+      cloneDir.deleteSync(recursive: true);
     });
 
     test(
       'clones repository with provided keypair from memory',
       () {
+        final cloneDir = Directory.systemTemp.createTempSync('clone');
         final pubKey = File(p.join('test', 'assets', 'keys', 'id_rsa.pub'))
             .readAsStringSync();
         final privateKey =
@@ -208,12 +213,15 @@ void main() {
 
         expect(repo.isEmpty, false);
 
-        repo.free();
+        if (Platform.isLinux || Platform.isMacOS) {
+          cloneDir.deleteSync(recursive: true);
+        }
       },
       testOn: '!linux',
     );
 
     test('throws when provided keypair from memory is incorrect', () {
+      final cloneDir = Directory.systemTemp.createTempSync('clone');
       final pubKey = File(p.join('test', 'assets', 'keys', 'id_rsa.pub'))
           .readAsStringSync();
       final keypair = KeypairFromMemory(
@@ -232,9 +240,12 @@ void main() {
         ),
         throwsA(isA<LibGit2Error>()),
       );
+
+      cloneDir.deleteSync(recursive: true);
     });
 
     test('throws when provided keypair from agent is incorrect', () {
+      final cloneDir = Directory.systemTemp.createTempSync('clone');
       final callbacks = const Callbacks(credentials: KeypairFromAgent('git'));
 
       expect(
@@ -245,6 +256,8 @@ void main() {
         ),
         throwsA(isA<LibGit2Error>()),
       );
+
+      cloneDir.deleteSync(recursive: true);
     });
   });
 }

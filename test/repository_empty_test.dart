@@ -20,10 +20,6 @@ void main() {
         repo = Repository.open(p.join('test', 'assets', 'empty_bare.git'));
       });
 
-      tearDown(() {
-        repo.free();
-      });
-
       test('opens successfully', () {
         expect(repo, isA<Repository>());
       });
@@ -50,10 +46,6 @@ void main() {
         repo = Repository.open(
           p.join('test', 'assets', 'empty_standard', '.gitdir'),
         );
-      });
-
-      tearDown(() {
-        repo.free();
       });
 
       test('opens standart repository from working directory successfully', () {
@@ -89,12 +81,18 @@ void main() {
 
       test('sets identity ', () {
         repo.setIdentity(name: 'name', email: 'email@email.com');
-        expect(repo.identity, {'name': 'email@email.com'});
+
+        final identity = repo.identity;
+        expect(identity.name, 'name');
+        expect(identity.email, 'email@email.com');
       });
 
       test('unsets identity', () {
         repo.setIdentity(name: null, email: null);
-        expect(repo.identity, isEmpty);
+
+        final identity = repo.identity;
+        expect(identity.name, '');
+        expect(identity.email, '');
       });
 
       test('checks if shallow clone', () {

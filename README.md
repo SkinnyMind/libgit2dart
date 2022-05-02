@@ -78,16 +78,12 @@ You can instantiate a `Repository` class with a path to open an existing reposit
 
 ```dart
 final repo = Repository.open('path/to/repository'); // => Repository
-// Release memory allocated for Repository object when it's no longer needed
-repo.free();
 ```
 
 You can create new repository with provided path and optional `bare` argument if you want it to be bare:
 
 ```dart
 final repo = Repository.init(path: 'path/to/folder', bare: true); // => Repository
-// Release memory allocated for Repository object when it's no longer needed
-repo.free();
 ```
 
 You can clone the existing repository at provided url into local path:
@@ -97,8 +93,6 @@ final repo = Repository.clone(
   url: 'https://some.url/',
   localPath: 'path/to/clone/into',
 ); // => Repository
-// Release memory allocated for Repository object when it's no longer needed
-repo.free();
 ```
 
 Also you can discover the path to the '.git' directory of repository if you provide a path to subdirectory:
@@ -135,9 +129,6 @@ ref.target.sha; // => '821ed6e80627b8769d170a293862f9fc60825226'
 final oid = repo['821ed6e80627b8769d170a293862f9fc60825226']; // => Oid
 final commit = Commit.lookup(repo: repo, oid: oid); // => Commit
 commit.message; // => 'initial commit'
-
-// Release memory allocated for Repository object when it's no longer needed
-repo.free();
 ```
 
 #### Writing to repository
@@ -160,9 +151,6 @@ Commit.create(
   tree: tree,
   parents: [], // empty list for initial commit, 1 parent for regular and 2+ for merge commits
 ); // => Oid
-
-// Release memory allocated for Repository object when it's no longer needed
-repo.free();
 ```
 
 ---

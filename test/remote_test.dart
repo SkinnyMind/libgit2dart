@@ -18,7 +18,6 @@ void main() {
   });
 
   tearDown(() {
-    repo.free();
     tmpDir.deleteSync(recursive: true);
   });
 
@@ -474,13 +473,8 @@ Total 69 (delta 0), reused 1 (delta 0), pack-reused 68
     );
 
     test('pushes with update reference callback', () {
-      final originDir =
-          Directory(p.join(Directory.systemTemp.path, 'origin_testrepo'));
+      final originDir = Directory.systemTemp.createTempSync('origin');
 
-      if (originDir.existsSync()) {
-        originDir.deleteSync(recursive: true);
-      }
-      originDir.createSync();
       copyRepo(
         from: Directory(p.join('test', 'assets', 'empty_bare.git')),
         to: originDir,
@@ -505,8 +499,9 @@ Total 69 (delta 0), reused 1 (delta 0), pack-reused 68
       );
       expect(updateRefOutput, {'refs/heads/master': ''});
 
-      originRepo.free();
-      originDir.delete(recursive: true);
+      if (Platform.isLinux || Platform.isMacOS) {
+        originDir.deleteSync(recursive: true);
+      }
     });
 
     test('throws when trying to push to invalid url', () {

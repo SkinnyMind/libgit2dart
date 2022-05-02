@@ -22,7 +22,6 @@ void main() {
   });
 
   tearDown(() {
-    repo.free();
     tmpDir.deleteSync(recursive: true);
     if (worktreeDir.existsSync()) {
       worktreeDir.deleteSync(recursive: true);

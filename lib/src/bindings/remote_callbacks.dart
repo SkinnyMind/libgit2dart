@@ -6,6 +6,8 @@ import 'package:libgit2dart/src/bindings/credentials.dart'
     as credentials_bindings;
 import 'package:libgit2dart/src/bindings/libgit2_bindings.dart';
 import 'package:libgit2dart/src/bindings/remote.dart' as remote_bindings;
+import 'package:libgit2dart/src/bindings/repository.dart'
+    as repository_bindings;
 import 'package:libgit2dart/src/util.dart';
 
 class RemoteCallbacks {
@@ -112,17 +114,25 @@ class RemoteCallbacks {
     int bare,
     Pointer<Void> payload,
   ) {
-    final repoPointer = Repository.init(
+    var flagsInt = repositoryCbData!.flags.fold(
+      0,
+      (int acc, e) => acc | e.value,
+    );
+
+    if (repositoryCbData!.bare) {
+      flagsInt |= GitRepositoryInit.bare.value;
+    }
+
+    final repoPointer = repository_bindings.init(
       path: repositoryCbData!.path,
-      bare: repositoryCbData!.bare,
-      flags: repositoryCbData!.flags,
+      flags: flagsInt,
       mode: repositoryCbData!.mode,
       workdirPath: repositoryCbData!.workdirPath,
       description: repositoryCbData!.description,
       templatePath: repositoryCbData!.templatePath,
       initialHead: repositoryCbData!.initialHead,
       originUrl: repositoryCbData!.originUrl,
-    ).pointer;
+    );
 
     repo[0] = repoPointer;
 

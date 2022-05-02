@@ -30,8 +30,6 @@ void main() {
   });
 
   tearDown(() {
-    originRepo.free();
-    clonedRepo.free();
     tmpDir.deleteSync(recursive: true);
     if (cloneDir.existsSync()) {
       cloneDir.deleteSync(recursive: true);

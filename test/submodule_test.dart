@@ -20,7 +20,6 @@ void main() {
   });
 
   tearDown(() {
-    repo.free();
     try {
       tmpDir.deleteSync(recursive: true);
     } catch (e) {
@@ -99,8 +98,6 @@ void main() {
         submodule.workdirOid?.sha,
         '49322bb17d3acc9146f98c97d078513228bbf3c0',
       );
-
-      submoduleRepo.free();
     });
 
     test('throws when trying to open repository for not initialized submodule',
@@ -120,8 +117,6 @@ void main() {
       expect(submodule.path, 'test');
       expect(submodule.url, submoduleUrl);
       expect(submoduleRepo.isEmpty, false);
-
-      submoduleRepo.free();
     });
 
     test('throws when trying to add submodule with wrong url', () {
@@ -197,9 +192,6 @@ void main() {
         updatedSubmRepoConfig['remote.origin.url'].value,
         'https://updated.com/',
       );
-
-      submRepo.free();
-      updatedSubmRepo.free();
     });
 
     test('reloads info', () {

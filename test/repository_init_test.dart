@@ -24,8 +24,6 @@ void main() {
 
       expect(repo.path, contains('init_repo'));
       expect(repo.isBare, true);
-
-      repo.free();
     });
 
     test('creates new standard repo at provided path', () {
@@ -34,8 +32,6 @@ void main() {
       expect(repo.path, contains('init_repo/.git/'));
       expect(repo.isBare, false);
       expect(repo.isEmpty, true);
-
-      repo.free();
     });
 
     test('creates new standard repo with provided options', () {
@@ -54,8 +50,6 @@ void main() {
         'test repo',
       );
       expect(Remote.lookup(repo: repo, name: 'origin').url, 'test.url');
-
-      repo.free();
     });
   });
 }

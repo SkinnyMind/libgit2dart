@@ -37,8 +37,6 @@ void main() {
 
       expect(clonedRepo.isEmpty, false);
       expect(clonedRepo.isBare, false);
-
-      clonedRepo.free();
     });
 
     test('clones repository as bare', () {
@@ -50,8 +48,6 @@ void main() {
 
       expect(clonedRepo.isEmpty, false);
       expect(clonedRepo.isBare, true);
-
-      clonedRepo.free();
     });
 
     test('clones repository with provided checkout branch name', () {
@@ -65,8 +61,6 @@ void main() {
       expect(clonedRepo.isEmpty, false);
       expect(clonedRepo.isBare, true);
       expect(clonedRepo.head.name, 'refs/heads/feature');
-
-      clonedRepo.free();
     });
 
     test(
@@ -82,8 +76,6 @@ void main() {
       expect(clonedRepo.isBare, false);
       expect(clonedRepo.remotes, ['test']);
       expect(clonedRepo.references, contains('refs/remotes/test/master'));
-
-      clonedRepo.free();
     });
 
     test('clones repository with provided remote callback ', () {
@@ -105,8 +97,6 @@ void main() {
       expect(clonedRepo.remotes, ['test']);
       expect(clonedRepo.references, contains('refs/remotes/spec/master'));
       expect(remote.fetchRefspecs, [fetchRefspec]);
-
-      clonedRepo.free();
     });
 
     test('throws when cloning repository with invalid remote callback', () {
@@ -132,14 +122,16 @@ void main() {
       final clonedRepo = Repository.clone(
         url: tmpDir.path,
         localPath: cloneDir.path,
-        repositoryCallback: RepositoryCallback(path: callbackPath.path),
+        repositoryCallback: RepositoryCallback(
+          path: callbackPath.path,
+          bare: true,
+        ),
       );
 
       expect(clonedRepo.isEmpty, false);
-      expect(clonedRepo.isBare, false);
-      expect(clonedRepo.path, contains('/callbackRepo/.git/'));
+      expect(clonedRepo.isBare, true);
+      expect(clonedRepo.path, contains('/callbackRepo/'));
 
-      clonedRepo.free();
       callbackPath.deleteSync(recursive: true);
     });
 
