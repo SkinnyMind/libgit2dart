@@ -5,16 +5,6 @@ import 'package:path/path.dart' as p;
 import 'package:test/test.dart';
 
 void main() {
-  // final cloneDir = Directory(
-  //   p.join(Directory.systemTemp.path, 'credentials_cloned'),
-  // );
-
-  // setUp(() {
-  //   if (cloneDir.existsSync()) {
-  //     cloneDir.deleteSync(recursive: true);
-  //   }
-  // });
-
   group('Credentials', () {
     test('initializes username/password credentials', () {
       final credentials = const UserPass(
@@ -113,7 +103,9 @@ void main() {
 
         expect(repo.isEmpty, false);
 
-        cloneDir.deleteSync(recursive: true);
+        if (Platform.isLinux || Platform.isMacOS) {
+          cloneDir.deleteSync(recursive: true);
+        }
       },
       testOn: '!linux',
     );
@@ -221,7 +213,9 @@ void main() {
 
         expect(repo.isEmpty, false);
 
-        cloneDir.deleteSync(recursive: true);
+        if (Platform.isLinux || Platform.isMacOS) {
+          cloneDir.deleteSync(recursive: true);
+        }
       },
       testOn: '!linux',
     );
