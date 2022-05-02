@@ -10,16 +10,11 @@ void main() {
   );
 
   setUp(() {
-    if (cloneDir.existsSync() && (Platform.isLinux || Platform.isMacOS)) {
+    if (cloneDir.existsSync()) {
       cloneDir.deleteSync(recursive: true);
     }
   });
 
-  tearDown(() {
-    if (cloneDir.existsSync() && (Platform.isLinux || Platform.isMacOS)) {
-      cloneDir.deleteSync(recursive: true);
-    }
-  });
   group('Credentials', () {
     test('initializes username/password credentials', () {
       final credentials = const UserPass(
