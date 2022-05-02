@@ -113,8 +113,6 @@ void main() {
         );
 
         expect(repo.isEmpty, false);
-
-        repo.free();
       },
       testOn: '!linux',
     );
@@ -207,8 +205,6 @@ void main() {
         );
 
         expect(repo.isEmpty, false);
-
-        repo.free();
       },
       testOn: '!linux',
     );

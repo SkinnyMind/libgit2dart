@@ -321,17 +321,19 @@ void setIdentity({
 }
 
 /// Retrieve the configured identity to use for reflogs.
-Map<String, String> identity(Pointer<git_repository> repo) {
+///
+/// Returns list with name and email respectively.
+List<String> identity(Pointer<git_repository> repo) {
   final name = calloc<Pointer<Int8>>();
   final email = calloc<Pointer<Int8>>();
   libgit2.git_repository_ident(name, email, repo);
-  final identity = <String, String>{};
+  final identity = <String>[];
 
   if (name.value == nullptr && email.value == nullptr) {
     return identity;
   } else {
-    identity[name.value.cast<Utf8>().toDartString()] =
-        email.value.cast<Utf8>().toDartString();
+    identity.add(name.value.cast<Utf8>().toDartString());
+    identity.add(email.value.cast<Utf8>().toDartString());
   }
 
   calloc.free(name);

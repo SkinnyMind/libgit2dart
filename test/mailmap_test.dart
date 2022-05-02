@@ -136,7 +136,6 @@ Santa Claus <santa.claus@northpole.xx> <me@company.xx>
   });
 
   tearDown(() {
-    repo.free();
     tmpDir.deleteSync(recursive: true);
   });
 

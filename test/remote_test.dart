@@ -18,7 +18,6 @@ void main() {
   });
 
   tearDown(() {
-    repo.free();
     tmpDir.deleteSync(recursive: true);
   });
 
@@ -505,7 +504,6 @@ Total 69 (delta 0), reused 1 (delta 0), pack-reused 68
       );
       expect(updateRefOutput, {'refs/heads/master': ''});
 
-      originRepo.free();
       originDir.delete(recursive: true);
     });
 

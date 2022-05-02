@@ -50,7 +50,6 @@ index e69de29..0000000
   });
 
   tearDown(() {
-    repo.free();
     tmpDir.deleteSync(recursive: true);
   });
 

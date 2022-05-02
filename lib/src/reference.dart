@@ -272,9 +272,6 @@ class Reference {
   /// Whether reference is a tag.
   bool get isTag => bindings.isTag(_refPointer);
 
-  /// Repository where a reference resides.
-  Repository get owner => Repository(bindings.owner(_refPointer));
-
   /// Compares two references.
   bool equals(Reference other) {
     return bindings.compare(

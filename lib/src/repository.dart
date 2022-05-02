@@ -17,13 +17,14 @@ class Repository {
   /// Initializes a new instance of the [Repository] class from provided
   /// pointer to repository object in memory.
   ///
-  /// **IMPORTANT**: Should be freed to release allocated memory.
-  ///
   /// Note: For internal use. Instead, use one of:
   /// - [Repository.init]
   /// - [Repository.open]
   /// - [Repository.clone]
-  Repository(this._repoPointer);
+  Repository(Pointer<git_repository> pointer) {
+    _repoPointer = pointer;
+    _finalizer.attach(this, _repoPointer, detach: this);
+  }
 
   /// Creates new git repository at the provided [path].
   ///
@@ -55,8 +56,6 @@ class Repository {
   /// [originUrl] if set, then after the rest of the repository initialization
   /// is completed, an "origin" remote will be added pointing to this URL.
   ///
-  /// **IMPORTANT**: Should be freed to release allocated memory.
-  ///
   /// Throws a [LibGit2Error] if error occured.
   Repository.init({
     required String path,
@@ -87,6 +86,8 @@ class Repository {
       initialHead: initialHead,
       originUrl: originUrl,
     );
+
+    _finalizer.attach(this, _repoPointer, detach: this);
   }
 
   /// Opens repository at provided [path].
@@ -95,13 +96,13 @@ class Repository {
   /// or to the working directory. For a bare repository, [path] should directly
   /// point to the repository folder.
   ///
-  /// **IMPORTANT**: Should be freed to release allocated memory.
-  ///
   /// Throws a [LibGit2Error] if error occured.
   Repository.open(String path) {
     libgit2.git_libgit2_init();
 
     _repoPointer = bindings.open(path);
+
+    _finalizer.attach(this, _repoPointer, detach: this);
   }
 
   /// Clones a remote repository at provided [url] into [localPath].
@@ -128,8 +129,6 @@ class Repository {
   /// [callbacks] is the combination of callback functions from [Callbacks]
   /// object.
   ///
-  /// **IMPORTANT**: Should be freed to release allocated memory.
-  ///
   /// Throws a [LibGit2Error] if error occured.
   Repository.clone({
     required String url,
@@ -151,6 +150,8 @@ class Repository {
       checkoutBranch: checkoutBranch,
       callbacks: callbacks,
     );
+
+    _finalizer.attach(this, _repoPointer, detach: this);
   }
 
   late final Pointer<git_repository> _repoPointer;
@@ -294,9 +295,12 @@ class Repository {
   }
 
   /// Configured identity to use for reflogs.
-  ///
-  /// Returns map with name as key and email as value.
-  Map<String, String> get identity => bindings.identity(_repoPointer);
+  Identity get identity {
+    final identity = bindings.identity(_repoPointer);
+    return identity.isNotEmpty
+        ? Identity(name: identity[0], email: identity[1])
+        : const Identity(name: '', email: '');
+  }
 
   /// Whether repository was a shallow clone.
   bool get isShallow => bindings.isShallow(_repoPointer);
@@ -364,7 +368,10 @@ class Repository {
   }
 
   /// Releases memory allocated for repository object.
-  void free() => bindings.free(_repoPointer);
+  void free() {
+    bindings.free(_repoPointer);
+    _finalizer.detach(this);
+  }
 
   @override
   String toString() {
@@ -736,6 +743,12 @@ class Repository {
   }
 }
 
+// coverage:ignore-start
+final _finalizer = Finalizer<Pointer<git_repository>>(
+  (pointer) => bindings.free(pointer),
+);
+// coverage:ignore-end
+
 class RepositoryCallback {
   /// Values used to override the repository creation and customization process
   /// during a clone operation.
@@ -806,4 +819,12 @@ class RepositoryCallback {
   /// "origin" remote URL that will be added after the rest of the repository
   /// initialization is completed.
   final String? originUrl;
+}
+
+class Identity {
+  /// Identity to use for reflogs.
+  const Identity({required this.name, required this.email});
+
+  final String name;
+  final String email;
 }

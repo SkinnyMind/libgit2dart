@@ -127,7 +127,6 @@ index e69de29..c217c63 100644
   });
 
   tearDown(() {
-    repo.free();
     if (Platform.isLinux || Platform.isMacOS) {
       tmpDir.deleteSync(recursive: true);
     }

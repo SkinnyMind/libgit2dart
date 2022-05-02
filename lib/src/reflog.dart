@@ -2,13 +2,14 @@ import 'dart:collection';
 import 'dart:ffi';
 import 'package:libgit2dart/libgit2dart.dart';
 import 'package:libgit2dart/src/bindings/libgit2_bindings.dart';
+import 'package:libgit2dart/src/bindings/reference.dart' as reference_bindings;
 import 'package:libgit2dart/src/bindings/reflog.dart' as bindings;
 
 class RefLog with IterableMixin<RefLogEntry> {
   /// Initializes a new instance of [RefLog] class from provided [Reference].
   RefLog(Reference ref) {
     _reflogPointer = bindings.read(
-      repoPointer: ref.owner.pointer,
+      repoPointer: reference_bindings.owner(ref.pointer),
       name: ref.name,
     );
     _finalizer.attach(this, _reflogPointer, detach: this);
@@ -19,7 +20,10 @@ class RefLog with IterableMixin<RefLogEntry> {
 
   /// Deletes the reflog for the given reference.
   static void delete(Reference ref) {
-    bindings.delete(repoPointer: ref.owner.pointer, name: ref.name);
+    bindings.delete(
+      repoPointer: reference_bindings.owner(ref.pointer),
+      name: ref.name,
+    );
   }
 
   /// Renames a reflog.

@@ -119,9 +119,6 @@ class Submodule {
   /// This will only work if the submodule is checked out into the working
   /// directory.
   ///
-  /// **IMPORTANT**: Returned [Repository] object should be freed to release
-  /// allocated memory.
-  ///
   /// Throws a [LibGit2Error] if error occured.
   Repository open() {
     return Repository(bindings.open(_submodulePointer));
