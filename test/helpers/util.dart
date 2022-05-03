@@ -2,6 +2,7 @@ import 'dart:io';
 import 'package:libgit2dart/libgit2dart.dart';
 import 'package:path/path.dart' as p;
 
+/// Copies repository at provided [repoDir] into system's temp directory.
 Directory setupRepo(Directory repoDir) {
   Libgit2.ownerValidation = false;
   final tmpDir = Directory.systemTemp.createTempSync('testrepo');
