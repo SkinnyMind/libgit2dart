@@ -4,10 +4,6 @@ import 'package:libgit2dart/libgit2dart.dart';
 import 'package:libgit2dart/src/bindings/annotated.dart' as bindings;
 import 'package:libgit2dart/src/bindings/libgit2_bindings.dart';
 
-/// An annotated commit contains information about how it was looked up, which
-/// may be useful for functions like merge or rebase to provide context to the
-/// operation. For example, conflict files will include the name of the source
-/// or target branches being merged.
 class AnnotatedCommit {
   /// Lookups an annotated commit from the given commit [oid].
   ///

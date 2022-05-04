@@ -3,6 +3,8 @@ import 'dart:io';
 import 'package:libgit2dart/libgit2dart.dart';
 import 'package:path/path.dart' as path;
 
+import '../test/helpers/util.dart';
+
 // These examples are basic emulation of core Git CLI functions demonstrating
 // basic libgit2dart API usage. Be advised that they don't have error handling,
 // copy with caution.
@@ -76,6 +78,15 @@ void main() {
 
   // Remove a remote repository.
   removeRemote(repo);
+
+  // Pull changes from a remote repository.
+  pullChanges(repo);
+
+  // Push changes to a remote repository.
+  pushChanges(repo);
+
+  // Push a new branch to remote repository.
+  pushNewBranch(repo);
 
   // Clean up.
   tmpDir.deleteSync(recursive: true);
@@ -376,7 +387,6 @@ void addRemote(Repository repo) {
   const remoteName = 'origin';
   const url = 'https://some.url';
   Remote.create(repo: repo, name: remoteName, url: url);
-  Remote.setPushUrl(repo: repo, remote: remoteName, url: url);
 }
 
 /// View remote URLs.
@@ -386,7 +396,7 @@ void viewRemoteUrls(Repository repo) {
   for (final remoteName in repo.remotes) {
     final remote = Remote.lookup(repo: repo, name: remoteName);
     stdout.writeln('\n${remote.name}  ${remote.url} (fetch)');
-    stdout.writeln('${remote.name}  ${remote.pushUrl} (push)');
+    stdout.writeln('${remote.name}  ${remote.url} (push)');
   }
 }
 
@@ -395,4 +405,123 @@ void viewRemoteUrls(Repository repo) {
 /// Similar to `git remote remove origin`
 void removeRemote(Repository repo) {
   Remote.delete(repo: repo, name: 'origin');
+}
+
+/// Pull changes from a remote repository.
+///
+/// Similar to `git pull`
+void pullChanges(Repository repo) {
+  // Prepare "origin" repository to pull from
+  final originDir = setupRepo(
+    Directory(path.join('test', 'assets', 'test_repo')),
+  );
+
+  // Add remote
+  const remoteName = 'origin';
+  final remote = Remote.create(
+    repo: repo,
+    name: remoteName,
+    url: originDir.path,
+  );
+
+  // Fetch changes
+  remote.fetch();
+
+  // Merge changes
+  final theirHead = Reference.lookup(
+    repo: repo,
+    name: 'refs/remotes/origin/master',
+  ).target;
+  final analysis = Merge.analysis(repo: repo, theirHead: theirHead);
+
+  // In reality there should be more checks for analysis result (if we should
+  // perform merge, or checkout if fast-forward is available, etc.)
+  if (analysis.result.contains(GitMergeAnalysis.normal)) {
+    final commit = AnnotatedCommit.lookup(repo: repo, oid: theirHead);
+    Merge.commit(repo: repo, commit: commit);
+  }
+
+  // Make merge commit
+  repo.index.write();
+  Commit.create(
+    repo: repo,
+    updateRef: 'HEAD',
+    author: repo.defaultSignature,
+    committer: repo.defaultSignature,
+    message: 'Merge branch "master" of some remote\n',
+    tree: Tree.lookup(repo: repo, oid: repo.index.writeTree()),
+    parents: [
+      Commit.lookup(repo: repo, oid: repo.head.target),
+      Commit.lookup(repo: repo, oid: theirHead),
+    ],
+  );
+  repo.stateCleanup();
+
+  // Remove "origin" repository
+  originDir.deleteSync(recursive: true);
+}
+
+/// Push changes to a remote repository.
+///
+/// Similar to `git push bare master`
+void pushChanges(Repository repo) {
+  // Prepare bare repository to push to
+  final bareDir = setupRepo(
+    Directory(path.join('test', 'assets', 'empty_bare.git')),
+  );
+
+  // Add remote
+  const remoteName = 'bare';
+  final url = bareDir.path;
+  Remote.create(repo: repo, name: remoteName, url: url);
+  Remote.addPush(repo: repo, remote: remoteName, refspec: 'refs/heads/master');
+
+  // Push changes
+  final remote = Remote.lookup(repo: repo, name: remoteName);
+  remote.push();
+
+  // Remove bare repository
+  bareDir.deleteSync(recursive: true);
+}
+
+/// Push a new branch to remote repository.
+///
+/// Similar to `git push -u another-origin new-branch`
+void pushNewBranch(Repository repo) {
+  // Prepare bare repository to push to
+  final bareDir = setupRepo(
+    Directory(path.join('test', 'assets', 'empty_bare.git')),
+  );
+
+  // Create new branch
+  final branch = Branch.create(
+    repo: repo,
+    name: 'new-branch',
+    target: Commit.lookup(repo: repo, oid: repo.head.target),
+  );
+
+  // Add remote
+  const remoteName = 'another-origin';
+  final url = bareDir.path;
+  Remote.create(repo: repo, name: remoteName, url: url);
+  Remote.addPush(
+    repo: repo,
+    remote: remoteName,
+    refspec: 'refs/heads/new-branch',
+  );
+
+  // Set upstream for the branch
+  final trackingRef = Reference.create(
+    repo: repo,
+    name: 'refs/remotes/bare/new-branch',
+    target: 'refs/heads/new-branch',
+  );
+  branch.setUpstream(trackingRef.shorthand);
+
+  // Push new branch
+  final remote = Remote.lookup(repo: repo, name: remoteName);
+  remote.push();
+
+  // Remove bare repository
+  bareDir.deleteSync(recursive: true);
 }

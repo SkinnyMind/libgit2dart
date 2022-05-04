@@ -68,7 +68,7 @@ dart run libgit2dart:setup
 
 libgit2dart provides you ability to manage Git repository. You can read and write objects (commit, tag, tree and blob), walk a tree, access the staging area, manage config and lots more.
 
-Let's look at some of the classes and methods.
+Let's look at some of the classes and methods (you can also check [example](example/example.dart)).
 
 ### Repository
 
