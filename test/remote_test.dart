@@ -282,6 +282,7 @@ void main() {
     });
 
     test(
+      tags: 'remote_fetch',
       'fetches data',
       () {
         Remote.setUrl(
@@ -309,10 +310,10 @@ void main() {
         expect(stats.receivedBytes, 0);
         expect(stats.toString(), contains('TransferProgress{'));
       },
-      tags: 'remote_fetch',
     );
 
     test(
+      tags: 'remote_fetch',
       'fetches data with proxy set to auto',
       () {
         Remote.setUrl(
@@ -341,10 +342,10 @@ void main() {
         expect(stats.receivedBytes, 0);
         expect(stats.toString(), contains('TransferProgress{'));
       },
-      tags: 'remote_fetch',
     );
 
     test(
+      tags: 'remote_fetch',
       'uses specified proxy for fetch',
       () {
         Remote.setUrl(
@@ -367,7 +368,6 @@ void main() {
           throwsA(isA<LibGit2Error>()),
         );
       },
-      tags: 'remote_fetch',
     );
 
     test('throws when trying to fetch data with invalid url', () {
@@ -381,6 +381,7 @@ void main() {
     });
 
     test(
+      tags: 'remote_fetch',
       'fetches data with provided transfer progress callback',
       () {
         Remote.setUrl(
@@ -403,10 +404,10 @@ void main() {
         expect(stats.indexedDeltas == callbackStats?.indexedDeltas, true);
         expect(stats.receivedBytes == callbackStats?.receivedBytes, true);
       },
-      tags: 'remote_fetch',
     );
 
     test(
+      tags: 'remote_fetch',
       'fetches data with provided sideband progress callback',
       () {
         const sidebandMessage = """
@@ -427,10 +428,10 @@ Total 69 (delta 0), reused 1 (delta 0), pack-reused 68
         remote.fetch(callbacks: Callbacks(sidebandProgress: sideband));
         expect(sidebandOutput.toString(), sidebandMessage);
       },
-      tags: 'remote_fetch',
     );
 
     test(
+      tags: 'remote_fetch',
       'fetches data with provided update tips callback',
       () {
         Remote.setUrl(
@@ -469,7 +470,6 @@ Total 69 (delta 0), reused 1 (delta 0), pack-reused 68
         remote.fetch(callbacks: Callbacks(updateTips: updateTips));
         expect(updateTipsOutput, tipsExpected);
       },
-      tags: 'remote_fetch',
     );
 
     test('pushes with update reference callback', () {
