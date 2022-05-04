@@ -84,6 +84,7 @@ void main() {
     });
 
     test(
+      testOn: '!linux',
       'clones repository with provided keypair',
       () {
         final cloneDir = Directory.systemTemp.createTempSync('clone');
@@ -107,7 +108,6 @@ void main() {
           cloneDir.deleteSync(recursive: true);
         }
       },
-      testOn: '!linux',
     );
 
     test('throws when no credentials is provided', () {
@@ -190,6 +190,7 @@ void main() {
     });
 
     test(
+      testOn: '!linux',
       'clones repository with provided keypair from memory',
       () {
         final cloneDir = Directory.systemTemp.createTempSync('clone');
@@ -217,7 +218,6 @@ void main() {
           cloneDir.deleteSync(recursive: true);
         }
       },
-      testOn: '!linux',
     );
 
     test('throws when provided keypair from memory is incorrect', () {
