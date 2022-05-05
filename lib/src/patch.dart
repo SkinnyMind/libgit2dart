@@ -220,7 +220,7 @@ class Patch {
         );
         lines.add(
           DiffLine._(
-            origin: GitDiffLine.values.singleWhere(
+            origin: GitDiffLine.values.firstWhere(
               (e) => linePointer.ref.origin == e.value,
             ),
             oldLineNumber: linePointer.ref.old_lineno,

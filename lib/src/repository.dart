@@ -330,7 +330,7 @@ class Repository {
   /// cherry-pick, etc) is in progress.
   GitRepositoryState get state {
     final stateInt = bindings.state(_repoPointer);
-    return GitRepositoryState.values.singleWhere(
+    return GitRepositoryState.values.firstWhere(
       (state) => stateInt == state.value,
     );
   }

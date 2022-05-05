@@ -158,7 +158,7 @@ class RebaseOperation {
 
   /// Type of rebase operation.
   GitRebaseOperation get type {
-    return GitRebaseOperation.values.singleWhere(
+    return GitRebaseOperation.values.firstWhere(
       (e) => _rebaseOperationPointer.ref.type == e.value,
     );
   }

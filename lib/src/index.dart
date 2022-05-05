@@ -349,7 +349,7 @@ class IndexEntry {
 
   /// UNIX file attributes of a index entry.
   GitFilemode get mode {
-    return GitFilemode.values.singleWhere(
+    return GitFilemode.values.firstWhere(
       (mode) => _indexEntryPointer.ref.mode == mode.value,
     );
   }
