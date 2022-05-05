@@ -4,7 +4,11 @@ class Callbacks {
   /// Callback functions used in various methods of [Remote] and with
   /// [Repository.clone].
   ///
-  /// [credentials] is the [Credentials] object used for authentication.
+  /// [credentials] is one of the objects used for authentication:
+  /// - [UserPass]
+  /// - [Keypair]
+  /// - [KeypairFromAgent]
+  /// - [KeypairFromMemory]
   ///
   /// [transferProgress] is the callback function that reports transfer
   /// progress.
@@ -27,7 +31,11 @@ class Callbacks {
     this.pushUpdateReference,
   });
 
-  /// Credentials used for authentication.
+  /// Credentials used for authentication. Could be one of:
+  /// - [UserPass]
+  /// - [Keypair]
+  /// - [KeypairFromAgent]
+  /// - [KeypairFromMemory]
   final Credentials? credentials;
 
   /// Callback function that reports transfer progress.

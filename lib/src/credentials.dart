@@ -1,5 +1,10 @@
 import 'package:libgit2dart/libgit2dart.dart';
 
+/// Abstract class. Use one of the implementations:
+/// - [UserPass]
+/// - [Keypair]
+/// - [KeypairFromAgent]
+/// - [KeypairFromMemory]
 abstract class Credentials {
   /// Returns type of authentication method.
   GitCredential get credentialType;
