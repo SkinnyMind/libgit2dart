@@ -1,3 +1,6 @@
+/// Dart bindings to libgit2.
+library libgit2dart;
+
 export 'src/annotated.dart';
 export 'src/blame.dart';
 export 'src/blob.dart';
