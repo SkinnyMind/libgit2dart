@@ -69,7 +69,7 @@ class Merge {
     final result = GitMergeAnalysis.values
         .where((e) => analysisInt[0] & e.value == e.value)
         .toSet();
-    final preference = GitMergePreference.values.singleWhere(
+    final preference = GitMergePreference.values.firstWhere(
       (e) => analysisInt[1] == e.value,
     );
 

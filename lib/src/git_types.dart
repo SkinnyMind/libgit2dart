@@ -1,173 +1,109 @@
 /// Basic type of any Git reference.
-class ReferenceType {
-  const ReferenceType._(this._value, this._name);
-  final int _value;
-  final String _name;
-
+enum ReferenceType {
   /// Invalid reference.
-  static const invalid = ReferenceType._(0, 'invalid');
+  invalid(0),
 
   /// A reference that points at an object id.
-  static const direct = ReferenceType._(1, 'direct');
+  direct(1),
 
   /// A reference that points at another reference.
-  static const symbolic = ReferenceType._(2, 'symbolic');
+  symbolic(2),
 
-  static const all = ReferenceType._(3, 'all');
+  all(3);
 
-  static const List<ReferenceType> values = [invalid, direct, symbolic, all];
-
-  int get value => _value;
-
-  @override
-  String toString() => 'ReferenceType.$_name';
+  const ReferenceType(this.value);
+  final int value;
 }
 
 /// Valid modes for index and tree entries.
-class GitFilemode {
-  const GitFilemode._(this._value, this._name);
-  final int _value;
-  final String _name;
+enum GitFilemode {
+  unreadable(0),
+  tree(16384),
+  blob(33188),
+  blobExecutable(33261),
+  link(40960),
+  commit(57344);
 
-  static const unreadable = GitFilemode._(0, 'unreadable');
-  static const tree = GitFilemode._(16384, 'tree');
-  static const blob = GitFilemode._(33188, 'blob');
-  static const blobExecutable = GitFilemode._(33261, 'blobExecutable');
-  static const link = GitFilemode._(40960, 'link');
-  static const commit = GitFilemode._(57344, 'commit');
-
-  static const List<GitFilemode> values = [
-    unreadable,
-    tree,
-    blob,
-    blobExecutable,
-    link,
-    commit,
-  ];
-
-  int get value => _value;
-
-  @override
-  String toString() => 'GitFilemode.$_name';
+  const GitFilemode(this.value);
+  final int value;
 }
 
 /// Flags to specify the sorting which a revwalk should perform.
-class GitSort {
-  const GitSort._(this._value, this._name);
-  final int _value;
-  final String _name;
-
+enum GitSort {
   /// Sort the output with the same default method from `git`: reverse
   /// chronological order. This is the default sorting for new walkers.
-  static const none = GitSort._(0, 'none');
+  none(0),
 
   /// Sort the repository contents in topological order (no parents before
   /// all of its children are shown); this sorting mode can be combined
   /// with time sorting to produce `git`'s `--date-order``.
-  static const topological = GitSort._(1, 'topological');
+  topological(1),
 
   /// Sort the repository contents by commit time;
   /// this sorting mode can be combined with topological sorting.
-  static const time = GitSort._(2, 'time');
+  time(2),
 
   /// Iterate through the repository contents in reverse order; this sorting
   /// mode can be combined with any of the above.
-  static const reverse = GitSort._(4, 'reverse');
+  reverse(4);
 
-  static const List<GitSort> values = [none, topological, time, reverse];
-
-  int get value => _value;
-
-  @override
-  String toString() => 'GitSort.$_name';
+  const GitSort(this.value);
+  final int value;
 }
 
 /// Basic type (loose or packed) of any Git object.
-class GitObject {
-  const GitObject._(this._value, this._name);
-  final int _value;
-  final String _name;
-
+enum GitObject {
   /// Object can be any of the following.
-  static const any = GitObject._(-2, 'any');
+  any(-2),
 
   /// Object is invalid.
-  static const invalid = GitObject._(-1, 'invalid');
+  invalid(-1),
 
   /// A commit object.
-  static const commit = GitObject._(1, 'commit');
+  commit(1),
 
   /// A tree (directory listing) object.
-  static const tree = GitObject._(2, 'tree');
+  tree(2),
 
   /// A file revision object.
-  static const blob = GitObject._(3, 'blob');
+  blob(3),
 
   /// An annotated tag object.
-  static const tag = GitObject._(4, 'tag');
+  tag(4),
 
   /// A delta, base is given by an offset.
-  static const offsetDelta = GitObject._(6, 'offsetDelta');
+  offsetDelta(6),
 
   /// A delta, base is given by object id.
-  static const refDelta = GitObject._(7, 'refDelta');
+  refDelta(7);
 
-  static const List<GitObject> values = [
-    any,
-    invalid,
-    commit,
-    tree,
-    blob,
-    tag,
-    offsetDelta,
-    refDelta,
-  ];
-
-  int get value => _value;
-
-  @override
-  String toString() => 'GitObject.$_name';
+  const GitObject(this.value);
+  final int value;
 }
 
 /// Revparse flags, indicate the intended behavior of the spec.
-class GitRevSpec {
-  const GitRevSpec._(this._value, this._name);
-  final int _value;
-  final String _name;
-
+enum GitRevSpec {
   /// The spec targeted a single object.
-  static const single = GitRevSpec._(1, 'single');
+  single(1),
 
   /// The spec targeted a range of commits.
-  static const range = GitRevSpec._(2, 'range');
+  range(2),
 
   /// The spec used the '...' operator, which invokes special semantics.
-  static const mergeBase = GitRevSpec._(4, 'mergeBase');
+  mergeBase(4);
 
-  static const List<GitRevSpec> values = [single, range, mergeBase];
-
-  int get value => _value;
-
-  @override
-  String toString() => 'GitRevSpec.$_name';
+  const GitRevSpec(this.value);
+  final int value;
 }
 
 /// Basic type of any Git branch.
-class GitBranch {
-  const GitBranch._(this._value, this._name);
-  final int _value;
-  final String _name;
+enum GitBranch {
+  local(1),
+  remote(2),
+  all(3);
 
-  static const local = GitBranch._(1, 'local');
-  static const remote = GitBranch._(2, 'remote');
-  static const all = GitBranch._(3, 'all');
-
-  static const List<GitBranch> values = [local, remote, all];
-
-  int get value => _value;
-
-  @override
-  String toString() => 'GitBranch.$_name';
+  const GitBranch(this.value);
+  final int value;
 }
 
 /// Status flags for a single file.
@@ -178,301 +114,179 @@ class GitBranch {
 /// represents the status of file in the index relative to the HEAD, and the
 /// `GitStatus.wt` set of flags represent the status of the file in the
 /// working directory relative to the index.
-class GitStatus {
-  const GitStatus._(this._value, this._name);
-  final int _value;
-  final String _name;
+enum GitStatus {
+  current(0),
+  indexNew(1),
+  indexModified(2),
+  indexDeleted(4),
+  indexRenamed(8),
+  indexTypeChange(16),
+  wtNew(128),
+  wtModified(256),
+  wtDeleted(512),
+  wtTypeChange(1024),
+  wtRenamed(2048),
+  wtUnreadable(4096),
+  ignored(16384),
+  conflicted(32768);
 
-  static const current = GitStatus._(0, 'current');
-  static const indexNew = GitStatus._(1, 'indexNew');
-  static const indexModified = GitStatus._(2, 'indexModified');
-  static const indexDeleted = GitStatus._(4, 'indexDeleted');
-  static const indexRenamed = GitStatus._(8, 'indexRenamed');
-  static const indexTypeChange = GitStatus._(16, 'indexTypeChange');
-  static const wtNew = GitStatus._(128, 'wtNew');
-  static const wtModified = GitStatus._(256, 'wtModified');
-  static const wtDeleted = GitStatus._(512, 'wtDeleted');
-  static const wtTypeChange = GitStatus._(1024, 'wtTypeChange');
-  static const wtRenamed = GitStatus._(2048, 'wtRenamed');
-  static const wtUnreadable = GitStatus._(4096, 'wtUnreadable');
-  static const ignored = GitStatus._(16384, 'ignored');
-  static const conflicted = GitStatus._(32768, 'conflicted');
-
-  static const List<GitStatus> values = [
-    current,
-    indexNew,
-    indexModified,
-    indexDeleted,
-    indexRenamed,
-    indexTypeChange,
-    wtNew,
-    wtModified,
-    wtDeleted,
-    wtTypeChange,
-    wtRenamed,
-    wtUnreadable,
-    ignored,
-    conflicted,
-  ];
-
-  int get value => _value;
-
-  @override
-  String toString() => 'GitStatus.$_name';
+  const GitStatus(this.value);
+  final int value;
 }
 
 /// The results of `mergeAnalysis` indicate the merge opportunities.
-class GitMergeAnalysis {
-  const GitMergeAnalysis._(this._value, this._name);
-  final int _value;
-  final String _name;
-
-  /// No merge is possible (unused).
-  static const none = GitMergeAnalysis._(0, 'none');
-
+enum GitMergeAnalysis {
   /// A "normal" merge; both HEAD and the given merge input have diverged
   /// from their common ancestor. The divergent commits must be merged.
-  static const normal = GitMergeAnalysis._(1, 'normal');
+  normal(1),
 
   /// All given merge inputs are reachable from HEAD, meaning the
   /// repository is up-to-date and no merge needs to be performed.
-  static const upToDate = GitMergeAnalysis._(2, 'upToDate');
+  upToDate(2),
 
   /// The given merge input is a fast-forward from HEAD and no merge
   /// needs to be performed. Instead, the client can check out the
   /// given merge input.
-  static const fastForward = GitMergeAnalysis._(4, 'fastForward');
+  fastForward(4),
 
   /// The HEAD of the current repository is "unborn" and does not point to
   /// a valid commit. No merge can be performed, but the caller may wish
   /// to simply set HEAD to the target commit(s).
-  static const unborn = GitMergeAnalysis._(8, 'unborn');
+  unborn(8);
 
-  static const List<GitMergeAnalysis> values = [
-    normal,
-    upToDate,
-    fastForward,
-    unborn,
-  ];
-
-  int get value => _value;
-
-  @override
-  String toString() => 'GitMergeAnalysis.$_name';
+  const GitMergeAnalysis(this.value);
+  final int value;
 }
 
 /// The user's stated preference for merges.
-class GitMergePreference {
-  const GitMergePreference._(this._value, this._name);
-  final int _value;
-  final String _name;
-
+enum GitMergePreference {
   /// No configuration was found that suggests a preferred behavior for merge.
-  static const none = GitMergePreference._(0, 'none');
+  none(0),
 
   /// There is a `merge.ff=false` configuration setting, suggesting that
   /// the user does not want to allow a fast-forward merge.
-  static const noFastForward = GitMergePreference._(1, 'noFastForward');
+  noFastForward(1),
 
   /// There is a `merge.ff=only` configuration setting, suggesting that
   /// the user only wants fast-forward merges.
-  static const fastForwardOnly = GitMergePreference._(2, 'fastForwardOnly');
+  fastForwardOnly(2);
 
-  static const List<GitMergePreference> values = [
-    none,
-    noFastForward,
-    fastForwardOnly,
-  ];
-
-  int get value => _value;
-
-  @override
-  String toString() => 'GitMergePreference.$_name';
+  const GitMergePreference(this.value);
+  final int value;
 }
 
 /// Repository state.
 ///
 /// These values represent possible states for the repository to be in,
 /// based on the current operation which is ongoing.
-class GitRepositoryState {
-  const GitRepositoryState._(this._value, this._name);
-  final int _value;
-  final String _name;
+enum GitRepositoryState {
+  none(0),
+  merge(1),
+  revert(2),
+  revertSequence(3),
+  cherrypick(4),
+  cherrypickSequence(5),
+  bisect(6),
+  rebase(7),
+  rebaseInteractive(8),
+  rebaseMerge(9),
+  applyMailbox(10),
+  applyMailboxOrRebase(11);
 
-  static const none = GitRepositoryState._(0, 'none');
-  static const merge = GitRepositoryState._(1, 'merge');
-  static const revert = GitRepositoryState._(2, 'revert');
-  static const revertSequence = GitRepositoryState._(3, 'revertSequence');
-  static const cherrypick = GitRepositoryState._(4, 'cherrypick');
-  static const cherrypickSequence =
-      GitRepositoryState._(5, 'cherrypickSequence');
-  static const bisect = GitRepositoryState._(6, 'bisect');
-  static const rebase = GitRepositoryState._(7, 'rebase');
-  static const rebaseInteractive = GitRepositoryState._(8, 'rebaseInteractive');
-  static const rebaseMerge = GitRepositoryState._(9, 'rebaseMerge');
-  static const applyMailbox = GitRepositoryState._(10, 'applyMailbox');
-  static const applyMailboxOrRebase =
-      GitRepositoryState._(11, 'applyMailboxOrRebase');
-
-  static const List<GitRepositoryState> values = [
-    none,
-    merge,
-    revert,
-    revertSequence,
-    cherrypick,
-    cherrypickSequence,
-    bisect,
-    rebase,
-    rebaseInteractive,
-    rebaseMerge,
-    applyMailbox,
-    applyMailboxOrRebase,
-  ];
-
-  int get value => _value;
-
-  @override
-  String toString() => 'GitRepositoryState.$_name';
+  const GitRepositoryState(this.value);
+  final int value;
 }
 
 /// Flags for merge options.
-class GitMergeFlag {
-  const GitMergeFlag._(this._value, this._name);
-  final int _value;
-  final String _name;
-
+enum GitMergeFlag {
   /// Detect renames that occur between the common ancestor and the "ours"
   /// side or the common ancestor and the "theirs" side.  This will enable
   /// the ability to merge between a modified and renamed file.
-  static const findRenames = GitMergeFlag._(1, 'findRenames');
+  findRenames(1),
 
   /// If a conflict occurs, exit immediately instead of attempting to
   /// continue resolving conflicts.  The merge operation will fail with
   /// and no index will be returned.
-  static const failOnConflict = GitMergeFlag._(2, 'failOnConflict');
+  failOnConflict(2),
 
   /// Do not write the REUC extension on the generated index.
-  static const skipREUC = GitMergeFlag._(4, 'skipREUC');
+  skipREUC(4),
 
   /// If the commits being merged have multiple merge bases, do not build
   /// a recursive merge base (by merging the multiple merge bases),
   /// instead simply use the first base.
-  static const noRecursive = GitMergeFlag._(8, 'noRecursive');
+  noRecursive(8);
 
-  static const List<GitMergeFlag> values = [
-    findRenames,
-    failOnConflict,
-    skipREUC,
-    noRecursive,
-  ];
-
-  int get value => _value;
-
-  @override
-  String toString() => 'GitMergeFlag.$_name';
+  const GitMergeFlag(this.value);
+  final int value;
 }
 
 /// Merge file favor options to instruct the file-level merging functionality
 /// on how to deal with conflicting regions of the files.
-class GitMergeFileFavor {
-  const GitMergeFileFavor._(this._value, this._name);
-  final int _value;
-  final String _name;
-
+enum GitMergeFileFavor {
   /// When a region of a file is changed in both branches, a conflict
   /// will be recorded in the index. This is the default.
-  static const normal = GitMergeFileFavor._(0, 'normal');
+  normal(0),
 
   /// When a region of a file is changed in both branches, the file
   /// created in the index will contain the "ours" side of any conflicting
   /// region. The index will not record a conflict.
-  static const ours = GitMergeFileFavor._(1, 'ours');
+  ours(1),
 
   /// When a region of a file is changed in both branches, the file
   /// created in the index will contain the "theirs" side of any conflicting
   /// region. The index will not record a conflict.
-  static const theirs = GitMergeFileFavor._(2, 'theirs');
+  theirs(2),
 
   /// When a region of a file is changed in both branches, the file
   /// created in the index will contain each unique line from each side,
   /// which has the result of combining both files. The index will not
   /// record a conflict.
-  static const union = GitMergeFileFavor._(3, 'union');
+  union(3);
 
-  static const List<GitMergeFileFavor> values = [
-    normal,
-    ours,
-    theirs,
-    union,
-  ];
-
-  int get value => _value;
-
-  @override
-  String toString() => 'GitMergeFileFavor.$_name';
+  const GitMergeFileFavor(this.value);
+  final int value;
 }
 
 /// File merging flags.
-class GitMergeFileFlag {
-  const GitMergeFileFlag._(this._value, this._name);
-  final int _value;
-  final String _name;
-
+enum GitMergeFileFlag {
   /// Defaults.
-  static const defaults = GitMergeFileFlag._(0, 'defaults');
+  defaults(0),
 
   /// Create standard conflicted merge files.
-  static const styleMerge = GitMergeFileFlag._(1, 'styleMerge');
+  styleMerge(1),
 
   /// Create diff3-style files.
-  static const styleDiff3 = GitMergeFileFlag._(2, 'styleDiff3');
+  styleDiff3(2),
 
   /// Condense non-alphanumeric regions for simplified diff file.
-  static const simplifyAlnum = GitMergeFileFlag._(4, 'simplifyAlnum');
+  simplifyAlnum(4),
 
   /// Ignore all whitespace.
-  static const ignoreWhitespace = GitMergeFileFlag._(8, 'ignoreWhitespace');
+  ignoreWhitespace(8),
 
   /// Ignore changes in amount of whitespace.
-  static const ignoreWhitespaceChange =
-      GitMergeFileFlag._(16, 'ignoreWhitespaceChange');
+  ignoreWhitespaceChange(16),
 
   /// Ignore whitespace at end of line.
-  static const ignoreWhitespaceEOL =
-      GitMergeFileFlag._(32, 'ignoreWhitespaceEOL');
+  ignoreWhitespaceEOL(32),
 
   /// Use the "patience diff" algorithm.
-  static const diffPatience = GitMergeFileFlag._(64, 'diffPatience');
+  diffPatience(64),
 
   /// Take extra time to find minimal diff.
-  static const diffMinimal = GitMergeFileFlag._(128, 'diffMinimal');
+  diffMinimal(128),
 
   /// Create zdiff3 ("zealous diff3")-style files.
-  static const styleZdiff3 = GitMergeFileFlag._(256, 'styleZdiff3');
+  styleZdiff3(256),
 
   /// Do not produce file conflicts when common regions have
   /// changed; keep the conflict markers in the file and accept
   /// that as the merge result.
-  static const acceptConflicts = GitMergeFileFlag._(512, 'acceptConflicts');
+  acceptConflicts(512);
 
-  static const List<GitMergeFileFlag> values = [
-    defaults,
-    styleMerge,
-    styleDiff3,
-    simplifyAlnum,
-    ignoreWhitespace,
-    ignoreWhitespaceChange,
-    ignoreWhitespaceEOL,
-    diffPatience,
-    diffMinimal,
-    styleZdiff3,
-    acceptConflicts,
-  ];
-
-  int get value => _value;
-
-  @override
-  String toString() => 'GitMergeFileFlag.$_name';
+  const GitMergeFileFlag(this.value);
+  final int value;
 }
 
 /// Checkout behavior flags.
@@ -480,13 +294,9 @@ class GitMergeFileFlag {
 /// In libgit2, checkout is used to update the working directory and index
 /// to match a target tree.  Unlike git checkout, it does not move the HEAD
 /// commit for you - use `setHead` or the like to do that.
-class GitCheckout {
-  const GitCheckout._(this._value, this._name);
-  final int _value;
-  final String _name;
-
+enum GitCheckout {
   /// Default is a dry run, no actual updates.
-  static const none = GitCheckout._(0, 'none');
+  none(0),
 
   /// Allow safe updates that cannot overwrite uncommitted data.
   /// If the uncommitted changes don't conflict with the checked out files,
@@ -494,190 +304,143 @@ class GitCheckout {
   ///
   /// Mutually exclusive with [GitCheckout.force].
   /// [GitCheckout.force] takes precedence over [GitCheckout.safe].
-  static const safe = GitCheckout._(1, 'safe');
+  safe(1),
 
   /// Allow all updates to force working directory to look like index.
   ///
   /// Mutually exclusive with [GitCheckout.safe].
   /// [GitCheckout.force] takes precedence over [GitCheckout.safe].
-  static const force = GitCheckout._(2, 'force');
+  force(2),
 
   /// Allow checkout to recreate missing files.
-  static const recreateMissing = GitCheckout._(4, 'recreateMissing');
+  recreateMissing(4),
 
   /// Allow checkout to make safe updates even if conflicts are found.
-  static const allowConflicts = GitCheckout._(16, 'allowConflicts');
+  allowConflicts(16),
 
   /// Remove untracked files not in index (that are not ignored).
-  static const removeUntracked = GitCheckout._(32, 'removeUntracked');
+  removeUntracked(32),
 
   /// Remove ignored files not in index.
-  static const removeIgnored = GitCheckout._(64, 'removeIgnored');
+  removeIgnored(64),
 
   /// Only update existing files, don't create new ones.
-  static const updateOnly = GitCheckout._(128, 'updateOnly');
+  updateOnly(128),
 
   /// Normally checkout updates index entries as it goes; this stops that.
   /// Implies [GitCheckout.dontWriteIndex].
-  static const dontUpdateIndex = GitCheckout._(256, 'dontUpdateIndex');
+  dontUpdateIndex(256),
 
   /// Don't refresh index/config/etc before doing checkout.
-  static const noRefresh = GitCheckout._(512, 'noRefresh');
+  noRefresh(512),
 
   /// Allow checkout to skip unmerged files.
-  static const skipUnmerged = GitCheckout._(1024, 'skipUnmerged');
+  skipUnmerged(1024),
 
   /// For unmerged files, checkout stage 2 from index.
-  static const useOurs = GitCheckout._(2048, 'useOurs');
+  useOurs(2048),
 
   /// For unmerged files, checkout stage 3 from index.
-  static const useTheirs = GitCheckout._(4096, 'useTheirs');
+  useTheirs(4096),
 
   /// Treat pathspec as simple list of exact match file paths.
-  static const disablePathspecMatch =
-      GitCheckout._(8192, 'disablePathspecMatch');
+  disablePathspecMatch(8192),
 
   /// Ignore directories in use, they will be left empty.
-  static const skipLockedDirectories =
-      GitCheckout._(262144, 'skipLockedDirectories');
+  skipLockedDirectories(262144),
 
   /// Don't overwrite ignored files that exist in the checkout target.
-  static const dontOverwriteIgnored =
-      GitCheckout._(524288, 'dontOverwriteIgnored');
+  dontOverwriteIgnored(524288),
 
   /// Write normal merge files for conflicts.
-  static const conflictStyleMerge =
-      GitCheckout._(1048576, 'conflictStyleMerge');
+  conflictStyleMerge(1048576),
 
   /// Include common ancestor data in diff3 format files for conflicts.
-  static const conflictStyleDiff3 =
-      GitCheckout._(2097152, 'conflictStyleDiff3');
+  conflictStyleDiff3(2097152),
 
   /// Don't overwrite existing files or folders.
-  static const dontRemoveExisting =
-      GitCheckout._(4194304, 'dontRemoveExisting');
+  dontRemoveExisting(4194304),
 
   /// Normally checkout writes the index upon completion; this prevents that.
-  static const dontWriteIndex = GitCheckout._(8388608, 'dontWriteIndex');
+  dontWriteIndex(8388608),
 
   /// Show what would be done by a checkout. Stop after sending
   /// notifications; don't update the working directory or index.
-  static const dryRun = GitCheckout._(16777216, 'dryRun');
+  dryRun(16777216),
 
   /// Include common ancestor data in zdiff3 format for conflicts.
-  static const conflictStyleZdiff3 =
-      GitCheckout._(33554432, 'conflictStyleZdiff3');
+  conflictStyleZdiff3(33554432);
 
-  static const List<GitCheckout> values = [
-    none,
-    safe,
-    force,
-    recreateMissing,
-    allowConflicts,
-    removeUntracked,
-    removeIgnored,
-    updateOnly,
-    dontUpdateIndex,
-    noRefresh,
-    skipUnmerged,
-    useOurs,
-    useTheirs,
-    disablePathspecMatch,
-    skipLockedDirectories,
-    dontOverwriteIgnored,
-    conflictStyleMerge,
-    conflictStyleDiff3,
-    dontRemoveExisting,
-    dontWriteIndex,
-    dryRun,
-    conflictStyleZdiff3,
-  ];
-
-  int get value => _value;
-
-  @override
-  String toString() => 'GitCheckout.$_name';
+  const GitCheckout(this.value);
+  final int value;
 }
 
 /// Kinds of reset operation.
-class GitReset {
-  const GitReset._(this._value, this._name);
-  final int _value;
-  final String _name;
-
+enum GitReset {
   /// Move the head to the given commit.
-  static const soft = GitReset._(1, 'soft');
+  soft(1),
 
   /// [GitReset.soft] plus reset index to the commit.
-  static const mixed = GitReset._(2, 'mixed');
+  mixed(2),
 
   /// [GitReset.mixed] plus changes in working tree discarded.
-  static const hard = GitReset._(3, 'hard');
+  hard(3);
 
-  static const List<GitReset> values = [soft, mixed, hard];
-
-  int get value => _value;
-
-  @override
-  String toString() => 'GitReset.$_name';
+  const GitReset(this.value);
+  final int value;
 }
 
 /// Flags for diff options.  A combination of these flags can be passed.
-class GitDiff {
-  const GitDiff._(this._value, this._name);
-  final int _value;
-  final String _name;
-
+enum GitDiff {
   /// Normal diff, the default.
-  static const normal = GitDiff._(0, 'normal');
+  normal(0),
 
   /// Reverse the sides of the diff.
-  static const reverse = GitDiff._(1, 'reverse');
+  reverse(1),
 
   /// Include ignored files in the diff.
-  static const includeIgnored = GitDiff._(2, 'includeIgnored');
+  includeIgnored(2),
 
   /// Even with [GitDiff.includeUntracked], an entire ignored directory
   /// will be marked with only a single entry in the diff; this flag
   /// adds all files under the directory as IGNORED entries, too.
-  static const recurseIgnoredDirs = GitDiff._(4, 'recurseIgnoredDirs');
+  recurseIgnoredDirs(4),
 
   /// Include untracked files in the diff.
-  static const includeUntracked = GitDiff._(8, 'includeUntracked');
+  includeUntracked(8),
 
   /// Even with [GitDiff.includeUntracked], an entire untracked
   /// directory will be marked with only a single entry in the diff
   /// (a la what core Git does in `git status`); this flag adds *all*
   /// files under untracked directories as UNTRACKED entries, too.
-  static const recurseUntrackedDirs = GitDiff._(16, 'recurseUntrackedDirs');
+  recurseUntrackedDirs(16),
 
   /// Include unmodified files in the diff.
-  static const includeUnmodified = GitDiff._(32, 'includeUnmodified');
+  includeUnmodified(32),
 
   /// Normally, a type change between files will be converted into a
   /// DELETED record for the old and an ADDED record for the new; this
   /// options enabled the generation of TYPECHANGE delta records.
-  static const includeTypechange = GitDiff._(64, 'includeTypechange');
+  includeTypechange(64),
 
   /// Even with [GitDiff.includeTypechange], blob->tree changes still
   /// generally show as a DELETED blob.  This flag tries to correctly
   /// label blob->tree transitions as TYPECHANGE records with new_file's
   /// mode set to tree. Note: the tree SHA will not be available.
-  static const includeTypechangeTrees =
-      GitDiff._(128, 'includeTypechangeTrees');
+  includeTypechangeTrees(128),
 
   /// Ignore file mode changes.
-  static const ignoreFilemode = GitDiff._(256, 'ignoreFilemode');
+  ignoreFilemode(256),
 
   /// Treat all submodules as unmodified.
-  static const ignoreSubmodules = GitDiff._(512, 'ignoreSubmodules');
+  ignoreSubmodules(512),
 
   /// Use case insensitive filename comparisons.
-  static const ignoreCase = GitDiff._(1024, 'ignoreCase');
+  ignoreCase(1024),
 
   /// May be combined with [GitDiff.ignoreCase] to specify that a file
   /// that has changed case will be returned as an add/delete pair.
-  static const includeCaseChange = GitDiff._(2048, 'includeCaseChange');
+  includeCaseChange(2048),
 
   /// If the pathspec is set in the diff options, this flags indicates
   /// that the paths will be treated as literal paths instead of
@@ -685,12 +448,12 @@ class GitDiff {
   /// path to a file or a directory. (A trailing slash indicates that
   /// the path will _only_ match a directory). If a directory is
   /// specified, all children will be included.
-  static const disablePathspecMatch = GitDiff._(4096, 'disablePathspecMatch');
+  disablePathspecMatch(4096),
 
   /// Disable updating of the `binary` flag in delta records.  This is
   /// useful when iterating over a diff if you don't need hunk and data
   /// callbacks and want to avoid having to load file completely.
-  static const skipBinaryCheck = GitDiff._(8192, 'skipBinaryCheck');
+  skipBinaryCheck(8192),
 
   /// When diff finds an untracked directory, to match the behavior of
   /// core Git, it scans the contents for IGNORED and UNTRACKED files.
@@ -699,103 +462,64 @@ class GitDiff {
   /// This is extra work that may not matter in many cases.  This flag
   /// turns off that scan and immediately labels an untracked directory
   /// as UNTRACKED (changing the behavior to not match core Git).
-  static const enableFastUntrackedDirs =
-      GitDiff._(16384, 'enableFastUntrackedDirs');
+  enableFastUntrackedDirs(16384),
 
   /// When diff finds a file in the working directory with stat
   /// information different from the index, but the OID ends up being the
   /// same, write the correct stat information into the index. Note:
   /// without this flag, diff will always leave the index untouched.
-  static const updateIndex = GitDiff._(32768, 'updateIndex');
+  updateIndex(32768),
 
   /// Include unreadable files in the diff.
-  static const includeUnreadable = GitDiff._(65536, 'includeUnreadable');
+  includeUnreadable(65536),
 
   /// Include unreadable files in the diff.
-  static const includeUnreadableAsUntracked =
-      GitDiff._(131072, 'includeUnreadableAsUntracked');
+  includeUnreadableAsUntracked(131072),
 
   /// Use a heuristic that takes indentation and whitespace into account
   /// which generally can produce better diffs when dealing with ambiguous
   /// diff hunks.
-  static const indentHeuristic = GitDiff._(262144, 'indentHeuristic');
+  indentHeuristic(262144),
 
   /// Treat all files as text, disabling binary attributes & detection.
-  static const forceText = GitDiff._(1048576, 'forceText');
+  forceText(1048576),
 
   /// Treat all files as binary, disabling text diffs.
-  static const forceBinary = GitDiff._(2097152, 'forceBinary');
+  forceBinary(2097152),
 
   /// Ignore all whitespace.
-  static const ignoreWhitespace = GitDiff._(4194304, 'ignoreWhitespace');
+  ignoreWhitespace(4194304),
 
   /// Ignore changes in amount of whitespace.
-  static const ignoreWhitespaceChange =
-      GitDiff._(8388608, 'ignoreWhitespaceChange');
+  ignoreWhitespaceChange(8388608),
 
   /// Ignore whitespace at end of line.
-  static const ignoreWhitespaceEOL = GitDiff._(16777216, 'ignoreWhitespaceEOL');
+  ignoreWhitespaceEOL(16777216),
 
   /// When generating patch text, include the content of untracked
   /// files. This automatically turns on [GitDiff.includeUntracked] but
   /// it does not turn on [GitDiff.recurseUntrackedDirs]. Add that
   /// flag if you want the content of every single UNTRACKED file.
-  static const showUntrackedContent =
-      GitDiff._(33554432, 'showUntrackedContent');
+  showUntrackedContent(33554432),
 
   /// When generating output, include the names of unmodified files if
   /// they are included in the git diff.  Normally these are skipped in
   /// the formats that list files (e.g. name-only, name-status, raw).
   /// Even with this, these will not be included in patch format.
-  static const showUnmodified = GitDiff._(67108864, 'showUnmodified');
+  showUnmodified(67108864),
 
   /// Use the "patience diff" algorithm.
-  static const patience = GitDiff._(268435456, 'patience');
+  patience(268435456),
 
   /// Take extra time to find minimal diff.
-  static const minimal = GitDiff._(536870912, 'minimal');
+  minimal(536870912),
 
   /// Include the necessary deflate / delta information so that `git-apply`
   /// can apply given diff information to binary files.
-  static const showBinary = GitDiff._(1073741824, 'showBinary');
+  showBinary(1073741824);
 
-  static const List<GitDiff> values = [
-    normal,
-    reverse,
-    includeIgnored,
-    recurseIgnoredDirs,
-    includeUntracked,
-    recurseUntrackedDirs,
-    includeUnmodified,
-    includeTypechange,
-    includeTypechangeTrees,
-    ignoreFilemode,
-    ignoreSubmodules,
-    ignoreCase,
-    includeCaseChange,
-    disablePathspecMatch,
-    skipBinaryCheck,
-    enableFastUntrackedDirs,
-    updateIndex,
-    includeUnreadable,
-    includeUnreadableAsUntracked,
-    indentHeuristic,
-    forceText,
-    forceBinary,
-    ignoreWhitespace,
-    ignoreWhitespaceChange,
-    ignoreWhitespaceEOL,
-    showUntrackedContent,
-    showUnmodified,
-    patience,
-    minimal,
-    showBinary,
-  ];
-
-  int get value => _value;
-
-  @override
-  String toString() => 'GitDiff.$_name';
+  const GitDiff(this.value);
+  final int value;
 }
 
 /// What type of change is described by a git_diff_delta?
@@ -806,178 +530,132 @@ class GitDiff {
 /// [GitDelta.typechange] only shows up given [GitDiff.includeTypechange]
 /// in the option flags (otherwise type changes will be split into ADDED /
 /// DELETED pairs).
-class GitDelta {
-  const GitDelta._(this._value, this._name);
-  final int _value;
-  final String _name;
-
+enum GitDelta {
   /// No changes.
-  static const unmodified = GitDelta._(0, 'unmodified');
+  unmodified(0),
 
   /// Entry does not exist in old version.
-  static const added = GitDelta._(1, 'added');
+  added(1),
 
   /// Entry does not exist in new version.
-  static const deleted = GitDelta._(2, 'deleted');
+  deleted(2),
 
   /// Entry content changed between old and new.
-  static const modified = GitDelta._(3, 'modified');
+  modified(3),
 
   /// Entry was renamed between old and new.
-  static const renamed = GitDelta._(4, 'renamed');
+  renamed(4),
 
   /// Entry was copied from another old entry.
-  static const copied = GitDelta._(5, 'copied');
+  copied(5),
 
   /// Entry is ignored item in workdir.
-  static const ignored = GitDelta._(6, 'ignored');
+  ignored(6),
 
   /// Entry is is untracked item in workdir.
-  static const untracked = GitDelta._(7, 'untracked');
+  untracked(7),
 
   /// Type of entry changed between old and new.
-  static const typechange = GitDelta._(8, 'typechange');
+  typechange(8),
 
   /// Entry is unreadable.
-  static const unreadable = GitDelta._(9, 'unreadable');
+  unreadable(9),
 
   /// Entry in the index is conflicted.
-  static const conflicted = GitDelta._(10, 'conflicted');
+  conflicted(10);
 
-  static const List<GitDelta> values = [
-    unmodified,
-    added,
-    deleted,
-    modified,
-    renamed,
-    copied,
-    ignored,
-    untracked,
-    typechange,
-    unreadable,
-    conflicted,
-  ];
-
-  int get value => _value;
-
-  @override
-  String toString() => 'GitDelta.$_name';
+  const GitDelta(this.value);
+  final int value;
 }
 
 /// Flags for the delta object and the file objects on each side.
-class GitDiffFlag {
-  const GitDiffFlag._(this._value, this._name);
-  final int _value;
-  final String _name;
-
+enum GitDiffFlag {
   /// File(s) treated as binary data.
-  static const binary = GitDiffFlag._(1, 'binary');
+  binary(1),
 
   /// File(s) treated as text data.
-  static const notBinary = GitDiffFlag._(2, 'notBinary');
+  notBinary(2),
 
   /// `id` value is known correct.
-  static const validId = GitDiffFlag._(4, 'validId');
+  validId(4),
 
   /// File exists at this side of the delta.
-  static const exists = GitDiffFlag._(8, 'exists');
+  exists(8);
 
-  static const List<GitDiffFlag> values = [binary, notBinary, validId, exists];
-
-  int get value => _value;
-
-  @override
-  String toString() => 'GitDiffFlag.$_name';
+  const GitDiffFlag(this.value);
+  final int value;
 }
 
 /// Formatting options for diff stats.
-class GitDiffStats {
-  const GitDiffStats._(this._value, this._name);
-  final int _value;
-  final String _name;
-
+enum GitDiffStats {
   /// No stats.
-  static const none = GitDiffStats._(0, 'none');
+  none(0),
 
   /// Full statistics, equivalent of `--stat`.
-  static const full = GitDiffStats._(1, 'full');
+  full(1),
 
   /// Short statistics, equivalent of `--shortstat`.
-  static const short = GitDiffStats._(2, 'short');
+  short(2),
 
   /// Number statistics, equivalent of `--numstat`.
-  static const number = GitDiffStats._(4, 'number');
+  number(4),
 
   /// Extended header information such as creations, renames and mode changes,
   /// equivalent of `--summary`.
-  static const includeSummary = GitDiffStats._(8, 'includeSummary');
+  includeSummary(8);
 
-  static const List<GitDiffStats> values = [
-    none,
-    full,
-    short,
-    number,
-    includeSummary,
-  ];
-
-  int get value => _value;
-
-  @override
-  String toString() => 'GitDiffStats.$_name';
+  const GitDiffStats(this.value);
+  final int value;
 }
 
 /// Formatting options for diff stats.
-class GitDiffFind {
-  const GitDiffFind._(this._value, this._name);
-  final int _value;
-  final String _name;
-
+enum GitDiffFind {
   /// Obey `diff.renames`. Overridden by any other [GitDiffFind] flag.
-  static const byConfig = GitDiffFind._(0, 'byConfig');
+  byConfig(0),
 
-  /// Look for renames? (`--find-renames`)
-  static const renames = GitDiffFind._(1, 'renames');
+  /// Look for renames, equivalent of `--find-renames`
+  renames(1),
 
-  /// Consider old side of MODIFIED for renames? (`--break-rewrites=N`)
-  static const renamesFromRewrites = GitDiffFind._(2, 'renamesFromRewrites');
+  /// Consider old side of MODIFIED for renames, equivalent of
+  /// `--break-rewrites=N`
+  renamesFromRewrites(2),
 
-  /// Look for copies? (a la `--find-copies`)
-  static const copies = GitDiffFind._(4, 'copies');
+  /// Look for copies, equivalent of `--find-copies`
+  copies(4),
 
-  /// Consider UNMODIFIED as copy sources? (`--find-copies-harder`)
+  /// Consider UNMODIFIED as copy sources, equivalent of `--find-copies-harder`
   ///
   /// For this to work correctly, use [GitDiff.includeUnmodified] when
   /// the initial git diff is being generated.
-  static const copiesFromUnmodified = GitDiffFind._(8, 'copiesFromUnmodified');
+  copiesFromUnmodified(8),
 
-  /// Mark significant rewrites for split (`--break-rewrites=/M`)
-  static const rewrites = GitDiffFind._(16, 'rewrites');
+  /// Mark significant rewrites for split, equivalent of `--break-rewrites=/M`
+  rewrites(16),
 
   /// Actually split large rewrites into delete/add pairs.
-  static const breakRewrites = GitDiffFind._(32, 'breakRewrites');
+  breakRewrites(32),
 
   /// Mark rewrites for split and break into delete/add pairs.
-  static const andBreakRewrites = GitDiffFind._(48, 'andBreakRewrites');
+  andBreakRewrites(48),
 
   /// Find renames/copies for UNTRACKED items in working directory.
   ///
   /// For this to work correctly, use [GitDiff.includeUntracked] when the
   /// initial git diff is being generated (and obviously the diff must
   /// be against the working directory for this to make sense).
-  static const forUntracked = GitDiffFind._(64, 'forUntracked');
+  forUntracked(64),
 
   /// Turn on all finding features.
-  static const all = GitDiffFind._(255, 'all');
+  all(255),
 
   /// Measure similarity ignoring all whitespace.
-  static const ignoreWhitespace = GitDiffFind._(4096, 'ignoreWhitespace');
+  ignoreWhitespace(4096),
 
   /// Measure similarity including all data.
-  static const dontIgnoreWhitespace =
-      GitDiffFind._(8192, 'dontIgnoreWhitespace');
+  dontIgnoreWhitespace(8192),
 
   /// Measure similarity only by comparing SHAs (fast and cheap).
-  static const exactMatchOnly = GitDiffFind._(16384, 'exactMatchOnly');
+  exactMatchOnly(16384),
 
   /// Do not break rewrites unless they contribute to a rename.
   ///
@@ -989,8 +667,7 @@ class GitDiffFind {
   /// If you add this flag in and the split pair is *not* used for an
   /// actual rename or copy, then the modified record will be restored to
   /// a regular MODIFIED record instead of being split.
-  static const breakRewritesForRenamesOnly =
-      GitDiffFind._(32768, 'breakRewritesForRenamesOnly');
+  breakRewritesForRenamesOnly(32768),
 
   /// Remove any UNMODIFIED deltas after find_similar is done.
   ///
@@ -998,73 +675,35 @@ class GitDiffFind {
   /// --find-copies-harder behavior requires building a diff with the
   /// [GitDiff.includeUnmodified] flag. If you do not want UNMODIFIED
   /// records in the final result, pass this flag to have them removed.
-  static const removeUnmodified = GitDiffFind._(65536, 'removeUnmodified');
+  removeUnmodified(65536);
 
-  static const List<GitDiffFind> values = [
-    byConfig,
-    renames,
-    renamesFromRewrites,
-    copies,
-    copiesFromUnmodified,
-    rewrites,
-    breakRewrites,
-    andBreakRewrites,
-    forUntracked,
-    all,
-    ignoreWhitespace,
-    dontIgnoreWhitespace,
-    exactMatchOnly,
-    breakRewritesForRenamesOnly,
-    removeUnmodified,
-  ];
-
-  int get value => _value;
-
-  @override
-  String toString() => 'GitDiffFind.$_name';
+  const GitDiffFind(this.value);
+  final int value;
 }
 
 /// Line origin, describing where a line came from.
-class GitDiffLine {
-  const GitDiffLine._(this._value, this._name);
-  final int _value;
-  final String _name;
-
-  static const context = GitDiffLine._(32, 'context');
-  static const addition = GitDiffLine._(43, 'addition');
-  static const deletion = GitDiffLine._(45, 'deletion');
+enum GitDiffLine {
+  context(32),
+  addition(43),
+  deletion(45),
 
   /// Both files have no LF at end.
-  static const contextEOFNL = GitDiffLine._(61, 'contextEOFNL');
+  contextEOFNL(61),
 
   /// Old has no LF at end, new does.
-  static const addEOFNL = GitDiffLine._(62, 'addEOFNL');
+  addEOFNL(62),
 
   /// Old has LF at end, new does not.
-  static const delEOFNL = GitDiffLine._(60, 'delEOFNL');
+  delEOFNL(60),
 
-  static const fileHeader = GitDiffLine._(70, 'fileHeader');
-  static const hunkHeader = GitDiffLine._(72, 'hunkHeader');
+  fileHeader(70),
+  hunkHeader(72),
 
   /// For "Binary files x and y differ"
-  static const binary = GitDiffLine._(66, 'binary');
+  binary(66);
 
-  static const List<GitDiffLine> values = [
-    context,
-    addition,
-    deletion,
-    contextEOFNL,
-    addEOFNL,
-    delEOFNL,
-    fileHeader,
-    hunkHeader,
-    binary,
-  ];
-
-  int get value => _value;
-
-  @override
-  String toString() => 'GitDiffLine.$_name';
+  const GitDiffLine(this.value);
+  final int value;
 }
 
 /// Possible application locations for `apply()`
@@ -1096,427 +735,280 @@ class GitApplyLocation {
 /// Priority level of a config file.
 /// These priority levels correspond to the natural escalation logic
 /// (from higher to lower) when searching for config entries in git.
-class GitConfigLevel {
-  const GitConfigLevel._(this._value, this._name);
-  final int _value;
-  final String _name;
-
+enum GitConfigLevel {
   /// System-wide on Windows, for compatibility with portable git.
-  static const programData = GitConfigLevel._(1, 'programData');
+  programData(1),
 
   /// System-wide configuration file; /etc/gitconfig on Linux systems.
-  static const system = GitConfigLevel._(2, 'system');
+  system(2),
 
   /// XDG compatible configuration file; typically ~/.config/git/config
-  static const xdg = GitConfigLevel._(3, 'xdg');
+  xdg(3),
 
   /// User-specific configuration file (also called Global configuration
   /// file); typically ~/.gitconfig
-  static const global = GitConfigLevel._(4, 'global');
+  global(4),
 
   /// Repository specific configuration file; $WORK_DIR/.git/config on
   /// non-bare repos.
-  static const local = GitConfigLevel._(5, 'local');
+  local(5),
 
   /// Application specific configuration file; freely defined by applications.
-  static const app = GitConfigLevel._(6, 'app');
+  app(6),
 
   /// Represents the highest level available config file (i.e. the most
   /// specific config file available that actually is loaded).
-  static const highest = GitConfigLevel._(-1, 'highest');
+  highest(-1);
 
-  static const List<GitConfigLevel> values = [
-    programData,
-    system,
-    xdg,
-    global,
-    local,
-    app,
-    highest,
-  ];
-
-  int get value => _value;
-
-  @override
-  String toString() => 'GitConfigLevel.$_name';
+  const GitConfigLevel(this.value);
+  final int value;
 }
 
 /// Stash flags.
-class GitStash {
-  const GitStash._(this._value, this._name);
-  final int _value;
-  final String _name;
-
+enum GitStash {
   /// No option, default.
-  static const defaults = GitStash._(0, 'defaults');
+  defaults(0),
 
   /// All changes already added to the index are left intact in
   /// the working directory.
-  static const keepIndex = GitStash._(1, 'keepIndex');
+  keepIndex(1),
 
   /// All untracked files are also stashed and then cleaned up
   /// from the working directory.
-  static const includeUntracked = GitStash._(2, 'includeUntracked');
+  includeUntracked(2),
 
   /// All ignored files are also stashed and then cleaned up from
   /// the working directory.
-  static const includeIgnored = GitStash._(4, 'includeIgnored');
+  includeIgnored(4);
 
-  static const List<GitStash> values = [
-    defaults,
-    keepIndex,
-    includeUntracked,
-    includeIgnored,
-  ];
-
-  int get value => _value;
-
-  @override
-  String toString() => 'GitStash.$_name';
+  const GitStash(this.value);
+  final int value;
 }
 
 /// Stash application flags.
-class GitStashApply {
-  const GitStashApply._(this._value, this._name);
-  final int _value;
-  final String _name;
-
-  static const defaults = GitStashApply._(0, 'defaults');
+enum GitStashApply {
+  defaults(0),
 
   /// Try to reinstate not only the working tree's changes,
   /// but also the index's changes.
-  static const reinstateIndex = GitStashApply._(1, 'reinstateIndex');
+  reinstateIndex(1);
 
-  static const List<GitStashApply> values = [defaults, reinstateIndex];
-
-  int get value => _value;
-
-  @override
-  String toString() => 'GitStashApply.$_name';
+  const GitStashApply(this.value);
+  final int value;
 }
 
 /// Direction of the connection.
-class GitDirection {
-  const GitDirection._(this._value, this._name);
-  final int _value;
-  final String _name;
+enum GitDirection {
+  fetch(0),
+  push(1);
 
-  static const fetch = GitDirection._(0, 'fetch');
-  static const push = GitDirection._(1, 'push');
-
-  static const List<GitDirection> values = [fetch, push];
-
-  int get value => _value;
-
-  @override
-  String toString() => 'GitDirection.$_name';
+  const GitDirection(this.value);
+  final int value;
 }
 
 /// Acceptable prune settings when fetching.
-class GitFetchPrune {
-  const GitFetchPrune._(this._value, this._name);
-  final int _value;
-  final String _name;
-
+enum GitFetchPrune {
   /// Use the setting from the configuration.
-  static const unspecified = GitFetchPrune._(0, 'unspecified');
+  unspecified(0),
 
   /// Force pruning on. Removes any remote branch in the local repository
   /// that does not exist in the remote
-  static const prune = GitFetchPrune._(1, 'prune');
+  prune(1),
 
   /// Force pruning off. Keeps the remote branches.
-  static const noPrune = GitFetchPrune._(2, 'noPrune');
+  noPrune(2);
 
-  static const List<GitFetchPrune> values = [unspecified, prune, noPrune];
-
-  int get value => _value;
-
-  @override
-  String toString() => 'GitFetchPrune.$_name';
+  const GitFetchPrune(this.value);
+  final int value;
 }
 
 /// Option flags for [Repository] init.
-class GitRepositoryInit {
-  const GitRepositoryInit._(this._value, this._name);
-  final int _value;
-  final String _name;
-
+enum GitRepositoryInit {
   /// Create a bare repository with no working directory.
-  static const bare = GitRepositoryInit._(1, 'bare');
+  bare(1),
 
   /// Return an GIT_EEXISTS error if the repo path appears to already be
   /// an git repository.
-  static const noReinit = GitRepositoryInit._(2, 'noReinit');
+  noReinit(2),
 
   /// Normally a "/.git/" will be appended to the repo path for
   /// non-bare repos (if it is not already there), but passing this flag
   /// prevents that behavior.
-  static const noDotGitDir = GitRepositoryInit._(4, 'noDotGitDir');
+  noDotGitDir(4),
 
   /// Make the repo path (and workdir path) as needed. Init is always willing
   /// to create the ".git" directory even without this flag. This flag tells
   /// init to create the trailing component of the repo and workdir paths
   /// as needed.
-  static const mkdir = GitRepositoryInit._(8, 'mkdir');
+  mkdir(8),
 
   /// Recursively make all components of the repo and workdir paths as
   /// necessary.
-  static const mkpath = GitRepositoryInit._(16, 'mkpath');
+  mkpath(16),
 
   /// libgit2 normally uses internal templates to initialize a new repo.
   /// This flags enables external templates, looking the [templatePath] from
   /// the options if set, or the `init.templatedir` global config if not,
   /// or falling back on "/usr/share/git-core/templates" if it exists.
-  static const externalTemplate = GitRepositoryInit._(32, 'externalTemplate');
+  externalTemplate(32),
 
   /// If an alternate workdir is specified, use relative paths for the gitdir
   /// and core.worktree.
-  static const relativeGitlink = GitRepositoryInit._(64, 'relativeGitlink');
+  relativeGitlink(64);
 
-  static const List<GitRepositoryInit> values = [
-    bare,
-    noReinit,
-    noDotGitDir,
-    mkdir,
-    mkpath,
-    externalTemplate,
-    relativeGitlink,
-  ];
-
-  int get value => _value;
-
-  @override
-  String toString() => 'GitRepositoryInit.$_name';
+  const GitRepositoryInit(this.value);
+  final int value;
 }
 
 /// Supported credential types.
 ///
 /// This represents the various types of authentication methods supported by
 /// the library.
-class GitCredential {
-  const GitCredential._(this._value, this._name);
-  final int _value;
-  final String _name;
-
+enum GitCredential {
   /// A vanilla user/password request.
-  static const userPassPlainText = GitCredential._(1, 'userPassPlainText');
+  userPassPlainText(1),
 
   /// An SSH key-based authentication request.
-  static const sshKey = GitCredential._(2, 'sshKey');
+  sshKey(2),
 
   /// An SSH key-based authentication request, with a custom signature.
-  static const sshCustom = GitCredential._(4, 'sshCustom');
+  sshCustom(4),
 
   /// An NTLM/Negotiate-based authentication request.
-  static const defaultAuth = GitCredential._(8, 'defaultAuth');
+  defaultAuth(8),
 
   /// An SSH interactive authentication request.
-  static const sshInteractive = GitCredential._(16, 'sshInteractive');
+  sshInteractive(16),
 
   /// Username-only authentication request.
   ///
   /// Used as a pre-authentication step if the underlying transport
   /// (eg. SSH, with no username in its URL) does not know which username
   /// to use.
-  static const username = GitCredential._(32, 'username');
+  username(32),
 
   /// An SSH key-based authentication request.
   ///
   /// Allows credentials to be read from memory instead of files.
   /// Note that because of differences in crypto backend support, it might
   /// not be functional.
-  static const sshMemory = GitCredential._(64, 'sshMemory');
+  sshMemory(64);
 
-  static const List<GitCredential> values = [
-    userPassPlainText,
-    sshKey,
-    sshCustom,
-    defaultAuth,
-    sshInteractive,
-    username,
-    sshMemory,
-  ];
-
-  int get value => _value;
-
-  @override
-  String toString() => 'GitCredential.$_name';
+  const GitCredential(this.value);
+  final int value;
 }
 
 /// Combinations of these values describe the features with which libgit2
 /// was compiled.
-class GitFeature {
-  const GitFeature._(this._value, this._name);
-  final int _value;
-  final String _name;
-
+enum GitFeature {
   /// If set, libgit2 was built thread-aware and can be safely used from
   /// multiple threads.
-  static const threads = GitFeature._(1, 'threads');
+  threads(1),
 
   /// If set, libgit2 was built with and linked against a TLS implementation.
   /// Custom TLS streams may still be added by the user to support HTTPS
   /// regardless of this.
-  static const https = GitFeature._(2, 'https');
+  https(2),
 
   /// If set, libgit2 was built with and linked against libssh2. A custom
   /// transport may still be added by the user to support libssh2 regardless of
   /// this.
-  static const ssh = GitFeature._(4, 'ssh');
+  ssh(4),
 
   /// If set, libgit2 was built with support for sub-second resolution in file
   /// modification times.
-  static const nsec = GitFeature._(8, 'nsec');
+  nsec(8);
 
-  static const List<GitFeature> values = [threads, https, ssh, nsec];
-
-  int get value => _value;
-
-  @override
-  String toString() => 'GitFeature.$_name';
+  const GitFeature(this.value);
+  final int value;
 }
 
 /// Combinations of these values determine the lookup order for attribute.
-class GitAttributeCheck {
-  const GitAttributeCheck._(this._value, this._name);
-  final int _value;
-  final String _name;
+enum GitAttributeCheck {
+  fileThenIndex(0),
+  indexThenFile(1),
+  indexOnly(2),
+  noSystem(4),
+  includeHead(8),
+  includeCommit(16);
 
-  static const fileThenIndex = GitAttributeCheck._(0, 'fileThenIndex');
-  static const indexThenFile = GitAttributeCheck._(1, 'indexThenFile');
-  static const indexOnly = GitAttributeCheck._(2, 'indexOnly');
-  static const noSystem = GitAttributeCheck._(4, 'noSystem');
-  static const includeHead = GitAttributeCheck._(8, 'includeHead');
-  static const includeCommit = GitAttributeCheck._(16, 'includeCommit');
-
-  static const List<GitAttributeCheck> values = [
-    fileThenIndex,
-    indexThenFile,
-    indexOnly,
-    noSystem,
-    includeHead,
-    includeCommit,
-  ];
-
-  int get value => _value;
-
-  @override
-  String toString() => 'GitAttributeCheck.$_name';
+  const GitAttributeCheck(this.value);
+  final int value;
 }
 
 /// Flags for indicating option behavior for git blame APIs.
-class GitBlameFlag {
-  const GitBlameFlag._(this._value, this._name);
-  final int _value;
-  final String _name;
-
+enum GitBlameFlag {
   /// Normal blame, the default.
-  static const normal = GitBlameFlag._(0, 'normal');
+  normal(0),
 
   /// Track lines that have moved within a file (like `git blame -M`).
   ///
   /// This is not yet implemented and reserved for future use.
-  static const trackCopiesSameFile = GitBlameFlag._(1, 'trackCopiesSameFile');
+  trackCopiesSameFile(1),
 
   /// Track lines that have moved across files in the same commit
   /// (like `git blame -C`).
   ///
   /// This is not yet implemented and reserved for future use.
-  static const trackCopiesSameCommitMoves =
-      GitBlameFlag._(2, 'trackCopiesSameCommitMoves');
+  trackCopiesSameCommitMoves(2),
 
   /// Track lines that have been copied from another file that exists
   /// in the same commit (like `git blame -CC`).  Implies SAME_FILE.
   ///
   /// This is not yet implemented and reserved for future use.
-  static const trackCopiesSameCommitCopies = GitBlameFlag._(
-    4,
-    'trackCopiesSameCommitCopies',
-  );
+  trackCopiesSameCommitCopies(4),
 
   /// Track lines that have been copied from another file that exists in
   /// *any* commit (like `git blame -CCC`).  Implies SAME_COMMIT_COPIES.
   ///
   /// This is not yet implemented and reserved for future use.
-  static const trackCopiesAnyCommitCopies = GitBlameFlag._(
-    8,
-    'trackCopiesAnyCommitCopies',
-  );
+  trackCopiesAnyCommitCopies(8),
 
   /// Restrict the search of commits to those reachable following only
   /// the first parents.
-  static const firstParent = GitBlameFlag._(16, 'firstParent');
+  firstParent(16),
 
   /// Use mailmap file to map author and committer names and email
   /// addresses to canonical real names and email addresses. The
   /// mailmap will be read from the working directory, or HEAD in a
   /// bare repository.
-  static const useMailmap = GitBlameFlag._(32, 'useMailmap');
+  useMailmap(32),
 
   /// Ignore whitespace differences.
-  static const ignoreWhitespace = GitBlameFlag._(64, 'ignoreWhitespace');
+  ignoreWhitespace(64);
 
-  static const List<GitBlameFlag> values = [
-    normal,
-    trackCopiesSameFile,
-    trackCopiesSameCommitMoves,
-    trackCopiesSameCommitCopies,
-    trackCopiesAnyCommitCopies,
-    firstParent,
-    useMailmap,
-    ignoreWhitespace,
-  ];
-
-  int get value => _value;
-
-  @override
-  String toString() => 'GitBlameFlag.$_name';
+  const GitBlameFlag(this.value);
+  final int value;
 }
 
 /// Type of rebase operation in-progress after calling rebase's `next()`.
-class GitRebaseOperation {
-  const GitRebaseOperation._(this._value, this._name);
-  final int _value;
-  final String _name;
-
+enum GitRebaseOperation {
   /// The given commit is to be cherry-picked. The client should commit
   /// the changes and continue if there are no conflicts.
-  static const pick = GitRebaseOperation._(0, 'pick');
+  pick(0),
 
   /// The given commit is to be cherry-picked, but the client should prompt
   /// the user to provide an updated commit message.
-  static const reword = GitRebaseOperation._(1, 'reword');
+  reword(1),
 
   /// The given commit is to be cherry-picked, but the client should stop
   /// to allow the user to edit the changes before committing them.
-  static const edit = GitRebaseOperation._(2, 'edit');
+  edit(2),
 
   /// The given commit is to be squashed into the previous commit. The
   /// commit message will be merged with the previous message.
-  static const squash = GitRebaseOperation._(3, 'squash');
+  squash(3),
 
   /// The given commit is to be squashed into the previous commit. The
   /// commit message from this commit will be discarded.
-  static const fixup = GitRebaseOperation._(4, 'fixup');
+  fixup(4),
 
   /// No commit will be cherry-picked. The client should run the given
   /// command and (if successful) continue.
-  static const exec = GitRebaseOperation._(5, 'exec');
+  exec(5);
 
-  static const List<GitRebaseOperation> values = [
-    pick,
-    reword,
-    edit,
-    squash,
-    fixup,
-    exec,
-  ];
-
-  int get value => _value;
-
-  @override
-  String toString() => 'GitRebaseOperation.$_name';
+  const GitRebaseOperation(this.value);
+  final int value;
 }
 
 /// Reference lookup strategy.
@@ -1524,26 +1016,18 @@ class GitRebaseOperation {
 /// These behave like the --tags and --all options to git-describe,
 /// namely they say to look for any reference in either refs/tags/ or
 /// refs/ respectively.
-class GitDescribeStrategy {
-  const GitDescribeStrategy._(this._value, this._name);
-  final int _value;
-  final String _name;
-
+enum GitDescribeStrategy {
   /// Only match annotated tags.
-  static const defaultStrategy = GitDescribeStrategy._(0, 'defaultStrategy');
+  defaultStrategy(0),
 
   /// Match everything under `refs/tags/` (includes lightweight tags).
-  static const tags = GitDescribeStrategy._(1, 'tags');
+  tags(1),
 
   /// Match everything under `refs/` (includes branches).
-  static const all = GitDescribeStrategy._(2, 'all');
+  all(2);
 
-  static const List<GitDescribeStrategy> values = [defaultStrategy, tags, all];
-
-  int get value => _value;
-
-  @override
-  String toString() => 'GitDescribeStrategy.$_name';
+  const GitDescribeStrategy(this.value);
+  final int value;
 }
 
 /// Submodule ignore values.
@@ -1551,41 +1035,27 @@ class GitDescribeStrategy {
 /// These values represent settings for the `submodule.$name.ignore`
 /// configuration value which says how deeply to look at the working
 /// directory when getting submodule status.
-class GitSubmoduleIgnore {
-  const GitSubmoduleIgnore._(this._value, this._name);
-  final int _value;
-  final String _name;
-
+enum GitSubmoduleIgnore {
   // Use the submodule's configuration.
-  static const unspecified = GitSubmoduleIgnore._(-1, 'unspecified');
+  unspecified(-1),
 
   /// Don't ignore any change - i.e. even an untracked file, will mark the
   /// submodule as dirty.  Ignored files are still ignored, of course.
-  static const none = GitSubmoduleIgnore._(1, 'none');
+  none(1),
 
   /// Ignore untracked files; only changes to tracked files, or the index or
   /// the HEAD commit will matter.
-  static const untracked = GitSubmoduleIgnore._(2, 'untracked');
+  untracked(2),
 
   /// Ignore changes in the working directory, only considering changes if
   /// the HEAD of submodule has moved from the value in the superproject.
-  static const dirty = GitSubmoduleIgnore._(3, 'dirty');
+  dirty(3),
 
   /// Never check if the submodule is dirty.
-  static const all = GitSubmoduleIgnore._(4, 'all');
+  all(4);
 
-  static const List<GitSubmoduleIgnore> values = [
-    unspecified,
-    none,
-    untracked,
-    dirty,
-    all,
-  ];
-
-  int get value => _value;
-
-  @override
-  String toString() => 'GitSubmoduleIgnore.$_name';
+  const GitSubmoduleIgnore(this.value);
+  final int value;
 }
 
 /// Submodule update values
@@ -1594,38 +1064,25 @@ class GitSubmoduleIgnore {
 /// configuration value which says how to handle `git submodule update` for
 /// this submodule.  The value is usually set in the `.gitmodules` file and
 /// copied to `.git/config` when the submodule is initialized.
-class GitSubmoduleUpdate {
-  const GitSubmoduleUpdate._(this._value, this._name);
-  final int _value;
-  final String _name;
-
+enum GitSubmoduleUpdate {
   /// The default; when a submodule is updated, checkout the new detached HEAD
   /// to the submodule directory.
-  static const checkout = GitSubmoduleUpdate._(1, 'checkout');
+  checkout(1),
 
   /// Update by rebasing the current checked out branch onto the commit from
   /// the superproject.
-  static const rebase = GitSubmoduleUpdate._(2, 'rebase');
+  rebase(2),
 
   /// Update by merging the commit in the superproject into the current checkout
   /// out branch of the submodule.
-  static const merge = GitSubmoduleUpdate._(3, 'merge');
+  merge(3),
 
   /// Do not update this submodule even when the commit in the superproject is
   /// updated.
-  static const none = GitSubmoduleUpdate._(4, 'none');
+  none(4);
 
-  static const List<GitSubmoduleUpdate> values = [
-    checkout,
-    rebase,
-    merge,
-    none,
-  ];
-
-  int get value => _value;
-
-  @override
-  String toString() => 'GitSubmoduleUpdate.$_name';
+  const GitSubmoduleUpdate(this.value);
+  final int value;
 }
 
 /// A combination of these flags will be returned to describe the status of a
@@ -1638,145 +1095,81 @@ class GitSubmoduleUpdate {
 /// or all of those places might be missing information about the submodule
 /// depending on what state the repo is in.  We consider all four places to
 /// build the combination of status flags.
-class GitSubmoduleStatus {
-  const GitSubmoduleStatus._(this._value, this._name);
-  final int _value;
-  final String _name;
-
+enum GitSubmoduleStatus {
   /// Superproject head contains submodule.
-  static const inHead = GitSubmoduleStatus._(1, 'inHead');
+  inHead(1),
 
   /// Superproject index contains submodule.
-  static const inIndex = GitSubmoduleStatus._(2, 'inIndex');
+  inIndex(2),
 
   /// Superproject gitmodules has submodule.
-  static const inConfig = GitSubmoduleStatus._(4, 'inConfig');
+  inConfig(4),
 
   /// Superproject workdir has submodule.
-  static const inWorkdir = GitSubmoduleStatus._(8, 'inWorkdir');
+  inWorkdir(8),
 
   /// In index, not in head.
-  static const indexAdded = GitSubmoduleStatus._(16, 'indexAdded');
+  indexAdded(16),
 
   /// In head, not in index.
-  static const indexDeleted = GitSubmoduleStatus._(32, 'indexDeleted');
+  indexDeleted(32),
 
   /// Index and head don't match.
-  static const indexModified = GitSubmoduleStatus._(64, 'indexModified');
+  indexModified(64),
 
   /// Workdir contains empty directory.
-  static const workdirUninitialized = GitSubmoduleStatus._(
-    128,
-    'workdirUninitialized',
-  );
+  workdirUninitialized(128),
 
   /// In workdir, not index.
-  static const workdirAdded = GitSubmoduleStatus._(256, 'workdirAdded');
+  workdirAdded(256),
 
   /// In index, not workdir.
-  static const workdirDeleted = GitSubmoduleStatus._(512, 'workdirDeleted');
+  workdirDeleted(512),
 
   /// Index and workdir head don't match.
-  static const workdirModified = GitSubmoduleStatus._(1024, 'workdirModified');
+  workdirModified(1024),
 
   /// Submodule workdir index is dirty.
-  static const workdirIndexModified = GitSubmoduleStatus._(
-    2048,
-    'workdirIndexModified',
-  );
+  workdirIndexModified(2048),
 
   /// Submodule workdir has modified files.
-  static const smWorkdirModified = GitSubmoduleStatus._(
-    4096,
-    'smWorkdirModified',
-  );
+  smWorkdirModified(4096),
 
   /// Workdir contains untracked files.
-  static const workdirUntracked = GitSubmoduleStatus._(
-    8192,
-    'workdirUntracked',
-  );
+  workdirUntracked(8192);
 
-  static const List<GitSubmoduleStatus> values = [
-    inHead,
-    inIndex,
-    inConfig,
-    inWorkdir,
-    indexAdded,
-    indexDeleted,
-    indexModified,
-    workdirUninitialized,
-    workdirAdded,
-    workdirDeleted,
-    workdirModified,
-    workdirIndexModified,
-    smWorkdirModified,
-    workdirUntracked,
-  ];
-
-  int get value => _value;
-
-  @override
-  String toString() => 'GitSubmoduleStatus.$_name';
+  const GitSubmoduleStatus(this.value);
+  final int value;
 }
 
 /// Capabilities of system that affect index actions.
-class GitIndexCapability {
-  const GitIndexCapability._(this._value, this._name);
-  final int _value;
-  final String _name;
+enum GitIndexCapability {
+  ignoreCase(1),
+  noFileMode(2),
+  noSymlinks(4),
+  fromOwner(-1);
 
-  static const ignoreCase = GitIndexCapability._(1, 'ignoreCase');
-  static const noFileMode = GitIndexCapability._(2, 'noFileMode');
-  static const noSymlinks = GitIndexCapability._(4, 'noSymlinks');
-  static const fromOwner = GitIndexCapability._(-1, 'fromOwner');
-
-  static const List<GitIndexCapability> values = [
-    ignoreCase,
-    noFileMode,
-    noSymlinks,
-    fromOwner,
-  ];
-
-  int get value => _value;
-
-  @override
-  String toString() => 'GitIndexCapability.$_name';
+  const GitIndexCapability(this.value);
+  final int value;
 }
 
 /// Flags to control the functionality of blob content filtering.
-class GitBlobFilter {
-  const GitBlobFilter._(this._value, this._name);
-  final int _value;
-  final String _name;
-
+enum GitBlobFilter {
   /// When set, filters will not be applied to binary files.
-  static const checkForBinary = GitBlobFilter._(1, 'checkForBinary');
+  checkForBinary(1),
 
   /// When set, filters will not load configuration from the
   /// system-wide `gitattributes` in `/etc` (or system equivalent).
-  static const noSystemAttributes = GitBlobFilter._(2, 'noSystemAttributes');
+  noSystemAttributes(2),
 
   /// When set, filters will be loaded from a `.gitattributes` file
   /// in the HEAD commit.
-  static const attributesFromHead = GitBlobFilter._(4, 'attributesFromHead');
+  attributesFromHead(4),
 
   /// When set, filters will be loaded from a `.gitattributes` file
   /// in the specified commit.
-  static const attributesFromCommit = GitBlobFilter._(
-    8,
-    'attributesFromCommit',
-  );
+  attributesFromCommit(8);
 
-  static const List<GitBlobFilter> values = [
-    checkForBinary,
-    noSystemAttributes,
-    attributesFromHead,
-    attributesFromCommit,
-  ];
-
-  int get value => _value;
-
-  @override
-  String toString() => 'GitBlobFilter.$_name';
+  const GitBlobFilter(this.value);
+  final int value;
 }

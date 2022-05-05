@@ -471,13 +471,13 @@ index e69de29..c217c63 100644
         newTree: Tree.lookup(repo: repo, oid: repo.index.writeTree()),
       );
       expect(
-        diff.deltas.singleWhere((e) => e.newFile.path == 'staged_new').status,
+        diff.deltas.firstWhere((e) => e.newFile.path == 'staged_new').status,
         GitDelta.added,
       );
 
       diff.findSimilar();
       expect(
-        diff.deltas.singleWhere((e) => e.newFile.path == 'staged_new').status,
+        diff.deltas.firstWhere((e) => e.newFile.path == 'staged_new').status,
         GitDelta.renamed,
       );
     });

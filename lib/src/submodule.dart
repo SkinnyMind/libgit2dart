@@ -229,7 +229,7 @@ class Submodule {
   /// Ignore rule that will be used for the submodule.
   GitSubmoduleIgnore get ignore {
     final ruleInt = bindings.ignore(_submodulePointer);
-    return GitSubmoduleIgnore.values.singleWhere((e) => ruleInt == e.value);
+    return GitSubmoduleIgnore.values.firstWhere((e) => ruleInt == e.value);
   }
 
   /// Sets the ignore rule for the submodule in the configuration.
@@ -245,7 +245,7 @@ class Submodule {
   /// This value controls the behavior of the `git submodule update` command.
   GitSubmoduleUpdate get updateRule {
     final ruleInt = bindings.updateRule(_submodulePointer);
-    return GitSubmoduleUpdate.values.singleWhere((e) => ruleInt == e.value);
+    return GitSubmoduleUpdate.values.firstWhere((e) => ruleInt == e.value);
   }
 
   /// Sets the update rule for the submodule in the configuration.

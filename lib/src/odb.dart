@@ -125,7 +125,7 @@ class OdbObject {
   /// Type of an ODB object.
   GitObject get type {
     final typeInt = bindings.objectType(_odbObjectPointer);
-    return GitObject.values.singleWhere((e) => typeInt == e.value);
+    return GitObject.values.firstWhere((e) => typeInt == e.value);
   }
 
   /// Uncompressed, raw data as read from the ODB, without the leading header.

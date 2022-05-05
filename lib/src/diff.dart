@@ -481,7 +481,7 @@ class DiffDelta {
 
   /// Type of change.
   GitDelta get status {
-    return GitDelta.values.singleWhere(
+    return GitDelta.values.firstWhere(
       (e) => _diffDeltaPointer.ref.status == e.value,
     );
   }
@@ -552,7 +552,7 @@ class DiffFile {
 
   /// One of the [GitFilemode] values.
   GitFilemode get mode {
-    return GitFilemode.values.singleWhere((e) => _diffFile.mode == e.value);
+    return GitFilemode.values.firstWhere((e) => _diffFile.mode == e.value);
   }
 
   @override
