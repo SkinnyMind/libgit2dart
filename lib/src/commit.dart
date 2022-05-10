@@ -1,11 +1,14 @@
 import 'dart:ffi';
 
+import 'package:equatable/equatable.dart';
 import 'package:libgit2dart/libgit2dart.dart';
 import 'package:libgit2dart/src/bindings/commit.dart' as bindings;
 import 'package:libgit2dart/src/bindings/graph.dart' as graph_bindings;
 import 'package:libgit2dart/src/bindings/libgit2_bindings.dart';
+import 'package:meta/meta.dart';
 
-class Commit {
+@immutable
+class Commit extends Equatable {
   /// Initializes a new instance of [Commit] class from provided pointer to
   /// commit object in memory.
   ///
@@ -338,6 +341,9 @@ class Commit {
         'messageEncoding: $messageEncoding, time: $time, committer: $committer,'
         ' author: $author}';
   }
+
+  @override
+  List<Object?> get props => [oid];
 }
 
 // coverage:ignore-start

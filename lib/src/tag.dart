@@ -1,11 +1,14 @@
 import 'dart:ffi';
 
+import 'package:equatable/equatable.dart';
 import 'package:libgit2dart/libgit2dart.dart';
 import 'package:libgit2dart/src/bindings/libgit2_bindings.dart';
 import 'package:libgit2dart/src/bindings/object.dart' as object_bindings;
 import 'package:libgit2dart/src/bindings/tag.dart' as bindings;
+import 'package:meta/meta.dart';
 
-class Tag {
+@immutable
+class Tag extends Equatable {
   /// Initializes a new instance of [Tag] class from provided pointer to
   /// tag object in memory.
   ///
@@ -223,6 +226,9 @@ class Tag {
     return 'Tag{oid: $oid, name: $name, message: $message, target: $target, '
         'tagger: $tagger}';
   }
+
+  @override
+  List<Object?> get props => [name];
 }
 
 // coverage:ignore-start

@@ -211,5 +211,12 @@ void main() {
       final blame = Blame.file(repo: repo, path: 'feature_file');
       expect(blame.toString(), contains('BlameHunk{'));
     });
+
+    test('supports value comparison', () {
+      expect(
+        Blame.file(repo: repo, path: 'feature_file'),
+        equals(Blame.file(repo: repo, path: 'feature_file')),
+      );
+    });
   });
 }

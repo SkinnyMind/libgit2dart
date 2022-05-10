@@ -1,11 +1,14 @@
 import 'dart:ffi';
 
+import 'package:equatable/equatable.dart';
 import 'package:libgit2dart/libgit2dart.dart';
 import 'package:libgit2dart/src/bindings/branch.dart' as bindings;
 import 'package:libgit2dart/src/bindings/libgit2_bindings.dart';
 import 'package:libgit2dart/src/bindings/reference.dart' as reference_bindings;
+import 'package:meta/meta.dart';
 
-class Branch {
+@immutable
+class Branch extends Equatable {
   /// Initializes a new instance of [Branch] class from provided pointer to
   /// branch object in memory.
   ///
@@ -228,6 +231,9 @@ class Branch {
     return 'Branch{name: $name, target: $target, isHead: $isHead, '
         'isCheckedOut: $isCheckedOut}';
   }
+
+  @override
+  List<Object?> get props => [target, name];
 }
 
 // coverage:ignore-start

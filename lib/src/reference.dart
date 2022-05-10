@@ -1,5 +1,6 @@
 import 'dart:ffi';
 
+import 'package:equatable/equatable.dart';
 import 'package:libgit2dart/libgit2dart.dart';
 import 'package:libgit2dart/src/bindings/libgit2_bindings.dart';
 import 'package:libgit2dart/src/bindings/object.dart' as object_bindings;
@@ -7,8 +8,10 @@ import 'package:libgit2dart/src/bindings/refdb.dart' as refdb_bindings;
 import 'package:libgit2dart/src/bindings/reference.dart' as bindings;
 import 'package:libgit2dart/src/bindings/repository.dart'
     as repository_bindings;
+import 'package:meta/meta.dart';
 
-class Reference {
+@immutable
+class Reference extends Equatable {
   /// Initializes a new instance of the [Reference] class.
   ///
   /// Note: For internal use. Instead, use one of:
@@ -79,7 +82,7 @@ class Reference {
     _finalizer.attach(this, _refPointer, detach: this);
   }
 
-  late Pointer<git_reference> _refPointer;
+  late final Pointer<git_reference> _refPointer;
 
   /// Pointer to memory address for allocated reference object.
   ///
@@ -122,6 +125,39 @@ class Reference {
       force: force,
       logMessage: logMessage,
     );
+  }
+
+  /// Updates the [target] of reference with provided [name].
+  ///
+  /// [target] being either Oid for direct reference or string reference name
+  /// for symbolic reference.
+  ///
+  /// Throws a [LibGit2Error] if error occured or [ArgumentError] if [target]
+  /// is not [Oid] or string.
+  static void setTarget({
+    required Repository repo,
+    required String name,
+    required Object target,
+    String? logMessage,
+  }) {
+    final ref = Reference.lookup(repo: repo, name: name);
+    if (target is Oid) {
+      bindings.setTarget(
+        refPointer: ref.pointer,
+        oidPointer: target.pointer,
+        logMessage: logMessage,
+      );
+    } else if (target is String) {
+      bindings.setTargetSymbolic(
+        refPointer: ref.pointer,
+        target: target,
+        logMessage: logMessage,
+      );
+    } else {
+      throw ArgumentError.value(
+        '$target must be either Oid or String reference name',
+      );
+    }
   }
 
   /// List of all the references names that can be found in a [repo]sitory.
@@ -175,35 +211,6 @@ class Reference {
       oidPointer = bindings.target(bindings.resolve(_refPointer));
     }
     return Oid(oidPointer);
-  }
-
-  /// Updates the [target] of this reference.
-  ///
-  /// [target] being either Oid for direct reference or string reference name
-  /// for symbolic reference.
-  ///
-  /// Throws a [LibGit2Error] if error occured or [ArgumentError] if [target]
-  /// is not [Oid] or string.
-  void setTarget({required Object target, String? logMessage}) {
-    if (target is Oid) {
-      final newPointer = bindings.setTarget(
-        refPointer: _refPointer,
-        oidPointer: target.pointer,
-        logMessage: logMessage,
-      );
-      _refPointer = newPointer;
-    } else if (target is String) {
-      final newPointer = bindings.setTargetSymbolic(
-        refPointer: _refPointer,
-        target: target,
-        logMessage: logMessage,
-      );
-      _refPointer = newPointer;
-    } else {
-      throw ArgumentError.value(
-        '$target must be either Oid or String reference name',
-      );
-    }
   }
 
   /// Recursively peel reference until object of the specified [type] is found.
@@ -272,17 +279,6 @@ class Reference {
   /// Whether reference is a tag.
   bool get isTag => bindings.isTag(_refPointer);
 
-  /// Compares two references.
-  bool equals(Reference other) {
-    return bindings.compare(
-      ref1Pointer: _refPointer,
-      ref2Pointer: other._refPointer,
-    );
-  }
-
-  /// Compares two references.
-  bool notEquals(Reference other) => !equals(other);
-
   /// Releases memory allocated for reference object.
   void free() {
     bindings.free(_refPointer);
@@ -295,6 +291,9 @@ class Reference {
         'isBranch: $isBranch, isNote: $isNote, isRemote: $isRemote, '
         'isTag: $isTag}';
   }
+
+  @override
+  List<Object?> get props => [target];
 }
 
 // coverage:ignore-start

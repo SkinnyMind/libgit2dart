@@ -1,9 +1,12 @@
 import 'dart:ffi';
+import 'package:equatable/equatable.dart';
 import 'package:libgit2dart/libgit2dart.dart';
 import 'package:libgit2dart/src/bindings/libgit2_bindings.dart';
 import 'package:libgit2dart/src/bindings/submodule.dart' as bindings;
+import 'package:meta/meta.dart';
 
-class Submodule {
+@immutable
+class Submodule extends Equatable {
   /// Lookups submodule information by [name] or path (they are usually the
   /// same).
   ///
@@ -267,10 +270,23 @@ class Submodule {
 
   @override
   String toString() {
-    return 'Submodule{name: $name, path: $path, url: $url, status: $status, '
-        'branch: $branch, headOid: $headOid, indexOid: $indexOid, '
-        'workdirOid: $workdirOid, ignore: $ignore, updateRule: $updateRule}';
+    return 'Submodule{name: $name, path: $path, url: $url, branch: $branch, '
+        'headOid: $headOid, indexOid: $indexOid, workdirOid: $workdirOid, '
+        'ignore: $ignore, updateRule: $updateRule}';
   }
+
+  @override
+  List<Object?> get props => [
+        name,
+        path,
+        url,
+        branch,
+        headOid,
+        indexOid,
+        workdirOid,
+        ignore,
+        updateRule,
+      ];
 }
 
 // coverage:ignore-start

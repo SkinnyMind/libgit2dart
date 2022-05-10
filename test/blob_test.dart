@@ -153,5 +153,12 @@ void main() {
       final blob = Blob.lookup(repo: repo, oid: repo[blobSHA]);
       expect(blob.toString(), contains('Blob{'));
     });
+
+    test('supports value comparison', () {
+      expect(
+        Blob.lookup(repo: repo, oid: repo[blobSHA]),
+        equals(Blob.lookup(repo: repo, oid: repo[blobSHA])),
+      );
+    });
   });
 }

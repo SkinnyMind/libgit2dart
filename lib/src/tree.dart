@@ -1,10 +1,13 @@
 import 'dart:ffi';
 
+import 'package:equatable/equatable.dart';
 import 'package:libgit2dart/libgit2dart.dart';
 import 'package:libgit2dart/src/bindings/libgit2_bindings.dart';
 import 'package:libgit2dart/src/bindings/tree.dart' as bindings;
+import 'package:meta/meta.dart';
 
-class Tree {
+@immutable
+class Tree extends Equatable {
   /// Initializes a new instance of [Tree] class from provided pointer to
   /// tree object in memory.
   ///
@@ -102,6 +105,9 @@ class Tree {
   String toString() {
     return 'Tree{oid: $oid, length: $length}';
   }
+
+  @override
+  List<Object?> get props => [oid];
 }
 
 // coverage:ignore-start
@@ -110,12 +116,13 @@ final _finalizer = Finalizer<Pointer<git_tree>>(
 );
 // coverage:ignore-end
 
-class TreeEntry {
+@immutable
+class TreeEntry extends Equatable {
   /// Initializes a new instance of [TreeEntry] class from provided pointer to
   /// tree entry object in memory.
   ///
   /// Note: For internal use.
-  TreeEntry(this._treeEntryPointer);
+  const TreeEntry(this._treeEntryPointer);
 
   /// Initializes a new instance of [TreeEntry] class from provided pointer to
   /// tree entry object in memory.
@@ -150,6 +157,9 @@ class TreeEntry {
 
   @override
   String toString() => 'TreeEntry{oid: $oid, name: $name, filemode: $filemode}';
+
+  @override
+  List<Object?> get props => [oid, name, filemode];
 }
 
 // coverage:ignore-start

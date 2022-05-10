@@ -396,5 +396,12 @@ Some description.
       final commit = Commit.lookup(repo: repo, oid: tip);
       expect(commit.toString(), contains('Commit{'));
     });
+
+    test('supports value comparison', () {
+      expect(
+        Commit.lookup(repo: repo, oid: tip),
+        equals(Commit.lookup(repo: repo, oid: tip)),
+      );
+    });
   });
 }

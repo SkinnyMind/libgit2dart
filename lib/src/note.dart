@@ -1,9 +1,12 @@
 import 'dart:ffi';
+import 'package:equatable/equatable.dart';
 import 'package:libgit2dart/libgit2dart.dart';
 import 'package:libgit2dart/src/bindings/libgit2_bindings.dart';
 import 'package:libgit2dart/src/bindings/note.dart' as bindings;
+import 'package:meta/meta.dart';
 
-class Note {
+@immutable
+class Note extends Equatable {
   /// Initializes a new instance of the [Note] class from provided
   /// pointer to note and annotatedOid objects in memory.
   ///
@@ -143,6 +146,9 @@ class Note {
   String toString() {
     return 'Note{oid: $oid, message: $message, annotatedOid: $annotatedOid}';
   }
+
+  @override
+  List<Object?> get props => [oid];
 }
 
 // coverage:ignore-start

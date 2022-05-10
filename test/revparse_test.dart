@@ -59,7 +59,7 @@ void main() {
       var headParse = RevParse.ext(repo: repo, spec: 'master');
 
       expect(headParse.object.oid.sha, headSHA);
-      expect(headParse.reference?.equals(masterRef), true);
+      expect(headParse.reference, equals(masterRef));
       expect(headParse.toString(), contains('RevParse{'));
 
       final featureRef = Reference.lookup(
@@ -72,7 +72,7 @@ void main() {
         headParse.object.oid.sha,
         '5aecfa0fb97eadaac050ccb99f03c3fb65460ad4',
       );
-      expect(headParse.reference?.equals(featureRef), true);
+      expect(headParse.reference, equals(featureRef));
     });
 
     test('.ext() returns only commit when no intermidiate reference found', () {

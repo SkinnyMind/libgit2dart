@@ -1,12 +1,15 @@
 import 'dart:ffi';
 
+import 'package:equatable/equatable.dart';
 import 'package:ffi/ffi.dart';
 import 'package:libgit2dart/libgit2dart.dart';
 import 'package:libgit2dart/src/bindings/libgit2_bindings.dart';
 import 'package:libgit2dart/src/bindings/patch.dart' as bindings;
 import 'package:libgit2dart/src/util.dart';
+import 'package:meta/meta.dart';
 
-class Patch {
+@immutable
+class Patch extends Equatable {
   /// Initializes a new instance of [Patch] class from provided
   /// pointer to patch object in memory and pointers to old and new blobs/buffers.
   ///
@@ -264,6 +267,9 @@ class Patch {
 
   @override
   String toString() => 'Patch{size: ${size()}, delta: $delta}';
+
+  @override
+  List<Object?> get props => [delta];
 }
 
 // coverage:ignore-start
@@ -296,7 +302,8 @@ class PatchStats {
   }
 }
 
-class DiffHunk {
+@immutable
+class DiffHunk extends Equatable {
   const DiffHunk._({
     required this.linesCount,
     required this.index,
@@ -338,9 +345,22 @@ class DiffHunk {
         'oldStart: $oldStart, oldLines: $oldLines, newStart: $newStart, '
         'newLines: $newLines, header: $header}';
   }
+
+  @override
+  List<Object?> get props => [
+        linesCount,
+        index,
+        oldStart,
+        oldLines,
+        newStart,
+        newLines,
+        header,
+        lines
+      ];
 }
 
-class DiffLine {
+@immutable
+class DiffLine extends Equatable {
   const DiffLine._({
     required this.origin,
     required this.oldLineNumber,
@@ -374,4 +394,14 @@ class DiffLine {
         'newLineNumber: $newLineNumber, numLines: $numLines, '
         'contentOffset: $contentOffset, content: $content}';
   }
+
+  @override
+  List<Object?> get props => [
+        origin,
+        oldLineNumber,
+        newLineNumber,
+        numLines,
+        contentOffset,
+        content,
+      ];
 }

@@ -410,14 +410,6 @@ Pointer<git_reference> setTargetSymbolic({
   }
 }
 
-/// Compare two references.
-bool compare({
-  required Pointer<git_reference> ref1Pointer,
-  required Pointer<git_reference> ref2Pointer,
-}) {
-  return libgit2.git_reference_cmp(ref1Pointer, ref2Pointer) == 0 || false;
-}
-
 /// Recursively peel reference until object of the specified type is found.
 ///
 /// The retrieved peeled object is owned by the repository and should be closed

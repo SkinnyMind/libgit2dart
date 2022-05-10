@@ -1,7 +1,10 @@
+import 'package:equatable/equatable.dart';
 import 'package:libgit2dart/libgit2dart.dart';
 import 'package:libgit2dart/src/bindings/stash.dart' as bindings;
+import 'package:meta/meta.dart';
 
-class Stash {
+@immutable
+class Stash extends Equatable {
   /// Initializes a new instance of [Stash] class from provided stash [index],
   /// [message] and [oid].
   const Stash({
@@ -146,4 +149,7 @@ class Stash {
   String toString() {
     return 'Stash{index: $index, message: $message, oid: $oid}';
   }
+
+  @override
+  List<Object?> get props => [index, message, oid];
 }

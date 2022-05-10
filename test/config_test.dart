@@ -217,5 +217,9 @@ void main() {
       final entry = config.first;
       expect(entry.toString(), contains('ConfigEntry{'));
     });
+
+    test('supports value comparison', () {
+      expect(Config.open(filePath), equals(Config.open(filePath)));
+    });
   });
 }

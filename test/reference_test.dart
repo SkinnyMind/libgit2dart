@@ -155,7 +155,7 @@ void main() {
       final duplicate = ref.duplicate();
 
       expect(repo.references.length, 6);
-      expect(duplicate.equals(ref), true);
+      expect(duplicate, equals(ref));
     });
 
     group('create direct', () {
@@ -354,25 +354,35 @@ void main() {
 
     group('set target', () {
       test('sets direct reference with provided oid target', () {
+        Reference.setTarget(
+          repo: repo,
+          name: 'refs/heads/master',
+          target: repo[newCommit],
+        );
         final ref = Reference.lookup(repo: repo, name: 'refs/heads/master');
-        ref.setTarget(target: repo[newCommit]);
         expect(ref.target.sha, newCommit);
       });
 
       test('sets symbolic target with provided reference name', () {
+        Reference.setTarget(
+          repo: repo,
+          name: 'HEAD',
+          target: 'refs/heads/feature',
+        );
         final ref = Reference.lookup(repo: repo, name: 'HEAD');
-        expect(ref.target.sha, lastCommit);
-
-        ref.setTarget(target: 'refs/heads/feature');
         expect(ref.target.sha, '5aecfa0fb97eadaac050ccb99f03c3fb65460ad4');
       });
 
       test('sets target with log message', () {
-        final ref = Reference.lookup(repo: repo, name: 'HEAD');
-        expect(ref.target.sha, lastCommit);
-
         repo.setIdentity(name: 'name', email: 'email');
-        ref.setTarget(target: 'refs/heads/feature', logMessage: 'log message');
+        Reference.setTarget(
+          repo: repo,
+          name: 'HEAD',
+          target: 'refs/heads/feature',
+          logMessage: 'log message',
+        );
+
+        final ref = Reference.lookup(repo: repo, name: 'HEAD');
         expect(ref.target.sha, '5aecfa0fb97eadaac050ccb99f03c3fb65460ad4');
         final logEntry = ref.log.first;
         expect(logEntry.message, 'log message');
@@ -381,18 +391,28 @@ void main() {
       });
 
       test('throws on invalid target', () {
-        final ref = Reference.lookup(repo: repo, name: 'HEAD');
         expect(
-          () => ref.setTarget(target: 'refs/heads/invalid~'),
+          () => Reference.setTarget(
+            repo: repo,
+            name: 'HEAD',
+            target: 'refs/heads/invalid~',
+          ),
           throwsA(isA<LibGit2Error>()),
         );
 
         expect(
-          () => ref.setTarget(target: Oid(nullptr)),
+          () => Reference.setTarget(
+            repo: repo,
+            name: 'HEAD',
+            target: Oid(nullptr),
+          ),
           throwsA(isA<LibGit2Error>()),
         );
 
-        expect(() => ref.setTarget(target: 0), throwsA(isA<ArgumentError>()));
+        expect(
+          () => Reference.setTarget(repo: repo, name: 'HEAD', target: 0),
+          throwsA(isA<ArgumentError>()),
+        );
       });
     });
 
@@ -458,17 +478,6 @@ void main() {
       });
     });
 
-    test('checks equality', () {
-      final ref1 = Reference.lookup(repo: repo, name: 'refs/heads/master');
-      final ref2 = Reference.lookup(repo: repo, name: 'refs/heads/master');
-      final ref3 = Reference.lookup(repo: repo, name: 'refs/heads/feature');
-
-      expect(ref1.equals(ref2), true);
-      expect(ref1.notEquals(ref2), false);
-      expect(ref1.equals(ref3), false);
-      expect(ref1.notEquals(ref3), true);
-    });
-
     test('peels to non-tag object when no type is provided', () {
       final ref = Reference.lookup(repo: repo, name: 'refs/heads/master');
       final commit = Commit.lookup(repo: repo, oid: ref.target);
@@ -529,6 +538,13 @@ void main() {
     test('returns string representation of Reference object', () {
       final ref = Reference.lookup(repo: repo, name: 'refs/heads/master');
       expect(ref.toString(), contains('Reference{'));
+    });
+
+    test('supports value comparison', () {
+      expect(
+        Reference.lookup(repo: repo, name: 'HEAD'),
+        equals(Reference.lookup(repo: repo, name: 'refs/heads/master')),
+      );
     });
   });
 }

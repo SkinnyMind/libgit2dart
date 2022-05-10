@@ -1,9 +1,11 @@
 import 'dart:collection';
 import 'dart:ffi';
+import 'package:equatable/equatable.dart';
 import 'package:libgit2dart/libgit2dart.dart';
 import 'package:libgit2dart/src/bindings/libgit2_bindings.dart';
 import 'package:libgit2dart/src/bindings/reference.dart' as reference_bindings;
 import 'package:libgit2dart/src/bindings/reflog.dart' as bindings;
+import 'package:meta/meta.dart';
 
 class RefLog with IterableMixin<RefLogEntry> {
   /// Initializes a new instance of [RefLog] class from provided [Reference].
@@ -109,7 +111,8 @@ final _finalizer = Finalizer<Pointer<git_reflog>>(
 );
 // coverage:ignore-end
 
-class RefLogEntry {
+@immutable
+class RefLogEntry extends Equatable {
   /// Initializes a new instance of [RefLogEntry] class from provided
   /// pointer to RefLogEntry object in memory.
   const RefLogEntry._(this._entryPointer);
@@ -133,6 +136,9 @@ class RefLogEntry {
 
   @override
   String toString() => 'RefLogEntry{message: $message, committer: $committer}';
+
+  @override
+  List<Object?> get props => [message, committer, newOid, oldOid];
 }
 
 class _RefLogIterator implements Iterator<RefLogEntry> {

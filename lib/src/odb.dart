@@ -1,10 +1,13 @@
 import 'dart:ffi';
+import 'package:equatable/equatable.dart';
 import 'package:libgit2dart/libgit2dart.dart';
 import 'package:libgit2dart/src/bindings/libgit2_bindings.dart';
 import 'package:libgit2dart/src/bindings/odb.dart' as bindings;
 import 'package:libgit2dart/src/util.dart';
+import 'package:meta/meta.dart';
 
-class Odb {
+@immutable
+class Odb extends Equatable {
   /// Initializes a new instance of [Odb] class from provided
   /// pointer to Odb object in memory.
   ///
@@ -101,6 +104,9 @@ class Odb {
     bindings.free(_odbPointer);
     _finalizer.detach(this);
   }
+
+  @override
+  List<Object?> get props => [objects];
 }
 
 // coverage:ignore-start
@@ -109,7 +115,8 @@ final _finalizer = Finalizer<Pointer<git_odb>>(
 );
 // coverage:ignore-end
 
-class OdbObject {
+@immutable
+class OdbObject extends Equatable {
   /// Initializes a new instance of the [OdbObject] class from
   /// provided pointer to odbObject object in memory.
   OdbObject._(this._odbObjectPointer) {
@@ -144,6 +151,9 @@ class OdbObject {
   String toString() {
     return 'OdbObject{oid: $oid, type: $type, size: $size}';
   }
+
+  @override
+  List<Object?> get props => [oid];
 }
 
 // coverage:ignore-start

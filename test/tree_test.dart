@@ -101,5 +101,14 @@ void main() {
         'looked up by path', () {
       expect(() => tree['dir/dir_file.txt'].free(), returnsNormally);
     });
+
+    test('supports value comparison', () {
+      expect(
+        Tree.lookup(repo: repo, oid: repo['a8ae3dd']),
+        equals(Tree.lookup(repo: repo, oid: repo['a8ae3dd'])),
+      );
+
+      expect(tree[0], equals(tree[0]));
+    });
   });
 }

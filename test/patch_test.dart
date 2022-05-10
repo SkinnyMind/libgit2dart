@@ -230,5 +230,25 @@ index e69de29..0000000
       expect(patch.hunks[0].toString(), contains('DiffHunk{'));
       expect(patch.hunks[0].lines[0].toString(), contains('DiffLine{'));
     });
+
+    test('supports value comparison', () {
+      final patch = Patch.fromBuffers(
+        oldBuffer: oldBuffer,
+        newBuffer: newBuffer,
+        oldBufferPath: path,
+        newBufferPath: path,
+      );
+      final anotherPatch = Patch.fromBuffers(
+        oldBuffer: oldBuffer,
+        newBuffer: newBuffer,
+        oldBufferPath: path,
+        newBufferPath: path,
+      );
+      expect(patch, equals(anotherPatch));
+      expect(patch.hunks[0], equals(patch.hunks[0]));
+
+      final hunk = patch.hunks[0];
+      expect(hunk.lines[0], equals(hunk.lines[0]));
+    });
   });
 }

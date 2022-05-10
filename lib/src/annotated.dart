@@ -1,10 +1,13 @@
 import 'dart:ffi';
 
+import 'package:equatable/equatable.dart';
 import 'package:libgit2dart/libgit2dart.dart';
 import 'package:libgit2dart/src/bindings/annotated.dart' as bindings;
 import 'package:libgit2dart/src/bindings/libgit2_bindings.dart';
+import 'package:meta/meta.dart';
 
-class AnnotatedCommit {
+@immutable
+class AnnotatedCommit extends Equatable {
   /// Lookups an annotated commit from the given commit [oid].
   ///
   /// It is preferable to use [AnnotatedCommit.fromReference] instead of this
@@ -96,6 +99,9 @@ class AnnotatedCommit {
     bindings.free(_annotatedCommitPointer);
     _finalizer.detach(this);
   }
+
+  @override
+  List<Object?> get props => [oid];
 }
 
 // coverage:ignore-start

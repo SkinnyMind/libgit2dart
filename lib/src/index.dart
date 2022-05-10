@@ -1,10 +1,12 @@
 import 'dart:collection';
 import 'dart:ffi';
 
+import 'package:equatable/equatable.dart';
 import 'package:ffi/ffi.dart';
 import 'package:libgit2dart/libgit2dart.dart';
 import 'package:libgit2dart/src/bindings/index.dart' as bindings;
 import 'package:libgit2dart/src/bindings/libgit2_bindings.dart';
+import 'package:meta/meta.dart';
 
 class Index with IterableMixin<IndexEntry> {
   /// Initializes a new instance of [Index] class from provided
@@ -323,7 +325,8 @@ final _finalizer = Finalizer<Pointer<git_index>>(
 );
 // coverage:ignore-end
 
-class IndexEntry {
+@immutable
+class IndexEntry extends Equatable {
   /// Initializes a new instance of [IndexEntry] class.
   ///
   /// Note: For internal use.
@@ -367,6 +370,9 @@ class IndexEntry {
   String toString() {
     return 'IndexEntry{oid: $oid, path: $path, mode: $mode, stage: $stage}';
   }
+
+  @override
+  List<Object?> get props => [oid, path, mode, stage];
 }
 
 class ConflictEntry {

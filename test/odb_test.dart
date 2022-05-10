@@ -50,6 +50,7 @@ void main() {
       expect(object.type, GitObject.blob);
       expect(object.data, blobContent);
       expect(object.size, 13);
+      expect(object, equals(repo.odb.read(repo[blobSha])));
     });
 
     test('throws when trying to read object and error occurs', () {
@@ -114,6 +115,10 @@ void main() {
     test('returns string representation of OdbObject object', () {
       final object = repo.odb.read(repo[blobSha]);
       expect(object.toString(), contains('OdbObject{'));
+    });
+
+    test('supports value comparison', () {
+      expect(repo.odb, equals(repo.odb));
     });
   });
 }
