@@ -826,10 +826,14 @@ class RepositoryCallback {
   final String? originUrl;
 }
 
-class Identity {
+@immutable
+class Identity extends Equatable {
   /// Identity to use for reflogs.
   const Identity({required this.name, required this.email});
 
   final String name;
   final String email;
+
+  @override
+  List<Object?> get props => [name, email];
 }

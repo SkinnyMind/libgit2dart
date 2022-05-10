@@ -85,6 +85,7 @@ void main() {
         final identity = repo.identity;
         expect(identity.name, 'name');
         expect(identity.email, 'email@email.com');
+        expect(identity, equals(repo.identity));
       });
 
       test('unsets identity', () {
