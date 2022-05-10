@@ -249,5 +249,9 @@ void main() {
     test('returns string representation of Repository object', () {
       expect(repo.toString(), contains('Repository{'));
     });
+
+    test('supports value comparison', () {
+      expect(repo, equals(Repository.open(tmpDir.path)));
+    });
   });
 }

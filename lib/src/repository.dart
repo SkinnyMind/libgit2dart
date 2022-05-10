@@ -1,8 +1,8 @@
 import 'dart:ffi';
 
+import 'package:equatable/equatable.dart';
 import 'package:ffi/ffi.dart';
 import 'package:libgit2dart/libgit2dart.dart';
-
 import 'package:libgit2dart/src/bindings/attr.dart' as attr_bindings;
 import 'package:libgit2dart/src/bindings/describe.dart' as describe_bindings;
 import 'package:libgit2dart/src/bindings/graph.dart' as graph_bindings;
@@ -12,8 +12,10 @@ import 'package:libgit2dart/src/bindings/repository.dart' as bindings;
 import 'package:libgit2dart/src/bindings/reset.dart' as reset_bindings;
 import 'package:libgit2dart/src/bindings/status.dart' as status_bindings;
 import 'package:libgit2dart/src/util.dart';
+import 'package:meta/meta.dart';
 
-class Repository {
+@immutable
+class Repository extends Equatable {
   /// Initializes a new instance of the [Repository] class from provided
   /// pointer to repository object in memory.
   ///
@@ -741,6 +743,9 @@ class Repository {
 
     return packbuilder.writtenLength;
   }
+
+  @override
+  List<Object?> get props => [path];
 }
 
 // coverage:ignore-start
