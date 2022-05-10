@@ -580,5 +580,15 @@ index e69de29..c217c63 100644
       expect(patch.delta.oldFile.toString(), contains('DiffFile{'));
       expect(stats.toString(), contains('DiffStats{'));
     });
+
+    test('supports value comparison', () {
+      expect(Diff.parse(patchText), equals(Diff.parse(patchText)));
+
+      final diff = Diff.parse(patchText);
+      expect(diff.deltas[0], equals(diff.deltas[0]));
+
+      final delta = diff.deltas[0];
+      expect(delta.oldFile, equals(delta.oldFile));
+    });
   });
 }

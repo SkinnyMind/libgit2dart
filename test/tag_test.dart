@@ -384,5 +384,12 @@ void main() {
       tag = Tag.lookup(repo: repo, oid: tagOid);
       expect(() => tag.free(), returnsNormally);
     });
+
+    test('supports value comparison', () {
+      expect(
+        Tag.lookup(repo: repo, oid: tagOid),
+        equals(Tag.lookup(repo: repo, oid: tagOid)),
+      );
+    });
   });
 }

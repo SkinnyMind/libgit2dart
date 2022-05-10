@@ -47,6 +47,7 @@ void main() {
         lessThan(5),
       );
       expect(sig.offset, isA<int>());
+      expect(sig.sign, isNotEmpty);
     });
 
     test('returns correct values', () {
@@ -76,6 +77,13 @@ void main() {
 
     test('returns string representation of Signature object', () {
       expect(signature.toString(), contains('Signature{'));
+    });
+
+    test('supports value comparison', () {
+      expect(
+        Signature.create(name: name, email: email, time: time),
+        equals(Signature.create(name: name, email: email, time: time)),
+      );
     });
   });
 }

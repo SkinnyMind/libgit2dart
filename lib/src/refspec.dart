@@ -1,9 +1,12 @@
 import 'dart:ffi';
+import 'package:equatable/equatable.dart';
 import 'package:libgit2dart/libgit2dart.dart';
 import 'package:libgit2dart/src/bindings/libgit2_bindings.dart';
 import 'package:libgit2dart/src/bindings/refspec.dart' as bindings;
+import 'package:meta/meta.dart';
 
-class Refspec {
+@immutable
+class Refspec extends Equatable {
   /// Initializes a new instance of the [Refspec] class
   /// from provided pointer to refspec object in memory.
   ///
@@ -72,6 +75,9 @@ class Refspec {
   @override
   String toString() {
     return 'Refspec{source: $source, destination: $destination, force: $force, '
-        'string: $string}';
+        'string: $string, direction: $direction}';
   }
+
+  @override
+  List<Object?> get props => [source, destination, force, string, direction];
 }

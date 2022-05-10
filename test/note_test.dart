@@ -134,5 +134,13 @@ void main() {
       final note = Note.lookup(repo: repo, annotatedOid: repo['821ed6e']);
       expect(note.toString(), contains('Note{'));
     });
+
+    test('supports value comparison', () {
+      final oid = repo.head.target;
+      expect(
+        Note.lookup(repo: repo, annotatedOid: oid),
+        equals(Note.lookup(repo: repo, annotatedOid: oid)),
+      );
+    });
   });
 }

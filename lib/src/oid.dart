@@ -1,5 +1,6 @@
 import 'dart:ffi';
 
+import 'package:equatable/equatable.dart';
 import 'package:libgit2dart/libgit2dart.dart';
 import 'package:libgit2dart/src/bindings/libgit2_bindings.dart';
 import 'package:libgit2dart/src/bindings/odb.dart' as odb_bindings;
@@ -8,7 +9,7 @@ import 'package:libgit2dart/src/util.dart';
 import 'package:meta/meta.dart';
 
 @immutable
-class Oid {
+class Oid extends Equatable {
   /// Initializes a new instance of [Oid] class from provided
   /// pointer to Oid object in memory.
   ///
@@ -54,13 +55,6 @@ class Oid {
   /// Hexadecimal SHA string.
   String get sha => bindings.toSHA(_oidPointer);
 
-  @override
-  bool operator ==(Object other) {
-    return (other is Oid) &&
-        (bindings.compare(aPointer: _oidPointer, bPointer: other._oidPointer) ==
-            0);
-  }
-
   bool operator <(Oid other) {
     return bindings.compare(
           aPointer: _oidPointer,
@@ -93,9 +87,9 @@ class Oid {
         1;
   }
 
-  @override // coverage:ignore-line
-  int get hashCode => _oidPointer.address.hashCode; // coverage:ignore-line
-
   @override
   String toString() => 'Oid{sha: $sha}';
+
+  @override
+  List<Object?> get props => [sha];
 }

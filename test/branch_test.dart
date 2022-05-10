@@ -327,5 +327,12 @@ void main() {
       final branch = Branch.lookup(repo: repo, name: 'master');
       expect(branch.toString(), contains('Branch{'));
     });
+
+    test('supports value comparison', () {
+      expect(
+        Branch.lookup(repo: repo, name: 'master'),
+        equals(Branch.lookup(repo: repo, name: 'master')),
+      );
+    });
   });
 }

@@ -1,4 +1,5 @@
 import 'dart:ffi';
+import 'package:equatable/equatable.dart';
 import 'package:ffi/ffi.dart';
 import 'package:libgit2dart/libgit2dart.dart';
 import 'package:libgit2dart/src/bindings/libgit2_bindings.dart';
@@ -7,7 +8,7 @@ import 'package:libgit2dart/src/util.dart';
 import 'package:meta/meta.dart';
 
 @immutable
-class Signature {
+class Signature extends Equatable {
   /// Initializes a new instance of [Signature] class from provided pointer to
   /// signature object in memory.
   ///
@@ -74,16 +75,8 @@ class Signature {
   /// Timezone offset in minutes.
   int get offset => _signaturePointer.ref.when.offset;
 
-  @override
-  bool operator ==(Object other) {
-    return (other is Signature) &&
-        (name == other.name) &&
-        (email == other.email) &&
-        (time == other.time) &&
-        (offset == other.offset) &&
-        (_signaturePointer.ref.when.sign ==
-            other._signaturePointer.ref.when.sign);
-  }
+  /// Indicator for questionable '-0000' offsets in signature.
+  String get sign => String.fromCharCode(_signaturePointer.ref.when.sign);
 
   /// Releases memory allocated for signature object.
   void free() {
@@ -91,15 +84,14 @@ class Signature {
     _finalizer.detach(this);
   }
 
-  @override // coverage:ignore-line
-  int get hashCode =>
-      _signaturePointer.address.hashCode; // coverage:ignore-line
-
   @override
   String toString() {
     return 'Signature{name: $name, email: $email, time: $time, '
-        'offset: $offset}';
+        'offset: $sign$offset}';
   }
+
+  @override
+  List<Object?> get props => [name, email, time, offset, sign];
 }
 
 // coverage:ignore-start

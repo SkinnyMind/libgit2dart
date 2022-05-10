@@ -509,5 +509,9 @@ void main() {
       expect(index.toString(), contains('Index{'));
       expect(index['file'].toString(), contains('IndexEntry{'));
     });
+
+    test('supports value comparison', () {
+      expect(repo.index, equals(repo.index));
+    });
   });
 }

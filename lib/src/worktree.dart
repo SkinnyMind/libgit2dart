@@ -1,9 +1,12 @@
 import 'dart:ffi';
+import 'package:equatable/equatable.dart';
 import 'package:libgit2dart/libgit2dart.dart';
 import 'package:libgit2dart/src/bindings/libgit2_bindings.dart';
 import 'package:libgit2dart/src/bindings/worktree.dart' as bindings;
+import 'package:meta/meta.dart';
 
-class Worktree {
+@immutable
+class Worktree extends Equatable {
   /// Creates new worktree.
   ///
   /// If [ref] is provided, no new branch will be created but specified [ref]
@@ -93,8 +96,12 @@ class Worktree {
 
   @override
   String toString() {
-    return 'Worktree{name: $name, path: $path}';
+    return 'Worktree{name: $name, path: $path, isLocked: $isLocked, '
+        'isPrunable: $isPrunable, isValid: $isValid}';
   }
+
+  @override
+  List<Object?> get props => [name, path, isLocked, isValid];
 }
 
 // coverage:ignore-start

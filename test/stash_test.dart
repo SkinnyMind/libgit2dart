@@ -211,5 +211,12 @@ void main() {
 
       expect(repo.stashes[0].toString(), contains('Stash{'));
     });
+
+    test('supports value comparison', () {
+      File(filePath).writeAsStringSync('edit', mode: FileMode.append);
+      Stash.create(repo: repo, stasher: stasher, message: 'WIP');
+
+      expect(repo.stashes.first, equals(repo.stashes.first));
+    });
   });
 }

@@ -33,11 +33,19 @@ void main() {
       expect(remote.url, remoteUrl);
       expect(remote.pushUrl, '');
       expect(remote.toString(), contains('Remote{'));
+      expect(remote, equals(Remote.lookup(repo: repo, name: 'origin')));
     });
 
     test('throws when provided name for lookup is not found', () {
       expect(
         () => Remote.lookup(repo: repo, name: 'upstream'),
+        throwsA(isA<LibGit2Error>()),
+      );
+    });
+
+    test('throws when trying to create remote and name already exists', () {
+      expect(
+        () => Remote.create(repo: repo, name: 'origin', url: remoteUrl),
         throwsA(isA<LibGit2Error>()),
       );
     });
@@ -188,6 +196,8 @@ void main() {
         refspec.rTransform('refs/remotes/origin/master'),
         'refs/heads/master',
       );
+
+      expect(refspec, equals(remote.getRefspec(0)));
     });
 
     test('throws when trying to transform refspec with invalid reference name',
@@ -270,6 +280,7 @@ void main() {
       expect(refs.first.symRef, 'refs/heads/master');
       expect((refs.first.oid).sha, '49322bb17d3acc9146f98c97d078513228bbf3c0');
       expect(refs.first.toString(), contains('RemoteReference{'));
+      expect(refs.first, remote.ls().first);
     });
 
     test(

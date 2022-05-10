@@ -107,5 +107,12 @@ void main() {
       final annotated = AnnotatedCommit.lookup(repo: repo, oid: tip);
       expect(() => annotated.free(), returnsNormally);
     });
+
+    test('supports value comparison', () {
+      expect(
+        AnnotatedCommit.lookup(repo: repo, oid: tip),
+        equals(AnnotatedCommit.lookup(repo: repo, oid: tip)),
+      );
+    });
   });
 }

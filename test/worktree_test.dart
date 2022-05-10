@@ -166,5 +166,14 @@ void main() {
       );
       expect(() => worktree.free(), returnsNormally);
     });
+
+    test('supports value comparison', () {
+      final worktree = Worktree.create(
+        repo: repo,
+        name: worktreeName,
+        path: worktreeDir.path,
+      );
+      expect(worktree, equals(Worktree.lookup(repo: repo, name: worktreeName)));
+    });
   });
 }

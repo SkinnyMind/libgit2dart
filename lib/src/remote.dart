@@ -1,9 +1,12 @@
 import 'dart:ffi';
+import 'package:equatable/equatable.dart';
 import 'package:libgit2dart/libgit2dart.dart';
 import 'package:libgit2dart/src/bindings/libgit2_bindings.dart';
 import 'package:libgit2dart/src/bindings/remote.dart' as bindings;
+import 'package:meta/meta.dart';
 
-class Remote {
+@immutable
+class Remote extends Equatable {
   /// Lookups remote with provided [name] in a [repo]sitory.
   ///
   /// The [name] will be checked for validity.
@@ -310,6 +313,9 @@ class Remote {
     return 'Remote{name: $name, url: $url, pushUrl: $pushUrl, '
         'refspecCount: $refspecCount}';
   }
+
+  @override
+  List<Object?> get props => [name];
 }
 
 // coverage:ignore-start
@@ -378,7 +384,8 @@ class RemoteCallback {
   final String? fetch;
 }
 
-class RemoteReference {
+@immutable
+class RemoteReference extends Equatable {
   const RemoteReference._({
     required this.isLocal,
     required this.localId,
@@ -408,4 +415,7 @@ class RemoteReference {
     return 'RemoteReference{isLocal: $isLocal, localId: $localId, '
         'name: $name, oid: $oid, symRef: $symRef}';
   }
+
+  @override
+  List<Object?> get props => [isLocal, localId, name, oid, symRef];
 }

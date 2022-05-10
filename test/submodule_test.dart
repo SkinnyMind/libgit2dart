@@ -243,5 +243,12 @@ void main() {
       final submodule = Submodule.lookup(repo: repo, name: testSubmodule);
       expect(() => submodule.free(), returnsNormally);
     });
+
+    test('supports value comparison', () {
+      expect(
+        Submodule.lookup(repo: repo, name: testSubmodule),
+        equals(Submodule.lookup(repo: repo, name: testSubmodule)),
+      );
+    });
   });
 }

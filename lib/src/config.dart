@@ -2,11 +2,13 @@ import 'dart:collection';
 import 'dart:ffi';
 import 'dart:io';
 
+import 'package:equatable/equatable.dart';
 import 'package:ffi/ffi.dart';
 import 'package:libgit2dart/libgit2dart.dart';
 import 'package:libgit2dart/src/bindings/config.dart' as bindings;
 import 'package:libgit2dart/src/bindings/libgit2_bindings.dart';
 import 'package:libgit2dart/src/util.dart';
+import 'package:meta/meta.dart';
 
 class Config with IterableMixin<ConfigEntry> {
   /// Initializes a new instance of [Config] class from provided
@@ -209,8 +211,9 @@ final _finalizer = Finalizer<Pointer<git_config>>(
 );
 // coverage:ignore-end
 
-class ConfigEntry {
-  ConfigEntry._({
+@immutable
+class ConfigEntry extends Equatable {
+  const ConfigEntry._({
     required this.name,
     required this.value,
     required this.includeDepth,
@@ -234,6 +237,9 @@ class ConfigEntry {
     return 'ConfigEntry{name: $name, value: $value, '
         'includeDepth: $includeDepth, level: $level}';
   }
+
+  @override
+  List<Object?> get props => [name, value, includeDepth, level];
 }
 
 class _ConfigIterator implements Iterator<ConfigEntry> {

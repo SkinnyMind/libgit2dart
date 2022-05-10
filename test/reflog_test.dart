@@ -153,5 +153,10 @@ void main() {
     test('returns string representation of RefLogEntry object', () {
       expect(reflog[0].toString(), contains('RefLogEntry{'));
     });
+
+    test('supports value comparison', () {
+      final ref = Reference.lookup(repo: repo, name: 'refs/heads/master');
+      expect(RefLog(repo.head), equals(RefLog(ref)));
+    });
   });
 }

@@ -1,10 +1,13 @@
 import 'dart:ffi';
 
+import 'package:equatable/equatable.dart';
 import 'package:libgit2dart/libgit2dart.dart';
 import 'package:libgit2dart/src/bindings/blob.dart' as bindings;
 import 'package:libgit2dart/src/bindings/libgit2_bindings.dart';
+import 'package:meta/meta.dart';
 
-class Blob {
+@immutable
+class Blob extends Equatable {
   /// Initializes a new instance of [Blob] class from provided pointer to
   /// blob object in memory.
   ///
@@ -124,6 +127,9 @@ class Blob {
   String toString() {
     return 'Blob{oid: $oid, isBinary: $isBinary, size: $size}';
   }
+
+  @override
+  List<Object?> get props => [oid];
 }
 
 // coverage:ignore-start

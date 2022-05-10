@@ -1,12 +1,15 @@
 import 'dart:ffi';
 
+import 'package:equatable/equatable.dart';
 import 'package:ffi/ffi.dart';
 import 'package:libgit2dart/libgit2dart.dart';
 import 'package:libgit2dart/src/bindings/diff.dart' as bindings;
 import 'package:libgit2dart/src/bindings/libgit2_bindings.dart';
 import 'package:libgit2dart/src/util.dart';
+import 'package:meta/meta.dart';
 
-class Diff {
+@immutable
+class Diff extends Equatable {
   /// Initializes a new instance of [Diff] class from provided
   /// pointer to diff object in memory.
   ///
@@ -461,8 +464,11 @@ class Diff {
 
   @override
   String toString() {
-    return 'Diff{length: $length}';
+    return 'Diff{length: $length, patchOid: $patchOid}';
   }
+
+  @override
+  List<Object?> get props => [patchOid];
 }
 
 // coverage:ignore-start
@@ -471,7 +477,8 @@ final _finalizer = Finalizer<Pointer<git_diff>>(
 );
 // coverage:ignore-end
 
-class DiffDelta {
+@immutable
+class DiffDelta extends Equatable {
   /// Initializes a new instance of [DiffDelta] class from provided
   /// pointer to diff delta object in memory.
   const DiffDelta(this._diffDeltaPointer);
@@ -519,6 +526,16 @@ class DiffDelta {
     return 'DiffDelta{status: $status, flags: $flags, similarity: $similarity, '
         'numberOfFiles: $numberOfFiles, oldFile: $oldFile, newFile: $newFile}';
   }
+
+  @override
+  List<Object?> get props => [
+        status,
+        flags,
+        similarity,
+        numberOfFiles,
+        oldFile,
+        newFile,
+      ];
 }
 
 /// Description of one side of a delta.
@@ -526,7 +543,8 @@ class DiffDelta {
 /// Although this is called a "file", it could represent a file, a symbolic
 /// link, a submodule commit id, or even a tree (although that only if you
 /// are tracking type changes or ignored/untracked directories).
-class DiffFile {
+@immutable
+class DiffFile extends Equatable {
   /// Initializes a new instance of [DiffFile] class from provided diff file
   /// object.
   const DiffFile._(this._diffFile);
@@ -560,6 +578,9 @@ class DiffFile {
     return 'DiffFile{oid: $oid, path: $path, size: $size, flags: $flags, '
         'mode: $mode}';
   }
+
+  @override
+  List<Object?> get props => [oid, path, size, flags, mode];
 }
 
 class DiffStats {

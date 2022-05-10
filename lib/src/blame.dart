@@ -1,10 +1,12 @@
 import 'dart:collection';
 import 'dart:ffi';
 
+import 'package:equatable/equatable.dart';
 import 'package:ffi/ffi.dart';
 import 'package:libgit2dart/libgit2dart.dart';
 import 'package:libgit2dart/src/bindings/blame.dart' as bindings;
 import 'package:libgit2dart/src/bindings/libgit2_bindings.dart';
+import 'package:meta/meta.dart';
 
 class Blame with IterableMixin<BlameHunk> {
   /// Returns the blame for a single file.
@@ -120,7 +122,8 @@ final _finalizer = Finalizer<Pointer<git_blame>>(
 );
 // coverage:ignore-end
 
-class BlameHunk {
+@immutable
+class BlameHunk extends Equatable {
   /// Initializes a new instance of the [BlameHunk] class from
   /// provided pointer to blame hunk object in memory.
   const BlameHunk._(this._blameHunkPointer);
@@ -183,6 +186,19 @@ class BlameHunk {
         'originCommitter: $originCommitter, originCommitOid: $originCommitOid, '
         'originPath: $originPath}';
   }
+
+  @override
+  List<Object?> get props => [
+        linesCount,
+        isBoundary,
+        finalStartLineNumber,
+        finalCommitter,
+        finalCommitOid,
+        originStartLineNumber,
+        originCommitter,
+        originCommitOid,
+        originPath,
+      ];
 }
 
 class _BlameIterator implements Iterator<BlameHunk> {
