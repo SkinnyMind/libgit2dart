@@ -578,13 +578,19 @@ class Repository extends Equatable {
   /// The scope of the updated entries is determined by the paths being passed
   /// in the [pathspec].
   ///
+  /// Passing a null [oid] will result in removing entries in the index
+  /// matching the provided [pathspec]s.
+  ///
   /// Throws a [LibGit2Error] if error occured.
-  void resetDefault({required Oid oid, required List<String> pathspec}) {
-    final object = object_bindings.lookup(
-      repoPointer: _repoPointer,
-      oidPointer: oid.pointer,
-      type: GitObject.commit.value,
-    );
+  void resetDefault({required Oid? oid, required List<String> pathspec}) {
+    Pointer<git_object>? object;
+    if (oid != null) {
+      object = object_bindings.lookup(
+        repoPointer: _repoPointer,
+        oidPointer: oid.pointer,
+        type: GitObject.commit.value,
+      );
+    }
 
     reset_bindings.resetDefault(
       repoPointer: _repoPointer,
