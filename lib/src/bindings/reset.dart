@@ -28,12 +28,15 @@ void reset({
 /// Updates some entries in the index from the target commit tree.
 ///
 /// The scope of the updated entries is determined by the paths being passed in
-/// the pathspec parameters.
+/// the [pathspec] parameters.
+///
+/// Passing a null [targetPointer] will result in removing entries in the index
+/// matching the provided [pathspec]s.
 ///
 /// Throws a [LibGit2Error] if error occured.
 void resetDefault({
   required Pointer<git_repository> repoPointer,
-  required Pointer<git_object> targetPointer,
+  required Pointer<git_object>? targetPointer,
   required List<String> pathspec,
 }) {
   final pathspecC = calloc<git_strarray>();
@@ -50,7 +53,7 @@ void resetDefault({
 
   final error = libgit2.git_reset_default(
     repoPointer,
-    targetPointer,
+    targetPointer ?? nullptr,
     pathspecC,
   );
 

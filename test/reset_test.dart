@@ -61,6 +61,17 @@ void main() {
         expect(repo.status['feature_file'], {GitStatus.wtModified});
       });
 
+      test('removes entry in the index when null oid is provided', () {
+        const fileName = 'new_file.txt';
+        File(p.join(tmpDir.path, fileName)).createSync();
+
+        repo.index.add(fileName);
+        expect(repo.status[fileName], {GitStatus.indexNew});
+
+        repo.resetDefault(oid: null, pathspec: [fileName]);
+        expect(repo.status[fileName], {GitStatus.wtNew});
+      });
+
       test('throws when pathspec list is empty', () {
         expect(
           () => repo.resetDefault(oid: repo.head.target, pathspec: []),
