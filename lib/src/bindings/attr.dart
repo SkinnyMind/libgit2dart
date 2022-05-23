@@ -14,9 +14,9 @@ Object? getAttribute({
   required String path,
   required String name,
 }) {
-  final out = calloc<Pointer<Int8>>();
-  final pathC = path.toNativeUtf8().cast<Int8>();
-  final nameC = name.toNativeUtf8().cast<Int8>();
+  final out = calloc<Pointer<Char>>();
+  final pathC = path.toNativeUtf8().cast<Char>();
+  final nameC = name.toNativeUtf8().cast<Char>();
   libgit2.git_attr_get(out, repoPointer, flags, pathC, nameC);
 
   final result = out.value;

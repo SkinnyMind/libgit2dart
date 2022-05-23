@@ -16,7 +16,7 @@ Pointer<git_revspec> revParse({
   required String spec,
 }) {
   final out = calloc<git_revspec>();
-  final specC = spec.toNativeUtf8().cast<Int8>();
+  final specC = spec.toNativeUtf8().cast<Char>();
 
   final error = libgit2.git_revparse(out, repoPointer, specC);
 
@@ -42,7 +42,7 @@ Pointer<git_object> revParseSingle({
   required String spec,
 }) {
   final out = calloc<Pointer<git_object>>();
-  final specC = spec.toNativeUtf8().cast<Int8>();
+  final specC = spec.toNativeUtf8().cast<Char>();
 
   final error = libgit2.git_revparse_single(out, repoPointer, specC);
 
@@ -76,7 +76,7 @@ List<Pointer> revParseExt({
 }) {
   final objectOut = calloc<Pointer<git_object>>();
   final referenceOut = calloc<Pointer<git_reference>>();
-  final specC = spec.toNativeUtf8().cast<Int8>();
+  final specC = spec.toNativeUtf8().cast<Char>();
 
   final error = libgit2.git_revparse_ext(
     objectOut,

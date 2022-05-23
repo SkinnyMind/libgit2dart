@@ -125,7 +125,7 @@ Pointer<git_oid> writeTreeTo({
 /// Find the first position of any entries which point to given path in the Git
 /// index.
 bool find({required Pointer<git_index> indexPointer, required String path}) {
-  final pathC = path.toNativeUtf8().cast<Int8>();
+  final pathC = path.toNativeUtf8().cast<Char>();
   final result = libgit2.git_index_find(nullptr, indexPointer, pathC);
 
   calloc.free(pathC);
@@ -164,7 +164,7 @@ Pointer<git_index_entry> getByPath({
   required String path,
   required int stage,
 }) {
-  final pathC = path.toNativeUtf8().cast<Int8>();
+  final pathC = path.toNativeUtf8().cast<Char>();
   final result = libgit2.git_index_get_bypath(indexPointer, pathC, stage);
 
   calloc.free(pathC);
@@ -231,7 +231,7 @@ void addByPath({
   required Pointer<git_index> indexPointer,
   required String path,
 }) {
-  final pathC = path.toNativeUtf8().cast<Int8>();
+  final pathC = path.toNativeUtf8().cast<Char>();
   final error = libgit2.git_index_add_bypath(indexPointer, pathC);
 
   calloc.free(pathC);
@@ -294,8 +294,8 @@ void addAll({
 }) {
   final pathspecC = calloc<git_strarray>();
   final pathPointers =
-      pathspec.map((e) => e.toNativeUtf8().cast<Int8>()).toList();
-  final strArray = calloc<Pointer<Int8>>(pathspec.length);
+      pathspec.map((e) => e.toNativeUtf8().cast<Char>()).toList();
+  final strArray = calloc<Pointer<Char>>(pathspec.length);
 
   for (var i = 0; i < pathspec.length; i++) {
     strArray[i] = pathPointers[i];
@@ -339,8 +339,8 @@ void updateAll({
 }) {
   final pathspecC = calloc<git_strarray>();
   final pathPointers =
-      pathspec.map((e) => e.toNativeUtf8().cast<Int8>()).toList();
-  final strArray = calloc<Pointer<Int8>>(pathspec.length);
+      pathspec.map((e) => e.toNativeUtf8().cast<Char>()).toList();
+  final strArray = calloc<Pointer<Char>>(pathspec.length);
 
   for (var i = 0; i < pathspec.length; i++) {
     strArray[i] = pathPointers[i];
@@ -379,7 +379,7 @@ void remove({
   required String path,
   required int stage,
 }) {
-  final pathC = path.toNativeUtf8().cast<Int8>();
+  final pathC = path.toNativeUtf8().cast<Char>();
   final error = libgit2.git_index_remove(indexPointer, pathC, stage);
 
   calloc.free(pathC);
@@ -395,7 +395,7 @@ void removeDirectory({
   required String dir,
   required int stage,
 }) {
-  final dirC = dir.toNativeUtf8().cast<Int8>();
+  final dirC = dir.toNativeUtf8().cast<Char>();
   libgit2.git_index_remove_directory(indexPointer, dirC, stage);
   calloc.free(dirC);
 }
@@ -407,8 +407,8 @@ void removeAll({
 }) {
   final pathspecC = calloc<git_strarray>();
   final pathPointers =
-      pathspec.map((e) => e.toNativeUtf8().cast<Int8>()).toList();
-  final strArray = calloc<Pointer<Int8>>(pathspec.length);
+      pathspec.map((e) => e.toNativeUtf8().cast<Char>()).toList();
+  final strArray = calloc<Pointer<Char>>(pathspec.length);
 
   for (var i = 0; i < pathspec.length; i++) {
     strArray[i] = pathPointers[i];
@@ -511,7 +511,7 @@ void conflictRemove({
   required Pointer<git_index> indexPointer,
   required String path,
 }) {
-  final pathC = path.toNativeUtf8().cast<Int8>();
+  final pathC = path.toNativeUtf8().cast<Char>();
   final error = libgit2.git_index_conflict_remove(indexPointer, pathC);
 
   calloc.free(pathC);

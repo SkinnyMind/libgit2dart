@@ -348,7 +348,7 @@ class IndexEntry extends Equatable {
   String get path => _indexEntryPointer.ref.path.cast<Utf8>().toDartString();
 
   set path(String path) =>
-      _indexEntryPointer.ref.path = path.toNativeUtf8().cast<Int8>();
+      _indexEntryPointer.ref.path = path.toNativeUtf8().cast<Char>();
 
   /// UNIX file attributes of a index entry.
   GitFilemode get mode {

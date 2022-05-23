@@ -15,7 +15,7 @@ Pointer<git_reflog> read({
   required String name,
 }) {
   final out = calloc<Pointer<git_reflog>>();
-  final nameC = name.toNativeUtf8().cast<Int8>();
+  final nameC = name.toNativeUtf8().cast<Char>();
   libgit2.git_reflog_read(out, repoPointer, nameC);
 
   final result = out.value;
@@ -43,7 +43,7 @@ void delete({
   required Pointer<git_repository> repoPointer,
   required String name,
 }) {
-  final nameC = name.toNativeUtf8().cast<Int8>();
+  final nameC = name.toNativeUtf8().cast<Char>();
   libgit2.git_reflog_delete(repoPointer, nameC);
   calloc.free(nameC);
 }
@@ -60,8 +60,8 @@ void rename({
   required String oldName,
   required String newName,
 }) {
-  final oldNameC = oldName.toNativeUtf8().cast<Int8>();
-  final newNameC = newName.toNativeUtf8().cast<Int8>();
+  final oldNameC = oldName.toNativeUtf8().cast<Char>();
+  final newNameC = newName.toNativeUtf8().cast<Char>();
   final error = libgit2.git_reflog_rename(repoPointer, oldNameC, newNameC);
 
   calloc.free(oldNameC);
@@ -82,7 +82,7 @@ void add({
   required String message,
 }) {
   final messageC =
-      message.isEmpty ? nullptr : message.toNativeUtf8().cast<Int8>();
+      message.isEmpty ? nullptr : message.toNativeUtf8().cast<Char>();
 
   final error = libgit2.git_reflog_append(
     reflogPointer,

@@ -67,9 +67,9 @@ class Libgit2 {
   late final _mktime = _mktimePtr.asFunction<int Function(ffi.Pointer<tm>)>();
 
   int strftime(
-    ffi.Pointer<ffi.Int8> __s,
+    ffi.Pointer<ffi.Char> __s,
     int __maxsize,
-    ffi.Pointer<ffi.Int8> __format,
+    ffi.Pointer<ffi.Char> __format,
     ffi.Pointer<tm> __tp,
   ) {
     return _strftime(
@@ -82,16 +82,16 @@ class Libgit2 {
 
   late final _strftimePtr = _lookup<
       ffi.NativeFunction<
-          size_t Function(ffi.Pointer<ffi.Int8>, size_t, ffi.Pointer<ffi.Int8>,
-              ffi.Pointer<tm>)>>('strftime');
+          ffi.Size Function(ffi.Pointer<ffi.Char>, ffi.Size,
+              ffi.Pointer<ffi.Char>, ffi.Pointer<tm>)>>('strftime');
   late final _strftime = _strftimePtr.asFunction<
-      int Function(ffi.Pointer<ffi.Int8>, int, ffi.Pointer<ffi.Int8>,
+      int Function(ffi.Pointer<ffi.Char>, int, ffi.Pointer<ffi.Char>,
           ffi.Pointer<tm>)>();
 
   int strftime_l(
-    ffi.Pointer<ffi.Int8> __s,
+    ffi.Pointer<ffi.Char> __s,
     int __maxsize,
-    ffi.Pointer<ffi.Int8> __format,
+    ffi.Pointer<ffi.Char> __format,
     ffi.Pointer<tm> __tp,
     locale_t __loc,
   ) {
@@ -106,10 +106,10 @@ class Libgit2 {
 
   late final _strftime_lPtr = _lookup<
       ffi.NativeFunction<
-          size_t Function(ffi.Pointer<ffi.Int8>, size_t, ffi.Pointer<ffi.Int8>,
-              ffi.Pointer<tm>, locale_t)>>('strftime_l');
+          ffi.Size Function(ffi.Pointer<ffi.Char>, ffi.Size,
+              ffi.Pointer<ffi.Char>, ffi.Pointer<tm>, locale_t)>>('strftime_l');
   late final _strftime_l = _strftime_lPtr.asFunction<
-      int Function(ffi.Pointer<ffi.Int8>, int, ffi.Pointer<ffi.Int8>,
+      int Function(ffi.Pointer<ffi.Char>, int, ffi.Pointer<ffi.Char>,
           ffi.Pointer<tm>, locale_t)>();
 
   ffi.Pointer<tm> gmtime(
@@ -174,7 +174,7 @@ class Libgit2 {
   late final _localtime_r = _localtime_rPtr.asFunction<
       ffi.Pointer<tm> Function(ffi.Pointer<time_t>, ffi.Pointer<tm>)>();
 
-  ffi.Pointer<ffi.Int8> asctime(
+  ffi.Pointer<ffi.Char> asctime(
     ffi.Pointer<tm> __tp,
   ) {
     return _asctime(
@@ -183,12 +183,12 @@ class Libgit2 {
   }
 
   late final _asctimePtr = _lookup<
-          ffi.NativeFunction<ffi.Pointer<ffi.Int8> Function(ffi.Pointer<tm>)>>(
+          ffi.NativeFunction<ffi.Pointer<ffi.Char> Function(ffi.Pointer<tm>)>>(
       'asctime');
   late final _asctime =
-      _asctimePtr.asFunction<ffi.Pointer<ffi.Int8> Function(ffi.Pointer<tm>)>();
+      _asctimePtr.asFunction<ffi.Pointer<ffi.Char> Function(ffi.Pointer<tm>)>();
 
-  ffi.Pointer<ffi.Int8> ctime(
+  ffi.Pointer<ffi.Char> ctime(
     ffi.Pointer<time_t> __timer,
   ) {
     return _ctime(
@@ -198,13 +198,13 @@ class Libgit2 {
 
   late final _ctimePtr = _lookup<
       ffi.NativeFunction<
-          ffi.Pointer<ffi.Int8> Function(ffi.Pointer<time_t>)>>('ctime');
+          ffi.Pointer<ffi.Char> Function(ffi.Pointer<time_t>)>>('ctime');
   late final _ctime = _ctimePtr
-      .asFunction<ffi.Pointer<ffi.Int8> Function(ffi.Pointer<time_t>)>();
+      .asFunction<ffi.Pointer<ffi.Char> Function(ffi.Pointer<time_t>)>();
 
-  ffi.Pointer<ffi.Int8> asctime_r(
+  ffi.Pointer<ffi.Char> asctime_r(
     ffi.Pointer<tm> __tp,
-    ffi.Pointer<ffi.Int8> __buf,
+    ffi.Pointer<ffi.Char> __buf,
   ) {
     return _asctime_r(
       __tp,
@@ -214,14 +214,14 @@ class Libgit2 {
 
   late final _asctime_rPtr = _lookup<
       ffi.NativeFunction<
-          ffi.Pointer<ffi.Int8> Function(
-              ffi.Pointer<tm>, ffi.Pointer<ffi.Int8>)>>('asctime_r');
+          ffi.Pointer<ffi.Char> Function(
+              ffi.Pointer<tm>, ffi.Pointer<ffi.Char>)>>('asctime_r');
   late final _asctime_r = _asctime_rPtr.asFunction<
-      ffi.Pointer<ffi.Int8> Function(ffi.Pointer<tm>, ffi.Pointer<ffi.Int8>)>();
+      ffi.Pointer<ffi.Char> Function(ffi.Pointer<tm>, ffi.Pointer<ffi.Char>)>();
 
-  ffi.Pointer<ffi.Int8> ctime_r(
+  ffi.Pointer<ffi.Char> ctime_r(
     ffi.Pointer<time_t> __timer,
-    ffi.Pointer<ffi.Int8> __buf,
+    ffi.Pointer<ffi.Char> __buf,
   ) {
     return _ctime_r(
       __timer,
@@ -231,40 +231,39 @@ class Libgit2 {
 
   late final _ctime_rPtr = _lookup<
       ffi.NativeFunction<
-          ffi.Pointer<ffi.Int8> Function(
-              ffi.Pointer<time_t>, ffi.Pointer<ffi.Int8>)>>('ctime_r');
+          ffi.Pointer<ffi.Char> Function(
+              ffi.Pointer<time_t>, ffi.Pointer<ffi.Char>)>>('ctime_r');
   late final _ctime_r = _ctime_rPtr.asFunction<
-      ffi.Pointer<ffi.Int8> Function(
-          ffi.Pointer<time_t>, ffi.Pointer<ffi.Int8>)>();
+      ffi.Pointer<ffi.Char> Function(
+          ffi.Pointer<time_t>, ffi.Pointer<ffi.Char>)>();
 
-  late final ffi.Pointer<ffi.Pointer<ffi.Pointer<ffi.Int8>>> ___tzname =
-      _lookup<ffi.Pointer<ffi.Pointer<ffi.Int8>>>('__tzname');
+  late final ffi.Pointer<ffi.Pointer<ffi.Pointer<ffi.Char>>> ___tzname =
+      _lookup<ffi.Pointer<ffi.Pointer<ffi.Char>>>('__tzname');
 
-  ffi.Pointer<ffi.Pointer<ffi.Int8>> get __tzname => ___tzname.value;
+  ffi.Pointer<ffi.Pointer<ffi.Char>> get __tzname => ___tzname.value;
 
-  set __tzname(ffi.Pointer<ffi.Pointer<ffi.Int8>> value) =>
+  set __tzname(ffi.Pointer<ffi.Pointer<ffi.Char>> value) =>
       ___tzname.value = value;
 
-  late final ffi.Pointer<ffi.Int32> ___daylight =
-      _lookup<ffi.Int32>('__daylight');
+  late final ffi.Pointer<ffi.Int> ___daylight = _lookup<ffi.Int>('__daylight');
 
   int get __daylight => ___daylight.value;
 
   set __daylight(int value) => ___daylight.value = value;
 
-  late final ffi.Pointer<ffi.Int64> ___timezone =
-      _lookup<ffi.Int64>('__timezone');
+  late final ffi.Pointer<ffi.Long> ___timezone =
+      _lookup<ffi.Long>('__timezone');
 
   int get __timezone => ___timezone.value;
 
   set __timezone(int value) => ___timezone.value = value;
 
-  late final ffi.Pointer<ffi.Pointer<ffi.Pointer<ffi.Int8>>> _tzname =
-      _lookup<ffi.Pointer<ffi.Pointer<ffi.Int8>>>('tzname');
+  late final ffi.Pointer<ffi.Pointer<ffi.Pointer<ffi.Char>>> _tzname =
+      _lookup<ffi.Pointer<ffi.Pointer<ffi.Char>>>('tzname');
 
-  ffi.Pointer<ffi.Pointer<ffi.Int8>> get tzname => _tzname.value;
+  ffi.Pointer<ffi.Pointer<ffi.Char>> get tzname => _tzname.value;
 
-  set tzname(ffi.Pointer<ffi.Pointer<ffi.Int8>> value) => _tzname.value = value;
+  set tzname(ffi.Pointer<ffi.Pointer<ffi.Char>> value) => _tzname.value = value;
 
   void tzset() {
     return _tzset();
@@ -274,13 +273,13 @@ class Libgit2 {
       _lookup<ffi.NativeFunction<ffi.Void Function()>>('tzset');
   late final _tzset = _tzsetPtr.asFunction<void Function()>();
 
-  late final ffi.Pointer<ffi.Int32> _daylight = _lookup<ffi.Int32>('daylight');
+  late final ffi.Pointer<ffi.Int> _daylight = _lookup<ffi.Int>('daylight');
 
   int get daylight => _daylight.value;
 
   set daylight(int value) => _daylight.value = value;
 
-  late final ffi.Pointer<ffi.Int64> _timezone = _lookup<ffi.Int64>('timezone');
+  late final ffi.Pointer<ffi.Long> _timezone = _lookup<ffi.Long>('timezone');
 
   int get timezone => _timezone.value;
 
@@ -321,7 +320,7 @@ class Libgit2 {
   }
 
   late final _dysizePtr =
-      _lookup<ffi.NativeFunction<ffi.Int32 Function(ffi.Int32)>>('dysize');
+      _lookup<ffi.NativeFunction<ffi.Int Function(ffi.Int)>>('dysize');
   late final _dysize = _dysizePtr.asFunction<int Function(int)>();
 
   int nanosleep(
@@ -336,7 +335,7 @@ class Libgit2 {
 
   late final _nanosleepPtr = _lookup<
       ffi.NativeFunction<
-          ffi.Int32 Function(
+          ffi.Int Function(
               ffi.Pointer<timespec>, ffi.Pointer<timespec>)>>('nanosleep');
   late final _nanosleep = _nanosleepPtr
       .asFunction<int Function(ffi.Pointer<timespec>, ffi.Pointer<timespec>)>();
@@ -353,8 +352,7 @@ class Libgit2 {
 
   late final _clock_getresPtr = _lookup<
       ffi.NativeFunction<
-          ffi.Int32 Function(
-              clockid_t, ffi.Pointer<timespec>)>>('clock_getres');
+          ffi.Int Function(clockid_t, ffi.Pointer<timespec>)>>('clock_getres');
   late final _clock_getres =
       _clock_getresPtr.asFunction<int Function(int, ffi.Pointer<timespec>)>();
 
@@ -370,8 +368,7 @@ class Libgit2 {
 
   late final _clock_gettimePtr = _lookup<
       ffi.NativeFunction<
-          ffi.Int32 Function(
-              clockid_t, ffi.Pointer<timespec>)>>('clock_gettime');
+          ffi.Int Function(clockid_t, ffi.Pointer<timespec>)>>('clock_gettime');
   late final _clock_gettime =
       _clock_gettimePtr.asFunction<int Function(int, ffi.Pointer<timespec>)>();
 
@@ -387,8 +384,7 @@ class Libgit2 {
 
   late final _clock_settimePtr = _lookup<
       ffi.NativeFunction<
-          ffi.Int32 Function(
-              clockid_t, ffi.Pointer<timespec>)>>('clock_settime');
+          ffi.Int Function(clockid_t, ffi.Pointer<timespec>)>>('clock_settime');
   late final _clock_settime =
       _clock_settimePtr.asFunction<int Function(int, ffi.Pointer<timespec>)>();
 
@@ -408,7 +404,7 @@ class Libgit2 {
 
   late final _clock_nanosleepPtr = _lookup<
       ffi.NativeFunction<
-          ffi.Int32 Function(clockid_t, ffi.Int32, ffi.Pointer<timespec>,
+          ffi.Int Function(clockid_t, ffi.Int, ffi.Pointer<timespec>,
               ffi.Pointer<timespec>)>>('clock_nanosleep');
   late final _clock_nanosleep = _clock_nanosleepPtr.asFunction<
       int Function(int, int, ffi.Pointer<timespec>, ffi.Pointer<timespec>)>();
@@ -424,9 +420,8 @@ class Libgit2 {
   }
 
   late final _clock_getcpuclockidPtr = _lookup<
-      ffi.NativeFunction<
-          ffi.Int32 Function(
-              pid_t, ffi.Pointer<clockid_t>)>>('clock_getcpuclockid');
+          ffi.NativeFunction<ffi.Int Function(pid_t, ffi.Pointer<clockid_t>)>>(
+      'clock_getcpuclockid');
   late final _clock_getcpuclockid = _clock_getcpuclockidPtr
       .asFunction<int Function(int, ffi.Pointer<clockid_t>)>();
 
@@ -444,7 +439,7 @@ class Libgit2 {
 
   late final _timer_createPtr = _lookup<
       ffi.NativeFunction<
-          ffi.Int32 Function(clockid_t, ffi.Pointer<sigevent>,
+          ffi.Int Function(clockid_t, ffi.Pointer<sigevent>,
               ffi.Pointer<timer_t>)>>('timer_create');
   late final _timer_create = _timer_createPtr.asFunction<
       int Function(int, ffi.Pointer<sigevent>, ffi.Pointer<timer_t>)>();
@@ -458,7 +453,7 @@ class Libgit2 {
   }
 
   late final _timer_deletePtr =
-      _lookup<ffi.NativeFunction<ffi.Int32 Function(timer_t)>>('timer_delete');
+      _lookup<ffi.NativeFunction<ffi.Int Function(timer_t)>>('timer_delete');
   late final _timer_delete =
       _timer_deletePtr.asFunction<int Function(timer_t)>();
 
@@ -478,7 +473,7 @@ class Libgit2 {
 
   late final _timer_settimePtr = _lookup<
       ffi.NativeFunction<
-          ffi.Int32 Function(timer_t, ffi.Int32, ffi.Pointer<itimerspec>,
+          ffi.Int Function(timer_t, ffi.Int, ffi.Pointer<itimerspec>,
               ffi.Pointer<itimerspec>)>>('timer_settime');
   late final _timer_settime = _timer_settimePtr.asFunction<
       int Function(
@@ -496,8 +491,7 @@ class Libgit2 {
 
   late final _timer_gettimePtr = _lookup<
       ffi.NativeFunction<
-          ffi.Int32 Function(
-              timer_t, ffi.Pointer<itimerspec>)>>('timer_gettime');
+          ffi.Int Function(timer_t, ffi.Pointer<itimerspec>)>>('timer_gettime');
   late final _timer_gettime = _timer_gettimePtr
       .asFunction<int Function(timer_t, ffi.Pointer<itimerspec>)>();
 
@@ -510,7 +504,7 @@ class Libgit2 {
   }
 
   late final _timer_getoverrunPtr =
-      _lookup<ffi.NativeFunction<ffi.Int32 Function(timer_t)>>(
+      _lookup<ffi.NativeFunction<ffi.Int Function(timer_t)>>(
           'timer_getoverrun');
   late final _timer_getoverrun =
       _timer_getoverrunPtr.asFunction<int Function(timer_t)>();
@@ -526,9 +520,8 @@ class Libgit2 {
   }
 
   late final _timespec_getPtr = _lookup<
-      ffi.NativeFunction<
-          ffi.Int32 Function(
-              ffi.Pointer<timespec>, ffi.Int32)>>('timespec_get');
+          ffi.NativeFunction<ffi.Int Function(ffi.Pointer<timespec>, ffi.Int)>>(
+      'timespec_get');
   late final _timespec_get =
       _timespec_getPtr.asFunction<int Function(ffi.Pointer<timespec>, int)>();
 
@@ -537,12 +530,13 @@ class Libgit2 {
   }
 
   late final ___ctype_get_mb_cur_maxPtr =
-      _lookup<ffi.NativeFunction<size_t Function()>>('__ctype_get_mb_cur_max');
+      _lookup<ffi.NativeFunction<ffi.Size Function()>>(
+          '__ctype_get_mb_cur_max');
   late final ___ctype_get_mb_cur_max =
       ___ctype_get_mb_cur_maxPtr.asFunction<int Function()>();
 
   double atof(
-    ffi.Pointer<ffi.Int8> __nptr,
+    ffi.Pointer<ffi.Char> __nptr,
   ) {
     return _atof(
       __nptr,
@@ -550,13 +544,13 @@ class Libgit2 {
   }
 
   late final _atofPtr =
-      _lookup<ffi.NativeFunction<ffi.Double Function(ffi.Pointer<ffi.Int8>)>>(
+      _lookup<ffi.NativeFunction<ffi.Double Function(ffi.Pointer<ffi.Char>)>>(
           'atof');
   late final _atof =
-      _atofPtr.asFunction<double Function(ffi.Pointer<ffi.Int8>)>();
+      _atofPtr.asFunction<double Function(ffi.Pointer<ffi.Char>)>();
 
   int atoi(
-    ffi.Pointer<ffi.Int8> __nptr,
+    ffi.Pointer<ffi.Char> __nptr,
   ) {
     return _atoi(
       __nptr,
@@ -564,12 +558,12 @@ class Libgit2 {
   }
 
   late final _atoiPtr =
-      _lookup<ffi.NativeFunction<ffi.Int32 Function(ffi.Pointer<ffi.Int8>)>>(
+      _lookup<ffi.NativeFunction<ffi.Int Function(ffi.Pointer<ffi.Char>)>>(
           'atoi');
-  late final _atoi = _atoiPtr.asFunction<int Function(ffi.Pointer<ffi.Int8>)>();
+  late final _atoi = _atoiPtr.asFunction<int Function(ffi.Pointer<ffi.Char>)>();
 
   int atol(
-    ffi.Pointer<ffi.Int8> __nptr,
+    ffi.Pointer<ffi.Char> __nptr,
   ) {
     return _atol(
       __nptr,
@@ -577,12 +571,12 @@ class Libgit2 {
   }
 
   late final _atolPtr =
-      _lookup<ffi.NativeFunction<ffi.Int64 Function(ffi.Pointer<ffi.Int8>)>>(
+      _lookup<ffi.NativeFunction<ffi.Long Function(ffi.Pointer<ffi.Char>)>>(
           'atol');
-  late final _atol = _atolPtr.asFunction<int Function(ffi.Pointer<ffi.Int8>)>();
+  late final _atol = _atolPtr.asFunction<int Function(ffi.Pointer<ffi.Char>)>();
 
   int atoll(
-    ffi.Pointer<ffi.Int8> __nptr,
+    ffi.Pointer<ffi.Char> __nptr,
   ) {
     return _atoll(
       __nptr,
@@ -590,14 +584,14 @@ class Libgit2 {
   }
 
   late final _atollPtr =
-      _lookup<ffi.NativeFunction<ffi.Int64 Function(ffi.Pointer<ffi.Int8>)>>(
+      _lookup<ffi.NativeFunction<ffi.LongLong Function(ffi.Pointer<ffi.Char>)>>(
           'atoll');
   late final _atoll =
-      _atollPtr.asFunction<int Function(ffi.Pointer<ffi.Int8>)>();
+      _atollPtr.asFunction<int Function(ffi.Pointer<ffi.Char>)>();
 
   double strtod(
-    ffi.Pointer<ffi.Int8> __nptr,
-    ffi.Pointer<ffi.Pointer<ffi.Int8>> __endptr,
+    ffi.Pointer<ffi.Char> __nptr,
+    ffi.Pointer<ffi.Pointer<ffi.Char>> __endptr,
   ) {
     return _strtod(
       __nptr,
@@ -607,15 +601,15 @@ class Libgit2 {
 
   late final _strtodPtr = _lookup<
       ffi.NativeFunction<
-          ffi.Double Function(ffi.Pointer<ffi.Int8>,
-              ffi.Pointer<ffi.Pointer<ffi.Int8>>)>>('strtod');
+          ffi.Double Function(ffi.Pointer<ffi.Char>,
+              ffi.Pointer<ffi.Pointer<ffi.Char>>)>>('strtod');
   late final _strtod = _strtodPtr.asFunction<
       double Function(
-          ffi.Pointer<ffi.Int8>, ffi.Pointer<ffi.Pointer<ffi.Int8>>)>();
+          ffi.Pointer<ffi.Char>, ffi.Pointer<ffi.Pointer<ffi.Char>>)>();
 
   double strtof(
-    ffi.Pointer<ffi.Int8> __nptr,
-    ffi.Pointer<ffi.Pointer<ffi.Int8>> __endptr,
+    ffi.Pointer<ffi.Char> __nptr,
+    ffi.Pointer<ffi.Pointer<ffi.Char>> __endptr,
   ) {
     return _strtof(
       __nptr,
@@ -625,15 +619,15 @@ class Libgit2 {
 
   late final _strtofPtr = _lookup<
       ffi.NativeFunction<
-          ffi.Float Function(ffi.Pointer<ffi.Int8>,
-              ffi.Pointer<ffi.Pointer<ffi.Int8>>)>>('strtof');
+          ffi.Float Function(ffi.Pointer<ffi.Char>,
+              ffi.Pointer<ffi.Pointer<ffi.Char>>)>>('strtof');
   late final _strtof = _strtofPtr.asFunction<
       double Function(
-          ffi.Pointer<ffi.Int8>, ffi.Pointer<ffi.Pointer<ffi.Int8>>)>();
+          ffi.Pointer<ffi.Char>, ffi.Pointer<ffi.Pointer<ffi.Char>>)>();
 
   int strtol(
-    ffi.Pointer<ffi.Int8> __nptr,
-    ffi.Pointer<ffi.Pointer<ffi.Int8>> __endptr,
+    ffi.Pointer<ffi.Char> __nptr,
+    ffi.Pointer<ffi.Pointer<ffi.Char>> __endptr,
     int __base,
   ) {
     return _strtol(
@@ -645,15 +639,15 @@ class Libgit2 {
 
   late final _strtolPtr = _lookup<
       ffi.NativeFunction<
-          ffi.Int64 Function(ffi.Pointer<ffi.Int8>,
-              ffi.Pointer<ffi.Pointer<ffi.Int8>>, ffi.Int32)>>('strtol');
+          ffi.Long Function(ffi.Pointer<ffi.Char>,
+              ffi.Pointer<ffi.Pointer<ffi.Char>>, ffi.Int)>>('strtol');
   late final _strtol = _strtolPtr.asFunction<
       int Function(
-          ffi.Pointer<ffi.Int8>, ffi.Pointer<ffi.Pointer<ffi.Int8>>, int)>();
+          ffi.Pointer<ffi.Char>, ffi.Pointer<ffi.Pointer<ffi.Char>>, int)>();
 
   int strtoul(
-    ffi.Pointer<ffi.Int8> __nptr,
-    ffi.Pointer<ffi.Pointer<ffi.Int8>> __endptr,
+    ffi.Pointer<ffi.Char> __nptr,
+    ffi.Pointer<ffi.Pointer<ffi.Char>> __endptr,
     int __base,
   ) {
     return _strtoul(
@@ -665,15 +659,15 @@ class Libgit2 {
 
   late final _strtoulPtr = _lookup<
       ffi.NativeFunction<
-          ffi.Uint64 Function(ffi.Pointer<ffi.Int8>,
-              ffi.Pointer<ffi.Pointer<ffi.Int8>>, ffi.Int32)>>('strtoul');
+          ffi.UnsignedLong Function(ffi.Pointer<ffi.Char>,
+              ffi.Pointer<ffi.Pointer<ffi.Char>>, ffi.Int)>>('strtoul');
   late final _strtoul = _strtoulPtr.asFunction<
       int Function(
-          ffi.Pointer<ffi.Int8>, ffi.Pointer<ffi.Pointer<ffi.Int8>>, int)>();
+          ffi.Pointer<ffi.Char>, ffi.Pointer<ffi.Pointer<ffi.Char>>, int)>();
 
   int strtoq(
-    ffi.Pointer<ffi.Int8> __nptr,
-    ffi.Pointer<ffi.Pointer<ffi.Int8>> __endptr,
+    ffi.Pointer<ffi.Char> __nptr,
+    ffi.Pointer<ffi.Pointer<ffi.Char>> __endptr,
     int __base,
   ) {
     return _strtoq(
@@ -685,15 +679,15 @@ class Libgit2 {
 
   late final _strtoqPtr = _lookup<
       ffi.NativeFunction<
-          ffi.Int64 Function(ffi.Pointer<ffi.Int8>,
-              ffi.Pointer<ffi.Pointer<ffi.Int8>>, ffi.Int32)>>('strtoq');
+          ffi.LongLong Function(ffi.Pointer<ffi.Char>,
+              ffi.Pointer<ffi.Pointer<ffi.Char>>, ffi.Int)>>('strtoq');
   late final _strtoq = _strtoqPtr.asFunction<
       int Function(
-          ffi.Pointer<ffi.Int8>, ffi.Pointer<ffi.Pointer<ffi.Int8>>, int)>();
+          ffi.Pointer<ffi.Char>, ffi.Pointer<ffi.Pointer<ffi.Char>>, int)>();
 
   int strtouq(
-    ffi.Pointer<ffi.Int8> __nptr,
-    ffi.Pointer<ffi.Pointer<ffi.Int8>> __endptr,
+    ffi.Pointer<ffi.Char> __nptr,
+    ffi.Pointer<ffi.Pointer<ffi.Char>> __endptr,
     int __base,
   ) {
     return _strtouq(
@@ -705,15 +699,15 @@ class Libgit2 {
 
   late final _strtouqPtr = _lookup<
       ffi.NativeFunction<
-          ffi.Uint64 Function(ffi.Pointer<ffi.Int8>,
-              ffi.Pointer<ffi.Pointer<ffi.Int8>>, ffi.Int32)>>('strtouq');
+          ffi.UnsignedLongLong Function(ffi.Pointer<ffi.Char>,
+              ffi.Pointer<ffi.Pointer<ffi.Char>>, ffi.Int)>>('strtouq');
   late final _strtouq = _strtouqPtr.asFunction<
       int Function(
-          ffi.Pointer<ffi.Int8>, ffi.Pointer<ffi.Pointer<ffi.Int8>>, int)>();
+          ffi.Pointer<ffi.Char>, ffi.Pointer<ffi.Pointer<ffi.Char>>, int)>();
 
   int strtoll(
-    ffi.Pointer<ffi.Int8> __nptr,
-    ffi.Pointer<ffi.Pointer<ffi.Int8>> __endptr,
+    ffi.Pointer<ffi.Char> __nptr,
+    ffi.Pointer<ffi.Pointer<ffi.Char>> __endptr,
     int __base,
   ) {
     return _strtoll(
@@ -725,15 +719,15 @@ class Libgit2 {
 
   late final _strtollPtr = _lookup<
       ffi.NativeFunction<
-          ffi.Int64 Function(ffi.Pointer<ffi.Int8>,
-              ffi.Pointer<ffi.Pointer<ffi.Int8>>, ffi.Int32)>>('strtoll');
+          ffi.LongLong Function(ffi.Pointer<ffi.Char>,
+              ffi.Pointer<ffi.Pointer<ffi.Char>>, ffi.Int)>>('strtoll');
   late final _strtoll = _strtollPtr.asFunction<
       int Function(
-          ffi.Pointer<ffi.Int8>, ffi.Pointer<ffi.Pointer<ffi.Int8>>, int)>();
+          ffi.Pointer<ffi.Char>, ffi.Pointer<ffi.Pointer<ffi.Char>>, int)>();
 
   int strtoull(
-    ffi.Pointer<ffi.Int8> __nptr,
-    ffi.Pointer<ffi.Pointer<ffi.Int8>> __endptr,
+    ffi.Pointer<ffi.Char> __nptr,
+    ffi.Pointer<ffi.Pointer<ffi.Char>> __endptr,
     int __base,
   ) {
     return _strtoull(
@@ -745,13 +739,13 @@ class Libgit2 {
 
   late final _strtoullPtr = _lookup<
       ffi.NativeFunction<
-          ffi.Uint64 Function(ffi.Pointer<ffi.Int8>,
-              ffi.Pointer<ffi.Pointer<ffi.Int8>>, ffi.Int32)>>('strtoull');
+          ffi.UnsignedLongLong Function(ffi.Pointer<ffi.Char>,
+              ffi.Pointer<ffi.Pointer<ffi.Char>>, ffi.Int)>>('strtoull');
   late final _strtoull = _strtoullPtr.asFunction<
       int Function(
-          ffi.Pointer<ffi.Int8>, ffi.Pointer<ffi.Pointer<ffi.Int8>>, int)>();
+          ffi.Pointer<ffi.Char>, ffi.Pointer<ffi.Pointer<ffi.Char>>, int)>();
 
-  ffi.Pointer<ffi.Int8> l64a(
+  ffi.Pointer<ffi.Char> l64a(
     int __n,
   ) {
     return _l64a(
@@ -760,12 +754,12 @@ class Libgit2 {
   }
 
   late final _l64aPtr =
-      _lookup<ffi.NativeFunction<ffi.Pointer<ffi.Int8> Function(ffi.Int64)>>(
+      _lookup<ffi.NativeFunction<ffi.Pointer<ffi.Char> Function(ffi.Long)>>(
           'l64a');
-  late final _l64a = _l64aPtr.asFunction<ffi.Pointer<ffi.Int8> Function(int)>();
+  late final _l64a = _l64aPtr.asFunction<ffi.Pointer<ffi.Char> Function(int)>();
 
   int a64l(
-    ffi.Pointer<ffi.Int8> __s,
+    ffi.Pointer<ffi.Char> __s,
   ) {
     return _a64l(
       __s,
@@ -773,9 +767,9 @@ class Libgit2 {
   }
 
   late final _a64lPtr =
-      _lookup<ffi.NativeFunction<ffi.Int64 Function(ffi.Pointer<ffi.Int8>)>>(
+      _lookup<ffi.NativeFunction<ffi.Long Function(ffi.Pointer<ffi.Char>)>>(
           'a64l');
-  late final _a64l = _a64lPtr.asFunction<int Function(ffi.Pointer<ffi.Int8>)>();
+  late final _a64l = _a64lPtr.asFunction<int Function(ffi.Pointer<ffi.Char>)>();
 
   int select(
     int __nfds,
@@ -795,12 +789,8 @@ class Libgit2 {
 
   late final _selectPtr = _lookup<
       ffi.NativeFunction<
-          ffi.Int32 Function(
-              ffi.Int32,
-              ffi.Pointer<fd_set>,
-              ffi.Pointer<fd_set>,
-              ffi.Pointer<fd_set>,
-              ffi.Pointer<timeval>)>>('select');
+          ffi.Int Function(ffi.Int, ffi.Pointer<fd_set>, ffi.Pointer<fd_set>,
+              ffi.Pointer<fd_set>, ffi.Pointer<timeval>)>>('select');
   late final _select = _selectPtr.asFunction<
       int Function(int, ffi.Pointer<fd_set>, ffi.Pointer<fd_set>,
           ffi.Pointer<fd_set>, ffi.Pointer<timeval>)>();
@@ -825,8 +815,8 @@ class Libgit2 {
 
   late final _pselectPtr = _lookup<
       ffi.NativeFunction<
-          ffi.Int32 Function(
-              ffi.Int32,
+          ffi.Int Function(
+              ffi.Int,
               ffi.Pointer<fd_set>,
               ffi.Pointer<fd_set>,
               ffi.Pointer<fd_set>,
@@ -846,7 +836,7 @@ class Libgit2 {
   }
 
   late final _randomPtr =
-      _lookup<ffi.NativeFunction<ffi.Int64 Function()>>('random');
+      _lookup<ffi.NativeFunction<ffi.Long Function()>>('random');
   late final _random = _randomPtr.asFunction<int Function()>();
 
   void srandom(
@@ -858,12 +848,13 @@ class Libgit2 {
   }
 
   late final _srandomPtr =
-      _lookup<ffi.NativeFunction<ffi.Void Function(ffi.Uint32)>>('srandom');
+      _lookup<ffi.NativeFunction<ffi.Void Function(ffi.UnsignedInt)>>(
+          'srandom');
   late final _srandom = _srandomPtr.asFunction<void Function(int)>();
 
-  ffi.Pointer<ffi.Int8> initstate(
+  ffi.Pointer<ffi.Char> initstate(
     int __seed,
-    ffi.Pointer<ffi.Int8> __statebuf,
+    ffi.Pointer<ffi.Char> __statebuf,
     int __statelen,
   ) {
     return _initstate(
@@ -875,13 +866,13 @@ class Libgit2 {
 
   late final _initstatePtr = _lookup<
       ffi.NativeFunction<
-          ffi.Pointer<ffi.Int8> Function(
-              ffi.Uint32, ffi.Pointer<ffi.Int8>, size_t)>>('initstate');
+          ffi.Pointer<ffi.Char> Function(
+              ffi.UnsignedInt, ffi.Pointer<ffi.Char>, ffi.Size)>>('initstate');
   late final _initstate = _initstatePtr.asFunction<
-      ffi.Pointer<ffi.Int8> Function(int, ffi.Pointer<ffi.Int8>, int)>();
+      ffi.Pointer<ffi.Char> Function(int, ffi.Pointer<ffi.Char>, int)>();
 
-  ffi.Pointer<ffi.Int8> setstate(
-    ffi.Pointer<ffi.Int8> __statebuf,
+  ffi.Pointer<ffi.Char> setstate(
+    ffi.Pointer<ffi.Char> __statebuf,
   ) {
     return _setstate(
       __statebuf,
@@ -890,9 +881,9 @@ class Libgit2 {
 
   late final _setstatePtr = _lookup<
       ffi.NativeFunction<
-          ffi.Pointer<ffi.Int8> Function(ffi.Pointer<ffi.Int8>)>>('setstate');
+          ffi.Pointer<ffi.Char> Function(ffi.Pointer<ffi.Char>)>>('setstate');
   late final _setstate = _setstatePtr
-      .asFunction<ffi.Pointer<ffi.Int8> Function(ffi.Pointer<ffi.Int8>)>();
+      .asFunction<ffi.Pointer<ffi.Char> Function(ffi.Pointer<ffi.Char>)>();
 
   int random_r(
     ffi.Pointer<random_data> __buf,
@@ -906,7 +897,7 @@ class Libgit2 {
 
   late final _random_rPtr = _lookup<
       ffi.NativeFunction<
-          ffi.Int32 Function(
+          ffi.Int Function(
               ffi.Pointer<random_data>, ffi.Pointer<ffi.Int32>)>>('random_r');
   late final _random_r = _random_rPtr.asFunction<
       int Function(ffi.Pointer<random_data>, ffi.Pointer<ffi.Int32>)>();
@@ -923,14 +914,14 @@ class Libgit2 {
 
   late final _srandom_rPtr = _lookup<
       ffi.NativeFunction<
-          ffi.Int32 Function(
-              ffi.Uint32, ffi.Pointer<random_data>)>>('srandom_r');
+          ffi.Int Function(
+              ffi.UnsignedInt, ffi.Pointer<random_data>)>>('srandom_r');
   late final _srandom_r =
       _srandom_rPtr.asFunction<int Function(int, ffi.Pointer<random_data>)>();
 
   int initstate_r(
     int __seed,
-    ffi.Pointer<ffi.Int8> __statebuf,
+    ffi.Pointer<ffi.Char> __statebuf,
     int __statelen,
     ffi.Pointer<random_data> __buf,
   ) {
@@ -944,14 +935,14 @@ class Libgit2 {
 
   late final _initstate_rPtr = _lookup<
       ffi.NativeFunction<
-          ffi.Int32 Function(ffi.Uint32, ffi.Pointer<ffi.Int8>, size_t,
+          ffi.Int Function(ffi.UnsignedInt, ffi.Pointer<ffi.Char>, ffi.Size,
               ffi.Pointer<random_data>)>>('initstate_r');
   late final _initstate_r = _initstate_rPtr.asFunction<
       int Function(
-          int, ffi.Pointer<ffi.Int8>, int, ffi.Pointer<random_data>)>();
+          int, ffi.Pointer<ffi.Char>, int, ffi.Pointer<random_data>)>();
 
   int setstate_r(
-    ffi.Pointer<ffi.Int8> __statebuf,
+    ffi.Pointer<ffi.Char> __statebuf,
     ffi.Pointer<random_data> __buf,
   ) {
     return _setstate_r(
@@ -962,17 +953,16 @@ class Libgit2 {
 
   late final _setstate_rPtr = _lookup<
       ffi.NativeFunction<
-          ffi.Int32 Function(
-              ffi.Pointer<ffi.Int8>, ffi.Pointer<random_data>)>>('setstate_r');
+          ffi.Int Function(
+              ffi.Pointer<ffi.Char>, ffi.Pointer<random_data>)>>('setstate_r');
   late final _setstate_r = _setstate_rPtr.asFunction<
-      int Function(ffi.Pointer<ffi.Int8>, ffi.Pointer<random_data>)>();
+      int Function(ffi.Pointer<ffi.Char>, ffi.Pointer<random_data>)>();
 
   int rand() {
     return _rand();
   }
 
-  late final _randPtr =
-      _lookup<ffi.NativeFunction<ffi.Int32 Function()>>('rand');
+  late final _randPtr = _lookup<ffi.NativeFunction<ffi.Int Function()>>('rand');
   late final _rand = _randPtr.asFunction<int Function()>();
 
   void srand(
@@ -984,22 +974,22 @@ class Libgit2 {
   }
 
   late final _srandPtr =
-      _lookup<ffi.NativeFunction<ffi.Void Function(ffi.Uint32)>>('srand');
+      _lookup<ffi.NativeFunction<ffi.Void Function(ffi.UnsignedInt)>>('srand');
   late final _srand = _srandPtr.asFunction<void Function(int)>();
 
   int rand_r(
-    ffi.Pointer<ffi.Uint32> __seed,
+    ffi.Pointer<ffi.UnsignedInt> __seed,
   ) {
     return _rand_r(
       __seed,
     );
   }
 
-  late final _rand_rPtr =
-      _lookup<ffi.NativeFunction<ffi.Int32 Function(ffi.Pointer<ffi.Uint32>)>>(
-          'rand_r');
+  late final _rand_rPtr = _lookup<
+          ffi.NativeFunction<ffi.Int Function(ffi.Pointer<ffi.UnsignedInt>)>>(
+      'rand_r');
   late final _rand_r =
-      _rand_rPtr.asFunction<int Function(ffi.Pointer<ffi.Uint32>)>();
+      _rand_rPtr.asFunction<int Function(ffi.Pointer<ffi.UnsignedInt>)>();
 
   double drand48() {
     return _drand48();
@@ -1010,62 +1000,62 @@ class Libgit2 {
   late final _drand48 = _drand48Ptr.asFunction<double Function()>();
 
   double erand48(
-    ffi.Pointer<ffi.Uint16> __xsubi,
+    ffi.Pointer<ffi.UnsignedShort> __xsubi,
   ) {
     return _erand48(
       __xsubi,
     );
   }
 
-  late final _erand48Ptr =
-      _lookup<ffi.NativeFunction<ffi.Double Function(ffi.Pointer<ffi.Uint16>)>>(
-          'erand48');
+  late final _erand48Ptr = _lookup<
+      ffi.NativeFunction<
+          ffi.Double Function(ffi.Pointer<ffi.UnsignedShort>)>>('erand48');
   late final _erand48 =
-      _erand48Ptr.asFunction<double Function(ffi.Pointer<ffi.Uint16>)>();
+      _erand48Ptr.asFunction<double Function(ffi.Pointer<ffi.UnsignedShort>)>();
 
   int lrand48() {
     return _lrand48();
   }
 
   late final _lrand48Ptr =
-      _lookup<ffi.NativeFunction<ffi.Int64 Function()>>('lrand48');
+      _lookup<ffi.NativeFunction<ffi.Long Function()>>('lrand48');
   late final _lrand48 = _lrand48Ptr.asFunction<int Function()>();
 
   int nrand48(
-    ffi.Pointer<ffi.Uint16> __xsubi,
+    ffi.Pointer<ffi.UnsignedShort> __xsubi,
   ) {
     return _nrand48(
       __xsubi,
     );
   }
 
-  late final _nrand48Ptr =
-      _lookup<ffi.NativeFunction<ffi.Int64 Function(ffi.Pointer<ffi.Uint16>)>>(
-          'nrand48');
+  late final _nrand48Ptr = _lookup<
+      ffi.NativeFunction<
+          ffi.Long Function(ffi.Pointer<ffi.UnsignedShort>)>>('nrand48');
   late final _nrand48 =
-      _nrand48Ptr.asFunction<int Function(ffi.Pointer<ffi.Uint16>)>();
+      _nrand48Ptr.asFunction<int Function(ffi.Pointer<ffi.UnsignedShort>)>();
 
   int mrand48() {
     return _mrand48();
   }
 
   late final _mrand48Ptr =
-      _lookup<ffi.NativeFunction<ffi.Int64 Function()>>('mrand48');
+      _lookup<ffi.NativeFunction<ffi.Long Function()>>('mrand48');
   late final _mrand48 = _mrand48Ptr.asFunction<int Function()>();
 
   int jrand48(
-    ffi.Pointer<ffi.Uint16> __xsubi,
+    ffi.Pointer<ffi.UnsignedShort> __xsubi,
   ) {
     return _jrand48(
       __xsubi,
     );
   }
 
-  late final _jrand48Ptr =
-      _lookup<ffi.NativeFunction<ffi.Int64 Function(ffi.Pointer<ffi.Uint16>)>>(
-          'jrand48');
+  late final _jrand48Ptr = _lookup<
+      ffi.NativeFunction<
+          ffi.Long Function(ffi.Pointer<ffi.UnsignedShort>)>>('jrand48');
   late final _jrand48 =
-      _jrand48Ptr.asFunction<int Function(ffi.Pointer<ffi.Uint16>)>();
+      _jrand48Ptr.asFunction<int Function(ffi.Pointer<ffi.UnsignedShort>)>();
 
   void srand48(
     int __seedval,
@@ -1076,11 +1066,11 @@ class Libgit2 {
   }
 
   late final _srand48Ptr =
-      _lookup<ffi.NativeFunction<ffi.Void Function(ffi.Int64)>>('srand48');
+      _lookup<ffi.NativeFunction<ffi.Void Function(ffi.Long)>>('srand48');
   late final _srand48 = _srand48Ptr.asFunction<void Function(int)>();
 
-  ffi.Pointer<ffi.Uint16> seed48(
-    ffi.Pointer<ffi.Uint16> __seed16v,
+  ffi.Pointer<ffi.UnsignedShort> seed48(
+    ffi.Pointer<ffi.UnsignedShort> __seed16v,
   ) {
     return _seed48(
       __seed16v,
@@ -1089,23 +1079,25 @@ class Libgit2 {
 
   late final _seed48Ptr = _lookup<
       ffi.NativeFunction<
-          ffi.Pointer<ffi.Uint16> Function(ffi.Pointer<ffi.Uint16>)>>('seed48');
-  late final _seed48 = _seed48Ptr
-      .asFunction<ffi.Pointer<ffi.Uint16> Function(ffi.Pointer<ffi.Uint16>)>();
+          ffi.Pointer<ffi.UnsignedShort> Function(
+              ffi.Pointer<ffi.UnsignedShort>)>>('seed48');
+  late final _seed48 = _seed48Ptr.asFunction<
+      ffi.Pointer<ffi.UnsignedShort> Function(
+          ffi.Pointer<ffi.UnsignedShort>)>();
 
   void lcong48(
-    ffi.Pointer<ffi.Uint16> __param,
+    ffi.Pointer<ffi.UnsignedShort> __param,
   ) {
     return _lcong48(
       __param,
     );
   }
 
-  late final _lcong48Ptr =
-      _lookup<ffi.NativeFunction<ffi.Void Function(ffi.Pointer<ffi.Uint16>)>>(
-          'lcong48');
+  late final _lcong48Ptr = _lookup<
+      ffi.NativeFunction<
+          ffi.Void Function(ffi.Pointer<ffi.UnsignedShort>)>>('lcong48');
   late final _lcong48 =
-      _lcong48Ptr.asFunction<void Function(ffi.Pointer<ffi.Uint16>)>();
+      _lcong48Ptr.asFunction<void Function(ffi.Pointer<ffi.UnsignedShort>)>();
 
   int drand48_r(
     ffi.Pointer<drand48_data> __buffer,
@@ -1119,13 +1111,13 @@ class Libgit2 {
 
   late final _drand48_rPtr = _lookup<
       ffi.NativeFunction<
-          ffi.Int32 Function(ffi.Pointer<drand48_data>,
+          ffi.Int Function(ffi.Pointer<drand48_data>,
               ffi.Pointer<ffi.Double>)>>('drand48_r');
   late final _drand48_r = _drand48_rPtr.asFunction<
       int Function(ffi.Pointer<drand48_data>, ffi.Pointer<ffi.Double>)>();
 
   int erand48_r(
-    ffi.Pointer<ffi.Uint16> __xsubi,
+    ffi.Pointer<ffi.UnsignedShort> __xsubi,
     ffi.Pointer<drand48_data> __buffer,
     ffi.Pointer<ffi.Double> __result,
   ) {
@@ -1138,15 +1130,17 @@ class Libgit2 {
 
   late final _erand48_rPtr = _lookup<
       ffi.NativeFunction<
-          ffi.Int32 Function(ffi.Pointer<ffi.Uint16>, ffi.Pointer<drand48_data>,
+          ffi.Int Function(
+              ffi.Pointer<ffi.UnsignedShort>,
+              ffi.Pointer<drand48_data>,
               ffi.Pointer<ffi.Double>)>>('erand48_r');
   late final _erand48_r = _erand48_rPtr.asFunction<
-      int Function(ffi.Pointer<ffi.Uint16>, ffi.Pointer<drand48_data>,
+      int Function(ffi.Pointer<ffi.UnsignedShort>, ffi.Pointer<drand48_data>,
           ffi.Pointer<ffi.Double>)>();
 
   int lrand48_r(
     ffi.Pointer<drand48_data> __buffer,
-    ffi.Pointer<ffi.Int64> __result,
+    ffi.Pointer<ffi.Long> __result,
   ) {
     return _lrand48_r(
       __buffer,
@@ -1156,15 +1150,15 @@ class Libgit2 {
 
   late final _lrand48_rPtr = _lookup<
       ffi.NativeFunction<
-          ffi.Int32 Function(
-              ffi.Pointer<drand48_data>, ffi.Pointer<ffi.Int64>)>>('lrand48_r');
+          ffi.Int Function(
+              ffi.Pointer<drand48_data>, ffi.Pointer<ffi.Long>)>>('lrand48_r');
   late final _lrand48_r = _lrand48_rPtr.asFunction<
-      int Function(ffi.Pointer<drand48_data>, ffi.Pointer<ffi.Int64>)>();
+      int Function(ffi.Pointer<drand48_data>, ffi.Pointer<ffi.Long>)>();
 
   int nrand48_r(
-    ffi.Pointer<ffi.Uint16> __xsubi,
+    ffi.Pointer<ffi.UnsignedShort> __xsubi,
     ffi.Pointer<drand48_data> __buffer,
-    ffi.Pointer<ffi.Int64> __result,
+    ffi.Pointer<ffi.Long> __result,
   ) {
     return _nrand48_r(
       __xsubi,
@@ -1175,15 +1169,15 @@ class Libgit2 {
 
   late final _nrand48_rPtr = _lookup<
       ffi.NativeFunction<
-          ffi.Int32 Function(ffi.Pointer<ffi.Uint16>, ffi.Pointer<drand48_data>,
-              ffi.Pointer<ffi.Int64>)>>('nrand48_r');
+          ffi.Int Function(ffi.Pointer<ffi.UnsignedShort>,
+              ffi.Pointer<drand48_data>, ffi.Pointer<ffi.Long>)>>('nrand48_r');
   late final _nrand48_r = _nrand48_rPtr.asFunction<
-      int Function(ffi.Pointer<ffi.Uint16>, ffi.Pointer<drand48_data>,
-          ffi.Pointer<ffi.Int64>)>();
+      int Function(ffi.Pointer<ffi.UnsignedShort>, ffi.Pointer<drand48_data>,
+          ffi.Pointer<ffi.Long>)>();
 
   int mrand48_r(
     ffi.Pointer<drand48_data> __buffer,
-    ffi.Pointer<ffi.Int64> __result,
+    ffi.Pointer<ffi.Long> __result,
   ) {
     return _mrand48_r(
       __buffer,
@@ -1193,15 +1187,15 @@ class Libgit2 {
 
   late final _mrand48_rPtr = _lookup<
       ffi.NativeFunction<
-          ffi.Int32 Function(
-              ffi.Pointer<drand48_data>, ffi.Pointer<ffi.Int64>)>>('mrand48_r');
+          ffi.Int Function(
+              ffi.Pointer<drand48_data>, ffi.Pointer<ffi.Long>)>>('mrand48_r');
   late final _mrand48_r = _mrand48_rPtr.asFunction<
-      int Function(ffi.Pointer<drand48_data>, ffi.Pointer<ffi.Int64>)>();
+      int Function(ffi.Pointer<drand48_data>, ffi.Pointer<ffi.Long>)>();
 
   int jrand48_r(
-    ffi.Pointer<ffi.Uint16> __xsubi,
+    ffi.Pointer<ffi.UnsignedShort> __xsubi,
     ffi.Pointer<drand48_data> __buffer,
-    ffi.Pointer<ffi.Int64> __result,
+    ffi.Pointer<ffi.Long> __result,
   ) {
     return _jrand48_r(
       __xsubi,
@@ -1212,11 +1206,11 @@ class Libgit2 {
 
   late final _jrand48_rPtr = _lookup<
       ffi.NativeFunction<
-          ffi.Int32 Function(ffi.Pointer<ffi.Uint16>, ffi.Pointer<drand48_data>,
-              ffi.Pointer<ffi.Int64>)>>('jrand48_r');
+          ffi.Int Function(ffi.Pointer<ffi.UnsignedShort>,
+              ffi.Pointer<drand48_data>, ffi.Pointer<ffi.Long>)>>('jrand48_r');
   late final _jrand48_r = _jrand48_rPtr.asFunction<
-      int Function(ffi.Pointer<ffi.Uint16>, ffi.Pointer<drand48_data>,
-          ffi.Pointer<ffi.Int64>)>();
+      int Function(ffi.Pointer<ffi.UnsignedShort>, ffi.Pointer<drand48_data>,
+          ffi.Pointer<ffi.Long>)>();
 
   int srand48_r(
     int __seedval,
@@ -1230,13 +1224,12 @@ class Libgit2 {
 
   late final _srand48_rPtr = _lookup<
       ffi.NativeFunction<
-          ffi.Int32 Function(
-              ffi.Int64, ffi.Pointer<drand48_data>)>>('srand48_r');
+          ffi.Int Function(ffi.Long, ffi.Pointer<drand48_data>)>>('srand48_r');
   late final _srand48_r =
       _srand48_rPtr.asFunction<int Function(int, ffi.Pointer<drand48_data>)>();
 
   int seed48_r(
-    ffi.Pointer<ffi.Uint16> __seed16v,
+    ffi.Pointer<ffi.UnsignedShort> __seed16v,
     ffi.Pointer<drand48_data> __buffer,
   ) {
     return _seed48_r(
@@ -1247,13 +1240,14 @@ class Libgit2 {
 
   late final _seed48_rPtr = _lookup<
       ffi.NativeFunction<
-          ffi.Int32 Function(
-              ffi.Pointer<ffi.Uint16>, ffi.Pointer<drand48_data>)>>('seed48_r');
+          ffi.Int Function(ffi.Pointer<ffi.UnsignedShort>,
+              ffi.Pointer<drand48_data>)>>('seed48_r');
   late final _seed48_r = _seed48_rPtr.asFunction<
-      int Function(ffi.Pointer<ffi.Uint16>, ffi.Pointer<drand48_data>)>();
+      int Function(
+          ffi.Pointer<ffi.UnsignedShort>, ffi.Pointer<drand48_data>)>();
 
   int lcong48_r(
-    ffi.Pointer<ffi.Uint16> __param,
+    ffi.Pointer<ffi.UnsignedShort> __param,
     ffi.Pointer<drand48_data> __buffer,
   ) {
     return _lcong48_r(
@@ -1264,10 +1258,11 @@ class Libgit2 {
 
   late final _lcong48_rPtr = _lookup<
       ffi.NativeFunction<
-          ffi.Int32 Function(ffi.Pointer<ffi.Uint16>,
+          ffi.Int Function(ffi.Pointer<ffi.UnsignedShort>,
               ffi.Pointer<drand48_data>)>>('lcong48_r');
   late final _lcong48_r = _lcong48_rPtr.asFunction<
-      int Function(ffi.Pointer<ffi.Uint16>, ffi.Pointer<drand48_data>)>();
+      int Function(
+          ffi.Pointer<ffi.UnsignedShort>, ffi.Pointer<drand48_data>)>();
 
   ffi.Pointer<ffi.Void> malloc(
     int __size,
@@ -1278,7 +1273,7 @@ class Libgit2 {
   }
 
   late final _mallocPtr =
-      _lookup<ffi.NativeFunction<ffi.Pointer<ffi.Void> Function(size_t)>>(
+      _lookup<ffi.NativeFunction<ffi.Pointer<ffi.Void> Function(ffi.Size)>>(
           'malloc');
   late final _malloc =
       _mallocPtr.asFunction<ffi.Pointer<ffi.Void> Function(int)>();
@@ -1294,8 +1289,8 @@ class Libgit2 {
   }
 
   late final _callocPtr = _lookup<
-          ffi.NativeFunction<ffi.Pointer<ffi.Void> Function(size_t, size_t)>>(
-      'calloc');
+      ffi.NativeFunction<
+          ffi.Pointer<ffi.Void> Function(ffi.Size, ffi.Size)>>('calloc');
   late final _calloc =
       _callocPtr.asFunction<ffi.Pointer<ffi.Void> Function(int, int)>();
 
@@ -1312,7 +1307,7 @@ class Libgit2 {
   late final _reallocPtr = _lookup<
       ffi.NativeFunction<
           ffi.Pointer<ffi.Void> Function(
-              ffi.Pointer<ffi.Void>, size_t)>>('realloc');
+              ffi.Pointer<ffi.Void>, ffi.Size)>>('realloc');
   late final _realloc = _reallocPtr
       .asFunction<ffi.Pointer<ffi.Void> Function(ffi.Pointer<ffi.Void>, int)>();
 
@@ -1345,8 +1340,27 @@ class Libgit2 {
   late final _reallocarrayPtr = _lookup<
       ffi.NativeFunction<
           ffi.Pointer<ffi.Void> Function(
-              ffi.Pointer<ffi.Void>, size_t, size_t)>>('reallocarray');
+              ffi.Pointer<ffi.Void>, ffi.Size, ffi.Size)>>('reallocarray');
   late final _reallocarray = _reallocarrayPtr.asFunction<
+      ffi.Pointer<ffi.Void> Function(ffi.Pointer<ffi.Void>, int, int)>();
+
+  ffi.Pointer<ffi.Void> reallocarray1(
+    ffi.Pointer<ffi.Void> __ptr,
+    int __nmemb,
+    int __size,
+  ) {
+    return _reallocarray1(
+      __ptr,
+      __nmemb,
+      __size,
+    );
+  }
+
+  late final _reallocarray1Ptr = _lookup<
+      ffi.NativeFunction<
+          ffi.Pointer<ffi.Void> Function(
+              ffi.Pointer<ffi.Void>, ffi.Size, ffi.Size)>>('reallocarray');
+  late final _reallocarray1 = _reallocarray1Ptr.asFunction<
       ffi.Pointer<ffi.Void> Function(ffi.Pointer<ffi.Void>, int, int)>();
 
   ffi.Pointer<ffi.Void> alloca(
@@ -1358,7 +1372,7 @@ class Libgit2 {
   }
 
   late final _allocaPtr =
-      _lookup<ffi.NativeFunction<ffi.Pointer<ffi.Void> Function(size_t)>>(
+      _lookup<ffi.NativeFunction<ffi.Pointer<ffi.Void> Function(ffi.Size)>>(
           'alloca');
   late final _alloca =
       _allocaPtr.asFunction<ffi.Pointer<ffi.Void> Function(int)>();
@@ -1372,7 +1386,7 @@ class Libgit2 {
   }
 
   late final _vallocPtr =
-      _lookup<ffi.NativeFunction<ffi.Pointer<ffi.Void> Function(size_t)>>(
+      _lookup<ffi.NativeFunction<ffi.Pointer<ffi.Void> Function(ffi.Size)>>(
           'valloc');
   late final _valloc =
       _vallocPtr.asFunction<ffi.Pointer<ffi.Void> Function(int)>();
@@ -1391,8 +1405,8 @@ class Libgit2 {
 
   late final _posix_memalignPtr = _lookup<
       ffi.NativeFunction<
-          ffi.Int32 Function(ffi.Pointer<ffi.Pointer<ffi.Void>>, size_t,
-              size_t)>>('posix_memalign');
+          ffi.Int Function(ffi.Pointer<ffi.Pointer<ffi.Void>>, ffi.Size,
+              ffi.Size)>>('posix_memalign');
   late final _posix_memalign = _posix_memalignPtr
       .asFunction<int Function(ffi.Pointer<ffi.Pointer<ffi.Void>>, int, int)>();
 
@@ -1407,8 +1421,8 @@ class Libgit2 {
   }
 
   late final _aligned_allocPtr = _lookup<
-          ffi.NativeFunction<ffi.Pointer<ffi.Void> Function(size_t, size_t)>>(
-      'aligned_alloc');
+      ffi.NativeFunction<
+          ffi.Pointer<ffi.Void> Function(ffi.Size, ffi.Size)>>('aligned_alloc');
   late final _aligned_alloc =
       _aligned_allocPtr.asFunction<ffi.Pointer<ffi.Void> Function(int, int)>();
 
@@ -1430,7 +1444,7 @@ class Libgit2 {
 
   late final _atexitPtr = _lookup<
       ffi.NativeFunction<
-          ffi.Int32 Function(
+          ffi.Int Function(
               ffi.Pointer<ffi.NativeFunction<ffi.Void Function()>>)>>('atexit');
   late final _atexit = _atexitPtr.asFunction<
       int Function(ffi.Pointer<ffi.NativeFunction<ffi.Void Function()>>)>();
@@ -1445,7 +1459,7 @@ class Libgit2 {
 
   late final _at_quick_exitPtr = _lookup<
           ffi.NativeFunction<
-              ffi.Int32 Function(
+              ffi.Int Function(
                   ffi.Pointer<ffi.NativeFunction<ffi.Void Function()>>)>>(
       'at_quick_exit');
   late final _at_quick_exit = _at_quick_exitPtr.asFunction<
@@ -1454,7 +1468,7 @@ class Libgit2 {
   int on_exit(
     ffi.Pointer<
             ffi.NativeFunction<
-                ffi.Void Function(ffi.Int32, ffi.Pointer<ffi.Void>)>>
+                ffi.Void Function(ffi.Int, ffi.Pointer<ffi.Void>)>>
         __func,
     ffi.Pointer<ffi.Void> __arg,
   ) {
@@ -1466,16 +1480,16 @@ class Libgit2 {
 
   late final _on_exitPtr = _lookup<
       ffi.NativeFunction<
-          ffi.Int32 Function(
+          ffi.Int Function(
               ffi.Pointer<
                   ffi.NativeFunction<
-                      ffi.Void Function(ffi.Int32, ffi.Pointer<ffi.Void>)>>,
+                      ffi.Void Function(ffi.Int, ffi.Pointer<ffi.Void>)>>,
               ffi.Pointer<ffi.Void>)>>('on_exit');
   late final _on_exit = _on_exitPtr.asFunction<
       int Function(
           ffi.Pointer<
               ffi.NativeFunction<
-                  ffi.Void Function(ffi.Int32, ffi.Pointer<ffi.Void>)>>,
+                  ffi.Void Function(ffi.Int, ffi.Pointer<ffi.Void>)>>,
           ffi.Pointer<ffi.Void>)>();
 
   void exit(
@@ -1487,7 +1501,7 @@ class Libgit2 {
   }
 
   late final _exitPtr =
-      _lookup<ffi.NativeFunction<ffi.Void Function(ffi.Int32)>>('exit');
+      _lookup<ffi.NativeFunction<ffi.Void Function(ffi.Int)>>('exit');
   late final _exit = _exitPtr.asFunction<void Function(int)>();
 
   void quick_exit(
@@ -1499,7 +1513,7 @@ class Libgit2 {
   }
 
   late final _quick_exitPtr =
-      _lookup<ffi.NativeFunction<ffi.Void Function(ffi.Int32)>>('quick_exit');
+      _lookup<ffi.NativeFunction<ffi.Void Function(ffi.Int)>>('quick_exit');
   late final _quick_exit = _quick_exitPtr.asFunction<void Function(int)>();
 
   void _Exit(
@@ -1511,11 +1525,11 @@ class Libgit2 {
   }
 
   late final __ExitPtr =
-      _lookup<ffi.NativeFunction<ffi.Void Function(ffi.Int32)>>('_Exit');
+      _lookup<ffi.NativeFunction<ffi.Void Function(ffi.Int)>>('_Exit');
   late final __Exit = __ExitPtr.asFunction<void Function(int)>();
 
-  ffi.Pointer<ffi.Int8> getenv(
-    ffi.Pointer<ffi.Int8> __name,
+  ffi.Pointer<ffi.Char> getenv(
+    ffi.Pointer<ffi.Char> __name,
   ) {
     return _getenv(
       __name,
@@ -1524,12 +1538,12 @@ class Libgit2 {
 
   late final _getenvPtr = _lookup<
       ffi.NativeFunction<
-          ffi.Pointer<ffi.Int8> Function(ffi.Pointer<ffi.Int8>)>>('getenv');
+          ffi.Pointer<ffi.Char> Function(ffi.Pointer<ffi.Char>)>>('getenv');
   late final _getenv = _getenvPtr
-      .asFunction<ffi.Pointer<ffi.Int8> Function(ffi.Pointer<ffi.Int8>)>();
+      .asFunction<ffi.Pointer<ffi.Char> Function(ffi.Pointer<ffi.Char>)>();
 
   int putenv(
-    ffi.Pointer<ffi.Int8> __string,
+    ffi.Pointer<ffi.Char> __string,
   ) {
     return _putenv(
       __string,
@@ -1537,14 +1551,14 @@ class Libgit2 {
   }
 
   late final _putenvPtr =
-      _lookup<ffi.NativeFunction<ffi.Int32 Function(ffi.Pointer<ffi.Int8>)>>(
+      _lookup<ffi.NativeFunction<ffi.Int Function(ffi.Pointer<ffi.Char>)>>(
           'putenv');
   late final _putenv =
-      _putenvPtr.asFunction<int Function(ffi.Pointer<ffi.Int8>)>();
+      _putenvPtr.asFunction<int Function(ffi.Pointer<ffi.Char>)>();
 
   int setenv(
-    ffi.Pointer<ffi.Int8> __name,
-    ffi.Pointer<ffi.Int8> __value,
+    ffi.Pointer<ffi.Char> __name,
+    ffi.Pointer<ffi.Char> __value,
     int __replace,
   ) {
     return _setenv(
@@ -1556,13 +1570,13 @@ class Libgit2 {
 
   late final _setenvPtr = _lookup<
       ffi.NativeFunction<
-          ffi.Int32 Function(ffi.Pointer<ffi.Int8>, ffi.Pointer<ffi.Int8>,
-              ffi.Int32)>>('setenv');
+          ffi.Int Function(ffi.Pointer<ffi.Char>, ffi.Pointer<ffi.Char>,
+              ffi.Int)>>('setenv');
   late final _setenv = _setenvPtr.asFunction<
-      int Function(ffi.Pointer<ffi.Int8>, ffi.Pointer<ffi.Int8>, int)>();
+      int Function(ffi.Pointer<ffi.Char>, ffi.Pointer<ffi.Char>, int)>();
 
   int unsetenv(
-    ffi.Pointer<ffi.Int8> __name,
+    ffi.Pointer<ffi.Char> __name,
   ) {
     return _unsetenv(
       __name,
@@ -1570,21 +1584,21 @@ class Libgit2 {
   }
 
   late final _unsetenvPtr =
-      _lookup<ffi.NativeFunction<ffi.Int32 Function(ffi.Pointer<ffi.Int8>)>>(
+      _lookup<ffi.NativeFunction<ffi.Int Function(ffi.Pointer<ffi.Char>)>>(
           'unsetenv');
   late final _unsetenv =
-      _unsetenvPtr.asFunction<int Function(ffi.Pointer<ffi.Int8>)>();
+      _unsetenvPtr.asFunction<int Function(ffi.Pointer<ffi.Char>)>();
 
   int clearenv() {
     return _clearenv();
   }
 
   late final _clearenvPtr =
-      _lookup<ffi.NativeFunction<ffi.Int32 Function()>>('clearenv');
+      _lookup<ffi.NativeFunction<ffi.Int Function()>>('clearenv');
   late final _clearenv = _clearenvPtr.asFunction<int Function()>();
 
-  ffi.Pointer<ffi.Int8> mktemp(
-    ffi.Pointer<ffi.Int8> __template,
+  ffi.Pointer<ffi.Char> mktemp(
+    ffi.Pointer<ffi.Char> __template,
   ) {
     return _mktemp(
       __template,
@@ -1593,12 +1607,12 @@ class Libgit2 {
 
   late final _mktempPtr = _lookup<
       ffi.NativeFunction<
-          ffi.Pointer<ffi.Int8> Function(ffi.Pointer<ffi.Int8>)>>('mktemp');
+          ffi.Pointer<ffi.Char> Function(ffi.Pointer<ffi.Char>)>>('mktemp');
   late final _mktemp = _mktempPtr
-      .asFunction<ffi.Pointer<ffi.Int8> Function(ffi.Pointer<ffi.Int8>)>();
+      .asFunction<ffi.Pointer<ffi.Char> Function(ffi.Pointer<ffi.Char>)>();
 
   int mkstemp(
-    ffi.Pointer<ffi.Int8> __template,
+    ffi.Pointer<ffi.Char> __template,
   ) {
     return _mkstemp(
       __template,
@@ -1606,13 +1620,13 @@ class Libgit2 {
   }
 
   late final _mkstempPtr =
-      _lookup<ffi.NativeFunction<ffi.Int32 Function(ffi.Pointer<ffi.Int8>)>>(
+      _lookup<ffi.NativeFunction<ffi.Int Function(ffi.Pointer<ffi.Char>)>>(
           'mkstemp');
   late final _mkstemp =
-      _mkstempPtr.asFunction<int Function(ffi.Pointer<ffi.Int8>)>();
+      _mkstempPtr.asFunction<int Function(ffi.Pointer<ffi.Char>)>();
 
   int mkstemps(
-    ffi.Pointer<ffi.Int8> __template,
+    ffi.Pointer<ffi.Char> __template,
     int __suffixlen,
   ) {
     return _mkstemps(
@@ -1622,13 +1636,13 @@ class Libgit2 {
   }
 
   late final _mkstempsPtr = _lookup<
-      ffi.NativeFunction<
-          ffi.Int32 Function(ffi.Pointer<ffi.Int8>, ffi.Int32)>>('mkstemps');
+          ffi.NativeFunction<ffi.Int Function(ffi.Pointer<ffi.Char>, ffi.Int)>>(
+      'mkstemps');
   late final _mkstemps =
-      _mkstempsPtr.asFunction<int Function(ffi.Pointer<ffi.Int8>, int)>();
+      _mkstempsPtr.asFunction<int Function(ffi.Pointer<ffi.Char>, int)>();
 
-  ffi.Pointer<ffi.Int8> mkdtemp(
-    ffi.Pointer<ffi.Int8> __template,
+  ffi.Pointer<ffi.Char> mkdtemp(
+    ffi.Pointer<ffi.Char> __template,
   ) {
     return _mkdtemp(
       __template,
@@ -1637,12 +1651,12 @@ class Libgit2 {
 
   late final _mkdtempPtr = _lookup<
       ffi.NativeFunction<
-          ffi.Pointer<ffi.Int8> Function(ffi.Pointer<ffi.Int8>)>>('mkdtemp');
+          ffi.Pointer<ffi.Char> Function(ffi.Pointer<ffi.Char>)>>('mkdtemp');
   late final _mkdtemp = _mkdtempPtr
-      .asFunction<ffi.Pointer<ffi.Int8> Function(ffi.Pointer<ffi.Int8>)>();
+      .asFunction<ffi.Pointer<ffi.Char> Function(ffi.Pointer<ffi.Char>)>();
 
   int system(
-    ffi.Pointer<ffi.Int8> __command,
+    ffi.Pointer<ffi.Char> __command,
   ) {
     return _system(
       __command,
@@ -1650,14 +1664,14 @@ class Libgit2 {
   }
 
   late final _systemPtr =
-      _lookup<ffi.NativeFunction<ffi.Int32 Function(ffi.Pointer<ffi.Int8>)>>(
+      _lookup<ffi.NativeFunction<ffi.Int Function(ffi.Pointer<ffi.Char>)>>(
           'system');
   late final _system =
-      _systemPtr.asFunction<int Function(ffi.Pointer<ffi.Int8>)>();
+      _systemPtr.asFunction<int Function(ffi.Pointer<ffi.Char>)>();
 
-  ffi.Pointer<ffi.Int8> realpath(
-    ffi.Pointer<ffi.Int8> __name,
-    ffi.Pointer<ffi.Int8> __resolved,
+  ffi.Pointer<ffi.Char> realpath(
+    ffi.Pointer<ffi.Char> __name,
+    ffi.Pointer<ffi.Char> __resolved,
   ) {
     return _realpath(
       __name,
@@ -1667,11 +1681,11 @@ class Libgit2 {
 
   late final _realpathPtr = _lookup<
       ffi.NativeFunction<
-          ffi.Pointer<ffi.Int8> Function(
-              ffi.Pointer<ffi.Int8>, ffi.Pointer<ffi.Int8>)>>('realpath');
+          ffi.Pointer<ffi.Char> Function(
+              ffi.Pointer<ffi.Char>, ffi.Pointer<ffi.Char>)>>('realpath');
   late final _realpath = _realpathPtr.asFunction<
-      ffi.Pointer<ffi.Int8> Function(
-          ffi.Pointer<ffi.Int8>, ffi.Pointer<ffi.Int8>)>();
+      ffi.Pointer<ffi.Char> Function(
+          ffi.Pointer<ffi.Char>, ffi.Pointer<ffi.Char>)>();
 
   ffi.Pointer<ffi.Void> bsearch(
     ffi.Pointer<ffi.Void> __key,
@@ -1694,8 +1708,8 @@ class Libgit2 {
           ffi.Pointer<ffi.Void> Function(
               ffi.Pointer<ffi.Void>,
               ffi.Pointer<ffi.Void>,
-              size_t,
-              size_t,
+              ffi.Size,
+              ffi.Size,
               __compar_fn_t)>>('bsearch');
   late final _bsearch = _bsearchPtr.asFunction<
       ffi.Pointer<ffi.Void> Function(ffi.Pointer<ffi.Void>,
@@ -1717,8 +1731,8 @@ class Libgit2 {
 
   late final _qsortPtr = _lookup<
       ffi.NativeFunction<
-          ffi.Void Function(
-              ffi.Pointer<ffi.Void>, size_t, size_t, __compar_fn_t)>>('qsort');
+          ffi.Void Function(ffi.Pointer<ffi.Void>, ffi.Size, ffi.Size,
+              __compar_fn_t)>>('qsort');
   late final _qsort = _qsortPtr.asFunction<
       void Function(ffi.Pointer<ffi.Void>, int, int, __compar_fn_t)>();
 
@@ -1731,7 +1745,7 @@ class Libgit2 {
   }
 
   late final _absPtr =
-      _lookup<ffi.NativeFunction<ffi.Int32 Function(ffi.Int32)>>('abs');
+      _lookup<ffi.NativeFunction<ffi.Int Function(ffi.Int)>>('abs');
   late final _abs = _absPtr.asFunction<int Function(int)>();
 
   int labs(
@@ -1743,7 +1757,7 @@ class Libgit2 {
   }
 
   late final _labsPtr =
-      _lookup<ffi.NativeFunction<ffi.Int64 Function(ffi.Int64)>>('labs');
+      _lookup<ffi.NativeFunction<ffi.Long Function(ffi.Long)>>('labs');
   late final _labs = _labsPtr.asFunction<int Function(int)>();
 
   int llabs(
@@ -1755,7 +1769,7 @@ class Libgit2 {
   }
 
   late final _llabsPtr =
-      _lookup<ffi.NativeFunction<ffi.Int64 Function(ffi.Int64)>>('llabs');
+      _lookup<ffi.NativeFunction<ffi.LongLong Function(ffi.LongLong)>>('llabs');
   late final _llabs = _llabsPtr.asFunction<int Function(int)>();
 
   div_t div(
@@ -1769,7 +1783,7 @@ class Libgit2 {
   }
 
   late final _divPtr =
-      _lookup<ffi.NativeFunction<div_t Function(ffi.Int32, ffi.Int32)>>('div');
+      _lookup<ffi.NativeFunction<div_t Function(ffi.Int, ffi.Int)>>('div');
   late final _div = _divPtr.asFunction<div_t Function(int, int)>();
 
   ldiv_t ldiv(
@@ -1783,8 +1797,7 @@ class Libgit2 {
   }
 
   late final _ldivPtr =
-      _lookup<ffi.NativeFunction<ldiv_t Function(ffi.Int64, ffi.Int64)>>(
-          'ldiv');
+      _lookup<ffi.NativeFunction<ldiv_t Function(ffi.Long, ffi.Long)>>('ldiv');
   late final _ldiv = _ldivPtr.asFunction<ldiv_t Function(int, int)>();
 
   lldiv_t lldiv(
@@ -1798,15 +1811,15 @@ class Libgit2 {
   }
 
   late final _lldivPtr =
-      _lookup<ffi.NativeFunction<lldiv_t Function(ffi.Int64, ffi.Int64)>>(
+      _lookup<ffi.NativeFunction<lldiv_t Function(ffi.LongLong, ffi.LongLong)>>(
           'lldiv');
   late final _lldiv = _lldivPtr.asFunction<lldiv_t Function(int, int)>();
 
-  ffi.Pointer<ffi.Int8> ecvt(
+  ffi.Pointer<ffi.Char> ecvt(
     double __value,
     int __ndigit,
-    ffi.Pointer<ffi.Int32> __decpt,
-    ffi.Pointer<ffi.Int32> __sign,
+    ffi.Pointer<ffi.Int> __decpt,
+    ffi.Pointer<ffi.Int> __sign,
   ) {
     return _ecvt(
       __value,
@@ -1818,17 +1831,17 @@ class Libgit2 {
 
   late final _ecvtPtr = _lookup<
       ffi.NativeFunction<
-          ffi.Pointer<ffi.Int8> Function(ffi.Double, ffi.Int32,
-              ffi.Pointer<ffi.Int32>, ffi.Pointer<ffi.Int32>)>>('ecvt');
+          ffi.Pointer<ffi.Char> Function(ffi.Double, ffi.Int,
+              ffi.Pointer<ffi.Int>, ffi.Pointer<ffi.Int>)>>('ecvt');
   late final _ecvt = _ecvtPtr.asFunction<
-      ffi.Pointer<ffi.Int8> Function(
-          double, int, ffi.Pointer<ffi.Int32>, ffi.Pointer<ffi.Int32>)>();
+      ffi.Pointer<ffi.Char> Function(
+          double, int, ffi.Pointer<ffi.Int>, ffi.Pointer<ffi.Int>)>();
 
-  ffi.Pointer<ffi.Int8> fcvt(
+  ffi.Pointer<ffi.Char> fcvt(
     double __value,
     int __ndigit,
-    ffi.Pointer<ffi.Int32> __decpt,
-    ffi.Pointer<ffi.Int32> __sign,
+    ffi.Pointer<ffi.Int> __decpt,
+    ffi.Pointer<ffi.Int> __sign,
   ) {
     return _fcvt(
       __value,
@@ -1840,16 +1853,16 @@ class Libgit2 {
 
   late final _fcvtPtr = _lookup<
       ffi.NativeFunction<
-          ffi.Pointer<ffi.Int8> Function(ffi.Double, ffi.Int32,
-              ffi.Pointer<ffi.Int32>, ffi.Pointer<ffi.Int32>)>>('fcvt');
+          ffi.Pointer<ffi.Char> Function(ffi.Double, ffi.Int,
+              ffi.Pointer<ffi.Int>, ffi.Pointer<ffi.Int>)>>('fcvt');
   late final _fcvt = _fcvtPtr.asFunction<
-      ffi.Pointer<ffi.Int8> Function(
-          double, int, ffi.Pointer<ffi.Int32>, ffi.Pointer<ffi.Int32>)>();
+      ffi.Pointer<ffi.Char> Function(
+          double, int, ffi.Pointer<ffi.Int>, ffi.Pointer<ffi.Int>)>();
 
-  ffi.Pointer<ffi.Int8> gcvt(
+  ffi.Pointer<ffi.Char> gcvt(
     double __value,
     int __ndigit,
-    ffi.Pointer<ffi.Int8> __buf,
+    ffi.Pointer<ffi.Char> __buf,
   ) {
     return _gcvt(
       __value,
@@ -1860,17 +1873,17 @@ class Libgit2 {
 
   late final _gcvtPtr = _lookup<
       ffi.NativeFunction<
-          ffi.Pointer<ffi.Int8> Function(
-              ffi.Double, ffi.Int32, ffi.Pointer<ffi.Int8>)>>('gcvt');
+          ffi.Pointer<ffi.Char> Function(
+              ffi.Double, ffi.Int, ffi.Pointer<ffi.Char>)>>('gcvt');
   late final _gcvt = _gcvtPtr.asFunction<
-      ffi.Pointer<ffi.Int8> Function(double, int, ffi.Pointer<ffi.Int8>)>();
+      ffi.Pointer<ffi.Char> Function(double, int, ffi.Pointer<ffi.Char>)>();
 
   int ecvt_r(
     double __value,
     int __ndigit,
-    ffi.Pointer<ffi.Int32> __decpt,
-    ffi.Pointer<ffi.Int32> __sign,
-    ffi.Pointer<ffi.Int8> __buf,
+    ffi.Pointer<ffi.Int> __decpt,
+    ffi.Pointer<ffi.Int> __sign,
+    ffi.Pointer<ffi.Char> __buf,
     int __len,
   ) {
     return _ecvt_r(
@@ -1885,23 +1898,23 @@ class Libgit2 {
 
   late final _ecvt_rPtr = _lookup<
       ffi.NativeFunction<
-          ffi.Int32 Function(
+          ffi.Int Function(
               ffi.Double,
-              ffi.Int32,
-              ffi.Pointer<ffi.Int32>,
-              ffi.Pointer<ffi.Int32>,
-              ffi.Pointer<ffi.Int8>,
-              size_t)>>('ecvt_r');
+              ffi.Int,
+              ffi.Pointer<ffi.Int>,
+              ffi.Pointer<ffi.Int>,
+              ffi.Pointer<ffi.Char>,
+              ffi.Size)>>('ecvt_r');
   late final _ecvt_r = _ecvt_rPtr.asFunction<
-      int Function(double, int, ffi.Pointer<ffi.Int32>, ffi.Pointer<ffi.Int32>,
-          ffi.Pointer<ffi.Int8>, int)>();
+      int Function(double, int, ffi.Pointer<ffi.Int>, ffi.Pointer<ffi.Int>,
+          ffi.Pointer<ffi.Char>, int)>();
 
   int fcvt_r(
     double __value,
     int __ndigit,
-    ffi.Pointer<ffi.Int32> __decpt,
-    ffi.Pointer<ffi.Int32> __sign,
-    ffi.Pointer<ffi.Int8> __buf,
+    ffi.Pointer<ffi.Int> __decpt,
+    ffi.Pointer<ffi.Int> __sign,
+    ffi.Pointer<ffi.Char> __buf,
     int __len,
   ) {
     return _fcvt_r(
@@ -1916,19 +1929,19 @@ class Libgit2 {
 
   late final _fcvt_rPtr = _lookup<
       ffi.NativeFunction<
-          ffi.Int32 Function(
+          ffi.Int Function(
               ffi.Double,
-              ffi.Int32,
-              ffi.Pointer<ffi.Int32>,
-              ffi.Pointer<ffi.Int32>,
-              ffi.Pointer<ffi.Int8>,
-              size_t)>>('fcvt_r');
+              ffi.Int,
+              ffi.Pointer<ffi.Int>,
+              ffi.Pointer<ffi.Int>,
+              ffi.Pointer<ffi.Char>,
+              ffi.Size)>>('fcvt_r');
   late final _fcvt_r = _fcvt_rPtr.asFunction<
-      int Function(double, int, ffi.Pointer<ffi.Int32>, ffi.Pointer<ffi.Int32>,
-          ffi.Pointer<ffi.Int8>, int)>();
+      int Function(double, int, ffi.Pointer<ffi.Int>, ffi.Pointer<ffi.Int>,
+          ffi.Pointer<ffi.Char>, int)>();
 
   int mblen(
-    ffi.Pointer<ffi.Int8> __s,
+    ffi.Pointer<ffi.Char> __s,
     int __n,
   ) {
     return _mblen(
@@ -1939,13 +1952,13 @@ class Libgit2 {
 
   late final _mblenPtr = _lookup<
       ffi.NativeFunction<
-          ffi.Int32 Function(ffi.Pointer<ffi.Int8>, size_t)>>('mblen');
+          ffi.Int Function(ffi.Pointer<ffi.Char>, ffi.Size)>>('mblen');
   late final _mblen =
-      _mblenPtr.asFunction<int Function(ffi.Pointer<ffi.Int8>, int)>();
+      _mblenPtr.asFunction<int Function(ffi.Pointer<ffi.Char>, int)>();
 
   int mbtowc(
-    ffi.Pointer<wchar_t> __pwc,
-    ffi.Pointer<ffi.Int8> __s,
+    ffi.Pointer<ffi.WChar> __pwc,
+    ffi.Pointer<ffi.Char> __s,
     int __n,
   ) {
     return _mbtowc(
@@ -1957,13 +1970,13 @@ class Libgit2 {
 
   late final _mbtowcPtr = _lookup<
       ffi.NativeFunction<
-          ffi.Int32 Function(
-              ffi.Pointer<wchar_t>, ffi.Pointer<ffi.Int8>, size_t)>>('mbtowc');
+          ffi.Int Function(ffi.Pointer<ffi.WChar>, ffi.Pointer<ffi.Char>,
+              ffi.Size)>>('mbtowc');
   late final _mbtowc = _mbtowcPtr.asFunction<
-      int Function(ffi.Pointer<wchar_t>, ffi.Pointer<ffi.Int8>, int)>();
+      int Function(ffi.Pointer<ffi.WChar>, ffi.Pointer<ffi.Char>, int)>();
 
   int wctomb(
-    ffi.Pointer<ffi.Int8> __s,
+    ffi.Pointer<ffi.Char> __s,
     int __wchar,
   ) {
     return _wctomb(
@@ -1974,13 +1987,13 @@ class Libgit2 {
 
   late final _wctombPtr = _lookup<
       ffi.NativeFunction<
-          ffi.Int32 Function(ffi.Pointer<ffi.Int8>, wchar_t)>>('wctomb');
+          ffi.Int Function(ffi.Pointer<ffi.Char>, ffi.WChar)>>('wctomb');
   late final _wctomb =
-      _wctombPtr.asFunction<int Function(ffi.Pointer<ffi.Int8>, int)>();
+      _wctombPtr.asFunction<int Function(ffi.Pointer<ffi.Char>, int)>();
 
   int mbstowcs(
-    ffi.Pointer<wchar_t> __pwcs,
-    ffi.Pointer<ffi.Int8> __s,
+    ffi.Pointer<ffi.WChar> __pwcs,
+    ffi.Pointer<ffi.Char> __s,
     int __n,
   ) {
     return _mbstowcs(
@@ -1992,14 +2005,14 @@ class Libgit2 {
 
   late final _mbstowcsPtr = _lookup<
       ffi.NativeFunction<
-          size_t Function(ffi.Pointer<wchar_t>, ffi.Pointer<ffi.Int8>,
-              size_t)>>('mbstowcs');
+          ffi.Size Function(ffi.Pointer<ffi.WChar>, ffi.Pointer<ffi.Char>,
+              ffi.Size)>>('mbstowcs');
   late final _mbstowcs = _mbstowcsPtr.asFunction<
-      int Function(ffi.Pointer<wchar_t>, ffi.Pointer<ffi.Int8>, int)>();
+      int Function(ffi.Pointer<ffi.WChar>, ffi.Pointer<ffi.Char>, int)>();
 
   int wcstombs(
-    ffi.Pointer<ffi.Int8> __s,
-    ffi.Pointer<wchar_t> __pwcs,
+    ffi.Pointer<ffi.Char> __s,
+    ffi.Pointer<ffi.WChar> __pwcs,
     int __n,
   ) {
     return _wcstombs(
@@ -2011,13 +2024,13 @@ class Libgit2 {
 
   late final _wcstombsPtr = _lookup<
       ffi.NativeFunction<
-          size_t Function(ffi.Pointer<ffi.Int8>, ffi.Pointer<wchar_t>,
-              size_t)>>('wcstombs');
+          ffi.Size Function(ffi.Pointer<ffi.Char>, ffi.Pointer<ffi.WChar>,
+              ffi.Size)>>('wcstombs');
   late final _wcstombs = _wcstombsPtr.asFunction<
-      int Function(ffi.Pointer<ffi.Int8>, ffi.Pointer<wchar_t>, int)>();
+      int Function(ffi.Pointer<ffi.Char>, ffi.Pointer<ffi.WChar>, int)>();
 
   int rpmatch(
-    ffi.Pointer<ffi.Int8> __response,
+    ffi.Pointer<ffi.Char> __response,
   ) {
     return _rpmatch(
       __response,
@@ -2025,15 +2038,15 @@ class Libgit2 {
   }
 
   late final _rpmatchPtr =
-      _lookup<ffi.NativeFunction<ffi.Int32 Function(ffi.Pointer<ffi.Int8>)>>(
+      _lookup<ffi.NativeFunction<ffi.Int Function(ffi.Pointer<ffi.Char>)>>(
           'rpmatch');
   late final _rpmatch =
-      _rpmatchPtr.asFunction<int Function(ffi.Pointer<ffi.Int8>)>();
+      _rpmatchPtr.asFunction<int Function(ffi.Pointer<ffi.Char>)>();
 
   int getsubopt(
-    ffi.Pointer<ffi.Pointer<ffi.Int8>> __optionp,
-    ffi.Pointer<ffi.Pointer<ffi.Int8>> __tokens,
-    ffi.Pointer<ffi.Pointer<ffi.Int8>> __valuep,
+    ffi.Pointer<ffi.Pointer<ffi.Char>> __optionp,
+    ffi.Pointer<ffi.Pointer<ffi.Char>> __tokens,
+    ffi.Pointer<ffi.Pointer<ffi.Char>> __valuep,
   ) {
     return _getsubopt(
       __optionp,
@@ -2044,15 +2057,15 @@ class Libgit2 {
 
   late final _getsuboptPtr = _lookup<
       ffi.NativeFunction<
-          ffi.Int32 Function(
-              ffi.Pointer<ffi.Pointer<ffi.Int8>>,
-              ffi.Pointer<ffi.Pointer<ffi.Int8>>,
-              ffi.Pointer<ffi.Pointer<ffi.Int8>>)>>('getsubopt');
+          ffi.Int Function(
+              ffi.Pointer<ffi.Pointer<ffi.Char>>,
+              ffi.Pointer<ffi.Pointer<ffi.Char>>,
+              ffi.Pointer<ffi.Pointer<ffi.Char>>)>>('getsubopt');
   late final _getsubopt = _getsuboptPtr.asFunction<
       int Function(
-          ffi.Pointer<ffi.Pointer<ffi.Int8>>,
-          ffi.Pointer<ffi.Pointer<ffi.Int8>>,
-          ffi.Pointer<ffi.Pointer<ffi.Int8>>)>();
+          ffi.Pointer<ffi.Pointer<ffi.Char>>,
+          ffi.Pointer<ffi.Pointer<ffi.Char>>,
+          ffi.Pointer<ffi.Pointer<ffi.Char>>)>();
 
   int getloadavg(
     ffi.Pointer<ffi.Double> __loadavg,
@@ -2066,8 +2079,7 @@ class Libgit2 {
 
   late final _getloadavgPtr = _lookup<
       ffi.NativeFunction<
-          ffi.Int32 Function(
-              ffi.Pointer<ffi.Double>, ffi.Int32)>>('getloadavg');
+          ffi.Int Function(ffi.Pointer<ffi.Double>, ffi.Int)>>('getloadavg');
   late final _getloadavg =
       _getloadavgPtr.asFunction<int Function(ffi.Pointer<ffi.Double>, int)>();
 
@@ -2099,8 +2111,8 @@ class Libgit2 {
   late final _imaxdiv = _imaxdivPtr.asFunction<imaxdiv_t Function(int, int)>();
 
   int strtoimax(
-    ffi.Pointer<ffi.Int8> __nptr,
-    ffi.Pointer<ffi.Pointer<ffi.Int8>> __endptr,
+    ffi.Pointer<ffi.Char> __nptr,
+    ffi.Pointer<ffi.Pointer<ffi.Char>> __endptr,
     int __base,
   ) {
     return _strtoimax(
@@ -2112,15 +2124,15 @@ class Libgit2 {
 
   late final _strtoimaxPtr = _lookup<
       ffi.NativeFunction<
-          intmax_t Function(ffi.Pointer<ffi.Int8>,
-              ffi.Pointer<ffi.Pointer<ffi.Int8>>, ffi.Int32)>>('strtoimax');
+          intmax_t Function(ffi.Pointer<ffi.Char>,
+              ffi.Pointer<ffi.Pointer<ffi.Char>>, ffi.Int)>>('strtoimax');
   late final _strtoimax = _strtoimaxPtr.asFunction<
       int Function(
-          ffi.Pointer<ffi.Int8>, ffi.Pointer<ffi.Pointer<ffi.Int8>>, int)>();
+          ffi.Pointer<ffi.Char>, ffi.Pointer<ffi.Pointer<ffi.Char>>, int)>();
 
   int strtoumax(
-    ffi.Pointer<ffi.Int8> __nptr,
-    ffi.Pointer<ffi.Pointer<ffi.Int8>> __endptr,
+    ffi.Pointer<ffi.Char> __nptr,
+    ffi.Pointer<ffi.Pointer<ffi.Char>> __endptr,
     int __base,
   ) {
     return _strtoumax(
@@ -2132,11 +2144,11 @@ class Libgit2 {
 
   late final _strtoumaxPtr = _lookup<
       ffi.NativeFunction<
-          uintmax_t Function(ffi.Pointer<ffi.Int8>,
-              ffi.Pointer<ffi.Pointer<ffi.Int8>>, ffi.Int32)>>('strtoumax');
+          uintmax_t Function(ffi.Pointer<ffi.Char>,
+              ffi.Pointer<ffi.Pointer<ffi.Char>>, ffi.Int)>>('strtoumax');
   late final _strtoumax = _strtoumaxPtr.asFunction<
       int Function(
-          ffi.Pointer<ffi.Int8>, ffi.Pointer<ffi.Pointer<ffi.Int8>>, int)>();
+          ffi.Pointer<ffi.Char>, ffi.Pointer<ffi.Pointer<ffi.Char>>, int)>();
 
   int wcstoimax(
     ffi.Pointer<__gwchar_t> __nptr,
@@ -2153,7 +2165,7 @@ class Libgit2 {
   late final _wcstoimaxPtr = _lookup<
       ffi.NativeFunction<
           intmax_t Function(ffi.Pointer<__gwchar_t>,
-              ffi.Pointer<ffi.Pointer<__gwchar_t>>, ffi.Int32)>>('wcstoimax');
+              ffi.Pointer<ffi.Pointer<__gwchar_t>>, ffi.Int)>>('wcstoimax');
   late final _wcstoimax = _wcstoimaxPtr.asFunction<
       int Function(ffi.Pointer<__gwchar_t>,
           ffi.Pointer<ffi.Pointer<__gwchar_t>>, int)>();
@@ -2173,7 +2185,7 @@ class Libgit2 {
   late final _wcstoumaxPtr = _lookup<
       ffi.NativeFunction<
           uintmax_t Function(ffi.Pointer<__gwchar_t>,
-              ffi.Pointer<ffi.Pointer<__gwchar_t>>, ffi.Int32)>>('wcstoumax');
+              ffi.Pointer<ffi.Pointer<__gwchar_t>>, ffi.Int)>>('wcstoumax');
   late final _wcstoumax = _wcstoumaxPtr.asFunction<
       int Function(ffi.Pointer<__gwchar_t>,
           ffi.Pointer<ffi.Pointer<__gwchar_t>>, int)>();
@@ -2186,9 +2198,9 @@ class Libgit2 {
   /// @param rev Store the revision (patch) number
   /// @return 0 on success or an error code on failure
   int git_libgit2_version(
-    ffi.Pointer<ffi.Int32> major,
-    ffi.Pointer<ffi.Int32> minor,
-    ffi.Pointer<ffi.Int32> rev,
+    ffi.Pointer<ffi.Int> major,
+    ffi.Pointer<ffi.Int> minor,
+    ffi.Pointer<ffi.Int> rev,
   ) {
     return _git_libgit2_version(
       major,
@@ -2199,11 +2211,11 @@ class Libgit2 {
 
   late final _git_libgit2_versionPtr = _lookup<
       ffi.NativeFunction<
-          ffi.Int32 Function(ffi.Pointer<ffi.Int32>, ffi.Pointer<ffi.Int32>,
-              ffi.Pointer<ffi.Int32>)>>('git_libgit2_version');
+          ffi.Int Function(ffi.Pointer<ffi.Int>, ffi.Pointer<ffi.Int>,
+              ffi.Pointer<ffi.Int>)>>('git_libgit2_version');
   late final _git_libgit2_version = _git_libgit2_versionPtr.asFunction<
-      int Function(ffi.Pointer<ffi.Int32>, ffi.Pointer<ffi.Int32>,
-          ffi.Pointer<ffi.Int32>)>();
+      int Function(
+          ffi.Pointer<ffi.Int>, ffi.Pointer<ffi.Int>, ffi.Pointer<ffi.Int>)>();
 
   /// Query compile time options for libgit2.
   ///
@@ -2229,7 +2241,7 @@ class Libgit2 {
   }
 
   late final _git_libgit2_featuresPtr =
-      _lookup<ffi.NativeFunction<ffi.Int32 Function()>>('git_libgit2_features');
+      _lookup<ffi.NativeFunction<ffi.Int Function()>>('git_libgit2_features');
   late final _git_libgit2_features =
       _git_libgit2_featuresPtr.asFunction<int Function()>();
 
@@ -2480,39 +2492,17 @@ class Libgit2 {
   /// @return 0 on success, <0 on failure
   int git_libgit2_opts(
     int option,
-    ffi.Pointer<ffi.Int8> out,
   ) {
     return _git_libgit2_opts(
       option,
-      out,
     );
   }
 
-  late final _git_libgit2_optsPtr = _lookup<
-      ffi.NativeFunction<
-          ffi.Int32 Function(
-              ffi.Int32, ffi.Pointer<ffi.Int8>)>>('git_libgit2_opts');
-  late final _git_libgit2_opts = _git_libgit2_optsPtr
-      .asFunction<int Function(int, ffi.Pointer<ffi.Int8>)>();
-
-  /// Set a library global option.
-  ///
-  /// Look at [git_libgit2_opts]
-  int git_libgit2_opts_set(
-    int option,
-    int value,
-  ) {
-    return _git_libgit2_opts_set(
-      option,
-      value,
-    );
-  }
-
-  late final _git_libgit2_opts_setPtr =
-      _lookup<ffi.NativeFunction<ffi.Int32 Function(ffi.Int32, ffi.Int32)>>(
+  late final _git_libgit2_optsPtr =
+      _lookup<ffi.NativeFunction<ffi.Int Function(ffi.Int)>>(
           'git_libgit2_opts');
-  late final _git_libgit2_opts_set =
-      _git_libgit2_opts_setPtr.asFunction<int Function(int, int)>();
+  late final _git_libgit2_opts =
+      _git_libgit2_optsPtr.asFunction<int Function(int)>();
 
   /// Free the memory referred to by the git_buf.
   ///
@@ -2543,7 +2533,7 @@ class Libgit2 {
   /// @return 0 or an error code
   int git_oid_fromstr(
     ffi.Pointer<git_oid> out,
-    ffi.Pointer<ffi.Int8> str,
+    ffi.Pointer<ffi.Char> str,
   ) {
     return _git_oid_fromstr(
       out,
@@ -2553,10 +2543,10 @@ class Libgit2 {
 
   late final _git_oid_fromstrPtr = _lookup<
       ffi.NativeFunction<
-          ffi.Int32 Function(
-              ffi.Pointer<git_oid>, ffi.Pointer<ffi.Int8>)>>('git_oid_fromstr');
+          ffi.Int Function(
+              ffi.Pointer<git_oid>, ffi.Pointer<ffi.Char>)>>('git_oid_fromstr');
   late final _git_oid_fromstr = _git_oid_fromstrPtr
-      .asFunction<int Function(ffi.Pointer<git_oid>, ffi.Pointer<ffi.Int8>)>();
+      .asFunction<int Function(ffi.Pointer<git_oid>, ffi.Pointer<ffi.Char>)>();
 
   /// Parse a hex formatted null-terminated string into a git_oid.
   ///
@@ -2565,7 +2555,7 @@ class Libgit2 {
   /// @return 0 or an error code
   int git_oid_fromstrp(
     ffi.Pointer<git_oid> out,
-    ffi.Pointer<ffi.Int8> str,
+    ffi.Pointer<ffi.Char> str,
   ) {
     return _git_oid_fromstrp(
       out,
@@ -2575,10 +2565,10 @@ class Libgit2 {
 
   late final _git_oid_fromstrpPtr = _lookup<
       ffi.NativeFunction<
-          ffi.Int32 Function(ffi.Pointer<git_oid>,
-              ffi.Pointer<ffi.Int8>)>>('git_oid_fromstrp');
+          ffi.Int Function(ffi.Pointer<git_oid>,
+              ffi.Pointer<ffi.Char>)>>('git_oid_fromstrp');
   late final _git_oid_fromstrp = _git_oid_fromstrpPtr
-      .asFunction<int Function(ffi.Pointer<git_oid>, ffi.Pointer<ffi.Int8>)>();
+      .asFunction<int Function(ffi.Pointer<git_oid>, ffi.Pointer<ffi.Char>)>();
 
   /// Parse N characters of a hex formatted object id into a git_oid.
   ///
@@ -2591,7 +2581,7 @@ class Libgit2 {
   /// @return 0 or an error code
   int git_oid_fromstrn(
     ffi.Pointer<git_oid> out,
-    ffi.Pointer<ffi.Int8> str,
+    ffi.Pointer<ffi.Char> str,
     int length,
   ) {
     return _git_oid_fromstrn(
@@ -2603,10 +2593,10 @@ class Libgit2 {
 
   late final _git_oid_fromstrnPtr = _lookup<
       ffi.NativeFunction<
-          ffi.Int32 Function(ffi.Pointer<git_oid>, ffi.Pointer<ffi.Int8>,
-              size_t)>>('git_oid_fromstrn');
+          ffi.Int Function(ffi.Pointer<git_oid>, ffi.Pointer<ffi.Char>,
+              ffi.Size)>>('git_oid_fromstrn');
   late final _git_oid_fromstrn = _git_oid_fromstrnPtr.asFunction<
-      int Function(ffi.Pointer<git_oid>, ffi.Pointer<ffi.Int8>, int)>();
+      int Function(ffi.Pointer<git_oid>, ffi.Pointer<ffi.Char>, int)>();
 
   /// Copy an already raw oid into a git_oid structure.
   ///
@@ -2615,7 +2605,7 @@ class Libgit2 {
   /// @return 0 on success or error code
   int git_oid_fromraw(
     ffi.Pointer<git_oid> out,
-    ffi.Pointer<ffi.Uint8> raw,
+    ffi.Pointer<ffi.UnsignedChar> raw,
   ) {
     return _git_oid_fromraw(
       out,
@@ -2625,10 +2615,10 @@ class Libgit2 {
 
   late final _git_oid_fromrawPtr = _lookup<
       ffi.NativeFunction<
-          ffi.Int32 Function(ffi.Pointer<git_oid>,
-              ffi.Pointer<ffi.Uint8>)>>('git_oid_fromraw');
-  late final _git_oid_fromraw = _git_oid_fromrawPtr
-      .asFunction<int Function(ffi.Pointer<git_oid>, ffi.Pointer<ffi.Uint8>)>();
+          ffi.Int Function(ffi.Pointer<git_oid>,
+              ffi.Pointer<ffi.UnsignedChar>)>>('git_oid_fromraw');
+  late final _git_oid_fromraw = _git_oid_fromrawPtr.asFunction<
+      int Function(ffi.Pointer<git_oid>, ffi.Pointer<ffi.UnsignedChar>)>();
 
   /// Format a git_oid into a hex string.
   ///
@@ -2640,7 +2630,7 @@ class Libgit2 {
   /// @param id oid structure to format.
   /// @return 0 on success or error code
   int git_oid_fmt(
-    ffi.Pointer<ffi.Int8> out,
+    ffi.Pointer<ffi.Char> out,
     ffi.Pointer<git_oid> id,
   ) {
     return _git_oid_fmt(
@@ -2651,10 +2641,10 @@ class Libgit2 {
 
   late final _git_oid_fmtPtr = _lookup<
       ffi.NativeFunction<
-          ffi.Int32 Function(
-              ffi.Pointer<ffi.Int8>, ffi.Pointer<git_oid>)>>('git_oid_fmt');
+          ffi.Int Function(
+              ffi.Pointer<ffi.Char>, ffi.Pointer<git_oid>)>>('git_oid_fmt');
   late final _git_oid_fmt = _git_oid_fmtPtr
-      .asFunction<int Function(ffi.Pointer<ffi.Int8>, ffi.Pointer<git_oid>)>();
+      .asFunction<int Function(ffi.Pointer<ffi.Char>, ffi.Pointer<git_oid>)>();
 
   /// Format a git_oid into a partial hex string.
   ///
@@ -2665,7 +2655,7 @@ class Libgit2 {
   /// @param id oid structure to format.
   /// @return 0 on success or error code
   int git_oid_nfmt(
-    ffi.Pointer<ffi.Int8> out,
+    ffi.Pointer<ffi.Char> out,
     int n,
     ffi.Pointer<git_oid> id,
   ) {
@@ -2678,10 +2668,10 @@ class Libgit2 {
 
   late final _git_oid_nfmtPtr = _lookup<
       ffi.NativeFunction<
-          ffi.Int32 Function(ffi.Pointer<ffi.Int8>, size_t,
+          ffi.Int Function(ffi.Pointer<ffi.Char>, ffi.Size,
               ffi.Pointer<git_oid>)>>('git_oid_nfmt');
   late final _git_oid_nfmt = _git_oid_nfmtPtr.asFunction<
-      int Function(ffi.Pointer<ffi.Int8>, int, ffi.Pointer<git_oid>)>();
+      int Function(ffi.Pointer<ffi.Char>, int, ffi.Pointer<git_oid>)>();
 
   /// Format a git_oid into a loose-object path string.
   ///
@@ -2696,7 +2686,7 @@ class Libgit2 {
   /// @param id oid structure to format.
   /// @return 0 on success, non-zero callback return value, or error code
   int git_oid_pathfmt(
-    ffi.Pointer<ffi.Int8> out,
+    ffi.Pointer<ffi.Char> out,
     ffi.Pointer<git_oid> id,
   ) {
     return _git_oid_pathfmt(
@@ -2707,10 +2697,10 @@ class Libgit2 {
 
   late final _git_oid_pathfmtPtr = _lookup<
       ffi.NativeFunction<
-          ffi.Int32 Function(
-              ffi.Pointer<ffi.Int8>, ffi.Pointer<git_oid>)>>('git_oid_pathfmt');
+          ffi.Int Function(
+              ffi.Pointer<ffi.Char>, ffi.Pointer<git_oid>)>>('git_oid_pathfmt');
   late final _git_oid_pathfmt = _git_oid_pathfmtPtr
-      .asFunction<int Function(ffi.Pointer<ffi.Int8>, ffi.Pointer<git_oid>)>();
+      .asFunction<int Function(ffi.Pointer<ffi.Char>, ffi.Pointer<git_oid>)>();
 
   /// Format a git_oid into a statically allocated c-string.
   ///
@@ -2721,7 +2711,7 @@ class Libgit2 {
   ///
   /// @param oid The oid structure to format
   /// @return the c-string
-  ffi.Pointer<ffi.Int8> git_oid_tostr_s(
+  ffi.Pointer<ffi.Char> git_oid_tostr_s(
     ffi.Pointer<git_oid> oid,
   ) {
     return _git_oid_tostr_s(
@@ -2731,10 +2721,10 @@ class Libgit2 {
 
   late final _git_oid_tostr_sPtr = _lookup<
       ffi.NativeFunction<
-          ffi.Pointer<ffi.Int8> Function(
+          ffi.Pointer<ffi.Char> Function(
               ffi.Pointer<git_oid>)>>('git_oid_tostr_s');
   late final _git_oid_tostr_s = _git_oid_tostr_sPtr
-      .asFunction<ffi.Pointer<ffi.Int8> Function(ffi.Pointer<git_oid>)>();
+      .asFunction<ffi.Pointer<ffi.Char> Function(ffi.Pointer<git_oid>)>();
 
   /// Format a git_oid into a buffer as a hex format c-string.
   ///
@@ -2751,8 +2741,8 @@ class Libgit2 {
   /// @param id the oid structure to format.
   /// @return the out buffer pointer, assuming no input parameter
   /// errors, otherwise a pointer to an empty string.
-  ffi.Pointer<ffi.Int8> git_oid_tostr(
-    ffi.Pointer<ffi.Int8> out,
+  ffi.Pointer<ffi.Char> git_oid_tostr(
+    ffi.Pointer<ffi.Char> out,
     int n,
     ffi.Pointer<git_oid> id,
   ) {
@@ -2765,11 +2755,11 @@ class Libgit2 {
 
   late final _git_oid_tostrPtr = _lookup<
       ffi.NativeFunction<
-          ffi.Pointer<ffi.Int8> Function(ffi.Pointer<ffi.Int8>, size_t,
+          ffi.Pointer<ffi.Char> Function(ffi.Pointer<ffi.Char>, ffi.Size,
               ffi.Pointer<git_oid>)>>('git_oid_tostr');
   late final _git_oid_tostr = _git_oid_tostrPtr.asFunction<
-      ffi.Pointer<ffi.Int8> Function(
-          ffi.Pointer<ffi.Int8>, int, ffi.Pointer<git_oid>)>();
+      ffi.Pointer<ffi.Char> Function(
+          ffi.Pointer<ffi.Char>, int, ffi.Pointer<git_oid>)>();
 
   /// Copy an oid from one structure to another.
   ///
@@ -2788,7 +2778,7 @@ class Libgit2 {
 
   late final _git_oid_cpyPtr = _lookup<
       ffi.NativeFunction<
-          ffi.Int32 Function(
+          ffi.Int Function(
               ffi.Pointer<git_oid>, ffi.Pointer<git_oid>)>>('git_oid_cpy');
   late final _git_oid_cpy = _git_oid_cpyPtr
       .asFunction<int Function(ffi.Pointer<git_oid>, ffi.Pointer<git_oid>)>();
@@ -2810,7 +2800,7 @@ class Libgit2 {
 
   late final _git_oid_cmpPtr = _lookup<
       ffi.NativeFunction<
-          ffi.Int32 Function(
+          ffi.Int Function(
               ffi.Pointer<git_oid>, ffi.Pointer<git_oid>)>>('git_oid_cmp');
   late final _git_oid_cmp = _git_oid_cmpPtr
       .asFunction<int Function(ffi.Pointer<git_oid>, ffi.Pointer<git_oid>)>();
@@ -2832,7 +2822,7 @@ class Libgit2 {
 
   late final _git_oid_equalPtr = _lookup<
       ffi.NativeFunction<
-          ffi.Int32 Function(
+          ffi.Int Function(
               ffi.Pointer<git_oid>, ffi.Pointer<git_oid>)>>('git_oid_equal');
   late final _git_oid_equal = _git_oid_equalPtr
       .asFunction<int Function(ffi.Pointer<git_oid>, ffi.Pointer<git_oid>)>();
@@ -2858,8 +2848,8 @@ class Libgit2 {
 
   late final _git_oid_ncmpPtr = _lookup<
       ffi.NativeFunction<
-          ffi.Int32 Function(ffi.Pointer<git_oid>, ffi.Pointer<git_oid>,
-              size_t)>>('git_oid_ncmp');
+          ffi.Int Function(ffi.Pointer<git_oid>, ffi.Pointer<git_oid>,
+              ffi.Size)>>('git_oid_ncmp');
   late final _git_oid_ncmp = _git_oid_ncmpPtr.asFunction<
       int Function(ffi.Pointer<git_oid>, ffi.Pointer<git_oid>, int)>();
 
@@ -2870,7 +2860,7 @@ class Libgit2 {
   /// @return 0 in case of a match, -1 otherwise.
   int git_oid_streq(
     ffi.Pointer<git_oid> id,
-    ffi.Pointer<ffi.Int8> str,
+    ffi.Pointer<ffi.Char> str,
   ) {
     return _git_oid_streq(
       id,
@@ -2880,10 +2870,10 @@ class Libgit2 {
 
   late final _git_oid_streqPtr = _lookup<
       ffi.NativeFunction<
-          ffi.Int32 Function(
-              ffi.Pointer<git_oid>, ffi.Pointer<ffi.Int8>)>>('git_oid_streq');
+          ffi.Int Function(
+              ffi.Pointer<git_oid>, ffi.Pointer<ffi.Char>)>>('git_oid_streq');
   late final _git_oid_streq = _git_oid_streqPtr
-      .asFunction<int Function(ffi.Pointer<git_oid>, ffi.Pointer<ffi.Int8>)>();
+      .asFunction<int Function(ffi.Pointer<git_oid>, ffi.Pointer<ffi.Char>)>();
 
   /// Compare an oid to an hex formatted object id.
   ///
@@ -2893,7 +2883,7 @@ class Libgit2 {
   /// 0 if id matches str, >0 if id sorts after str.
   int git_oid_strcmp(
     ffi.Pointer<git_oid> id,
-    ffi.Pointer<ffi.Int8> str,
+    ffi.Pointer<ffi.Char> str,
   ) {
     return _git_oid_strcmp(
       id,
@@ -2903,10 +2893,10 @@ class Libgit2 {
 
   late final _git_oid_strcmpPtr = _lookup<
       ffi.NativeFunction<
-          ffi.Int32 Function(
-              ffi.Pointer<git_oid>, ffi.Pointer<ffi.Int8>)>>('git_oid_strcmp');
+          ffi.Int Function(
+              ffi.Pointer<git_oid>, ffi.Pointer<ffi.Char>)>>('git_oid_strcmp');
   late final _git_oid_strcmp = _git_oid_strcmpPtr
-      .asFunction<int Function(ffi.Pointer<git_oid>, ffi.Pointer<ffi.Int8>)>();
+      .asFunction<int Function(ffi.Pointer<git_oid>, ffi.Pointer<ffi.Char>)>();
 
   /// Check is an oid is all zeros.
   ///
@@ -2920,7 +2910,7 @@ class Libgit2 {
   }
 
   late final _git_oid_is_zeroPtr =
-      _lookup<ffi.NativeFunction<ffi.Int32 Function(ffi.Pointer<git_oid>)>>(
+      _lookup<ffi.NativeFunction<ffi.Int Function(ffi.Pointer<git_oid>)>>(
           'git_oid_is_zero');
   late final _git_oid_is_zero =
       _git_oid_is_zeroPtr.asFunction<int Function(ffi.Pointer<git_oid>)>();
@@ -2946,7 +2936,7 @@ class Libgit2 {
   }
 
   late final _git_oid_shorten_newPtr = _lookup<
-          ffi.NativeFunction<ffi.Pointer<git_oid_shorten> Function(size_t)>>(
+          ffi.NativeFunction<ffi.Pointer<git_oid_shorten> Function(ffi.Size)>>(
       'git_oid_shorten_new');
   late final _git_oid_shorten_new = _git_oid_shorten_newPtr
       .asFunction<ffi.Pointer<git_oid_shorten> Function(int)>();
@@ -2975,7 +2965,7 @@ class Libgit2 {
   /// error occurs.
   int git_oid_shorten_add(
     ffi.Pointer<git_oid_shorten> os,
-    ffi.Pointer<ffi.Int8> text_id,
+    ffi.Pointer<ffi.Char> text_id,
   ) {
     return _git_oid_shorten_add(
       os,
@@ -2985,10 +2975,10 @@ class Libgit2 {
 
   late final _git_oid_shorten_addPtr = _lookup<
       ffi.NativeFunction<
-          ffi.Int32 Function(ffi.Pointer<git_oid_shorten>,
-              ffi.Pointer<ffi.Int8>)>>('git_oid_shorten_add');
+          ffi.Int Function(ffi.Pointer<git_oid_shorten>,
+              ffi.Pointer<ffi.Char>)>>('git_oid_shorten_add');
   late final _git_oid_shorten_add = _git_oid_shorten_addPtr.asFunction<
-      int Function(ffi.Pointer<git_oid_shorten>, ffi.Pointer<ffi.Int8>)>();
+      int Function(ffi.Pointer<git_oid_shorten>, ffi.Pointer<ffi.Char>)>();
 
   /// Free an OID shortener instance
   ///
@@ -3020,7 +3010,7 @@ class Libgit2 {
   /// @return 0 or an error code
   int git_repository_open(
     ffi.Pointer<ffi.Pointer<git_repository>> out,
-    ffi.Pointer<ffi.Int8> path,
+    ffi.Pointer<ffi.Char> path,
   ) {
     return _git_repository_open(
       out,
@@ -3030,11 +3020,11 @@ class Libgit2 {
 
   late final _git_repository_openPtr = _lookup<
       ffi.NativeFunction<
-          ffi.Int32 Function(ffi.Pointer<ffi.Pointer<git_repository>>,
-              ffi.Pointer<ffi.Int8>)>>('git_repository_open');
+          ffi.Int Function(ffi.Pointer<ffi.Pointer<git_repository>>,
+              ffi.Pointer<ffi.Char>)>>('git_repository_open');
   late final _git_repository_open = _git_repository_openPtr.asFunction<
       int Function(
-          ffi.Pointer<ffi.Pointer<git_repository>>, ffi.Pointer<ffi.Int8>)>();
+          ffi.Pointer<ffi.Pointer<git_repository>>, ffi.Pointer<ffi.Char>)>();
 
   /// Open working tree as a repository
   ///
@@ -3056,7 +3046,7 @@ class Libgit2 {
 
   late final _git_repository_open_from_worktreePtr = _lookup<
       ffi.NativeFunction<
-          ffi.Int32 Function(ffi.Pointer<ffi.Pointer<git_repository>>,
+          ffi.Int Function(ffi.Pointer<ffi.Pointer<git_repository>>,
               ffi.Pointer<git_worktree>)>>('git_repository_open_from_worktree');
   late final _git_repository_open_from_worktree =
       _git_repository_open_from_worktreePtr.asFunction<
@@ -3084,7 +3074,7 @@ class Libgit2 {
 
   late final _git_repository_wrap_odbPtr = _lookup<
       ffi.NativeFunction<
-          ffi.Int32 Function(ffi.Pointer<ffi.Pointer<git_repository>>,
+          ffi.Int Function(ffi.Pointer<ffi.Pointer<git_repository>>,
               ffi.Pointer<git_odb>)>>('git_repository_wrap_odb');
   late final _git_repository_wrap_odb = _git_repository_wrap_odbPtr.asFunction<
       int Function(
@@ -3116,9 +3106,9 @@ class Libgit2 {
   /// @return 0 or an error code
   int git_repository_discover(
     ffi.Pointer<git_buf> out,
-    ffi.Pointer<ffi.Int8> start_path,
+    ffi.Pointer<ffi.Char> start_path,
     int across_fs,
-    ffi.Pointer<ffi.Int8> ceiling_dirs,
+    ffi.Pointer<ffi.Char> ceiling_dirs,
   ) {
     return _git_repository_discover(
       out,
@@ -3130,11 +3120,11 @@ class Libgit2 {
 
   late final _git_repository_discoverPtr = _lookup<
       ffi.NativeFunction<
-          ffi.Int32 Function(ffi.Pointer<git_buf>, ffi.Pointer<ffi.Int8>,
-              ffi.Int32, ffi.Pointer<ffi.Int8>)>>('git_repository_discover');
+          ffi.Int Function(ffi.Pointer<git_buf>, ffi.Pointer<ffi.Char>, ffi.Int,
+              ffi.Pointer<ffi.Char>)>>('git_repository_discover');
   late final _git_repository_discover = _git_repository_discoverPtr.asFunction<
-      int Function(ffi.Pointer<git_buf>, ffi.Pointer<ffi.Int8>, int,
-          ffi.Pointer<ffi.Int8>)>();
+      int Function(ffi.Pointer<git_buf>, ffi.Pointer<ffi.Char>, int,
+          ffi.Pointer<ffi.Char>)>();
 
   /// Find and open a repository with extended controls.
   ///
@@ -3154,9 +3144,9 @@ class Libgit2 {
   /// (such as repo corruption or system errors).
   int git_repository_open_ext(
     ffi.Pointer<ffi.Pointer<git_repository>> out,
-    ffi.Pointer<ffi.Int8> path,
+    ffi.Pointer<ffi.Char> path,
     int flags,
-    ffi.Pointer<ffi.Int8> ceiling_dirs,
+    ffi.Pointer<ffi.Char> ceiling_dirs,
   ) {
     return _git_repository_open_ext(
       out,
@@ -3168,14 +3158,14 @@ class Libgit2 {
 
   late final _git_repository_open_extPtr = _lookup<
       ffi.NativeFunction<
-          ffi.Int32 Function(
+          ffi.Int Function(
               ffi.Pointer<ffi.Pointer<git_repository>>,
-              ffi.Pointer<ffi.Int8>,
-              ffi.Uint32,
-              ffi.Pointer<ffi.Int8>)>>('git_repository_open_ext');
+              ffi.Pointer<ffi.Char>,
+              ffi.UnsignedInt,
+              ffi.Pointer<ffi.Char>)>>('git_repository_open_ext');
   late final _git_repository_open_ext = _git_repository_open_extPtr.asFunction<
       int Function(ffi.Pointer<ffi.Pointer<git_repository>>,
-          ffi.Pointer<ffi.Int8>, int, ffi.Pointer<ffi.Int8>)>();
+          ffi.Pointer<ffi.Char>, int, ffi.Pointer<ffi.Char>)>();
 
   /// Open a bare repository on the serverside.
   ///
@@ -3188,7 +3178,7 @@ class Libgit2 {
   /// @return 0 on success, or an error code
   int git_repository_open_bare(
     ffi.Pointer<ffi.Pointer<git_repository>> out,
-    ffi.Pointer<ffi.Int8> bare_path,
+    ffi.Pointer<ffi.Char> bare_path,
   ) {
     return _git_repository_open_bare(
       out,
@@ -3198,12 +3188,12 @@ class Libgit2 {
 
   late final _git_repository_open_barePtr = _lookup<
       ffi.NativeFunction<
-          ffi.Int32 Function(ffi.Pointer<ffi.Pointer<git_repository>>,
-              ffi.Pointer<ffi.Int8>)>>('git_repository_open_bare');
+          ffi.Int Function(ffi.Pointer<ffi.Pointer<git_repository>>,
+              ffi.Pointer<ffi.Char>)>>('git_repository_open_bare');
   late final _git_repository_open_bare =
       _git_repository_open_barePtr.asFunction<
           int Function(ffi.Pointer<ffi.Pointer<git_repository>>,
-              ffi.Pointer<ffi.Int8>)>();
+              ffi.Pointer<ffi.Char>)>();
 
   /// Free a previously allocated repository
   ///
@@ -3243,7 +3233,7 @@ class Libgit2 {
   /// @return 0 or an error code
   int git_repository_init(
     ffi.Pointer<ffi.Pointer<git_repository>> out,
-    ffi.Pointer<ffi.Int8> path,
+    ffi.Pointer<ffi.Char> path,
     int is_bare,
   ) {
     return _git_repository_init(
@@ -3255,11 +3245,11 @@ class Libgit2 {
 
   late final _git_repository_initPtr = _lookup<
       ffi.NativeFunction<
-          ffi.Int32 Function(ffi.Pointer<ffi.Pointer<git_repository>>,
-              ffi.Pointer<ffi.Int8>, ffi.Uint32)>>('git_repository_init');
+          ffi.Int Function(ffi.Pointer<ffi.Pointer<git_repository>>,
+              ffi.Pointer<ffi.Char>, ffi.UnsignedInt)>>('git_repository_init');
   late final _git_repository_init = _git_repository_initPtr.asFunction<
       int Function(ffi.Pointer<ffi.Pointer<git_repository>>,
-          ffi.Pointer<ffi.Int8>, int)>();
+          ffi.Pointer<ffi.Char>, int)>();
 
   /// Initialize git_repository_init_options structure
   ///
@@ -3281,8 +3271,8 @@ class Libgit2 {
 
   late final _git_repository_init_options_initPtr = _lookup<
       ffi.NativeFunction<
-          ffi.Int32 Function(ffi.Pointer<git_repository_init_options>,
-              ffi.Uint32)>>('git_repository_init_options_init');
+          ffi.Int Function(ffi.Pointer<git_repository_init_options>,
+              ffi.UnsignedInt)>>('git_repository_init_options_init');
   late final _git_repository_init_options_init =
       _git_repository_init_options_initPtr.asFunction<
           int Function(ffi.Pointer<git_repository_init_options>, int)>();
@@ -3300,7 +3290,7 @@ class Libgit2 {
   /// @return 0 or an error code on failure.
   int git_repository_init_ext(
     ffi.Pointer<ffi.Pointer<git_repository>> out,
-    ffi.Pointer<ffi.Int8> repo_path,
+    ffi.Pointer<ffi.Char> repo_path,
     ffi.Pointer<git_repository_init_options> opts,
   ) {
     return _git_repository_init_ext(
@@ -3312,14 +3302,14 @@ class Libgit2 {
 
   late final _git_repository_init_extPtr = _lookup<
           ffi.NativeFunction<
-              ffi.Int32 Function(
+              ffi.Int Function(
                   ffi.Pointer<ffi.Pointer<git_repository>>,
-                  ffi.Pointer<ffi.Int8>,
+                  ffi.Pointer<ffi.Char>,
                   ffi.Pointer<git_repository_init_options>)>>(
       'git_repository_init_ext');
   late final _git_repository_init_ext = _git_repository_init_extPtr.asFunction<
       int Function(ffi.Pointer<ffi.Pointer<git_repository>>,
-          ffi.Pointer<ffi.Int8>, ffi.Pointer<git_repository_init_options>)>();
+          ffi.Pointer<ffi.Char>, ffi.Pointer<git_repository_init_options>)>();
 
   /// Retrieve and resolve the reference pointed at by HEAD.
   ///
@@ -3344,7 +3334,7 @@ class Libgit2 {
 
   late final _git_repository_headPtr = _lookup<
       ffi.NativeFunction<
-          ffi.Int32 Function(ffi.Pointer<ffi.Pointer<git_reference>>,
+          ffi.Int Function(ffi.Pointer<ffi.Pointer<git_reference>>,
               ffi.Pointer<git_repository>)>>('git_repository_head');
   late final _git_repository_head = _git_repository_headPtr.asFunction<
       int Function(ffi.Pointer<ffi.Pointer<git_reference>>,
@@ -3359,7 +3349,7 @@ class Libgit2 {
   int git_repository_head_for_worktree(
     ffi.Pointer<ffi.Pointer<git_reference>> out,
     ffi.Pointer<git_repository> repo,
-    ffi.Pointer<ffi.Int8> name,
+    ffi.Pointer<ffi.Char> name,
   ) {
     return _git_repository_head_for_worktree(
       out,
@@ -3370,14 +3360,14 @@ class Libgit2 {
 
   late final _git_repository_head_for_worktreePtr = _lookup<
       ffi.NativeFunction<
-          ffi.Int32 Function(
+          ffi.Int Function(
               ffi.Pointer<ffi.Pointer<git_reference>>,
               ffi.Pointer<git_repository>,
-              ffi.Pointer<ffi.Int8>)>>('git_repository_head_for_worktree');
+              ffi.Pointer<ffi.Char>)>>('git_repository_head_for_worktree');
   late final _git_repository_head_for_worktree =
       _git_repository_head_for_worktreePtr.asFunction<
           int Function(ffi.Pointer<ffi.Pointer<git_reference>>,
-              ffi.Pointer<git_repository>, ffi.Pointer<ffi.Int8>)>();
+              ffi.Pointer<git_repository>, ffi.Pointer<ffi.Char>)>();
 
   /// Check if a repository's HEAD is detached
   ///
@@ -3396,7 +3386,7 @@ class Libgit2 {
   }
 
   late final _git_repository_head_detachedPtr = _lookup<
-          ffi.NativeFunction<ffi.Int32 Function(ffi.Pointer<git_repository>)>>(
+          ffi.NativeFunction<ffi.Int Function(ffi.Pointer<git_repository>)>>(
       'git_repository_head_detached');
   late final _git_repository_head_detached = _git_repository_head_detachedPtr
       .asFunction<int Function(ffi.Pointer<git_repository>)>();
@@ -3412,7 +3402,7 @@ class Libgit2 {
   /// there was an error
   int git_repository_head_detached_for_worktree(
     ffi.Pointer<git_repository> repo,
-    ffi.Pointer<ffi.Int8> name,
+    ffi.Pointer<ffi.Char> name,
   ) {
     return _git_repository_head_detached_for_worktree(
       repo,
@@ -3422,12 +3412,12 @@ class Libgit2 {
 
   late final _git_repository_head_detached_for_worktreePtr = _lookup<
           ffi.NativeFunction<
-              ffi.Int32 Function(
-                  ffi.Pointer<git_repository>, ffi.Pointer<ffi.Int8>)>>(
+              ffi.Int Function(
+                  ffi.Pointer<git_repository>, ffi.Pointer<ffi.Char>)>>(
       'git_repository_head_detached_for_worktree');
   late final _git_repository_head_detached_for_worktree =
       _git_repository_head_detached_for_worktreePtr.asFunction<
-          int Function(ffi.Pointer<git_repository>, ffi.Pointer<ffi.Int8>)>();
+          int Function(ffi.Pointer<git_repository>, ffi.Pointer<ffi.Char>)>();
 
   /// Check if the current branch is unborn
   ///
@@ -3446,7 +3436,7 @@ class Libgit2 {
   }
 
   late final _git_repository_head_unbornPtr = _lookup<
-          ffi.NativeFunction<ffi.Int32 Function(ffi.Pointer<git_repository>)>>(
+          ffi.NativeFunction<ffi.Int Function(ffi.Pointer<git_repository>)>>(
       'git_repository_head_unborn');
   late final _git_repository_head_unborn = _git_repository_head_unbornPtr
       .asFunction<int Function(ffi.Pointer<git_repository>)>();
@@ -3468,7 +3458,7 @@ class Libgit2 {
   }
 
   late final _git_repository_is_emptyPtr = _lookup<
-          ffi.NativeFunction<ffi.Int32 Function(ffi.Pointer<git_repository>)>>(
+          ffi.NativeFunction<ffi.Int Function(ffi.Pointer<git_repository>)>>(
       'git_repository_is_empty');
   late final _git_repository_is_empty = _git_repository_is_emptyPtr
       .asFunction<int Function(ffi.Pointer<git_repository>)>();
@@ -3499,7 +3489,7 @@ class Libgit2 {
 
   late final _git_repository_item_pathPtr = _lookup<
       ffi.NativeFunction<
-          ffi.Int32 Function(ffi.Pointer<git_buf>, ffi.Pointer<git_repository>,
+          ffi.Int Function(ffi.Pointer<git_buf>, ffi.Pointer<git_repository>,
               ffi.Int32)>>('git_repository_item_path');
   late final _git_repository_item_path =
       _git_repository_item_pathPtr.asFunction<
@@ -3513,7 +3503,7 @@ class Libgit2 {
   ///
   /// @param repo A repository object
   /// @return the path to the repository
-  ffi.Pointer<ffi.Int8> git_repository_path(
+  ffi.Pointer<ffi.Char> git_repository_path(
     ffi.Pointer<git_repository> repo,
   ) {
     return _git_repository_path(
@@ -3523,10 +3513,10 @@ class Libgit2 {
 
   late final _git_repository_pathPtr = _lookup<
       ffi.NativeFunction<
-          ffi.Pointer<ffi.Int8> Function(
+          ffi.Pointer<ffi.Char> Function(
               ffi.Pointer<git_repository>)>>('git_repository_path');
   late final _git_repository_path = _git_repository_pathPtr.asFunction<
-      ffi.Pointer<ffi.Int8> Function(ffi.Pointer<git_repository>)>();
+      ffi.Pointer<ffi.Char> Function(ffi.Pointer<git_repository>)>();
 
   /// Get the path of the working directory for this repository
   ///
@@ -3535,7 +3525,7 @@ class Libgit2 {
   ///
   /// @param repo A repository object
   /// @return the path to the working dir, if it exists
-  ffi.Pointer<ffi.Int8> git_repository_workdir(
+  ffi.Pointer<ffi.Char> git_repository_workdir(
     ffi.Pointer<git_repository> repo,
   ) {
     return _git_repository_workdir(
@@ -3545,10 +3535,10 @@ class Libgit2 {
 
   late final _git_repository_workdirPtr = _lookup<
       ffi.NativeFunction<
-          ffi.Pointer<ffi.Int8> Function(
+          ffi.Pointer<ffi.Char> Function(
               ffi.Pointer<git_repository>)>>('git_repository_workdir');
   late final _git_repository_workdir = _git_repository_workdirPtr.asFunction<
-      ffi.Pointer<ffi.Int8> Function(ffi.Pointer<git_repository>)>();
+      ffi.Pointer<ffi.Char> Function(ffi.Pointer<git_repository>)>();
 
   /// Get the path of the shared common directory for this repository.
   ///
@@ -3558,7 +3548,7 @@ class Libgit2 {
   ///
   /// @param repo A repository object
   /// @return the path to the common dir
-  ffi.Pointer<ffi.Int8> git_repository_commondir(
+  ffi.Pointer<ffi.Char> git_repository_commondir(
     ffi.Pointer<git_repository> repo,
   ) {
     return _git_repository_commondir(
@@ -3568,11 +3558,11 @@ class Libgit2 {
 
   late final _git_repository_commondirPtr = _lookup<
       ffi.NativeFunction<
-          ffi.Pointer<ffi.Int8> Function(
+          ffi.Pointer<ffi.Char> Function(
               ffi.Pointer<git_repository>)>>('git_repository_commondir');
   late final _git_repository_commondir =
       _git_repository_commondirPtr.asFunction<
-          ffi.Pointer<ffi.Int8> Function(ffi.Pointer<git_repository>)>();
+          ffi.Pointer<ffi.Char> Function(ffi.Pointer<git_repository>)>();
 
   /// Set the path to the working directory for this repository
   ///
@@ -3591,7 +3581,7 @@ class Libgit2 {
   /// @return 0, or an error code
   int git_repository_set_workdir(
     ffi.Pointer<git_repository> repo,
-    ffi.Pointer<ffi.Int8> workdir,
+    ffi.Pointer<ffi.Char> workdir,
     int update_gitlink,
   ) {
     return _git_repository_set_workdir(
@@ -3603,12 +3593,12 @@ class Libgit2 {
 
   late final _git_repository_set_workdirPtr = _lookup<
       ffi.NativeFunction<
-          ffi.Int32 Function(ffi.Pointer<git_repository>, ffi.Pointer<ffi.Int8>,
-              ffi.Int32)>>('git_repository_set_workdir');
+          ffi.Int Function(ffi.Pointer<git_repository>, ffi.Pointer<ffi.Char>,
+              ffi.Int)>>('git_repository_set_workdir');
   late final _git_repository_set_workdir =
       _git_repository_set_workdirPtr.asFunction<
           int Function(
-              ffi.Pointer<git_repository>, ffi.Pointer<ffi.Int8>, int)>();
+              ffi.Pointer<git_repository>, ffi.Pointer<ffi.Char>, int)>();
 
   /// Check if a repository is bare
   ///
@@ -3623,7 +3613,7 @@ class Libgit2 {
   }
 
   late final _git_repository_is_barePtr = _lookup<
-          ffi.NativeFunction<ffi.Int32 Function(ffi.Pointer<git_repository>)>>(
+          ffi.NativeFunction<ffi.Int Function(ffi.Pointer<git_repository>)>>(
       'git_repository_is_bare');
   late final _git_repository_is_bare = _git_repository_is_barePtr
       .asFunction<int Function(ffi.Pointer<git_repository>)>();
@@ -3641,7 +3631,7 @@ class Libgit2 {
   }
 
   late final _git_repository_is_worktreePtr = _lookup<
-          ffi.NativeFunction<ffi.Int32 Function(ffi.Pointer<git_repository>)>>(
+          ffi.NativeFunction<ffi.Int Function(ffi.Pointer<git_repository>)>>(
       'git_repository_is_worktree');
   late final _git_repository_is_worktree = _git_repository_is_worktreePtr
       .asFunction<int Function(ffi.Pointer<git_repository>)>();
@@ -3670,7 +3660,7 @@ class Libgit2 {
 
   late final _git_repository_configPtr = _lookup<
       ffi.NativeFunction<
-          ffi.Int32 Function(ffi.Pointer<ffi.Pointer<git_config>>,
+          ffi.Int Function(ffi.Pointer<ffi.Pointer<git_config>>,
               ffi.Pointer<git_repository>)>>('git_repository_config');
   late final _git_repository_config = _git_repository_configPtr.asFunction<
       int Function(
@@ -3700,7 +3690,7 @@ class Libgit2 {
 
   late final _git_repository_config_snapshotPtr = _lookup<
       ffi.NativeFunction<
-          ffi.Int32 Function(ffi.Pointer<ffi.Pointer<git_config>>,
+          ffi.Int Function(ffi.Pointer<ffi.Pointer<git_config>>,
               ffi.Pointer<git_repository>)>>('git_repository_config_snapshot');
   late final _git_repository_config_snapshot =
       _git_repository_config_snapshotPtr.asFunction<
@@ -3731,7 +3721,7 @@ class Libgit2 {
 
   late final _git_repository_odbPtr = _lookup<
       ffi.NativeFunction<
-          ffi.Int32 Function(ffi.Pointer<ffi.Pointer<git_odb>>,
+          ffi.Int Function(ffi.Pointer<ffi.Pointer<git_odb>>,
               ffi.Pointer<git_repository>)>>('git_repository_odb');
   late final _git_repository_odb = _git_repository_odbPtr.asFunction<
       int Function(
@@ -3761,7 +3751,7 @@ class Libgit2 {
 
   late final _git_repository_refdbPtr = _lookup<
       ffi.NativeFunction<
-          ffi.Int32 Function(ffi.Pointer<ffi.Pointer<git_refdb>>,
+          ffi.Int Function(ffi.Pointer<ffi.Pointer<git_refdb>>,
               ffi.Pointer<git_repository>)>>('git_repository_refdb');
   late final _git_repository_refdb = _git_repository_refdbPtr.asFunction<
       int Function(
@@ -3791,7 +3781,7 @@ class Libgit2 {
 
   late final _git_repository_indexPtr = _lookup<
       ffi.NativeFunction<
-          ffi.Int32 Function(ffi.Pointer<ffi.Pointer<git_index>>,
+          ffi.Int Function(ffi.Pointer<ffi.Pointer<git_index>>,
               ffi.Pointer<git_repository>)>>('git_repository_index');
   late final _git_repository_index = _git_repository_indexPtr.asFunction<
       int Function(
@@ -3823,7 +3813,7 @@ class Libgit2 {
 
   late final _git_repository_messagePtr = _lookup<
       ffi.NativeFunction<
-          ffi.Int32 Function(ffi.Pointer<git_buf>,
+          ffi.Int Function(ffi.Pointer<git_buf>,
               ffi.Pointer<git_repository>)>>('git_repository_message');
   late final _git_repository_message = _git_repository_messagePtr.asFunction<
       int Function(ffi.Pointer<git_buf>, ffi.Pointer<git_repository>)>();
@@ -3843,7 +3833,7 @@ class Libgit2 {
   }
 
   late final _git_repository_message_removePtr = _lookup<
-          ffi.NativeFunction<ffi.Int32 Function(ffi.Pointer<git_repository>)>>(
+          ffi.NativeFunction<ffi.Int Function(ffi.Pointer<git_repository>)>>(
       'git_repository_message_remove');
   late final _git_repository_message_remove = _git_repository_message_removePtr
       .asFunction<int Function(ffi.Pointer<git_repository>)>();
@@ -3862,7 +3852,7 @@ class Libgit2 {
   }
 
   late final _git_repository_state_cleanupPtr = _lookup<
-          ffi.NativeFunction<ffi.Int32 Function(ffi.Pointer<git_repository>)>>(
+          ffi.NativeFunction<ffi.Int Function(ffi.Pointer<git_repository>)>>(
       'git_repository_state_cleanup');
   late final _git_repository_state_cleanup = _git_repository_state_cleanupPtr
       .asFunction<int Function(ffi.Pointer<git_repository>)>();
@@ -3890,7 +3880,7 @@ class Libgit2 {
 
   late final _git_repository_fetchhead_foreachPtr = _lookup<
       ffi.NativeFunction<
-          ffi.Int32 Function(
+          ffi.Int Function(
               ffi.Pointer<git_repository>,
               git_repository_fetchhead_foreach_cb,
               ffi.Pointer<ffi.Void>)>>('git_repository_fetchhead_foreach');
@@ -3923,7 +3913,7 @@ class Libgit2 {
 
   late final _git_repository_mergehead_foreachPtr = _lookup<
       ffi.NativeFunction<
-          ffi.Int32 Function(
+          ffi.Int Function(
               ffi.Pointer<git_repository>,
               git_repository_mergehead_foreach_cb,
               ffi.Pointer<ffi.Void>)>>('git_repository_mergehead_foreach');
@@ -3958,9 +3948,9 @@ class Libgit2 {
   int git_repository_hashfile(
     ffi.Pointer<git_oid> out,
     ffi.Pointer<git_repository> repo,
-    ffi.Pointer<ffi.Int8> path,
+    ffi.Pointer<ffi.Char> path,
     int type,
-    ffi.Pointer<ffi.Int8> as_path,
+    ffi.Pointer<ffi.Char> as_path,
   ) {
     return _git_repository_hashfile(
       out,
@@ -3973,15 +3963,15 @@ class Libgit2 {
 
   late final _git_repository_hashfilePtr = _lookup<
       ffi.NativeFunction<
-          ffi.Int32 Function(
+          ffi.Int Function(
               ffi.Pointer<git_oid>,
               ffi.Pointer<git_repository>,
-              ffi.Pointer<ffi.Int8>,
+              ffi.Pointer<ffi.Char>,
               ffi.Int32,
-              ffi.Pointer<ffi.Int8>)>>('git_repository_hashfile');
+              ffi.Pointer<ffi.Char>)>>('git_repository_hashfile');
   late final _git_repository_hashfile = _git_repository_hashfilePtr.asFunction<
       int Function(ffi.Pointer<git_oid>, ffi.Pointer<git_repository>,
-          ffi.Pointer<ffi.Int8>, int, ffi.Pointer<ffi.Int8>)>();
+          ffi.Pointer<ffi.Char>, int, ffi.Pointer<ffi.Char>)>();
 
   /// Make the repository HEAD point to the specified reference.
   ///
@@ -4001,7 +3991,7 @@ class Libgit2 {
   /// @return 0 on success, or an error code
   int git_repository_set_head(
     ffi.Pointer<git_repository> repo,
-    ffi.Pointer<ffi.Int8> refname,
+    ffi.Pointer<ffi.Char> refname,
   ) {
     return _git_repository_set_head(
       repo,
@@ -4011,10 +4001,10 @@ class Libgit2 {
 
   late final _git_repository_set_headPtr = _lookup<
       ffi.NativeFunction<
-          ffi.Int32 Function(ffi.Pointer<git_repository>,
-              ffi.Pointer<ffi.Int8>)>>('git_repository_set_head');
+          ffi.Int Function(ffi.Pointer<git_repository>,
+              ffi.Pointer<ffi.Char>)>>('git_repository_set_head');
   late final _git_repository_set_head = _git_repository_set_headPtr.asFunction<
-      int Function(ffi.Pointer<git_repository>, ffi.Pointer<ffi.Int8>)>();
+      int Function(ffi.Pointer<git_repository>, ffi.Pointer<ffi.Char>)>();
 
   /// Make the repository HEAD directly point to the Commit.
   ///
@@ -4042,7 +4032,7 @@ class Libgit2 {
 
   late final _git_repository_set_head_detachedPtr = _lookup<
       ffi.NativeFunction<
-          ffi.Int32 Function(ffi.Pointer<git_repository>,
+          ffi.Int Function(ffi.Pointer<git_repository>,
               ffi.Pointer<git_oid>)>>('git_repository_set_head_detached');
   late final _git_repository_set_head_detached =
       _git_repository_set_head_detachedPtr.asFunction<
@@ -4070,7 +4060,7 @@ class Libgit2 {
 
   late final _git_repository_set_head_detached_from_annotatedPtr = _lookup<
           ffi.NativeFunction<
-              ffi.Int32 Function(ffi.Pointer<git_repository>,
+              ffi.Int Function(ffi.Pointer<git_repository>,
                   ffi.Pointer<git_annotated_commit>)>>(
       'git_repository_set_head_detached_from_annotated');
   late final _git_repository_set_head_detached_from_annotated =
@@ -4102,7 +4092,7 @@ class Libgit2 {
   }
 
   late final _git_repository_detach_headPtr = _lookup<
-          ffi.NativeFunction<ffi.Int32 Function(ffi.Pointer<git_repository>)>>(
+          ffi.NativeFunction<ffi.Int Function(ffi.Pointer<git_repository>)>>(
       'git_repository_detach_head');
   late final _git_repository_detach_head = _git_repository_detach_headPtr
       .asFunction<int Function(ffi.Pointer<git_repository>)>();
@@ -4121,7 +4111,7 @@ class Libgit2 {
   }
 
   late final _git_repository_statePtr = _lookup<
-          ffi.NativeFunction<ffi.Int32 Function(ffi.Pointer<git_repository>)>>(
+          ffi.NativeFunction<ffi.Int Function(ffi.Pointer<git_repository>)>>(
       'git_repository_state');
   late final _git_repository_state = _git_repository_statePtr
       .asFunction<int Function(ffi.Pointer<git_repository>)>();
@@ -4138,7 +4128,7 @@ class Libgit2 {
   /// @return 0 on success, -1 on error
   int git_repository_set_namespace(
     ffi.Pointer<git_repository> repo,
-    ffi.Pointer<ffi.Int8> nmspace,
+    ffi.Pointer<ffi.Char> nmspace,
   ) {
     return _git_repository_set_namespace(
       repo,
@@ -4148,17 +4138,17 @@ class Libgit2 {
 
   late final _git_repository_set_namespacePtr = _lookup<
       ffi.NativeFunction<
-          ffi.Int32 Function(ffi.Pointer<git_repository>,
-              ffi.Pointer<ffi.Int8>)>>('git_repository_set_namespace');
+          ffi.Int Function(ffi.Pointer<git_repository>,
+              ffi.Pointer<ffi.Char>)>>('git_repository_set_namespace');
   late final _git_repository_set_namespace =
       _git_repository_set_namespacePtr.asFunction<
-          int Function(ffi.Pointer<git_repository>, ffi.Pointer<ffi.Int8>)>();
+          int Function(ffi.Pointer<git_repository>, ffi.Pointer<ffi.Char>)>();
 
   /// Get the currently active namespace for this repository
   ///
   /// @param repo The repo
   /// @return the active namespace, or NULL if there isn't one
-  ffi.Pointer<ffi.Int8> git_repository_get_namespace(
+  ffi.Pointer<ffi.Char> git_repository_get_namespace(
     ffi.Pointer<git_repository> repo,
   ) {
     return _git_repository_get_namespace(
@@ -4168,11 +4158,11 @@ class Libgit2 {
 
   late final _git_repository_get_namespacePtr = _lookup<
       ffi.NativeFunction<
-          ffi.Pointer<ffi.Int8> Function(
+          ffi.Pointer<ffi.Char> Function(
               ffi.Pointer<git_repository>)>>('git_repository_get_namespace');
   late final _git_repository_get_namespace =
       _git_repository_get_namespacePtr.asFunction<
-          ffi.Pointer<ffi.Int8> Function(ffi.Pointer<git_repository>)>();
+          ffi.Pointer<ffi.Char> Function(ffi.Pointer<git_repository>)>();
 
   /// Determine if the repository was a shallow clone
   ///
@@ -4187,7 +4177,7 @@ class Libgit2 {
   }
 
   late final _git_repository_is_shallowPtr = _lookup<
-          ffi.NativeFunction<ffi.Int32 Function(ffi.Pointer<git_repository>)>>(
+          ffi.NativeFunction<ffi.Int Function(ffi.Pointer<git_repository>)>>(
       'git_repository_is_shallow');
   late final _git_repository_is_shallow = _git_repository_is_shallowPtr
       .asFunction<int Function(ffi.Pointer<git_repository>)>();
@@ -4202,8 +4192,8 @@ class Libgit2 {
   /// @param repo the repository
   /// @return 0 or an error code
   int git_repository_ident(
-    ffi.Pointer<ffi.Pointer<ffi.Int8>> name,
-    ffi.Pointer<ffi.Pointer<ffi.Int8>> email,
+    ffi.Pointer<ffi.Pointer<ffi.Char>> name,
+    ffi.Pointer<ffi.Pointer<ffi.Char>> email,
     ffi.Pointer<git_repository> repo,
   ) {
     return _git_repository_ident(
@@ -4215,13 +4205,13 @@ class Libgit2 {
 
   late final _git_repository_identPtr = _lookup<
       ffi.NativeFunction<
-          ffi.Int32 Function(
-              ffi.Pointer<ffi.Pointer<ffi.Int8>>,
-              ffi.Pointer<ffi.Pointer<ffi.Int8>>,
+          ffi.Int Function(
+              ffi.Pointer<ffi.Pointer<ffi.Char>>,
+              ffi.Pointer<ffi.Pointer<ffi.Char>>,
               ffi.Pointer<git_repository>)>>('git_repository_ident');
   late final _git_repository_ident = _git_repository_identPtr.asFunction<
-      int Function(ffi.Pointer<ffi.Pointer<ffi.Int8>>,
-          ffi.Pointer<ffi.Pointer<ffi.Int8>>, ffi.Pointer<git_repository>)>();
+      int Function(ffi.Pointer<ffi.Pointer<ffi.Char>>,
+          ffi.Pointer<ffi.Pointer<ffi.Char>>, ffi.Pointer<git_repository>)>();
 
   /// Set the identity to be used for writing reflogs
   ///
@@ -4235,8 +4225,8 @@ class Libgit2 {
   /// @return 0 or an error code.
   int git_repository_set_ident(
     ffi.Pointer<git_repository> repo,
-    ffi.Pointer<ffi.Int8> name,
-    ffi.Pointer<ffi.Int8> email,
+    ffi.Pointer<ffi.Char> name,
+    ffi.Pointer<ffi.Char> email,
   ) {
     return _git_repository_set_ident(
       repo,
@@ -4247,12 +4237,12 @@ class Libgit2 {
 
   late final _git_repository_set_identPtr = _lookup<
       ffi.NativeFunction<
-          ffi.Int32 Function(ffi.Pointer<git_repository>, ffi.Pointer<ffi.Int8>,
-              ffi.Pointer<ffi.Int8>)>>('git_repository_set_ident');
+          ffi.Int Function(ffi.Pointer<git_repository>, ffi.Pointer<ffi.Char>,
+              ffi.Pointer<ffi.Char>)>>('git_repository_set_ident');
   late final _git_repository_set_ident =
       _git_repository_set_identPtr.asFunction<
-          int Function(ffi.Pointer<git_repository>, ffi.Pointer<ffi.Int8>,
-              ffi.Pointer<ffi.Int8>)>();
+          int Function(ffi.Pointer<git_repository>, ffi.Pointer<ffi.Char>,
+              ffi.Pointer<ffi.Char>)>();
 
   /// Creates a `git_annotated_commit` from the given reference.
   /// The resulting git_annotated_commit must be freed with
@@ -4276,7 +4266,7 @@ class Libgit2 {
 
   late final _git_annotated_commit_from_refPtr = _lookup<
       ffi.NativeFunction<
-          ffi.Int32 Function(
+          ffi.Int Function(
               ffi.Pointer<ffi.Pointer<git_annotated_commit>>,
               ffi.Pointer<git_repository>,
               ffi.Pointer<git_reference>)>>('git_annotated_commit_from_ref');
@@ -4298,8 +4288,8 @@ class Libgit2 {
   int git_annotated_commit_from_fetchhead(
     ffi.Pointer<ffi.Pointer<git_annotated_commit>> out,
     ffi.Pointer<git_repository> repo,
-    ffi.Pointer<ffi.Int8> branch_name,
-    ffi.Pointer<ffi.Int8> remote_url,
+    ffi.Pointer<ffi.Char> branch_name,
+    ffi.Pointer<ffi.Char> remote_url,
     ffi.Pointer<git_oid> id,
   ) {
     return _git_annotated_commit_from_fetchhead(
@@ -4313,19 +4303,19 @@ class Libgit2 {
 
   late final _git_annotated_commit_from_fetchheadPtr = _lookup<
       ffi.NativeFunction<
-          ffi.Int32 Function(
+          ffi.Int Function(
               ffi.Pointer<ffi.Pointer<git_annotated_commit>>,
               ffi.Pointer<git_repository>,
-              ffi.Pointer<ffi.Int8>,
-              ffi.Pointer<ffi.Int8>,
+              ffi.Pointer<ffi.Char>,
+              ffi.Pointer<ffi.Char>,
               ffi.Pointer<git_oid>)>>('git_annotated_commit_from_fetchhead');
   late final _git_annotated_commit_from_fetchhead =
       _git_annotated_commit_from_fetchheadPtr.asFunction<
           int Function(
               ffi.Pointer<ffi.Pointer<git_annotated_commit>>,
               ffi.Pointer<git_repository>,
-              ffi.Pointer<ffi.Int8>,
-              ffi.Pointer<ffi.Int8>,
+              ffi.Pointer<ffi.Char>,
+              ffi.Pointer<ffi.Char>,
               ffi.Pointer<git_oid>)>();
 
   /// Creates a `git_annotated_commit` from the given commit id.
@@ -4358,7 +4348,7 @@ class Libgit2 {
 
   late final _git_annotated_commit_lookupPtr = _lookup<
       ffi.NativeFunction<
-          ffi.Int32 Function(
+          ffi.Int Function(
               ffi.Pointer<ffi.Pointer<git_annotated_commit>>,
               ffi.Pointer<git_repository>,
               ffi.Pointer<git_oid>)>>('git_annotated_commit_lookup');
@@ -4380,7 +4370,7 @@ class Libgit2 {
   int git_annotated_commit_from_revspec(
     ffi.Pointer<ffi.Pointer<git_annotated_commit>> out,
     ffi.Pointer<git_repository> repo,
-    ffi.Pointer<ffi.Int8> revspec,
+    ffi.Pointer<ffi.Char> revspec,
   ) {
     return _git_annotated_commit_from_revspec(
       out,
@@ -4391,14 +4381,14 @@ class Libgit2 {
 
   late final _git_annotated_commit_from_revspecPtr = _lookup<
       ffi.NativeFunction<
-          ffi.Int32 Function(
+          ffi.Int Function(
               ffi.Pointer<ffi.Pointer<git_annotated_commit>>,
               ffi.Pointer<git_repository>,
-              ffi.Pointer<ffi.Int8>)>>('git_annotated_commit_from_revspec');
+              ffi.Pointer<ffi.Char>)>>('git_annotated_commit_from_revspec');
   late final _git_annotated_commit_from_revspec =
       _git_annotated_commit_from_revspecPtr.asFunction<
           int Function(ffi.Pointer<ffi.Pointer<git_annotated_commit>>,
-              ffi.Pointer<git_repository>, ffi.Pointer<ffi.Int8>)>();
+              ffi.Pointer<git_repository>, ffi.Pointer<ffi.Char>)>();
 
   /// Gets the commit ID that the given `git_annotated_commit` refers to.
   ///
@@ -4423,7 +4413,7 @@ class Libgit2 {
   ///
   /// @param commit the given annotated commit
   /// @return ref name.
-  ffi.Pointer<ffi.Int8> git_annotated_commit_ref(
+  ffi.Pointer<ffi.Char> git_annotated_commit_ref(
     ffi.Pointer<git_annotated_commit> commit,
   ) {
     return _git_annotated_commit_ref(
@@ -4433,11 +4423,11 @@ class Libgit2 {
 
   late final _git_annotated_commit_refPtr = _lookup<
       ffi.NativeFunction<
-          ffi.Pointer<ffi.Int8> Function(
+          ffi.Pointer<ffi.Char> Function(
               ffi.Pointer<git_annotated_commit>)>>('git_annotated_commit_ref');
   late final _git_annotated_commit_ref =
       _git_annotated_commit_refPtr.asFunction<
-          ffi.Pointer<ffi.Int8> Function(ffi.Pointer<git_annotated_commit>)>();
+          ffi.Pointer<ffi.Char> Function(ffi.Pointer<git_annotated_commit>)>();
 
   /// Frees a `git_annotated_commit`.
   ///
@@ -4489,7 +4479,7 @@ class Libgit2 {
 
   late final _git_object_lookupPtr = _lookup<
       ffi.NativeFunction<
-          ffi.Int32 Function(
+          ffi.Int Function(
               ffi.Pointer<ffi.Pointer<git_object>>,
               ffi.Pointer<git_repository>,
               ffi.Pointer<git_oid>,
@@ -4541,11 +4531,11 @@ class Libgit2 {
 
   late final _git_object_lookup_prefixPtr = _lookup<
       ffi.NativeFunction<
-          ffi.Int32 Function(
+          ffi.Int Function(
               ffi.Pointer<ffi.Pointer<git_object>>,
               ffi.Pointer<git_repository>,
               ffi.Pointer<git_oid>,
-              size_t,
+              ffi.Size,
               ffi.Int32)>>('git_object_lookup_prefix');
   late final _git_object_lookup_prefix =
       _git_object_lookup_prefixPtr.asFunction<
@@ -4563,7 +4553,7 @@ class Libgit2 {
   int git_object_lookup_bypath(
     ffi.Pointer<ffi.Pointer<git_object>> out,
     ffi.Pointer<git_object> treeish,
-    ffi.Pointer<ffi.Int8> path,
+    ffi.Pointer<ffi.Char> path,
     int type,
   ) {
     return _git_object_lookup_bypath(
@@ -4576,15 +4566,15 @@ class Libgit2 {
 
   late final _git_object_lookup_bypathPtr = _lookup<
       ffi.NativeFunction<
-          ffi.Int32 Function(
+          ffi.Int Function(
               ffi.Pointer<ffi.Pointer<git_object>>,
               ffi.Pointer<git_object>,
-              ffi.Pointer<ffi.Int8>,
+              ffi.Pointer<ffi.Char>,
               ffi.Int32)>>('git_object_lookup_bypath');
   late final _git_object_lookup_bypath =
       _git_object_lookup_bypathPtr.asFunction<
           int Function(ffi.Pointer<ffi.Pointer<git_object>>,
-              ffi.Pointer<git_object>, ffi.Pointer<ffi.Int8>, int)>();
+              ffi.Pointer<git_object>, ffi.Pointer<ffi.Char>, int)>();
 
   /// Get the id (SHA1) of a repository object
   ///
@@ -4627,7 +4617,7 @@ class Libgit2 {
 
   late final _git_object_short_idPtr = _lookup<
       ffi.NativeFunction<
-          ffi.Int32 Function(ffi.Pointer<git_buf>,
+          ffi.Int Function(ffi.Pointer<git_buf>,
               ffi.Pointer<git_object>)>>('git_object_short_id');
   late final _git_object_short_id = _git_object_short_idPtr.asFunction<
       int Function(ffi.Pointer<git_buf>, ffi.Pointer<git_object>)>();
@@ -4709,7 +4699,7 @@ class Libgit2 {
   ///
   /// @param type object type to convert.
   /// @return the corresponding string representation.
-  ffi.Pointer<ffi.Int8> git_object_type2string(
+  ffi.Pointer<ffi.Char> git_object_type2string(
     int type,
   ) {
     return _git_object_type2string(
@@ -4718,17 +4708,17 @@ class Libgit2 {
   }
 
   late final _git_object_type2stringPtr =
-      _lookup<ffi.NativeFunction<ffi.Pointer<ffi.Int8> Function(ffi.Int32)>>(
+      _lookup<ffi.NativeFunction<ffi.Pointer<ffi.Char> Function(ffi.Int32)>>(
           'git_object_type2string');
   late final _git_object_type2string = _git_object_type2stringPtr
-      .asFunction<ffi.Pointer<ffi.Int8> Function(int)>();
+      .asFunction<ffi.Pointer<ffi.Char> Function(int)>();
 
   /// Convert a string object type representation to it's git_object_t.
   ///
   /// @param str the string to convert.
   /// @return the corresponding git_object_t.
   int git_object_string2type(
-    ffi.Pointer<ffi.Int8> str,
+    ffi.Pointer<ffi.Char> str,
   ) {
     return _git_object_string2type(
       str,
@@ -4736,10 +4726,10 @@ class Libgit2 {
   }
 
   late final _git_object_string2typePtr =
-      _lookup<ffi.NativeFunction<ffi.Int32 Function(ffi.Pointer<ffi.Int8>)>>(
+      _lookup<ffi.NativeFunction<ffi.Int32 Function(ffi.Pointer<ffi.Char>)>>(
           'git_object_string2type');
   late final _git_object_string2type = _git_object_string2typePtr
-      .asFunction<int Function(ffi.Pointer<ffi.Int8>)>();
+      .asFunction<int Function(ffi.Pointer<ffi.Char>)>();
 
   /// Determine if the given git_object_t is a valid loose object type.
   ///
@@ -4755,7 +4745,7 @@ class Libgit2 {
   }
 
   late final _git_object_typeisloosePtr =
-      _lookup<ffi.NativeFunction<ffi.Int32 Function(ffi.Int32)>>(
+      _lookup<ffi.NativeFunction<ffi.Int Function(ffi.Int32)>>(
           'git_object_typeisloose');
   late final _git_object_typeisloose =
       _git_object_typeisloosePtr.asFunction<int Function(int)>();
@@ -4795,7 +4785,7 @@ class Libgit2 {
 
   late final _git_object_peelPtr = _lookup<
       ffi.NativeFunction<
-          ffi.Int32 Function(ffi.Pointer<ffi.Pointer<git_object>>,
+          ffi.Int Function(ffi.Pointer<ffi.Pointer<git_object>>,
               ffi.Pointer<git_object>, ffi.Int32)>>('git_object_peel');
   late final _git_object_peel = _git_object_peelPtr.asFunction<
       int Function(ffi.Pointer<ffi.Pointer<git_object>>,
@@ -4819,7 +4809,7 @@ class Libgit2 {
 
   late final _git_object_dupPtr = _lookup<
       ffi.NativeFunction<
-          ffi.Int32 Function(ffi.Pointer<ffi.Pointer<git_object>>,
+          ffi.Int Function(ffi.Pointer<ffi.Pointer<git_object>>,
               ffi.Pointer<git_object>)>>('git_object_dup');
   late final _git_object_dup = _git_object_dupPtr.asFunction<
       int Function(
@@ -4840,8 +4830,8 @@ class Libgit2 {
   /// @param type The type of the object in the buffer
   /// @return 0 on success or an error code
   int git_object_rawcontent_is_valid(
-    ffi.Pointer<ffi.Int32> valid,
-    ffi.Pointer<ffi.Int8> buf,
+    ffi.Pointer<ffi.Int> valid,
+    ffi.Pointer<ffi.Char> buf,
     int len,
     int type,
   ) {
@@ -4855,12 +4845,12 @@ class Libgit2 {
 
   late final _git_object_rawcontent_is_validPtr = _lookup<
       ffi.NativeFunction<
-          ffi.Int32 Function(ffi.Pointer<ffi.Int32>, ffi.Pointer<ffi.Int8>,
-              size_t, ffi.Int32)>>('git_object_rawcontent_is_valid');
+          ffi.Int Function(ffi.Pointer<ffi.Int>, ffi.Pointer<ffi.Char>,
+              ffi.Size, ffi.Int32)>>('git_object_rawcontent_is_valid');
   late final _git_object_rawcontent_is_valid =
       _git_object_rawcontent_is_validPtr.asFunction<
           int Function(
-              ffi.Pointer<ffi.Int32>, ffi.Pointer<ffi.Int8>, int, int)>();
+              ffi.Pointer<ffi.Int>, ffi.Pointer<ffi.Char>, int, int)>();
 
   /// Lookup a tree object from the repository.
   ///
@@ -4882,7 +4872,7 @@ class Libgit2 {
 
   late final _git_tree_lookupPtr = _lookup<
       ffi.NativeFunction<
-          ffi.Int32 Function(
+          ffi.Int Function(
               ffi.Pointer<ffi.Pointer<git_tree>>,
               ffi.Pointer<git_repository>,
               ffi.Pointer<git_oid>)>>('git_tree_lookup');
@@ -4916,11 +4906,11 @@ class Libgit2 {
 
   late final _git_tree_lookup_prefixPtr = _lookup<
       ffi.NativeFunction<
-          ffi.Int32 Function(
+          ffi.Int Function(
               ffi.Pointer<ffi.Pointer<git_tree>>,
               ffi.Pointer<git_repository>,
               ffi.Pointer<git_oid>,
-              size_t)>>('git_tree_lookup_prefix');
+              ffi.Size)>>('git_tree_lookup_prefix');
   late final _git_tree_lookup_prefix = _git_tree_lookup_prefixPtr.asFunction<
       int Function(ffi.Pointer<ffi.Pointer<git_tree>>,
           ffi.Pointer<git_repository>, ffi.Pointer<git_oid>, int)>();
@@ -4997,7 +4987,7 @@ class Libgit2 {
   }
 
   late final _git_tree_entrycountPtr =
-      _lookup<ffi.NativeFunction<size_t Function(ffi.Pointer<git_tree>)>>(
+      _lookup<ffi.NativeFunction<ffi.Size Function(ffi.Pointer<git_tree>)>>(
           'git_tree_entrycount');
   late final _git_tree_entrycount =
       _git_tree_entrycountPtr.asFunction<int Function(ffi.Pointer<git_tree>)>();
@@ -5012,7 +5002,7 @@ class Libgit2 {
   /// @return the tree entry; NULL if not found
   ffi.Pointer<git_tree_entry> git_tree_entry_byname(
     ffi.Pointer<git_tree> tree,
-    ffi.Pointer<ffi.Int8> filename,
+    ffi.Pointer<ffi.Char> filename,
   ) {
     return _git_tree_entry_byname(
       tree,
@@ -5023,10 +5013,10 @@ class Libgit2 {
   late final _git_tree_entry_bynamePtr = _lookup<
       ffi.NativeFunction<
           ffi.Pointer<git_tree_entry> Function(ffi.Pointer<git_tree>,
-              ffi.Pointer<ffi.Int8>)>>('git_tree_entry_byname');
+              ffi.Pointer<ffi.Char>)>>('git_tree_entry_byname');
   late final _git_tree_entry_byname = _git_tree_entry_bynamePtr.asFunction<
       ffi.Pointer<git_tree_entry> Function(
-          ffi.Pointer<git_tree>, ffi.Pointer<ffi.Int8>)>();
+          ffi.Pointer<git_tree>, ffi.Pointer<ffi.Char>)>();
 
   /// Lookup a tree entry by its position in the tree
   ///
@@ -5049,7 +5039,7 @@ class Libgit2 {
   late final _git_tree_entry_byindexPtr = _lookup<
       ffi.NativeFunction<
           ffi.Pointer<git_tree_entry> Function(
-              ffi.Pointer<git_tree>, size_t)>>('git_tree_entry_byindex');
+              ffi.Pointer<git_tree>, ffi.Size)>>('git_tree_entry_byindex');
   late final _git_tree_entry_byindex = _git_tree_entry_byindexPtr.asFunction<
       ffi.Pointer<git_tree_entry> Function(ffi.Pointer<git_tree>, int)>();
 
@@ -5094,7 +5084,7 @@ class Libgit2 {
   int git_tree_entry_bypath(
     ffi.Pointer<ffi.Pointer<git_tree_entry>> out,
     ffi.Pointer<git_tree> root,
-    ffi.Pointer<ffi.Int8> path,
+    ffi.Pointer<ffi.Char> path,
   ) {
     return _git_tree_entry_bypath(
       out,
@@ -5105,13 +5095,13 @@ class Libgit2 {
 
   late final _git_tree_entry_bypathPtr = _lookup<
       ffi.NativeFunction<
-          ffi.Int32 Function(
+          ffi.Int Function(
               ffi.Pointer<ffi.Pointer<git_tree_entry>>,
               ffi.Pointer<git_tree>,
-              ffi.Pointer<ffi.Int8>)>>('git_tree_entry_bypath');
+              ffi.Pointer<ffi.Char>)>>('git_tree_entry_bypath');
   late final _git_tree_entry_bypath = _git_tree_entry_bypathPtr.asFunction<
       int Function(ffi.Pointer<ffi.Pointer<git_tree_entry>>,
-          ffi.Pointer<git_tree>, ffi.Pointer<ffi.Int8>)>();
+          ffi.Pointer<git_tree>, ffi.Pointer<ffi.Char>)>();
 
   /// Duplicate a tree entry
   ///
@@ -5133,7 +5123,7 @@ class Libgit2 {
 
   late final _git_tree_entry_dupPtr = _lookup<
       ffi.NativeFunction<
-          ffi.Int32 Function(ffi.Pointer<ffi.Pointer<git_tree_entry>>,
+          ffi.Int Function(ffi.Pointer<ffi.Pointer<git_tree_entry>>,
               ffi.Pointer<git_tree_entry>)>>('git_tree_entry_dup');
   late final _git_tree_entry_dup = _git_tree_entry_dupPtr.asFunction<
       int Function(ffi.Pointer<ffi.Pointer<git_tree_entry>>,
@@ -5164,7 +5154,7 @@ class Libgit2 {
   ///
   /// @param entry a tree entry
   /// @return the name of the file
-  ffi.Pointer<ffi.Int8> git_tree_entry_name(
+  ffi.Pointer<ffi.Char> git_tree_entry_name(
     ffi.Pointer<git_tree_entry> entry,
   ) {
     return _git_tree_entry_name(
@@ -5174,10 +5164,10 @@ class Libgit2 {
 
   late final _git_tree_entry_namePtr = _lookup<
       ffi.NativeFunction<
-          ffi.Pointer<ffi.Int8> Function(
+          ffi.Pointer<ffi.Char> Function(
               ffi.Pointer<git_tree_entry>)>>('git_tree_entry_name');
   late final _git_tree_entry_name = _git_tree_entry_namePtr.asFunction<
-      ffi.Pointer<ffi.Int8> Function(ffi.Pointer<git_tree_entry>)>();
+      ffi.Pointer<ffi.Char> Function(ffi.Pointer<git_tree_entry>)>();
 
   /// Get the id of the object pointed by the entry
   ///
@@ -5272,7 +5262,7 @@ class Libgit2 {
 
   late final _git_tree_entry_cmpPtr = _lookup<
       ffi.NativeFunction<
-          ffi.Int32 Function(ffi.Pointer<git_tree_entry>,
+          ffi.Int Function(ffi.Pointer<git_tree_entry>,
               ffi.Pointer<git_tree_entry>)>>('git_tree_entry_cmp');
   late final _git_tree_entry_cmp = _git_tree_entry_cmpPtr.asFunction<
       int Function(ffi.Pointer<git_tree_entry>, ffi.Pointer<git_tree_entry>)>();
@@ -5299,7 +5289,7 @@ class Libgit2 {
 
   late final _git_tree_entry_to_objectPtr = _lookup<
       ffi.NativeFunction<
-          ffi.Int32 Function(
+          ffi.Int Function(
               ffi.Pointer<ffi.Pointer<git_object>>,
               ffi.Pointer<git_repository>,
               ffi.Pointer<git_tree_entry>)>>('git_tree_entry_to_object');
@@ -5337,7 +5327,7 @@ class Libgit2 {
 
   late final _git_treebuilder_newPtr = _lookup<
       ffi.NativeFunction<
-          ffi.Int32 Function(
+          ffi.Int Function(
               ffi.Pointer<ffi.Pointer<git_treebuilder>>,
               ffi.Pointer<git_repository>,
               ffi.Pointer<git_tree>)>>('git_treebuilder_new');
@@ -5358,7 +5348,7 @@ class Libgit2 {
   }
 
   late final _git_treebuilder_clearPtr = _lookup<
-          ffi.NativeFunction<ffi.Int32 Function(ffi.Pointer<git_treebuilder>)>>(
+          ffi.NativeFunction<ffi.Int Function(ffi.Pointer<git_treebuilder>)>>(
       'git_treebuilder_clear');
   late final _git_treebuilder_clear = _git_treebuilder_clearPtr
       .asFunction<int Function(ffi.Pointer<git_treebuilder>)>();
@@ -5376,7 +5366,7 @@ class Libgit2 {
   }
 
   late final _git_treebuilder_entrycountPtr = _lookup<
-          ffi.NativeFunction<size_t Function(ffi.Pointer<git_treebuilder>)>>(
+          ffi.NativeFunction<ffi.Size Function(ffi.Pointer<git_treebuilder>)>>(
       'git_treebuilder_entrycount');
   late final _git_treebuilder_entrycount = _git_treebuilder_entrycountPtr
       .asFunction<int Function(ffi.Pointer<git_treebuilder>)>();
@@ -5412,7 +5402,7 @@ class Libgit2 {
   /// @return pointer to the entry; NULL if not found
   ffi.Pointer<git_tree_entry> git_treebuilder_get(
     ffi.Pointer<git_treebuilder> bld,
-    ffi.Pointer<ffi.Int8> filename,
+    ffi.Pointer<ffi.Char> filename,
   ) {
     return _git_treebuilder_get(
       bld,
@@ -5423,10 +5413,10 @@ class Libgit2 {
   late final _git_treebuilder_getPtr = _lookup<
       ffi.NativeFunction<
           ffi.Pointer<git_tree_entry> Function(ffi.Pointer<git_treebuilder>,
-              ffi.Pointer<ffi.Int8>)>>('git_treebuilder_get');
+              ffi.Pointer<ffi.Char>)>>('git_treebuilder_get');
   late final _git_treebuilder_get = _git_treebuilder_getPtr.asFunction<
       ffi.Pointer<git_tree_entry> Function(
-          ffi.Pointer<git_treebuilder>, ffi.Pointer<ffi.Int8>)>();
+          ffi.Pointer<git_treebuilder>, ffi.Pointer<ffi.Char>)>();
 
   /// Add or update an entry to the builder
   ///
@@ -5457,7 +5447,7 @@ class Libgit2 {
   int git_treebuilder_insert(
     ffi.Pointer<ffi.Pointer<git_tree_entry>> out,
     ffi.Pointer<git_treebuilder> bld,
-    ffi.Pointer<ffi.Int8> filename,
+    ffi.Pointer<ffi.Char> filename,
     ffi.Pointer<git_oid> id,
     int filemode,
   ) {
@@ -5472,17 +5462,17 @@ class Libgit2 {
 
   late final _git_treebuilder_insertPtr = _lookup<
       ffi.NativeFunction<
-          ffi.Int32 Function(
+          ffi.Int Function(
               ffi.Pointer<ffi.Pointer<git_tree_entry>>,
               ffi.Pointer<git_treebuilder>,
-              ffi.Pointer<ffi.Int8>,
+              ffi.Pointer<ffi.Char>,
               ffi.Pointer<git_oid>,
               ffi.Int32)>>('git_treebuilder_insert');
   late final _git_treebuilder_insert = _git_treebuilder_insertPtr.asFunction<
       int Function(
           ffi.Pointer<ffi.Pointer<git_tree_entry>>,
           ffi.Pointer<git_treebuilder>,
-          ffi.Pointer<ffi.Int8>,
+          ffi.Pointer<ffi.Char>,
           ffi.Pointer<git_oid>,
           int)>();
 
@@ -5493,7 +5483,7 @@ class Libgit2 {
   /// @return 0 or an error code
   int git_treebuilder_remove(
     ffi.Pointer<git_treebuilder> bld,
-    ffi.Pointer<ffi.Int8> filename,
+    ffi.Pointer<ffi.Char> filename,
   ) {
     return _git_treebuilder_remove(
       bld,
@@ -5503,10 +5493,10 @@ class Libgit2 {
 
   late final _git_treebuilder_removePtr = _lookup<
       ffi.NativeFunction<
-          ffi.Int32 Function(ffi.Pointer<git_treebuilder>,
-              ffi.Pointer<ffi.Int8>)>>('git_treebuilder_remove');
+          ffi.Int Function(ffi.Pointer<git_treebuilder>,
+              ffi.Pointer<ffi.Char>)>>('git_treebuilder_remove');
   late final _git_treebuilder_remove = _git_treebuilder_removePtr.asFunction<
-      int Function(ffi.Pointer<git_treebuilder>, ffi.Pointer<ffi.Int8>)>();
+      int Function(ffi.Pointer<git_treebuilder>, ffi.Pointer<ffi.Char>)>();
 
   /// Selectively remove entries in the tree
   ///
@@ -5532,7 +5522,7 @@ class Libgit2 {
 
   late final _git_treebuilder_filterPtr = _lookup<
       ffi.NativeFunction<
-          ffi.Int32 Function(
+          ffi.Int Function(
               ffi.Pointer<git_treebuilder>,
               git_treebuilder_filter_cb,
               ffi.Pointer<ffi.Void>)>>('git_treebuilder_filter');
@@ -5560,7 +5550,7 @@ class Libgit2 {
 
   late final _git_treebuilder_writePtr = _lookup<
       ffi.NativeFunction<
-          ffi.Int32 Function(ffi.Pointer<git_oid>,
+          ffi.Int Function(ffi.Pointer<git_oid>,
               ffi.Pointer<git_treebuilder>)>>('git_treebuilder_write');
   late final _git_treebuilder_write = _git_treebuilder_writePtr.asFunction<
       int Function(ffi.Pointer<git_oid>, ffi.Pointer<git_treebuilder>)>();
@@ -5596,7 +5586,7 @@ class Libgit2 {
 
   late final _git_tree_walkPtr = _lookup<
       ffi.NativeFunction<
-          ffi.Int32 Function(ffi.Pointer<git_tree>, ffi.Int32, git_treewalk_cb,
+          ffi.Int Function(ffi.Pointer<git_tree>, ffi.Int32, git_treewalk_cb,
               ffi.Pointer<ffi.Void>)>>('git_tree_walk');
   late final _git_tree_walk = _git_tree_walkPtr.asFunction<
       int Function(ffi.Pointer<git_tree>, int, git_treewalk_cb,
@@ -5620,7 +5610,7 @@ class Libgit2 {
 
   late final _git_tree_dupPtr = _lookup<
       ffi.NativeFunction<
-          ffi.Int32 Function(ffi.Pointer<ffi.Pointer<git_tree>>,
+          ffi.Int Function(ffi.Pointer<ffi.Pointer<git_tree>>,
               ffi.Pointer<git_tree>)>>('git_tree_dup');
   late final _git_tree_dup = _git_tree_dupPtr.asFunction<
       int Function(
@@ -5663,11 +5653,11 @@ class Libgit2 {
 
   late final _git_tree_create_updatedPtr = _lookup<
       ffi.NativeFunction<
-          ffi.Int32 Function(
+          ffi.Int Function(
               ffi.Pointer<git_oid>,
               ffi.Pointer<git_repository>,
               ffi.Pointer<git_tree>,
-              size_t,
+              ffi.Size,
               ffi.Pointer<git_tree_update>)>>('git_tree_create_updated');
   late final _git_tree_create_updated = _git_tree_create_updatedPtr.asFunction<
       int Function(ffi.Pointer<git_oid>, ffi.Pointer<git_repository>,
@@ -5715,7 +5705,7 @@ class Libgit2 {
 
   late final _git_strarray_copyPtr = _lookup<
       ffi.NativeFunction<
-          ffi.Int32 Function(ffi.Pointer<git_strarray>,
+          ffi.Int Function(ffi.Pointer<git_strarray>,
               ffi.Pointer<git_strarray>)>>('git_strarray_copy');
   late final _git_strarray_copy = _git_strarray_copyPtr.asFunction<
       int Function(ffi.Pointer<git_strarray>, ffi.Pointer<git_strarray>)>();
@@ -5734,7 +5724,7 @@ class Libgit2 {
   int git_reference_lookup(
     ffi.Pointer<ffi.Pointer<git_reference>> out,
     ffi.Pointer<git_repository> repo,
-    ffi.Pointer<ffi.Int8> name,
+    ffi.Pointer<ffi.Char> name,
   ) {
     return _git_reference_lookup(
       out,
@@ -5745,13 +5735,13 @@ class Libgit2 {
 
   late final _git_reference_lookupPtr = _lookup<
       ffi.NativeFunction<
-          ffi.Int32 Function(
+          ffi.Int Function(
               ffi.Pointer<ffi.Pointer<git_reference>>,
               ffi.Pointer<git_repository>,
-              ffi.Pointer<ffi.Int8>)>>('git_reference_lookup');
+              ffi.Pointer<ffi.Char>)>>('git_reference_lookup');
   late final _git_reference_lookup = _git_reference_lookupPtr.asFunction<
       int Function(ffi.Pointer<ffi.Pointer<git_reference>>,
-          ffi.Pointer<git_repository>, ffi.Pointer<ffi.Int8>)>();
+          ffi.Pointer<git_repository>, ffi.Pointer<ffi.Char>)>();
 
   /// Lookup a reference by name and resolve immediately to OID.
   ///
@@ -5769,7 +5759,7 @@ class Libgit2 {
   int git_reference_name_to_id(
     ffi.Pointer<git_oid> out,
     ffi.Pointer<git_repository> repo,
-    ffi.Pointer<ffi.Int8> name,
+    ffi.Pointer<ffi.Char> name,
   ) {
     return _git_reference_name_to_id(
       out,
@@ -5780,12 +5770,12 @@ class Libgit2 {
 
   late final _git_reference_name_to_idPtr = _lookup<
       ffi.NativeFunction<
-          ffi.Int32 Function(ffi.Pointer<git_oid>, ffi.Pointer<git_repository>,
-              ffi.Pointer<ffi.Int8>)>>('git_reference_name_to_id');
+          ffi.Int Function(ffi.Pointer<git_oid>, ffi.Pointer<git_repository>,
+              ffi.Pointer<ffi.Char>)>>('git_reference_name_to_id');
   late final _git_reference_name_to_id =
       _git_reference_name_to_idPtr.asFunction<
           int Function(ffi.Pointer<git_oid>, ffi.Pointer<git_repository>,
-              ffi.Pointer<ffi.Int8>)>();
+              ffi.Pointer<ffi.Char>)>();
 
   /// Lookup a reference by DWIMing its short name
   ///
@@ -5799,7 +5789,7 @@ class Libgit2 {
   int git_reference_dwim(
     ffi.Pointer<ffi.Pointer<git_reference>> out,
     ffi.Pointer<git_repository> repo,
-    ffi.Pointer<ffi.Int8> shorthand,
+    ffi.Pointer<ffi.Char> shorthand,
   ) {
     return _git_reference_dwim(
       out,
@@ -5810,13 +5800,13 @@ class Libgit2 {
 
   late final _git_reference_dwimPtr = _lookup<
       ffi.NativeFunction<
-          ffi.Int32 Function(
+          ffi.Int Function(
               ffi.Pointer<ffi.Pointer<git_reference>>,
               ffi.Pointer<git_repository>,
-              ffi.Pointer<ffi.Int8>)>>('git_reference_dwim');
+              ffi.Pointer<ffi.Char>)>>('git_reference_dwim');
   late final _git_reference_dwim = _git_reference_dwimPtr.asFunction<
       int Function(ffi.Pointer<ffi.Pointer<git_reference>>,
-          ffi.Pointer<git_repository>, ffi.Pointer<ffi.Int8>)>();
+          ffi.Pointer<git_repository>, ffi.Pointer<ffi.Char>)>();
 
   /// Conditionally create a new symbolic reference.
   ///
@@ -5861,11 +5851,11 @@ class Libgit2 {
   int git_reference_symbolic_create_matching(
     ffi.Pointer<ffi.Pointer<git_reference>> out,
     ffi.Pointer<git_repository> repo,
-    ffi.Pointer<ffi.Int8> name,
-    ffi.Pointer<ffi.Int8> target,
+    ffi.Pointer<ffi.Char> name,
+    ffi.Pointer<ffi.Char> target,
     int force,
-    ffi.Pointer<ffi.Int8> current_value,
-    ffi.Pointer<ffi.Int8> log_message,
+    ffi.Pointer<ffi.Char> current_value,
+    ffi.Pointer<ffi.Char> log_message,
   ) {
     return _git_reference_symbolic_create_matching(
       out,
@@ -5880,25 +5870,25 @@ class Libgit2 {
 
   late final _git_reference_symbolic_create_matchingPtr = _lookup<
           ffi.NativeFunction<
-              ffi.Int32 Function(
+              ffi.Int Function(
                   ffi.Pointer<ffi.Pointer<git_reference>>,
                   ffi.Pointer<git_repository>,
-                  ffi.Pointer<ffi.Int8>,
-                  ffi.Pointer<ffi.Int8>,
-                  ffi.Int32,
-                  ffi.Pointer<ffi.Int8>,
-                  ffi.Pointer<ffi.Int8>)>>(
+                  ffi.Pointer<ffi.Char>,
+                  ffi.Pointer<ffi.Char>,
+                  ffi.Int,
+                  ffi.Pointer<ffi.Char>,
+                  ffi.Pointer<ffi.Char>)>>(
       'git_reference_symbolic_create_matching');
   late final _git_reference_symbolic_create_matching =
       _git_reference_symbolic_create_matchingPtr.asFunction<
           int Function(
               ffi.Pointer<ffi.Pointer<git_reference>>,
               ffi.Pointer<git_repository>,
-              ffi.Pointer<ffi.Int8>,
-              ffi.Pointer<ffi.Int8>,
+              ffi.Pointer<ffi.Char>,
+              ffi.Pointer<ffi.Char>,
               int,
-              ffi.Pointer<ffi.Int8>,
-              ffi.Pointer<ffi.Int8>)>();
+              ffi.Pointer<ffi.Char>,
+              ffi.Pointer<ffi.Char>)>();
 
   /// Create a new symbolic reference.
   ///
@@ -5935,10 +5925,10 @@ class Libgit2 {
   int git_reference_symbolic_create(
     ffi.Pointer<ffi.Pointer<git_reference>> out,
     ffi.Pointer<git_repository> repo,
-    ffi.Pointer<ffi.Int8> name,
-    ffi.Pointer<ffi.Int8> target,
+    ffi.Pointer<ffi.Char> name,
+    ffi.Pointer<ffi.Char> target,
     int force,
-    ffi.Pointer<ffi.Int8> log_message,
+    ffi.Pointer<ffi.Char> log_message,
   ) {
     return _git_reference_symbolic_create(
       out,
@@ -5952,22 +5942,22 @@ class Libgit2 {
 
   late final _git_reference_symbolic_createPtr = _lookup<
       ffi.NativeFunction<
-          ffi.Int32 Function(
+          ffi.Int Function(
               ffi.Pointer<ffi.Pointer<git_reference>>,
               ffi.Pointer<git_repository>,
-              ffi.Pointer<ffi.Int8>,
-              ffi.Pointer<ffi.Int8>,
-              ffi.Int32,
-              ffi.Pointer<ffi.Int8>)>>('git_reference_symbolic_create');
+              ffi.Pointer<ffi.Char>,
+              ffi.Pointer<ffi.Char>,
+              ffi.Int,
+              ffi.Pointer<ffi.Char>)>>('git_reference_symbolic_create');
   late final _git_reference_symbolic_create =
       _git_reference_symbolic_createPtr.asFunction<
           int Function(
               ffi.Pointer<ffi.Pointer<git_reference>>,
               ffi.Pointer<git_repository>,
-              ffi.Pointer<ffi.Int8>,
-              ffi.Pointer<ffi.Int8>,
+              ffi.Pointer<ffi.Char>,
+              ffi.Pointer<ffi.Char>,
               int,
-              ffi.Pointer<ffi.Int8>)>();
+              ffi.Pointer<ffi.Char>)>();
 
   /// Create a new direct reference.
   ///
@@ -6005,10 +5995,10 @@ class Libgit2 {
   int git_reference_create(
     ffi.Pointer<ffi.Pointer<git_reference>> out,
     ffi.Pointer<git_repository> repo,
-    ffi.Pointer<ffi.Int8> name,
+    ffi.Pointer<ffi.Char> name,
     ffi.Pointer<git_oid> id,
     int force,
-    ffi.Pointer<ffi.Int8> log_message,
+    ffi.Pointer<ffi.Char> log_message,
   ) {
     return _git_reference_create(
       out,
@@ -6022,21 +6012,21 @@ class Libgit2 {
 
   late final _git_reference_createPtr = _lookup<
       ffi.NativeFunction<
-          ffi.Int32 Function(
+          ffi.Int Function(
               ffi.Pointer<ffi.Pointer<git_reference>>,
               ffi.Pointer<git_repository>,
-              ffi.Pointer<ffi.Int8>,
+              ffi.Pointer<ffi.Char>,
               ffi.Pointer<git_oid>,
-              ffi.Int32,
-              ffi.Pointer<ffi.Int8>)>>('git_reference_create');
+              ffi.Int,
+              ffi.Pointer<ffi.Char>)>>('git_reference_create');
   late final _git_reference_create = _git_reference_createPtr.asFunction<
       int Function(
           ffi.Pointer<ffi.Pointer<git_reference>>,
           ffi.Pointer<git_repository>,
-          ffi.Pointer<ffi.Int8>,
+          ffi.Pointer<ffi.Char>,
           ffi.Pointer<git_oid>,
           int,
-          ffi.Pointer<ffi.Int8>)>();
+          ffi.Pointer<ffi.Char>)>();
 
   /// Conditionally create new direct reference
   ///
@@ -6080,11 +6070,11 @@ class Libgit2 {
   int git_reference_create_matching(
     ffi.Pointer<ffi.Pointer<git_reference>> out,
     ffi.Pointer<git_repository> repo,
-    ffi.Pointer<ffi.Int8> name,
+    ffi.Pointer<ffi.Char> name,
     ffi.Pointer<git_oid> id,
     int force,
     ffi.Pointer<git_oid> current_id,
-    ffi.Pointer<ffi.Int8> log_message,
+    ffi.Pointer<ffi.Char> log_message,
   ) {
     return _git_reference_create_matching(
       out,
@@ -6099,24 +6089,24 @@ class Libgit2 {
 
   late final _git_reference_create_matchingPtr = _lookup<
       ffi.NativeFunction<
-          ffi.Int32 Function(
+          ffi.Int Function(
               ffi.Pointer<ffi.Pointer<git_reference>>,
               ffi.Pointer<git_repository>,
-              ffi.Pointer<ffi.Int8>,
+              ffi.Pointer<ffi.Char>,
               ffi.Pointer<git_oid>,
-              ffi.Int32,
+              ffi.Int,
               ffi.Pointer<git_oid>,
-              ffi.Pointer<ffi.Int8>)>>('git_reference_create_matching');
+              ffi.Pointer<ffi.Char>)>>('git_reference_create_matching');
   late final _git_reference_create_matching =
       _git_reference_create_matchingPtr.asFunction<
           int Function(
               ffi.Pointer<ffi.Pointer<git_reference>>,
               ffi.Pointer<git_repository>,
-              ffi.Pointer<ffi.Int8>,
+              ffi.Pointer<ffi.Char>,
               ffi.Pointer<git_oid>,
               int,
               ffi.Pointer<git_oid>,
-              ffi.Pointer<ffi.Int8>)>();
+              ffi.Pointer<ffi.Char>)>();
 
   /// Get the OID pointed to by a direct reference.
   ///
@@ -6172,7 +6162,7 @@ class Libgit2 {
   ///
   /// @param ref The reference
   /// @return a pointer to the name if available, NULL otherwise
-  ffi.Pointer<ffi.Int8> git_reference_symbolic_target(
+  ffi.Pointer<ffi.Char> git_reference_symbolic_target(
     ffi.Pointer<git_reference> ref,
   ) {
     return _git_reference_symbolic_target(
@@ -6182,10 +6172,10 @@ class Libgit2 {
 
   late final _git_reference_symbolic_targetPtr = _lookup<
       ffi.NativeFunction<
-          ffi.Pointer<ffi.Int8> Function(
+          ffi.Pointer<ffi.Char> Function(
               ffi.Pointer<git_reference>)>>('git_reference_symbolic_target');
   late final _git_reference_symbolic_target = _git_reference_symbolic_targetPtr
-      .asFunction<ffi.Pointer<ffi.Int8> Function(ffi.Pointer<git_reference>)>();
+      .asFunction<ffi.Pointer<ffi.Char> Function(ffi.Pointer<git_reference>)>();
 
   /// Get the type of a reference.
   ///
@@ -6213,7 +6203,7 @@ class Libgit2 {
   ///
   /// @param ref The reference
   /// @return the full name for the ref
-  ffi.Pointer<ffi.Int8> git_reference_name(
+  ffi.Pointer<ffi.Char> git_reference_name(
     ffi.Pointer<git_reference> ref,
   ) {
     return _git_reference_name(
@@ -6223,10 +6213,10 @@ class Libgit2 {
 
   late final _git_reference_namePtr = _lookup<
       ffi.NativeFunction<
-          ffi.Pointer<ffi.Int8> Function(
+          ffi.Pointer<ffi.Char> Function(
               ffi.Pointer<git_reference>)>>('git_reference_name');
   late final _git_reference_name = _git_reference_namePtr
-      .asFunction<ffi.Pointer<ffi.Int8> Function(ffi.Pointer<git_reference>)>();
+      .asFunction<ffi.Pointer<ffi.Char> Function(ffi.Pointer<git_reference>)>();
 
   /// Resolve a symbolic reference to a direct reference.
   ///
@@ -6254,7 +6244,7 @@ class Libgit2 {
 
   late final _git_reference_resolvePtr = _lookup<
       ffi.NativeFunction<
-          ffi.Int32 Function(ffi.Pointer<ffi.Pointer<git_reference>>,
+          ffi.Int Function(ffi.Pointer<ffi.Pointer<git_reference>>,
               ffi.Pointer<git_reference>)>>('git_reference_resolve');
   late final _git_reference_resolve = _git_reference_resolvePtr.asFunction<
       int Function(ffi.Pointer<ffi.Pointer<git_reference>>,
@@ -6300,8 +6290,8 @@ class Libgit2 {
   int git_reference_symbolic_set_target(
     ffi.Pointer<ffi.Pointer<git_reference>> out,
     ffi.Pointer<git_reference> ref,
-    ffi.Pointer<ffi.Int8> target,
-    ffi.Pointer<ffi.Int8> log_message,
+    ffi.Pointer<ffi.Char> target,
+    ffi.Pointer<ffi.Char> log_message,
   ) {
     return _git_reference_symbolic_set_target(
       out,
@@ -6313,18 +6303,18 @@ class Libgit2 {
 
   late final _git_reference_symbolic_set_targetPtr = _lookup<
       ffi.NativeFunction<
-          ffi.Int32 Function(
+          ffi.Int Function(
               ffi.Pointer<ffi.Pointer<git_reference>>,
               ffi.Pointer<git_reference>,
-              ffi.Pointer<ffi.Int8>,
-              ffi.Pointer<ffi.Int8>)>>('git_reference_symbolic_set_target');
+              ffi.Pointer<ffi.Char>,
+              ffi.Pointer<ffi.Char>)>>('git_reference_symbolic_set_target');
   late final _git_reference_symbolic_set_target =
       _git_reference_symbolic_set_targetPtr.asFunction<
           int Function(
               ffi.Pointer<ffi.Pointer<git_reference>>,
               ffi.Pointer<git_reference>,
-              ffi.Pointer<ffi.Int8>,
-              ffi.Pointer<ffi.Int8>)>();
+              ffi.Pointer<ffi.Char>,
+              ffi.Pointer<ffi.Char>)>();
 
   /// Conditionally create a new reference with the same name as the given reference but a
   /// different OID target. The reference must be a direct reference, otherwise
@@ -6342,7 +6332,7 @@ class Libgit2 {
     ffi.Pointer<ffi.Pointer<git_reference>> out,
     ffi.Pointer<git_reference> ref,
     ffi.Pointer<git_oid> id,
-    ffi.Pointer<ffi.Int8> log_message,
+    ffi.Pointer<ffi.Char> log_message,
   ) {
     return _git_reference_set_target(
       out,
@@ -6354,18 +6344,18 @@ class Libgit2 {
 
   late final _git_reference_set_targetPtr = _lookup<
       ffi.NativeFunction<
-          ffi.Int32 Function(
+          ffi.Int Function(
               ffi.Pointer<ffi.Pointer<git_reference>>,
               ffi.Pointer<git_reference>,
               ffi.Pointer<git_oid>,
-              ffi.Pointer<ffi.Int8>)>>('git_reference_set_target');
+              ffi.Pointer<ffi.Char>)>>('git_reference_set_target');
   late final _git_reference_set_target =
       _git_reference_set_targetPtr.asFunction<
           int Function(
               ffi.Pointer<ffi.Pointer<git_reference>>,
               ffi.Pointer<git_reference>,
               ffi.Pointer<git_oid>,
-              ffi.Pointer<ffi.Int8>)>();
+              ffi.Pointer<ffi.Char>)>();
 
   /// Rename an existing reference.
   ///
@@ -6390,9 +6380,9 @@ class Libgit2 {
   int git_reference_rename(
     ffi.Pointer<ffi.Pointer<git_reference>> new_ref,
     ffi.Pointer<git_reference> ref,
-    ffi.Pointer<ffi.Int8> new_name,
+    ffi.Pointer<ffi.Char> new_name,
     int force,
-    ffi.Pointer<ffi.Int8> log_message,
+    ffi.Pointer<ffi.Char> log_message,
   ) {
     return _git_reference_rename(
       new_ref,
@@ -6405,19 +6395,19 @@ class Libgit2 {
 
   late final _git_reference_renamePtr = _lookup<
       ffi.NativeFunction<
-          ffi.Int32 Function(
+          ffi.Int Function(
               ffi.Pointer<ffi.Pointer<git_reference>>,
               ffi.Pointer<git_reference>,
-              ffi.Pointer<ffi.Int8>,
-              ffi.Int32,
-              ffi.Pointer<ffi.Int8>)>>('git_reference_rename');
+              ffi.Pointer<ffi.Char>,
+              ffi.Int,
+              ffi.Pointer<ffi.Char>)>>('git_reference_rename');
   late final _git_reference_rename = _git_reference_renamePtr.asFunction<
       int Function(
           ffi.Pointer<ffi.Pointer<git_reference>>,
           ffi.Pointer<git_reference>,
-          ffi.Pointer<ffi.Int8>,
+          ffi.Pointer<ffi.Char>,
           int,
-          ffi.Pointer<ffi.Int8>)>();
+          ffi.Pointer<ffi.Char>)>();
 
   /// Delete an existing reference.
   ///
@@ -6438,9 +6428,9 @@ class Libgit2 {
     );
   }
 
-  late final _git_reference_deletePtr = _lookup<
-          ffi.NativeFunction<ffi.Int32 Function(ffi.Pointer<git_reference>)>>(
-      'git_reference_delete');
+  late final _git_reference_deletePtr =
+      _lookup<ffi.NativeFunction<ffi.Int Function(ffi.Pointer<git_reference>)>>(
+          'git_reference_delete');
   late final _git_reference_delete = _git_reference_deletePtr
       .asFunction<int Function(ffi.Pointer<git_reference>)>();
 
@@ -6453,7 +6443,7 @@ class Libgit2 {
   /// @return 0 or an error code
   int git_reference_remove(
     ffi.Pointer<git_repository> repo,
-    ffi.Pointer<ffi.Int8> name,
+    ffi.Pointer<ffi.Char> name,
   ) {
     return _git_reference_remove(
       repo,
@@ -6463,10 +6453,10 @@ class Libgit2 {
 
   late final _git_reference_removePtr = _lookup<
       ffi.NativeFunction<
-          ffi.Int32 Function(ffi.Pointer<git_repository>,
-              ffi.Pointer<ffi.Int8>)>>('git_reference_remove');
+          ffi.Int Function(ffi.Pointer<git_repository>,
+              ffi.Pointer<ffi.Char>)>>('git_reference_remove');
   late final _git_reference_remove = _git_reference_removePtr.asFunction<
-      int Function(ffi.Pointer<git_repository>, ffi.Pointer<ffi.Int8>)>();
+      int Function(ffi.Pointer<git_repository>, ffi.Pointer<ffi.Char>)>();
 
   /// Fill a list with all the references that can be found in a repository.
   ///
@@ -6490,7 +6480,7 @@ class Libgit2 {
 
   late final _git_reference_listPtr = _lookup<
       ffi.NativeFunction<
-          ffi.Int32 Function(ffi.Pointer<git_strarray>,
+          ffi.Int Function(ffi.Pointer<git_strarray>,
               ffi.Pointer<git_repository>)>>('git_reference_list');
   late final _git_reference_list = _git_reference_listPtr.asFunction<
       int Function(ffi.Pointer<git_strarray>, ffi.Pointer<git_repository>)>();
@@ -6523,7 +6513,7 @@ class Libgit2 {
 
   late final _git_reference_foreachPtr = _lookup<
       ffi.NativeFunction<
-          ffi.Int32 Function(
+          ffi.Int Function(
               ffi.Pointer<git_repository>,
               git_reference_foreach_cb,
               ffi.Pointer<ffi.Void>)>>('git_reference_foreach');
@@ -6556,7 +6546,7 @@ class Libgit2 {
 
   late final _git_reference_foreach_namePtr = _lookup<
       ffi.NativeFunction<
-          ffi.Int32 Function(
+          ffi.Int Function(
               ffi.Pointer<git_repository>,
               git_reference_foreach_name_cb,
               ffi.Pointer<ffi.Void>)>>('git_reference_foreach_name');
@@ -6584,7 +6574,7 @@ class Libgit2 {
 
   late final _git_reference_dupPtr = _lookup<
       ffi.NativeFunction<
-          ffi.Int32 Function(ffi.Pointer<ffi.Pointer<git_reference>>,
+          ffi.Int Function(ffi.Pointer<ffi.Pointer<git_reference>>,
               ffi.Pointer<git_reference>)>>('git_reference_dup');
   late final _git_reference_dup = _git_reference_dupPtr.asFunction<
       int Function(ffi.Pointer<ffi.Pointer<git_reference>>,
@@ -6624,7 +6614,7 @@ class Libgit2 {
 
   late final _git_reference_cmpPtr = _lookup<
       ffi.NativeFunction<
-          ffi.Int32 Function(ffi.Pointer<git_reference>,
+          ffi.Int Function(ffi.Pointer<git_reference>,
               ffi.Pointer<git_reference>)>>('git_reference_cmp');
   late final _git_reference_cmp = _git_reference_cmpPtr.asFunction<
       int Function(ffi.Pointer<git_reference>, ffi.Pointer<git_reference>)>();
@@ -6646,7 +6636,7 @@ class Libgit2 {
 
   late final _git_reference_iterator_newPtr = _lookup<
       ffi.NativeFunction<
-          ffi.Int32 Function(ffi.Pointer<ffi.Pointer<git_reference_iterator>>,
+          ffi.Int Function(ffi.Pointer<ffi.Pointer<git_reference_iterator>>,
               ffi.Pointer<git_repository>)>>('git_reference_iterator_new');
   late final _git_reference_iterator_new =
       _git_reference_iterator_newPtr.asFunction<
@@ -6663,7 +6653,7 @@ class Libgit2 {
   int git_reference_iterator_glob_new(
     ffi.Pointer<ffi.Pointer<git_reference_iterator>> out,
     ffi.Pointer<git_repository> repo,
-    ffi.Pointer<ffi.Int8> glob,
+    ffi.Pointer<ffi.Char> glob,
   ) {
     return _git_reference_iterator_glob_new(
       out,
@@ -6674,14 +6664,14 @@ class Libgit2 {
 
   late final _git_reference_iterator_glob_newPtr = _lookup<
       ffi.NativeFunction<
-          ffi.Int32 Function(
+          ffi.Int Function(
               ffi.Pointer<ffi.Pointer<git_reference_iterator>>,
               ffi.Pointer<git_repository>,
-              ffi.Pointer<ffi.Int8>)>>('git_reference_iterator_glob_new');
+              ffi.Pointer<ffi.Char>)>>('git_reference_iterator_glob_new');
   late final _git_reference_iterator_glob_new =
       _git_reference_iterator_glob_newPtr.asFunction<
           int Function(ffi.Pointer<ffi.Pointer<git_reference_iterator>>,
-              ffi.Pointer<git_repository>, ffi.Pointer<ffi.Int8>)>();
+              ffi.Pointer<git_repository>, ffi.Pointer<ffi.Char>)>();
 
   /// Get the next reference
   ///
@@ -6700,7 +6690,7 @@ class Libgit2 {
 
   late final _git_reference_nextPtr = _lookup<
       ffi.NativeFunction<
-          ffi.Int32 Function(ffi.Pointer<ffi.Pointer<git_reference>>,
+          ffi.Int Function(ffi.Pointer<ffi.Pointer<git_reference>>,
               ffi.Pointer<git_reference_iterator>)>>('git_reference_next');
   late final _git_reference_next = _git_reference_nextPtr.asFunction<
       int Function(ffi.Pointer<ffi.Pointer<git_reference>>,
@@ -6716,7 +6706,7 @@ class Libgit2 {
   /// @param iter the iterator
   /// @return 0, GIT_ITEROVER if there are no more; or an error code
   int git_reference_next_name(
-    ffi.Pointer<ffi.Pointer<ffi.Int8>> out,
+    ffi.Pointer<ffi.Pointer<ffi.Char>> out,
     ffi.Pointer<git_reference_iterator> iter,
   ) {
     return _git_reference_next_name(
@@ -6727,10 +6717,10 @@ class Libgit2 {
 
   late final _git_reference_next_namePtr = _lookup<
       ffi.NativeFunction<
-          ffi.Int32 Function(ffi.Pointer<ffi.Pointer<ffi.Int8>>,
+          ffi.Int Function(ffi.Pointer<ffi.Pointer<ffi.Char>>,
               ffi.Pointer<git_reference_iterator>)>>('git_reference_next_name');
   late final _git_reference_next_name = _git_reference_next_namePtr.asFunction<
-      int Function(ffi.Pointer<ffi.Pointer<ffi.Int8>>,
+      int Function(ffi.Pointer<ffi.Pointer<ffi.Char>>,
           ffi.Pointer<git_reference_iterator>)>();
 
   /// Free the iterator and its associated resources
@@ -6769,7 +6759,7 @@ class Libgit2 {
   /// @return 0 on success, GIT_EUSER on non-zero callback, or error code
   int git_reference_foreach_glob(
     ffi.Pointer<git_repository> repo,
-    ffi.Pointer<ffi.Int8> glob,
+    ffi.Pointer<ffi.Char> glob,
     git_reference_foreach_name_cb callback,
     ffi.Pointer<ffi.Void> payload,
   ) {
@@ -6783,14 +6773,14 @@ class Libgit2 {
 
   late final _git_reference_foreach_globPtr = _lookup<
       ffi.NativeFunction<
-          ffi.Int32 Function(
+          ffi.Int Function(
               ffi.Pointer<git_repository>,
-              ffi.Pointer<ffi.Int8>,
+              ffi.Pointer<ffi.Char>,
               git_reference_foreach_name_cb,
               ffi.Pointer<ffi.Void>)>>('git_reference_foreach_glob');
   late final _git_reference_foreach_glob =
       _git_reference_foreach_globPtr.asFunction<
-          int Function(ffi.Pointer<git_repository>, ffi.Pointer<ffi.Int8>,
+          int Function(ffi.Pointer<git_repository>, ffi.Pointer<ffi.Char>,
               git_reference_foreach_name_cb, ffi.Pointer<ffi.Void>)>();
 
   /// Check if a reflog exists for the specified reference.
@@ -6801,7 +6791,7 @@ class Libgit2 {
   /// otherwise an error code.
   int git_reference_has_log(
     ffi.Pointer<git_repository> repo,
-    ffi.Pointer<ffi.Int8> refname,
+    ffi.Pointer<ffi.Char> refname,
   ) {
     return _git_reference_has_log(
       repo,
@@ -6811,10 +6801,10 @@ class Libgit2 {
 
   late final _git_reference_has_logPtr = _lookup<
       ffi.NativeFunction<
-          ffi.Int32 Function(ffi.Pointer<git_repository>,
-              ffi.Pointer<ffi.Int8>)>>('git_reference_has_log');
+          ffi.Int Function(ffi.Pointer<git_repository>,
+              ffi.Pointer<ffi.Char>)>>('git_reference_has_log');
   late final _git_reference_has_log = _git_reference_has_logPtr.asFunction<
-      int Function(ffi.Pointer<git_repository>, ffi.Pointer<ffi.Int8>)>();
+      int Function(ffi.Pointer<git_repository>, ffi.Pointer<ffi.Char>)>();
 
   /// Ensure there is a reflog for a particular reference.
   ///
@@ -6826,7 +6816,7 @@ class Libgit2 {
   /// @return 0 or an error code.
   int git_reference_ensure_log(
     ffi.Pointer<git_repository> repo,
-    ffi.Pointer<ffi.Int8> refname,
+    ffi.Pointer<ffi.Char> refname,
   ) {
     return _git_reference_ensure_log(
       repo,
@@ -6836,11 +6826,11 @@ class Libgit2 {
 
   late final _git_reference_ensure_logPtr = _lookup<
       ffi.NativeFunction<
-          ffi.Int32 Function(ffi.Pointer<git_repository>,
-              ffi.Pointer<ffi.Int8>)>>('git_reference_ensure_log');
+          ffi.Int Function(ffi.Pointer<git_repository>,
+              ffi.Pointer<ffi.Char>)>>('git_reference_ensure_log');
   late final _git_reference_ensure_log =
       _git_reference_ensure_logPtr.asFunction<
-          int Function(ffi.Pointer<git_repository>, ffi.Pointer<ffi.Int8>)>();
+          int Function(ffi.Pointer<git_repository>, ffi.Pointer<ffi.Char>)>();
 
   /// Check if a reference is a local branch.
   ///
@@ -6856,9 +6846,9 @@ class Libgit2 {
     );
   }
 
-  late final _git_reference_is_branchPtr = _lookup<
-          ffi.NativeFunction<ffi.Int32 Function(ffi.Pointer<git_reference>)>>(
-      'git_reference_is_branch');
+  late final _git_reference_is_branchPtr =
+      _lookup<ffi.NativeFunction<ffi.Int Function(ffi.Pointer<git_reference>)>>(
+          'git_reference_is_branch');
   late final _git_reference_is_branch = _git_reference_is_branchPtr
       .asFunction<int Function(ffi.Pointer<git_reference>)>();
 
@@ -6876,9 +6866,9 @@ class Libgit2 {
     );
   }
 
-  late final _git_reference_is_remotePtr = _lookup<
-          ffi.NativeFunction<ffi.Int32 Function(ffi.Pointer<git_reference>)>>(
-      'git_reference_is_remote');
+  late final _git_reference_is_remotePtr =
+      _lookup<ffi.NativeFunction<ffi.Int Function(ffi.Pointer<git_reference>)>>(
+          'git_reference_is_remote');
   late final _git_reference_is_remote = _git_reference_is_remotePtr
       .asFunction<int Function(ffi.Pointer<git_reference>)>();
 
@@ -6896,9 +6886,9 @@ class Libgit2 {
     );
   }
 
-  late final _git_reference_is_tagPtr = _lookup<
-          ffi.NativeFunction<ffi.Int32 Function(ffi.Pointer<git_reference>)>>(
-      'git_reference_is_tag');
+  late final _git_reference_is_tagPtr =
+      _lookup<ffi.NativeFunction<ffi.Int Function(ffi.Pointer<git_reference>)>>(
+          'git_reference_is_tag');
   late final _git_reference_is_tag = _git_reference_is_tagPtr
       .asFunction<int Function(ffi.Pointer<git_reference>)>();
 
@@ -6916,9 +6906,9 @@ class Libgit2 {
     );
   }
 
-  late final _git_reference_is_notePtr = _lookup<
-          ffi.NativeFunction<ffi.Int32 Function(ffi.Pointer<git_reference>)>>(
-      'git_reference_is_note');
+  late final _git_reference_is_notePtr =
+      _lookup<ffi.NativeFunction<ffi.Int Function(ffi.Pointer<git_reference>)>>(
+          'git_reference_is_note');
   late final _git_reference_is_note = _git_reference_is_notePtr
       .asFunction<int Function(ffi.Pointer<git_reference>)>();
 
@@ -6941,9 +6931,9 @@ class Libgit2 {
   /// @return 0 on success, GIT_EBUFS if buffer is too small, GIT_EINVALIDSPEC
   /// or an error code.
   int git_reference_normalize_name(
-    ffi.Pointer<ffi.Int8> buffer_out,
+    ffi.Pointer<ffi.Char> buffer_out,
     int buffer_size,
-    ffi.Pointer<ffi.Int8> name,
+    ffi.Pointer<ffi.Char> name,
     int flags,
   ) {
     return _git_reference_normalize_name(
@@ -6956,15 +6946,15 @@ class Libgit2 {
 
   late final _git_reference_normalize_namePtr = _lookup<
       ffi.NativeFunction<
-          ffi.Int32 Function(
-              ffi.Pointer<ffi.Int8>,
-              size_t,
-              ffi.Pointer<ffi.Int8>,
-              ffi.Uint32)>>('git_reference_normalize_name');
+          ffi.Int Function(
+              ffi.Pointer<ffi.Char>,
+              ffi.Size,
+              ffi.Pointer<ffi.Char>,
+              ffi.UnsignedInt)>>('git_reference_normalize_name');
   late final _git_reference_normalize_name =
       _git_reference_normalize_namePtr.asFunction<
           int Function(
-              ffi.Pointer<ffi.Int8>, int, ffi.Pointer<ffi.Int8>, int)>();
+              ffi.Pointer<ffi.Char>, int, ffi.Pointer<ffi.Char>, int)>();
 
   /// Recursively peel reference until object of the specified type is found.
   ///
@@ -6993,7 +6983,7 @@ class Libgit2 {
 
   late final _git_reference_peelPtr = _lookup<
       ffi.NativeFunction<
-          ffi.Int32 Function(ffi.Pointer<ffi.Pointer<git_object>>,
+          ffi.Int Function(ffi.Pointer<ffi.Pointer<git_object>>,
               ffi.Pointer<git_reference>, ffi.Int32)>>('git_reference_peel');
   late final _git_reference_peel = _git_reference_peelPtr.asFunction<
       int Function(ffi.Pointer<ffi.Pointer<git_object>>,
@@ -7013,8 +7003,8 @@ class Libgit2 {
   /// @param refname name to be checked.
   /// @return 0 on success or an error code
   int git_reference_name_is_valid(
-    ffi.Pointer<ffi.Int32> valid,
-    ffi.Pointer<ffi.Int8> refname,
+    ffi.Pointer<ffi.Int> valid,
+    ffi.Pointer<ffi.Char> refname,
   ) {
     return _git_reference_name_is_valid(
       valid,
@@ -7024,11 +7014,10 @@ class Libgit2 {
 
   late final _git_reference_name_is_validPtr = _lookup<
       ffi.NativeFunction<
-          ffi.Int32 Function(ffi.Pointer<ffi.Int32>,
-              ffi.Pointer<ffi.Int8>)>>('git_reference_name_is_valid');
-  late final _git_reference_name_is_valid =
-      _git_reference_name_is_validPtr.asFunction<
-          int Function(ffi.Pointer<ffi.Int32>, ffi.Pointer<ffi.Int8>)>();
+          ffi.Int Function(ffi.Pointer<ffi.Int>,
+              ffi.Pointer<ffi.Char>)>>('git_reference_name_is_valid');
+  late final _git_reference_name_is_valid = _git_reference_name_is_validPtr
+      .asFunction<int Function(ffi.Pointer<ffi.Int>, ffi.Pointer<ffi.Char>)>();
 
   /// Get the reference's short name
   ///
@@ -7040,7 +7029,7 @@ class Libgit2 {
   ///
   /// @param ref a reference
   /// @return the human-readable version of the name
-  ffi.Pointer<ffi.Int8> git_reference_shorthand(
+  ffi.Pointer<ffi.Char> git_reference_shorthand(
     ffi.Pointer<git_reference> ref,
   ) {
     return _git_reference_shorthand(
@@ -7050,10 +7039,10 @@ class Libgit2 {
 
   late final _git_reference_shorthandPtr = _lookup<
       ffi.NativeFunction<
-          ffi.Pointer<ffi.Int8> Function(
+          ffi.Pointer<ffi.Char> Function(
               ffi.Pointer<git_reference>)>>('git_reference_shorthand');
   late final _git_reference_shorthand = _git_reference_shorthandPtr
-      .asFunction<ffi.Pointer<ffi.Int8> Function(ffi.Pointer<git_reference>)>();
+      .asFunction<ffi.Pointer<ffi.Char> Function(ffi.Pointer<git_reference>)>();
 
   /// Initialize git_diff_options structure
   ///
@@ -7075,8 +7064,8 @@ class Libgit2 {
 
   late final _git_diff_options_initPtr = _lookup<
       ffi.NativeFunction<
-          ffi.Int32 Function(ffi.Pointer<git_diff_options>,
-              ffi.Uint32)>>('git_diff_options_init');
+          ffi.Int Function(ffi.Pointer<git_diff_options>,
+              ffi.UnsignedInt)>>('git_diff_options_init');
   late final _git_diff_options_init = _git_diff_options_initPtr
       .asFunction<int Function(ffi.Pointer<git_diff_options>, int)>();
 
@@ -7100,8 +7089,8 @@ class Libgit2 {
 
   late final _git_diff_find_options_initPtr = _lookup<
       ffi.NativeFunction<
-          ffi.Int32 Function(ffi.Pointer<git_diff_find_options>,
-              ffi.Uint32)>>('git_diff_find_options_init');
+          ffi.Int Function(ffi.Pointer<git_diff_find_options>,
+              ffi.UnsignedInt)>>('git_diff_find_options_init');
   late final _git_diff_find_options_init = _git_diff_find_options_initPtr
       .asFunction<int Function(ffi.Pointer<git_diff_find_options>, int)>();
 
@@ -7155,7 +7144,7 @@ class Libgit2 {
 
   late final _git_diff_tree_to_treePtr = _lookup<
       ffi.NativeFunction<
-          ffi.Int32 Function(
+          ffi.Int Function(
               ffi.Pointer<ffi.Pointer<git_diff>>,
               ffi.Pointer<git_repository>,
               ffi.Pointer<git_tree>,
@@ -7205,7 +7194,7 @@ class Libgit2 {
 
   late final _git_diff_tree_to_indexPtr = _lookup<
       ffi.NativeFunction<
-          ffi.Int32 Function(
+          ffi.Int Function(
               ffi.Pointer<ffi.Pointer<git_diff>>,
               ffi.Pointer<git_repository>,
               ffi.Pointer<git_tree>,
@@ -7254,7 +7243,7 @@ class Libgit2 {
 
   late final _git_diff_index_to_workdirPtr = _lookup<
       ffi.NativeFunction<
-          ffi.Int32 Function(
+          ffi.Int Function(
               ffi.Pointer<ffi.Pointer<git_diff>>,
               ffi.Pointer<git_repository>,
               ffi.Pointer<git_index>,
@@ -7305,7 +7294,7 @@ class Libgit2 {
 
   late final _git_diff_tree_to_workdirPtr = _lookup<
       ffi.NativeFunction<
-          ffi.Int32 Function(
+          ffi.Int Function(
               ffi.Pointer<ffi.Pointer<git_diff>>,
               ffi.Pointer<git_repository>,
               ffi.Pointer<git_tree>,
@@ -7346,7 +7335,7 @@ class Libgit2 {
 
   late final _git_diff_tree_to_workdir_with_indexPtr = _lookup<
           ffi.NativeFunction<
-              ffi.Int32 Function(
+              ffi.Int Function(
                   ffi.Pointer<ffi.Pointer<git_diff>>,
                   ffi.Pointer<git_repository>,
                   ffi.Pointer<git_tree>,
@@ -7389,7 +7378,7 @@ class Libgit2 {
 
   late final _git_diff_index_to_indexPtr = _lookup<
       ffi.NativeFunction<
-          ffi.Int32 Function(
+          ffi.Int Function(
               ffi.Pointer<ffi.Pointer<git_diff>>,
               ffi.Pointer<git_repository>,
               ffi.Pointer<git_index>,
@@ -7427,7 +7416,7 @@ class Libgit2 {
 
   late final _git_diff_mergePtr = _lookup<
       ffi.NativeFunction<
-          ffi.Int32 Function(
+          ffi.Int Function(
               ffi.Pointer<git_diff>, ffi.Pointer<git_diff>)>>('git_diff_merge');
   late final _git_diff_merge = _git_diff_mergePtr
       .asFunction<int Function(ffi.Pointer<git_diff>, ffi.Pointer<git_diff>)>();
@@ -7454,7 +7443,7 @@ class Libgit2 {
 
   late final _git_diff_find_similarPtr = _lookup<
       ffi.NativeFunction<
-          ffi.Int32 Function(ffi.Pointer<git_diff>,
+          ffi.Int Function(ffi.Pointer<git_diff>,
               ffi.Pointer<git_diff_find_options>)>>('git_diff_find_similar');
   late final _git_diff_find_similar = _git_diff_find_similarPtr.asFunction<
       int Function(
@@ -7473,7 +7462,7 @@ class Libgit2 {
   }
 
   late final _git_diff_num_deltasPtr =
-      _lookup<ffi.NativeFunction<size_t Function(ffi.Pointer<git_diff>)>>(
+      _lookup<ffi.NativeFunction<ffi.Size Function(ffi.Pointer<git_diff>)>>(
           'git_diff_num_deltas');
   late final _git_diff_num_deltas =
       _git_diff_num_deltasPtr.asFunction<int Function(ffi.Pointer<git_diff>)>();
@@ -7499,7 +7488,7 @@ class Libgit2 {
 
   late final _git_diff_num_deltas_of_typePtr = _lookup<
       ffi.NativeFunction<
-          size_t Function(ffi.Pointer<git_diff>,
+          ffi.Size Function(ffi.Pointer<git_diff>,
               ffi.Int32)>>('git_diff_num_deltas_of_type');
   late final _git_diff_num_deltas_of_type = _git_diff_num_deltas_of_typePtr
       .asFunction<int Function(ffi.Pointer<git_diff>, int)>();
@@ -7532,7 +7521,7 @@ class Libgit2 {
   late final _git_diff_get_deltaPtr = _lookup<
       ffi.NativeFunction<
           ffi.Pointer<git_diff_delta> Function(
-              ffi.Pointer<git_diff>, size_t)>>('git_diff_get_delta');
+              ffi.Pointer<git_diff>, ffi.Size)>>('git_diff_get_delta');
   late final _git_diff_get_delta = _git_diff_get_deltaPtr.asFunction<
       ffi.Pointer<git_diff_delta> Function(ffi.Pointer<git_diff>, int)>();
 
@@ -7549,7 +7538,7 @@ class Libgit2 {
   }
 
   late final _git_diff_is_sorted_icasePtr =
-      _lookup<ffi.NativeFunction<ffi.Int32 Function(ffi.Pointer<git_diff>)>>(
+      _lookup<ffi.NativeFunction<ffi.Int Function(ffi.Pointer<git_diff>)>>(
           'git_diff_is_sorted_icase');
   late final _git_diff_is_sorted_icase = _git_diff_is_sorted_icasePtr
       .asFunction<int Function(ffi.Pointer<git_diff>)>();
@@ -7598,7 +7587,7 @@ class Libgit2 {
 
   late final _git_diff_foreachPtr = _lookup<
       ffi.NativeFunction<
-          ffi.Int32 Function(
+          ffi.Int Function(
               ffi.Pointer<git_diff>,
               git_diff_file_cb,
               git_diff_binary_cb,
@@ -7627,7 +7616,7 @@ class Libgit2 {
   }
 
   late final _git_diff_status_charPtr =
-      _lookup<ffi.NativeFunction<ffi.Int8 Function(ffi.Int32)>>(
+      _lookup<ffi.NativeFunction<ffi.Char Function(ffi.Int32)>>(
           'git_diff_status_char');
   late final _git_diff_status_char =
       _git_diff_status_charPtr.asFunction<int Function(int)>();
@@ -7658,7 +7647,7 @@ class Libgit2 {
 
   late final _git_diff_printPtr = _lookup<
       ffi.NativeFunction<
-          ffi.Int32 Function(ffi.Pointer<git_diff>, ffi.Int32, git_diff_line_cb,
+          ffi.Int Function(ffi.Pointer<git_diff>, ffi.Int32, git_diff_line_cb,
               ffi.Pointer<ffi.Void>)>>('git_diff_print');
   late final _git_diff_print = _git_diff_printPtr.asFunction<
       int Function(ffi.Pointer<git_diff>, int, git_diff_line_cb,
@@ -7686,7 +7675,7 @@ class Libgit2 {
 
   late final _git_diff_to_bufPtr = _lookup<
       ffi.NativeFunction<
-          ffi.Int32 Function(ffi.Pointer<git_buf>, ffi.Pointer<git_diff>,
+          ffi.Int Function(ffi.Pointer<git_buf>, ffi.Pointer<git_diff>,
               ffi.Int32)>>('git_diff_to_buf');
   late final _git_diff_to_buf = _git_diff_to_bufPtr.asFunction<
       int Function(ffi.Pointer<git_buf>, ffi.Pointer<git_diff>, int)>();
@@ -7719,9 +7708,9 @@ class Libgit2 {
   /// @return 0 on success, non-zero callback return value, or error code
   int git_diff_blobs(
     ffi.Pointer<git_blob> old_blob,
-    ffi.Pointer<ffi.Int8> old_as_path,
+    ffi.Pointer<ffi.Char> old_as_path,
     ffi.Pointer<git_blob> new_blob,
-    ffi.Pointer<ffi.Int8> new_as_path,
+    ffi.Pointer<ffi.Char> new_as_path,
     ffi.Pointer<git_diff_options> options,
     git_diff_file_cb file_cb,
     git_diff_binary_cb binary_cb,
@@ -7745,11 +7734,11 @@ class Libgit2 {
 
   late final _git_diff_blobsPtr = _lookup<
       ffi.NativeFunction<
-          ffi.Int32 Function(
+          ffi.Int Function(
               ffi.Pointer<git_blob>,
-              ffi.Pointer<ffi.Int8>,
+              ffi.Pointer<ffi.Char>,
               ffi.Pointer<git_blob>,
-              ffi.Pointer<ffi.Int8>,
+              ffi.Pointer<ffi.Char>,
               ffi.Pointer<git_diff_options>,
               git_diff_file_cb,
               git_diff_binary_cb,
@@ -7759,9 +7748,9 @@ class Libgit2 {
   late final _git_diff_blobs = _git_diff_blobsPtr.asFunction<
       int Function(
           ffi.Pointer<git_blob>,
-          ffi.Pointer<ffi.Int8>,
+          ffi.Pointer<ffi.Char>,
           ffi.Pointer<git_blob>,
-          ffi.Pointer<ffi.Int8>,
+          ffi.Pointer<ffi.Char>,
           ffi.Pointer<git_diff_options>,
           git_diff_file_cb,
           git_diff_binary_cb,
@@ -7794,10 +7783,10 @@ class Libgit2 {
   /// @return 0 on success, non-zero callback return value, or error code
   int git_diff_blob_to_buffer(
     ffi.Pointer<git_blob> old_blob,
-    ffi.Pointer<ffi.Int8> old_as_path,
-    ffi.Pointer<ffi.Int8> buffer,
+    ffi.Pointer<ffi.Char> old_as_path,
+    ffi.Pointer<ffi.Char> buffer,
     int buffer_len,
-    ffi.Pointer<ffi.Int8> buffer_as_path,
+    ffi.Pointer<ffi.Char> buffer_as_path,
     ffi.Pointer<git_diff_options> options,
     git_diff_file_cb file_cb,
     git_diff_binary_cb binary_cb,
@@ -7822,12 +7811,12 @@ class Libgit2 {
 
   late final _git_diff_blob_to_bufferPtr = _lookup<
       ffi.NativeFunction<
-          ffi.Int32 Function(
+          ffi.Int Function(
               ffi.Pointer<git_blob>,
-              ffi.Pointer<ffi.Int8>,
-              ffi.Pointer<ffi.Int8>,
-              size_t,
-              ffi.Pointer<ffi.Int8>,
+              ffi.Pointer<ffi.Char>,
+              ffi.Pointer<ffi.Char>,
+              ffi.Size,
+              ffi.Pointer<ffi.Char>,
               ffi.Pointer<git_diff_options>,
               git_diff_file_cb,
               git_diff_binary_cb,
@@ -7837,10 +7826,10 @@ class Libgit2 {
   late final _git_diff_blob_to_buffer = _git_diff_blob_to_bufferPtr.asFunction<
       int Function(
           ffi.Pointer<git_blob>,
-          ffi.Pointer<ffi.Int8>,
-          ffi.Pointer<ffi.Int8>,
+          ffi.Pointer<ffi.Char>,
+          ffi.Pointer<ffi.Char>,
           int,
-          ffi.Pointer<ffi.Int8>,
+          ffi.Pointer<ffi.Char>,
           ffi.Pointer<git_diff_options>,
           git_diff_file_cb,
           git_diff_binary_cb,
@@ -7870,10 +7859,10 @@ class Libgit2 {
   int git_diff_buffers(
     ffi.Pointer<ffi.Void> old_buffer,
     int old_len,
-    ffi.Pointer<ffi.Int8> old_as_path,
+    ffi.Pointer<ffi.Char> old_as_path,
     ffi.Pointer<ffi.Void> new_buffer,
     int new_len,
-    ffi.Pointer<ffi.Int8> new_as_path,
+    ffi.Pointer<ffi.Char> new_as_path,
     ffi.Pointer<git_diff_options> options,
     git_diff_file_cb file_cb,
     git_diff_binary_cb binary_cb,
@@ -7899,13 +7888,13 @@ class Libgit2 {
 
   late final _git_diff_buffersPtr = _lookup<
       ffi.NativeFunction<
-          ffi.Int32 Function(
+          ffi.Int Function(
               ffi.Pointer<ffi.Void>,
-              size_t,
-              ffi.Pointer<ffi.Int8>,
+              ffi.Size,
+              ffi.Pointer<ffi.Char>,
               ffi.Pointer<ffi.Void>,
-              size_t,
-              ffi.Pointer<ffi.Int8>,
+              ffi.Size,
+              ffi.Pointer<ffi.Char>,
               ffi.Pointer<git_diff_options>,
               git_diff_file_cb,
               git_diff_binary_cb,
@@ -7916,10 +7905,10 @@ class Libgit2 {
       int Function(
           ffi.Pointer<ffi.Void>,
           int,
-          ffi.Pointer<ffi.Int8>,
+          ffi.Pointer<ffi.Char>,
           ffi.Pointer<ffi.Void>,
           int,
-          ffi.Pointer<ffi.Int8>,
+          ffi.Pointer<ffi.Char>,
           ffi.Pointer<git_diff_options>,
           git_diff_file_cb,
           git_diff_binary_cb,
@@ -7946,7 +7935,7 @@ class Libgit2 {
   /// @return 0 or an error code
   int git_diff_from_buffer(
     ffi.Pointer<ffi.Pointer<git_diff>> out,
-    ffi.Pointer<ffi.Int8> content,
+    ffi.Pointer<ffi.Char> content,
     int content_len,
   ) {
     return _git_diff_from_buffer(
@@ -7958,11 +7947,11 @@ class Libgit2 {
 
   late final _git_diff_from_bufferPtr = _lookup<
       ffi.NativeFunction<
-          ffi.Int32 Function(ffi.Pointer<ffi.Pointer<git_diff>>,
-              ffi.Pointer<ffi.Int8>, size_t)>>('git_diff_from_buffer');
+          ffi.Int Function(ffi.Pointer<ffi.Pointer<git_diff>>,
+              ffi.Pointer<ffi.Char>, ffi.Size)>>('git_diff_from_buffer');
   late final _git_diff_from_buffer = _git_diff_from_bufferPtr.asFunction<
       int Function(
-          ffi.Pointer<ffi.Pointer<git_diff>>, ffi.Pointer<ffi.Int8>, int)>();
+          ffi.Pointer<ffi.Pointer<git_diff>>, ffi.Pointer<ffi.Char>, int)>();
 
   /// Accumulate diff statistics for all patches.
   ///
@@ -7981,7 +7970,7 @@ class Libgit2 {
 
   late final _git_diff_get_statsPtr = _lookup<
       ffi.NativeFunction<
-          ffi.Int32 Function(ffi.Pointer<ffi.Pointer<git_diff_stats>>,
+          ffi.Int Function(ffi.Pointer<ffi.Pointer<git_diff_stats>>,
               ffi.Pointer<git_diff>)>>('git_diff_get_stats');
   late final _git_diff_get_stats = _git_diff_get_statsPtr.asFunction<
       int Function(
@@ -7999,9 +7988,9 @@ class Libgit2 {
     );
   }
 
-  late final _git_diff_stats_files_changedPtr =
-      _lookup<ffi.NativeFunction<size_t Function(ffi.Pointer<git_diff_stats>)>>(
-          'git_diff_stats_files_changed');
+  late final _git_diff_stats_files_changedPtr = _lookup<
+          ffi.NativeFunction<ffi.Size Function(ffi.Pointer<git_diff_stats>)>>(
+      'git_diff_stats_files_changed');
   late final _git_diff_stats_files_changed = _git_diff_stats_files_changedPtr
       .asFunction<int Function(ffi.Pointer<git_diff_stats>)>();
 
@@ -8017,9 +8006,9 @@ class Libgit2 {
     );
   }
 
-  late final _git_diff_stats_insertionsPtr =
-      _lookup<ffi.NativeFunction<size_t Function(ffi.Pointer<git_diff_stats>)>>(
-          'git_diff_stats_insertions');
+  late final _git_diff_stats_insertionsPtr = _lookup<
+          ffi.NativeFunction<ffi.Size Function(ffi.Pointer<git_diff_stats>)>>(
+      'git_diff_stats_insertions');
   late final _git_diff_stats_insertions = _git_diff_stats_insertionsPtr
       .asFunction<int Function(ffi.Pointer<git_diff_stats>)>();
 
@@ -8035,9 +8024,9 @@ class Libgit2 {
     );
   }
 
-  late final _git_diff_stats_deletionsPtr =
-      _lookup<ffi.NativeFunction<size_t Function(ffi.Pointer<git_diff_stats>)>>(
-          'git_diff_stats_deletions');
+  late final _git_diff_stats_deletionsPtr = _lookup<
+          ffi.NativeFunction<ffi.Size Function(ffi.Pointer<git_diff_stats>)>>(
+      'git_diff_stats_deletions');
   late final _git_diff_stats_deletions = _git_diff_stats_deletionsPtr
       .asFunction<int Function(ffi.Pointer<git_diff_stats>)>();
 
@@ -8064,8 +8053,8 @@ class Libgit2 {
 
   late final _git_diff_stats_to_bufPtr = _lookup<
       ffi.NativeFunction<
-          ffi.Int32 Function(ffi.Pointer<git_buf>, ffi.Pointer<git_diff_stats>,
-              ffi.Int32, size_t)>>('git_diff_stats_to_buf');
+          ffi.Int Function(ffi.Pointer<git_buf>, ffi.Pointer<git_diff_stats>,
+              ffi.Int32, ffi.Size)>>('git_diff_stats_to_buf');
   late final _git_diff_stats_to_buf = _git_diff_stats_to_bufPtr.asFunction<
       int Function(
           ffi.Pointer<git_buf>, ffi.Pointer<git_diff_stats>, int, int)>();
@@ -8108,8 +8097,8 @@ class Libgit2 {
 
   late final _git_diff_patchid_options_initPtr = _lookup<
       ffi.NativeFunction<
-          ffi.Int32 Function(ffi.Pointer<git_diff_patchid_options>,
-              ffi.Uint32)>>('git_diff_patchid_options_init');
+          ffi.Int Function(ffi.Pointer<git_diff_patchid_options>,
+              ffi.UnsignedInt)>>('git_diff_patchid_options_init');
   late final _git_diff_patchid_options_init = _git_diff_patchid_options_initPtr
       .asFunction<int Function(ffi.Pointer<git_diff_patchid_options>, int)>();
 
@@ -8144,7 +8133,7 @@ class Libgit2 {
 
   late final _git_diff_patchidPtr = _lookup<
       ffi.NativeFunction<
-          ffi.Int32 Function(ffi.Pointer<git_oid>, ffi.Pointer<git_diff>,
+          ffi.Int Function(ffi.Pointer<git_oid>, ffi.Pointer<git_diff>,
               ffi.Pointer<git_diff_patchid_options>)>>('git_diff_patchid');
   late final _git_diff_patchid = _git_diff_patchidPtr.asFunction<
       int Function(ffi.Pointer<git_oid>, ffi.Pointer<git_diff>,
@@ -8170,8 +8159,8 @@ class Libgit2 {
 
   late final _git_apply_options_initPtr = _lookup<
       ffi.NativeFunction<
-          ffi.Int32 Function(ffi.Pointer<git_apply_options>,
-              ffi.Uint32)>>('git_apply_options_init');
+          ffi.Int Function(ffi.Pointer<git_apply_options>,
+              ffi.UnsignedInt)>>('git_apply_options_init');
   late final _git_apply_options_init = _git_apply_options_initPtr
       .asFunction<int Function(ffi.Pointer<git_apply_options>, int)>();
 
@@ -8202,7 +8191,7 @@ class Libgit2 {
 
   late final _git_apply_to_treePtr = _lookup<
       ffi.NativeFunction<
-          ffi.Int32 Function(
+          ffi.Int Function(
               ffi.Pointer<ffi.Pointer<git_index>>,
               ffi.Pointer<git_repository>,
               ffi.Pointer<git_tree>,
@@ -8240,7 +8229,7 @@ class Libgit2 {
 
   late final _git_applyPtr = _lookup<
       ffi.NativeFunction<
-          ffi.Int32 Function(ffi.Pointer<git_repository>, ffi.Pointer<git_diff>,
+          ffi.Int Function(ffi.Pointer<git_repository>, ffi.Pointer<git_diff>,
               ffi.Int32, ffi.Pointer<git_apply_options>)>>('git_apply');
   late final _git_apply = _git_applyPtr.asFunction<
       int Function(ffi.Pointer<git_repository>, ffi.Pointer<git_diff>, int,
@@ -8258,7 +8247,7 @@ class Libgit2 {
   /// @param attr The attribute
   /// @return the value type for the attribute
   int git_attr_value(
-    ffi.Pointer<ffi.Int8> attr,
+    ffi.Pointer<ffi.Char> attr,
   ) {
     return _git_attr_value(
       attr,
@@ -8266,10 +8255,10 @@ class Libgit2 {
   }
 
   late final _git_attr_valuePtr =
-      _lookup<ffi.NativeFunction<ffi.Int32 Function(ffi.Pointer<ffi.Int8>)>>(
+      _lookup<ffi.NativeFunction<ffi.Int32 Function(ffi.Pointer<ffi.Char>)>>(
           'git_attr_value');
   late final _git_attr_value =
-      _git_attr_valuePtr.asFunction<int Function(ffi.Pointer<ffi.Int8>)>();
+      _git_attr_valuePtr.asFunction<int Function(ffi.Pointer<ffi.Char>)>();
 
   /// Look up the value of one git attribute for path.
   ///
@@ -8286,11 +8275,11 @@ class Libgit2 {
   /// @param name The name of the attribute to look up.
   /// @return 0 or an error code.
   int git_attr_get(
-    ffi.Pointer<ffi.Pointer<ffi.Int8>> value_out,
+    ffi.Pointer<ffi.Pointer<ffi.Char>> value_out,
     ffi.Pointer<git_repository> repo,
     int flags,
-    ffi.Pointer<ffi.Int8> path,
-    ffi.Pointer<ffi.Int8> name,
+    ffi.Pointer<ffi.Char> path,
+    ffi.Pointer<ffi.Char> name,
   ) {
     return _git_attr_get(
       value_out,
@@ -8303,19 +8292,19 @@ class Libgit2 {
 
   late final _git_attr_getPtr = _lookup<
       ffi.NativeFunction<
-          ffi.Int32 Function(
-              ffi.Pointer<ffi.Pointer<ffi.Int8>>,
+          ffi.Int Function(
+              ffi.Pointer<ffi.Pointer<ffi.Char>>,
               ffi.Pointer<git_repository>,
               ffi.Uint32,
-              ffi.Pointer<ffi.Int8>,
-              ffi.Pointer<ffi.Int8>)>>('git_attr_get');
+              ffi.Pointer<ffi.Char>,
+              ffi.Pointer<ffi.Char>)>>('git_attr_get');
   late final _git_attr_get = _git_attr_getPtr.asFunction<
       int Function(
-          ffi.Pointer<ffi.Pointer<ffi.Int8>>,
+          ffi.Pointer<ffi.Pointer<ffi.Char>>,
           ffi.Pointer<git_repository>,
           int,
-          ffi.Pointer<ffi.Int8>,
-          ffi.Pointer<ffi.Int8>)>();
+          ffi.Pointer<ffi.Char>,
+          ffi.Pointer<ffi.Char>)>();
 
   /// Look up the value of one git attribute for path with extended options.
   ///
@@ -8332,11 +8321,11 @@ class Libgit2 {
   /// @param name The name of the attribute to look up.
   /// @return 0 or an error code.
   int git_attr_get_ext(
-    ffi.Pointer<ffi.Pointer<ffi.Int8>> value_out,
+    ffi.Pointer<ffi.Pointer<ffi.Char>> value_out,
     ffi.Pointer<git_repository> repo,
     ffi.Pointer<git_attr_options> opts,
-    ffi.Pointer<ffi.Int8> path,
-    ffi.Pointer<ffi.Int8> name,
+    ffi.Pointer<ffi.Char> path,
+    ffi.Pointer<ffi.Char> name,
   ) {
     return _git_attr_get_ext(
       value_out,
@@ -8349,19 +8338,19 @@ class Libgit2 {
 
   late final _git_attr_get_extPtr = _lookup<
       ffi.NativeFunction<
-          ffi.Int32 Function(
-              ffi.Pointer<ffi.Pointer<ffi.Int8>>,
+          ffi.Int Function(
+              ffi.Pointer<ffi.Pointer<ffi.Char>>,
               ffi.Pointer<git_repository>,
               ffi.Pointer<git_attr_options>,
-              ffi.Pointer<ffi.Int8>,
-              ffi.Pointer<ffi.Int8>)>>('git_attr_get_ext');
+              ffi.Pointer<ffi.Char>,
+              ffi.Pointer<ffi.Char>)>>('git_attr_get_ext');
   late final _git_attr_get_ext = _git_attr_get_extPtr.asFunction<
       int Function(
-          ffi.Pointer<ffi.Pointer<ffi.Int8>>,
+          ffi.Pointer<ffi.Pointer<ffi.Char>>,
           ffi.Pointer<git_repository>,
           ffi.Pointer<git_attr_options>,
-          ffi.Pointer<ffi.Int8>,
-          ffi.Pointer<ffi.Int8>)>();
+          ffi.Pointer<ffi.Char>,
+          ffi.Pointer<ffi.Char>)>();
 
   /// Look up a list of git attributes for path.
   ///
@@ -8392,12 +8381,12 @@ class Libgit2 {
   /// @param names An array of num_attr strings containing attribute names.
   /// @return 0 or an error code.
   int git_attr_get_many(
-    ffi.Pointer<ffi.Pointer<ffi.Int8>> values_out,
+    ffi.Pointer<ffi.Pointer<ffi.Char>> values_out,
     ffi.Pointer<git_repository> repo,
     int flags,
-    ffi.Pointer<ffi.Int8> path,
+    ffi.Pointer<ffi.Char> path,
     int num_attr,
-    ffi.Pointer<ffi.Pointer<ffi.Int8>> names,
+    ffi.Pointer<ffi.Pointer<ffi.Char>> names,
   ) {
     return _git_attr_get_many(
       values_out,
@@ -8411,21 +8400,21 @@ class Libgit2 {
 
   late final _git_attr_get_manyPtr = _lookup<
       ffi.NativeFunction<
-          ffi.Int32 Function(
-              ffi.Pointer<ffi.Pointer<ffi.Int8>>,
+          ffi.Int Function(
+              ffi.Pointer<ffi.Pointer<ffi.Char>>,
               ffi.Pointer<git_repository>,
               ffi.Uint32,
-              ffi.Pointer<ffi.Int8>,
-              size_t,
-              ffi.Pointer<ffi.Pointer<ffi.Int8>>)>>('git_attr_get_many');
+              ffi.Pointer<ffi.Char>,
+              ffi.Size,
+              ffi.Pointer<ffi.Pointer<ffi.Char>>)>>('git_attr_get_many');
   late final _git_attr_get_many = _git_attr_get_manyPtr.asFunction<
       int Function(
-          ffi.Pointer<ffi.Pointer<ffi.Int8>>,
+          ffi.Pointer<ffi.Pointer<ffi.Char>>,
           ffi.Pointer<git_repository>,
           int,
-          ffi.Pointer<ffi.Int8>,
+          ffi.Pointer<ffi.Char>,
           int,
-          ffi.Pointer<ffi.Pointer<ffi.Int8>>)>();
+          ffi.Pointer<ffi.Pointer<ffi.Char>>)>();
 
   /// Look up a list of git attributes for path with extended options.
   ///
@@ -8443,12 +8432,12 @@ class Libgit2 {
   /// @param names An array of num_attr strings containing attribute names.
   /// @return 0 or an error code.
   int git_attr_get_many_ext(
-    ffi.Pointer<ffi.Pointer<ffi.Int8>> values_out,
+    ffi.Pointer<ffi.Pointer<ffi.Char>> values_out,
     ffi.Pointer<git_repository> repo,
     ffi.Pointer<git_attr_options> opts,
-    ffi.Pointer<ffi.Int8> path,
+    ffi.Pointer<ffi.Char> path,
     int num_attr,
-    ffi.Pointer<ffi.Pointer<ffi.Int8>> names,
+    ffi.Pointer<ffi.Pointer<ffi.Char>> names,
   ) {
     return _git_attr_get_many_ext(
       values_out,
@@ -8462,21 +8451,21 @@ class Libgit2 {
 
   late final _git_attr_get_many_extPtr = _lookup<
       ffi.NativeFunction<
-          ffi.Int32 Function(
-              ffi.Pointer<ffi.Pointer<ffi.Int8>>,
+          ffi.Int Function(
+              ffi.Pointer<ffi.Pointer<ffi.Char>>,
               ffi.Pointer<git_repository>,
               ffi.Pointer<git_attr_options>,
-              ffi.Pointer<ffi.Int8>,
-              size_t,
-              ffi.Pointer<ffi.Pointer<ffi.Int8>>)>>('git_attr_get_many_ext');
+              ffi.Pointer<ffi.Char>,
+              ffi.Size,
+              ffi.Pointer<ffi.Pointer<ffi.Char>>)>>('git_attr_get_many_ext');
   late final _git_attr_get_many_ext = _git_attr_get_many_extPtr.asFunction<
       int Function(
-          ffi.Pointer<ffi.Pointer<ffi.Int8>>,
+          ffi.Pointer<ffi.Pointer<ffi.Char>>,
           ffi.Pointer<git_repository>,
           ffi.Pointer<git_attr_options>,
-          ffi.Pointer<ffi.Int8>,
+          ffi.Pointer<ffi.Char>,
           int,
-          ffi.Pointer<ffi.Pointer<ffi.Int8>>)>();
+          ffi.Pointer<ffi.Pointer<ffi.Char>>)>();
 
   /// Loop over all the git attributes for a path.
   ///
@@ -8492,7 +8481,7 @@ class Libgit2 {
   int git_attr_foreach(
     ffi.Pointer<git_repository> repo,
     int flags,
-    ffi.Pointer<ffi.Int8> path,
+    ffi.Pointer<ffi.Char> path,
     git_attr_foreach_cb callback,
     ffi.Pointer<ffi.Void> payload,
   ) {
@@ -8507,14 +8496,14 @@ class Libgit2 {
 
   late final _git_attr_foreachPtr = _lookup<
       ffi.NativeFunction<
-          ffi.Int32 Function(
+          ffi.Int Function(
               ffi.Pointer<git_repository>,
               ffi.Uint32,
-              ffi.Pointer<ffi.Int8>,
+              ffi.Pointer<ffi.Char>,
               git_attr_foreach_cb,
               ffi.Pointer<ffi.Void>)>>('git_attr_foreach');
   late final _git_attr_foreach = _git_attr_foreachPtr.asFunction<
-      int Function(ffi.Pointer<git_repository>, int, ffi.Pointer<ffi.Int8>,
+      int Function(ffi.Pointer<git_repository>, int, ffi.Pointer<ffi.Char>,
           git_attr_foreach_cb, ffi.Pointer<ffi.Void>)>();
 
   /// Loop over all the git attributes for a path with extended options.
@@ -8531,7 +8520,7 @@ class Libgit2 {
   int git_attr_foreach_ext(
     ffi.Pointer<git_repository> repo,
     ffi.Pointer<git_attr_options> opts,
-    ffi.Pointer<ffi.Int8> path,
+    ffi.Pointer<ffi.Char> path,
     git_attr_foreach_cb callback,
     ffi.Pointer<ffi.Void> payload,
   ) {
@@ -8546,15 +8535,15 @@ class Libgit2 {
 
   late final _git_attr_foreach_extPtr = _lookup<
       ffi.NativeFunction<
-          ffi.Int32 Function(
+          ffi.Int Function(
               ffi.Pointer<git_repository>,
               ffi.Pointer<git_attr_options>,
-              ffi.Pointer<ffi.Int8>,
+              ffi.Pointer<ffi.Char>,
               git_attr_foreach_cb,
               ffi.Pointer<ffi.Void>)>>('git_attr_foreach_ext');
   late final _git_attr_foreach_ext = _git_attr_foreach_extPtr.asFunction<
       int Function(ffi.Pointer<git_repository>, ffi.Pointer<git_attr_options>,
-          ffi.Pointer<ffi.Int8>, git_attr_foreach_cb, ffi.Pointer<ffi.Void>)>();
+          ffi.Pointer<ffi.Char>, git_attr_foreach_cb, ffi.Pointer<ffi.Void>)>();
 
   /// Flush the gitattributes cache.
   ///
@@ -8574,7 +8563,7 @@ class Libgit2 {
   }
 
   late final _git_attr_cache_flushPtr = _lookup<
-          ffi.NativeFunction<ffi.Int32 Function(ffi.Pointer<git_repository>)>>(
+          ffi.NativeFunction<ffi.Int Function(ffi.Pointer<git_repository>)>>(
       'git_attr_cache_flush');
   late final _git_attr_cache_flush = _git_attr_cache_flushPtr
       .asFunction<int Function(ffi.Pointer<git_repository>)>();
@@ -8594,8 +8583,8 @@ class Libgit2 {
   /// @return 0 or an error code.
   int git_attr_add_macro(
     ffi.Pointer<git_repository> repo,
-    ffi.Pointer<ffi.Int8> name,
-    ffi.Pointer<ffi.Int8> values,
+    ffi.Pointer<ffi.Char> name,
+    ffi.Pointer<ffi.Char> values,
   ) {
     return _git_attr_add_macro(
       repo,
@@ -8606,11 +8595,11 @@ class Libgit2 {
 
   late final _git_attr_add_macroPtr = _lookup<
       ffi.NativeFunction<
-          ffi.Int32 Function(ffi.Pointer<git_repository>, ffi.Pointer<ffi.Int8>,
-              ffi.Pointer<ffi.Int8>)>>('git_attr_add_macro');
+          ffi.Int Function(ffi.Pointer<git_repository>, ffi.Pointer<ffi.Char>,
+              ffi.Pointer<ffi.Char>)>>('git_attr_add_macro');
   late final _git_attr_add_macro = _git_attr_add_macroPtr.asFunction<
-      int Function(ffi.Pointer<git_repository>, ffi.Pointer<ffi.Int8>,
-          ffi.Pointer<ffi.Int8>)>();
+      int Function(ffi.Pointer<git_repository>, ffi.Pointer<ffi.Char>,
+          ffi.Pointer<ffi.Char>)>();
 
   /// Lookup a blob object from a repository.
   ///
@@ -8632,7 +8621,7 @@ class Libgit2 {
 
   late final _git_blob_lookupPtr = _lookup<
       ffi.NativeFunction<
-          ffi.Int32 Function(
+          ffi.Int Function(
               ffi.Pointer<ffi.Pointer<git_blob>>,
               ffi.Pointer<git_repository>,
               ffi.Pointer<git_oid>)>>('git_blob_lookup');
@@ -8666,11 +8655,11 @@ class Libgit2 {
 
   late final _git_blob_lookup_prefixPtr = _lookup<
       ffi.NativeFunction<
-          ffi.Int32 Function(
+          ffi.Int Function(
               ffi.Pointer<ffi.Pointer<git_blob>>,
               ffi.Pointer<git_repository>,
               ffi.Pointer<git_oid>,
-              size_t)>>('git_blob_lookup_prefix');
+              ffi.Size)>>('git_blob_lookup_prefix');
   late final _git_blob_lookup_prefix = _git_blob_lookup_prefixPtr.asFunction<
       int Function(ffi.Pointer<ffi.Pointer<git_blob>>,
           ffi.Pointer<git_repository>, ffi.Pointer<git_oid>, int)>();
@@ -8798,8 +8787,8 @@ class Libgit2 {
 
   late final _git_blob_filter_options_initPtr = _lookup<
       ffi.NativeFunction<
-          ffi.Int32 Function(ffi.Pointer<git_blob_filter_options>,
-              ffi.Uint32)>>('git_blob_filter_options_init');
+          ffi.Int Function(ffi.Pointer<git_blob_filter_options>,
+              ffi.UnsignedInt)>>('git_blob_filter_options_init');
   late final _git_blob_filter_options_init = _git_blob_filter_options_initPtr
       .asFunction<int Function(ffi.Pointer<git_blob_filter_options>, int)>();
 
@@ -8826,7 +8815,7 @@ class Libgit2 {
   int git_blob_filter(
     ffi.Pointer<git_buf> out,
     ffi.Pointer<git_blob> blob,
-    ffi.Pointer<ffi.Int8> as_path,
+    ffi.Pointer<ffi.Char> as_path,
     ffi.Pointer<git_blob_filter_options> opts,
   ) {
     return _git_blob_filter(
@@ -8839,14 +8828,14 @@ class Libgit2 {
 
   late final _git_blob_filterPtr = _lookup<
       ffi.NativeFunction<
-          ffi.Int32 Function(
+          ffi.Int Function(
               ffi.Pointer<git_buf>,
               ffi.Pointer<git_blob>,
-              ffi.Pointer<ffi.Int8>,
+              ffi.Pointer<ffi.Char>,
               ffi.Pointer<git_blob_filter_options>)>>('git_blob_filter');
   late final _git_blob_filter = _git_blob_filterPtr.asFunction<
       int Function(ffi.Pointer<git_buf>, ffi.Pointer<git_blob>,
-          ffi.Pointer<ffi.Int8>, ffi.Pointer<git_blob_filter_options>)>();
+          ffi.Pointer<ffi.Char>, ffi.Pointer<git_blob_filter_options>)>();
 
   /// Read a file from the working folder of a repository
   /// and write it to the Object Database as a loose blob
@@ -8860,7 +8849,7 @@ class Libgit2 {
   int git_blob_create_from_workdir(
     ffi.Pointer<git_oid> id,
     ffi.Pointer<git_repository> repo,
-    ffi.Pointer<ffi.Int8> relative_path,
+    ffi.Pointer<ffi.Char> relative_path,
   ) {
     return _git_blob_create_from_workdir(
       id,
@@ -8871,12 +8860,12 @@ class Libgit2 {
 
   late final _git_blob_create_from_workdirPtr = _lookup<
       ffi.NativeFunction<
-          ffi.Int32 Function(ffi.Pointer<git_oid>, ffi.Pointer<git_repository>,
-              ffi.Pointer<ffi.Int8>)>>('git_blob_create_from_workdir');
+          ffi.Int Function(ffi.Pointer<git_oid>, ffi.Pointer<git_repository>,
+              ffi.Pointer<ffi.Char>)>>('git_blob_create_from_workdir');
   late final _git_blob_create_from_workdir =
       _git_blob_create_from_workdirPtr.asFunction<
           int Function(ffi.Pointer<git_oid>, ffi.Pointer<git_repository>,
-              ffi.Pointer<ffi.Int8>)>();
+              ffi.Pointer<ffi.Char>)>();
 
   /// Read a file from the filesystem and write its content
   /// to the Object Database as a loose blob
@@ -8889,7 +8878,7 @@ class Libgit2 {
   int git_blob_create_from_disk(
     ffi.Pointer<git_oid> id,
     ffi.Pointer<git_repository> repo,
-    ffi.Pointer<ffi.Int8> path,
+    ffi.Pointer<ffi.Char> path,
   ) {
     return _git_blob_create_from_disk(
       id,
@@ -8900,12 +8889,12 @@ class Libgit2 {
 
   late final _git_blob_create_from_diskPtr = _lookup<
       ffi.NativeFunction<
-          ffi.Int32 Function(ffi.Pointer<git_oid>, ffi.Pointer<git_repository>,
-              ffi.Pointer<ffi.Int8>)>>('git_blob_create_from_disk');
+          ffi.Int Function(ffi.Pointer<git_oid>, ffi.Pointer<git_repository>,
+              ffi.Pointer<ffi.Char>)>>('git_blob_create_from_disk');
   late final _git_blob_create_from_disk =
       _git_blob_create_from_diskPtr.asFunction<
           int Function(ffi.Pointer<git_oid>, ffi.Pointer<git_repository>,
-              ffi.Pointer<ffi.Int8>)>();
+              ffi.Pointer<ffi.Char>)>();
 
   /// Create a stream to write a new blob into the object db
   ///
@@ -8933,7 +8922,7 @@ class Libgit2 {
   int git_blob_create_from_stream(
     ffi.Pointer<ffi.Pointer<git_writestream>> out,
     ffi.Pointer<git_repository> repo,
-    ffi.Pointer<ffi.Int8> hintpath,
+    ffi.Pointer<ffi.Char> hintpath,
   ) {
     return _git_blob_create_from_stream(
       out,
@@ -8944,14 +8933,14 @@ class Libgit2 {
 
   late final _git_blob_create_from_streamPtr = _lookup<
       ffi.NativeFunction<
-          ffi.Int32 Function(
+          ffi.Int Function(
               ffi.Pointer<ffi.Pointer<git_writestream>>,
               ffi.Pointer<git_repository>,
-              ffi.Pointer<ffi.Int8>)>>('git_blob_create_from_stream');
+              ffi.Pointer<ffi.Char>)>>('git_blob_create_from_stream');
   late final _git_blob_create_from_stream =
       _git_blob_create_from_streamPtr.asFunction<
           int Function(ffi.Pointer<ffi.Pointer<git_writestream>>,
-              ffi.Pointer<git_repository>, ffi.Pointer<ffi.Int8>)>();
+              ffi.Pointer<git_repository>, ffi.Pointer<ffi.Char>)>();
 
   /// Close the stream and write the blob to the object db
   ///
@@ -8972,7 +8961,7 @@ class Libgit2 {
 
   late final _git_blob_create_from_stream_commitPtr = _lookup<
           ffi.NativeFunction<
-              ffi.Int32 Function(
+              ffi.Int Function(
                   ffi.Pointer<git_oid>, ffi.Pointer<git_writestream>)>>(
       'git_blob_create_from_stream_commit');
   late final _git_blob_create_from_stream_commit =
@@ -9002,8 +8991,8 @@ class Libgit2 {
 
   late final _git_blob_create_from_bufferPtr = _lookup<
       ffi.NativeFunction<
-          ffi.Int32 Function(ffi.Pointer<git_oid>, ffi.Pointer<git_repository>,
-              ffi.Pointer<ffi.Void>, size_t)>>('git_blob_create_from_buffer');
+          ffi.Int Function(ffi.Pointer<git_oid>, ffi.Pointer<git_repository>,
+              ffi.Pointer<ffi.Void>, ffi.Size)>>('git_blob_create_from_buffer');
   late final _git_blob_create_from_buffer =
       _git_blob_create_from_bufferPtr.asFunction<
           int Function(ffi.Pointer<git_oid>, ffi.Pointer<git_repository>,
@@ -9027,7 +9016,7 @@ class Libgit2 {
   }
 
   late final _git_blob_is_binaryPtr =
-      _lookup<ffi.NativeFunction<ffi.Int32 Function(ffi.Pointer<git_blob>)>>(
+      _lookup<ffi.NativeFunction<ffi.Int Function(ffi.Pointer<git_blob>)>>(
           'git_blob_is_binary');
   late final _git_blob_is_binary =
       _git_blob_is_binaryPtr.asFunction<int Function(ffi.Pointer<git_blob>)>();
@@ -9041,7 +9030,7 @@ class Libgit2 {
   /// @return 1 if the content of the blob is detected
   /// as binary; 0 otherwise.
   int git_blob_data_is_binary(
-    ffi.Pointer<ffi.Int8> data,
+    ffi.Pointer<ffi.Char> data,
     int len,
   ) {
     return _git_blob_data_is_binary(
@@ -9052,10 +9041,10 @@ class Libgit2 {
 
   late final _git_blob_data_is_binaryPtr = _lookup<
       ffi.NativeFunction<
-          ffi.Int32 Function(
-              ffi.Pointer<ffi.Int8>, size_t)>>('git_blob_data_is_binary');
+          ffi.Int Function(
+              ffi.Pointer<ffi.Char>, ffi.Size)>>('git_blob_data_is_binary');
   late final _git_blob_data_is_binary = _git_blob_data_is_binaryPtr
-      .asFunction<int Function(ffi.Pointer<ffi.Int8>, int)>();
+      .asFunction<int Function(ffi.Pointer<ffi.Char>, int)>();
 
   /// Create an in-memory copy of a blob. The copy must be explicitly
   /// free'd or it will leak.
@@ -9075,7 +9064,7 @@ class Libgit2 {
 
   late final _git_blob_dupPtr = _lookup<
       ffi.NativeFunction<
-          ffi.Int32 Function(ffi.Pointer<ffi.Pointer<git_blob>>,
+          ffi.Int Function(ffi.Pointer<ffi.Pointer<git_blob>>,
               ffi.Pointer<git_blob>)>>('git_blob_dup');
   late final _git_blob_dup = _git_blob_dupPtr.asFunction<
       int Function(
@@ -9101,8 +9090,8 @@ class Libgit2 {
 
   late final _git_blame_options_initPtr = _lookup<
       ffi.NativeFunction<
-          ffi.Int32 Function(ffi.Pointer<git_blame_options>,
-              ffi.Uint32)>>('git_blame_options_init');
+          ffi.Int Function(ffi.Pointer<git_blame_options>,
+              ffi.UnsignedInt)>>('git_blame_options_init');
   late final _git_blame_options_init = _git_blame_options_initPtr
       .asFunction<int Function(ffi.Pointer<git_blame_options>, int)>();
 
@@ -9165,7 +9154,7 @@ class Libgit2 {
   late final _git_blame_get_hunk_bylinePtr = _lookup<
       ffi.NativeFunction<
           ffi.Pointer<git_blame_hunk> Function(
-              ffi.Pointer<git_blame>, size_t)>>('git_blame_get_hunk_byline');
+              ffi.Pointer<git_blame>, ffi.Size)>>('git_blame_get_hunk_byline');
   late final _git_blame_get_hunk_byline =
       _git_blame_get_hunk_bylinePtr.asFunction<
           ffi.Pointer<git_blame_hunk> Function(ffi.Pointer<git_blame>, int)>();
@@ -9182,7 +9171,7 @@ class Libgit2 {
   int git_blame_file(
     ffi.Pointer<ffi.Pointer<git_blame>> out,
     ffi.Pointer<git_repository> repo,
-    ffi.Pointer<ffi.Int8> path,
+    ffi.Pointer<ffi.Char> path,
     ffi.Pointer<git_blame_options> options,
   ) {
     return _git_blame_file(
@@ -9195,16 +9184,16 @@ class Libgit2 {
 
   late final _git_blame_filePtr = _lookup<
       ffi.NativeFunction<
-          ffi.Int32 Function(
+          ffi.Int Function(
               ffi.Pointer<ffi.Pointer<git_blame>>,
               ffi.Pointer<git_repository>,
-              ffi.Pointer<ffi.Int8>,
+              ffi.Pointer<ffi.Char>,
               ffi.Pointer<git_blame_options>)>>('git_blame_file');
   late final _git_blame_file = _git_blame_filePtr.asFunction<
       int Function(
           ffi.Pointer<ffi.Pointer<git_blame>>,
           ffi.Pointer<git_repository>,
-          ffi.Pointer<ffi.Int8>,
+          ffi.Pointer<ffi.Char>,
           ffi.Pointer<git_blame_options>)>();
 
   /// Get blame data for a file that has been modified in memory. The `reference`
@@ -9225,7 +9214,7 @@ class Libgit2 {
   int git_blame_buffer(
     ffi.Pointer<ffi.Pointer<git_blame>> out,
     ffi.Pointer<git_blame> reference,
-    ffi.Pointer<ffi.Int8> buffer,
+    ffi.Pointer<ffi.Char> buffer,
     int buffer_len,
   ) {
     return _git_blame_buffer(
@@ -9238,14 +9227,14 @@ class Libgit2 {
 
   late final _git_blame_bufferPtr = _lookup<
       ffi.NativeFunction<
-          ffi.Int32 Function(
+          ffi.Int Function(
               ffi.Pointer<ffi.Pointer<git_blame>>,
               ffi.Pointer<git_blame>,
-              ffi.Pointer<ffi.Int8>,
-              size_t)>>('git_blame_buffer');
+              ffi.Pointer<ffi.Char>,
+              ffi.Size)>>('git_blame_buffer');
   late final _git_blame_buffer = _git_blame_bufferPtr.asFunction<
       int Function(ffi.Pointer<ffi.Pointer<git_blame>>, ffi.Pointer<git_blame>,
-          ffi.Pointer<ffi.Int8>, int)>();
+          ffi.Pointer<ffi.Char>, int)>();
 
   /// Free memory allocated by git_blame_file or git_blame_buffer.
   ///
@@ -9294,7 +9283,7 @@ class Libgit2 {
   int git_branch_create(
     ffi.Pointer<ffi.Pointer<git_reference>> out,
     ffi.Pointer<git_repository> repo,
-    ffi.Pointer<ffi.Int8> branch_name,
+    ffi.Pointer<ffi.Char> branch_name,
     ffi.Pointer<git_commit> target,
     int force,
   ) {
@@ -9309,17 +9298,17 @@ class Libgit2 {
 
   late final _git_branch_createPtr = _lookup<
       ffi.NativeFunction<
-          ffi.Int32 Function(
+          ffi.Int Function(
               ffi.Pointer<ffi.Pointer<git_reference>>,
               ffi.Pointer<git_repository>,
-              ffi.Pointer<ffi.Int8>,
+              ffi.Pointer<ffi.Char>,
               ffi.Pointer<git_commit>,
-              ffi.Int32)>>('git_branch_create');
+              ffi.Int)>>('git_branch_create');
   late final _git_branch_create = _git_branch_createPtr.asFunction<
       int Function(
           ffi.Pointer<ffi.Pointer<git_reference>>,
           ffi.Pointer<git_repository>,
-          ffi.Pointer<ffi.Int8>,
+          ffi.Pointer<ffi.Char>,
           ffi.Pointer<git_commit>,
           int)>();
 
@@ -9335,7 +9324,7 @@ class Libgit2 {
   int git_branch_create_from_annotated(
     ffi.Pointer<ffi.Pointer<git_reference>> ref_out,
     ffi.Pointer<git_repository> repository,
-    ffi.Pointer<ffi.Int8> branch_name,
+    ffi.Pointer<ffi.Char> branch_name,
     ffi.Pointer<git_annotated_commit> commit,
     int force,
   ) {
@@ -9350,18 +9339,18 @@ class Libgit2 {
 
   late final _git_branch_create_from_annotatedPtr = _lookup<
       ffi.NativeFunction<
-          ffi.Int32 Function(
+          ffi.Int Function(
               ffi.Pointer<ffi.Pointer<git_reference>>,
               ffi.Pointer<git_repository>,
-              ffi.Pointer<ffi.Int8>,
+              ffi.Pointer<ffi.Char>,
               ffi.Pointer<git_annotated_commit>,
-              ffi.Int32)>>('git_branch_create_from_annotated');
+              ffi.Int)>>('git_branch_create_from_annotated');
   late final _git_branch_create_from_annotated =
       _git_branch_create_from_annotatedPtr.asFunction<
           int Function(
               ffi.Pointer<ffi.Pointer<git_reference>>,
               ffi.Pointer<git_repository>,
-              ffi.Pointer<ffi.Int8>,
+              ffi.Pointer<ffi.Char>,
               ffi.Pointer<git_annotated_commit>,
               int)>();
 
@@ -9381,9 +9370,9 @@ class Libgit2 {
     );
   }
 
-  late final _git_branch_deletePtr = _lookup<
-          ffi.NativeFunction<ffi.Int32 Function(ffi.Pointer<git_reference>)>>(
-      'git_branch_delete');
+  late final _git_branch_deletePtr =
+      _lookup<ffi.NativeFunction<ffi.Int Function(ffi.Pointer<git_reference>)>>(
+          'git_branch_delete');
   late final _git_branch_delete = _git_branch_deletePtr
       .asFunction<int Function(ffi.Pointer<git_reference>)>();
 
@@ -9410,7 +9399,7 @@ class Libgit2 {
 
   late final _git_branch_iterator_newPtr = _lookup<
       ffi.NativeFunction<
-          ffi.Int32 Function(
+          ffi.Int Function(
               ffi.Pointer<ffi.Pointer<git_branch_iterator>>,
               ffi.Pointer<git_repository>,
               ffi.Int32)>>('git_branch_iterator_new');
@@ -9438,7 +9427,7 @@ class Libgit2 {
 
   late final _git_branch_nextPtr = _lookup<
       ffi.NativeFunction<
-          ffi.Int32 Function(
+          ffi.Int Function(
               ffi.Pointer<ffi.Pointer<git_reference>>,
               ffi.Pointer<ffi.Int32>,
               ffi.Pointer<git_branch_iterator>)>>('git_branch_next');
@@ -9486,7 +9475,7 @@ class Libgit2 {
   int git_branch_move(
     ffi.Pointer<ffi.Pointer<git_reference>> out,
     ffi.Pointer<git_reference> branch,
-    ffi.Pointer<ffi.Int8> new_branch_name,
+    ffi.Pointer<ffi.Char> new_branch_name,
     int force,
   ) {
     return _git_branch_move(
@@ -9499,14 +9488,14 @@ class Libgit2 {
 
   late final _git_branch_movePtr = _lookup<
       ffi.NativeFunction<
-          ffi.Int32 Function(
+          ffi.Int Function(
               ffi.Pointer<ffi.Pointer<git_reference>>,
               ffi.Pointer<git_reference>,
-              ffi.Pointer<ffi.Int8>,
-              ffi.Int32)>>('git_branch_move');
+              ffi.Pointer<ffi.Char>,
+              ffi.Int)>>('git_branch_move');
   late final _git_branch_move = _git_branch_movePtr.asFunction<
       int Function(ffi.Pointer<ffi.Pointer<git_reference>>,
-          ffi.Pointer<git_reference>, ffi.Pointer<ffi.Int8>, int)>();
+          ffi.Pointer<git_reference>, ffi.Pointer<ffi.Char>, int)>();
 
   /// Lookup a branch by its name in a repository.
   ///
@@ -9527,7 +9516,7 @@ class Libgit2 {
   int git_branch_lookup(
     ffi.Pointer<ffi.Pointer<git_reference>> out,
     ffi.Pointer<git_repository> repo,
-    ffi.Pointer<ffi.Int8> branch_name,
+    ffi.Pointer<ffi.Char> branch_name,
     int branch_type,
   ) {
     return _git_branch_lookup(
@@ -9540,14 +9529,14 @@ class Libgit2 {
 
   late final _git_branch_lookupPtr = _lookup<
       ffi.NativeFunction<
-          ffi.Int32 Function(
+          ffi.Int Function(
               ffi.Pointer<ffi.Pointer<git_reference>>,
               ffi.Pointer<git_repository>,
-              ffi.Pointer<ffi.Int8>,
+              ffi.Pointer<ffi.Char>,
               ffi.Int32)>>('git_branch_lookup');
   late final _git_branch_lookup = _git_branch_lookupPtr.asFunction<
       int Function(ffi.Pointer<ffi.Pointer<git_reference>>,
-          ffi.Pointer<git_repository>, ffi.Pointer<ffi.Int8>, int)>();
+          ffi.Pointer<git_repository>, ffi.Pointer<ffi.Char>, int)>();
 
   /// Get the branch name
   ///
@@ -9563,7 +9552,7 @@ class Libgit2 {
   /// @return 0 on success; GIT_EINVALID if the reference isn't either a local or
   /// remote branch, otherwise an error code.
   int git_branch_name(
-    ffi.Pointer<ffi.Pointer<ffi.Int8>> out,
+    ffi.Pointer<ffi.Pointer<ffi.Char>> out,
     ffi.Pointer<git_reference> ref,
   ) {
     return _git_branch_name(
@@ -9574,11 +9563,11 @@ class Libgit2 {
 
   late final _git_branch_namePtr = _lookup<
       ffi.NativeFunction<
-          ffi.Int32 Function(ffi.Pointer<ffi.Pointer<ffi.Int8>>,
+          ffi.Int Function(ffi.Pointer<ffi.Pointer<ffi.Char>>,
               ffi.Pointer<git_reference>)>>('git_branch_name');
   late final _git_branch_name = _git_branch_namePtr.asFunction<
       int Function(
-          ffi.Pointer<ffi.Pointer<ffi.Int8>>, ffi.Pointer<git_reference>)>();
+          ffi.Pointer<ffi.Pointer<ffi.Char>>, ffi.Pointer<git_reference>)>();
 
   /// Get the upstream of a branch
   ///
@@ -9604,7 +9593,7 @@ class Libgit2 {
 
   late final _git_branch_upstreamPtr = _lookup<
       ffi.NativeFunction<
-          ffi.Int32 Function(ffi.Pointer<ffi.Pointer<git_reference>>,
+          ffi.Int Function(ffi.Pointer<ffi.Pointer<git_reference>>,
               ffi.Pointer<git_reference>)>>('git_branch_upstream');
   late final _git_branch_upstream = _git_branch_upstreamPtr.asFunction<
       int Function(ffi.Pointer<ffi.Pointer<git_reference>>,
@@ -9625,7 +9614,7 @@ class Libgit2 {
   /// or an error code
   int git_branch_set_upstream(
     ffi.Pointer<git_reference> branch,
-    ffi.Pointer<ffi.Int8> branch_name,
+    ffi.Pointer<ffi.Char> branch_name,
   ) {
     return _git_branch_set_upstream(
       branch,
@@ -9635,10 +9624,10 @@ class Libgit2 {
 
   late final _git_branch_set_upstreamPtr = _lookup<
       ffi.NativeFunction<
-          ffi.Int32 Function(ffi.Pointer<git_reference>,
-              ffi.Pointer<ffi.Int8>)>>('git_branch_set_upstream');
+          ffi.Int Function(ffi.Pointer<git_reference>,
+              ffi.Pointer<ffi.Char>)>>('git_branch_set_upstream');
   late final _git_branch_set_upstream = _git_branch_set_upstreamPtr.asFunction<
-      int Function(ffi.Pointer<git_reference>, ffi.Pointer<ffi.Int8>)>();
+      int Function(ffi.Pointer<git_reference>, ffi.Pointer<ffi.Char>)>();
 
   /// Get the upstream name of a branch
   ///
@@ -9655,7 +9644,7 @@ class Libgit2 {
   int git_branch_upstream_name(
     ffi.Pointer<git_buf> out,
     ffi.Pointer<git_repository> repo,
-    ffi.Pointer<ffi.Int8> refname,
+    ffi.Pointer<ffi.Char> refname,
   ) {
     return _git_branch_upstream_name(
       out,
@@ -9666,12 +9655,12 @@ class Libgit2 {
 
   late final _git_branch_upstream_namePtr = _lookup<
       ffi.NativeFunction<
-          ffi.Int32 Function(ffi.Pointer<git_buf>, ffi.Pointer<git_repository>,
-              ffi.Pointer<ffi.Int8>)>>('git_branch_upstream_name');
+          ffi.Int Function(ffi.Pointer<git_buf>, ffi.Pointer<git_repository>,
+              ffi.Pointer<ffi.Char>)>>('git_branch_upstream_name');
   late final _git_branch_upstream_name =
       _git_branch_upstream_namePtr.asFunction<
           int Function(ffi.Pointer<git_buf>, ffi.Pointer<git_repository>,
-              ffi.Pointer<ffi.Int8>)>();
+              ffi.Pointer<ffi.Char>)>();
 
   /// Determine if HEAD points to the given branch
   ///
@@ -9687,9 +9676,9 @@ class Libgit2 {
     );
   }
 
-  late final _git_branch_is_headPtr = _lookup<
-          ffi.NativeFunction<ffi.Int32 Function(ffi.Pointer<git_reference>)>>(
-      'git_branch_is_head');
+  late final _git_branch_is_headPtr =
+      _lookup<ffi.NativeFunction<ffi.Int Function(ffi.Pointer<git_reference>)>>(
+          'git_branch_is_head');
   late final _git_branch_is_head = _git_branch_is_headPtr
       .asFunction<int Function(ffi.Pointer<git_reference>)>();
 
@@ -9709,9 +9698,9 @@ class Libgit2 {
     );
   }
 
-  late final _git_branch_is_checked_outPtr = _lookup<
-          ffi.NativeFunction<ffi.Int32 Function(ffi.Pointer<git_reference>)>>(
-      'git_branch_is_checked_out');
+  late final _git_branch_is_checked_outPtr =
+      _lookup<ffi.NativeFunction<ffi.Int Function(ffi.Pointer<git_reference>)>>(
+          'git_branch_is_checked_out');
   late final _git_branch_is_checked_out = _git_branch_is_checked_outPtr
       .asFunction<int Function(ffi.Pointer<git_reference>)>();
 
@@ -9732,7 +9721,7 @@ class Libgit2 {
   int git_branch_remote_name(
     ffi.Pointer<git_buf> out,
     ffi.Pointer<git_repository> repo,
-    ffi.Pointer<ffi.Int8> refname,
+    ffi.Pointer<ffi.Char> refname,
   ) {
     return _git_branch_remote_name(
       out,
@@ -9743,11 +9732,11 @@ class Libgit2 {
 
   late final _git_branch_remote_namePtr = _lookup<
       ffi.NativeFunction<
-          ffi.Int32 Function(ffi.Pointer<git_buf>, ffi.Pointer<git_repository>,
-              ffi.Pointer<ffi.Int8>)>>('git_branch_remote_name');
+          ffi.Int Function(ffi.Pointer<git_buf>, ffi.Pointer<git_repository>,
+              ffi.Pointer<ffi.Char>)>>('git_branch_remote_name');
   late final _git_branch_remote_name = _git_branch_remote_namePtr.asFunction<
       int Function(ffi.Pointer<git_buf>, ffi.Pointer<git_repository>,
-          ffi.Pointer<ffi.Int8>)>();
+          ffi.Pointer<ffi.Char>)>();
 
   /// Retrieve the upstream remote of a local branch
   ///
@@ -9761,7 +9750,7 @@ class Libgit2 {
   int git_branch_upstream_remote(
     ffi.Pointer<git_buf> buf,
     ffi.Pointer<git_repository> repo,
-    ffi.Pointer<ffi.Int8> refname,
+    ffi.Pointer<ffi.Char> refname,
   ) {
     return _git_branch_upstream_remote(
       buf,
@@ -9772,12 +9761,12 @@ class Libgit2 {
 
   late final _git_branch_upstream_remotePtr = _lookup<
       ffi.NativeFunction<
-          ffi.Int32 Function(ffi.Pointer<git_buf>, ffi.Pointer<git_repository>,
-              ffi.Pointer<ffi.Int8>)>>('git_branch_upstream_remote');
+          ffi.Int Function(ffi.Pointer<git_buf>, ffi.Pointer<git_repository>,
+              ffi.Pointer<ffi.Char>)>>('git_branch_upstream_remote');
   late final _git_branch_upstream_remote =
       _git_branch_upstream_remotePtr.asFunction<
           int Function(ffi.Pointer<git_buf>, ffi.Pointer<git_repository>,
-              ffi.Pointer<ffi.Int8>)>();
+              ffi.Pointer<ffi.Char>)>();
 
   /// Retrieve the upstream merge of a local branch
   ///
@@ -9791,7 +9780,7 @@ class Libgit2 {
   int git_branch_upstream_merge(
     ffi.Pointer<git_buf> buf,
     ffi.Pointer<git_repository> repo,
-    ffi.Pointer<ffi.Int8> refname,
+    ffi.Pointer<ffi.Char> refname,
   ) {
     return _git_branch_upstream_merge(
       buf,
@@ -9802,12 +9791,12 @@ class Libgit2 {
 
   late final _git_branch_upstream_mergePtr = _lookup<
       ffi.NativeFunction<
-          ffi.Int32 Function(ffi.Pointer<git_buf>, ffi.Pointer<git_repository>,
-              ffi.Pointer<ffi.Int8>)>>('git_branch_upstream_merge');
+          ffi.Int Function(ffi.Pointer<git_buf>, ffi.Pointer<git_repository>,
+              ffi.Pointer<ffi.Char>)>>('git_branch_upstream_merge');
   late final _git_branch_upstream_merge =
       _git_branch_upstream_mergePtr.asFunction<
           int Function(ffi.Pointer<git_buf>, ffi.Pointer<git_repository>,
-              ffi.Pointer<ffi.Int8>)>();
+              ffi.Pointer<ffi.Char>)>();
 
   /// Determine whether a branch name is valid, meaning that (when prefixed
   /// with `refs/heads/`) that it is a valid reference name, and that any
@@ -9818,8 +9807,8 @@ class Libgit2 {
   /// @param name a branch name to test
   /// @return 0 on success or an error code
   int git_branch_name_is_valid(
-    ffi.Pointer<ffi.Int32> valid,
-    ffi.Pointer<ffi.Int8> name,
+    ffi.Pointer<ffi.Int> valid,
+    ffi.Pointer<ffi.Char> name,
   ) {
     return _git_branch_name_is_valid(
       valid,
@@ -9829,11 +9818,10 @@ class Libgit2 {
 
   late final _git_branch_name_is_validPtr = _lookup<
       ffi.NativeFunction<
-          ffi.Int32 Function(ffi.Pointer<ffi.Int32>,
-              ffi.Pointer<ffi.Int8>)>>('git_branch_name_is_valid');
-  late final _git_branch_name_is_valid =
-      _git_branch_name_is_validPtr.asFunction<
-          int Function(ffi.Pointer<ffi.Int32>, ffi.Pointer<ffi.Int8>)>();
+          ffi.Int Function(ffi.Pointer<ffi.Int>,
+              ffi.Pointer<ffi.Char>)>>('git_branch_name_is_valid');
+  late final _git_branch_name_is_valid = _git_branch_name_is_validPtr
+      .asFunction<int Function(ffi.Pointer<ffi.Int>, ffi.Pointer<ffi.Char>)>();
 
   /// Initialize git_checkout_options structure
   ///
@@ -9855,8 +9843,8 @@ class Libgit2 {
 
   late final _git_checkout_options_initPtr = _lookup<
       ffi.NativeFunction<
-          ffi.Int32 Function(ffi.Pointer<git_checkout_options>,
-              ffi.Uint32)>>('git_checkout_options_init');
+          ffi.Int Function(ffi.Pointer<git_checkout_options>,
+              ffi.UnsignedInt)>>('git_checkout_options_init');
   late final _git_checkout_options_init = _git_checkout_options_initPtr
       .asFunction<int Function(ffi.Pointer<git_checkout_options>, int)>();
 
@@ -9887,7 +9875,7 @@ class Libgit2 {
 
   late final _git_checkout_headPtr = _lookup<
       ffi.NativeFunction<
-          ffi.Int32 Function(ffi.Pointer<git_repository>,
+          ffi.Int Function(ffi.Pointer<git_repository>,
               ffi.Pointer<git_checkout_options>)>>('git_checkout_head');
   late final _git_checkout_head = _git_checkout_headPtr.asFunction<
       int Function(
@@ -9914,9 +9902,7 @@ class Libgit2 {
 
   late final _git_checkout_indexPtr = _lookup<
       ffi.NativeFunction<
-          ffi.Int32 Function(
-              ffi.Pointer<git_repository>,
-              ffi.Pointer<git_index>,
+          ffi.Int Function(ffi.Pointer<git_repository>, ffi.Pointer<git_index>,
               ffi.Pointer<git_checkout_options>)>>('git_checkout_index');
   late final _git_checkout_index = _git_checkout_indexPtr.asFunction<
       int Function(ffi.Pointer<git_repository>, ffi.Pointer<git_index>,
@@ -9945,9 +9931,7 @@ class Libgit2 {
 
   late final _git_checkout_treePtr = _lookup<
       ffi.NativeFunction<
-          ffi.Int32 Function(
-              ffi.Pointer<git_repository>,
-              ffi.Pointer<git_object>,
+          ffi.Int Function(ffi.Pointer<git_repository>, ffi.Pointer<git_object>,
               ffi.Pointer<git_checkout_options>)>>('git_checkout_tree');
   late final _git_checkout_tree = _git_checkout_treePtr.asFunction<
       int Function(ffi.Pointer<git_repository>, ffi.Pointer<git_object>,
@@ -9993,8 +9977,8 @@ class Libgit2 {
 
   late final _git_indexer_options_initPtr = _lookup<
       ffi.NativeFunction<
-          ffi.Int32 Function(ffi.Pointer<git_indexer_options>,
-              ffi.Uint32)>>('git_indexer_options_init');
+          ffi.Int Function(ffi.Pointer<git_indexer_options>,
+              ffi.UnsignedInt)>>('git_indexer_options_init');
   late final _git_indexer_options_init = _git_indexer_options_initPtr
       .asFunction<int Function(ffi.Pointer<git_indexer_options>, int)>();
 
@@ -10011,7 +9995,7 @@ class Libgit2 {
   /// @return 0 or an error code.
   int git_indexer_new(
     ffi.Pointer<ffi.Pointer<git_indexer>> out,
-    ffi.Pointer<ffi.Int8> path,
+    ffi.Pointer<ffi.Char> path,
     int mode,
     ffi.Pointer<git_odb> odb,
     ffi.Pointer<git_indexer_options> opts,
@@ -10027,14 +10011,14 @@ class Libgit2 {
 
   late final _git_indexer_newPtr = _lookup<
       ffi.NativeFunction<
-          ffi.Int32 Function(
+          ffi.Int Function(
               ffi.Pointer<ffi.Pointer<git_indexer>>,
-              ffi.Pointer<ffi.Int8>,
-              ffi.Uint32,
+              ffi.Pointer<ffi.Char>,
+              ffi.UnsignedInt,
               ffi.Pointer<git_odb>,
               ffi.Pointer<git_indexer_options>)>>('git_indexer_new');
   late final _git_indexer_new = _git_indexer_newPtr.asFunction<
-      int Function(ffi.Pointer<ffi.Pointer<git_indexer>>, ffi.Pointer<ffi.Int8>,
+      int Function(ffi.Pointer<ffi.Pointer<git_indexer>>, ffi.Pointer<ffi.Char>,
           int, ffi.Pointer<git_odb>, ffi.Pointer<git_indexer_options>)>();
 
   /// Add data to the indexer
@@ -10060,10 +10044,10 @@ class Libgit2 {
 
   late final _git_indexer_appendPtr = _lookup<
       ffi.NativeFunction<
-          ffi.Int32 Function(
+          ffi.Int Function(
               ffi.Pointer<git_indexer>,
               ffi.Pointer<ffi.Void>,
-              size_t,
+              ffi.Size,
               ffi.Pointer<git_indexer_progress>)>>('git_indexer_append');
   late final _git_indexer_append = _git_indexer_appendPtr.asFunction<
       int Function(ffi.Pointer<git_indexer>, ffi.Pointer<ffi.Void>, int,
@@ -10088,7 +10072,7 @@ class Libgit2 {
 
   late final _git_indexer_commitPtr = _lookup<
       ffi.NativeFunction<
-          ffi.Int32 Function(ffi.Pointer<git_indexer>,
+          ffi.Int Function(ffi.Pointer<git_indexer>,
               ffi.Pointer<git_indexer_progress>)>>('git_indexer_commit');
   late final _git_indexer_commit = _git_indexer_commitPtr.asFunction<
       int Function(
@@ -10124,7 +10108,7 @@ class Libgit2 {
   ///
   /// @param idx the indexer instance
   /// @return a NUL terminated string for the packfile name
-  ffi.Pointer<ffi.Int8> git_indexer_name(
+  ffi.Pointer<ffi.Char> git_indexer_name(
     ffi.Pointer<git_indexer> idx,
   ) {
     return _git_indexer_name(
@@ -10134,10 +10118,10 @@ class Libgit2 {
 
   late final _git_indexer_namePtr = _lookup<
       ffi.NativeFunction<
-          ffi.Pointer<ffi.Int8> Function(
+          ffi.Pointer<ffi.Char> Function(
               ffi.Pointer<git_indexer>)>>('git_indexer_name');
   late final _git_indexer_name = _git_indexer_namePtr
-      .asFunction<ffi.Pointer<ffi.Int8> Function(ffi.Pointer<git_indexer>)>();
+      .asFunction<ffi.Pointer<ffi.Char> Function(ffi.Pointer<git_indexer>)>();
 
   /// Free the indexer and its resources
   ///
@@ -10174,7 +10158,7 @@ class Libgit2 {
   /// @return 0 or an error code
   int git_index_open(
     ffi.Pointer<ffi.Pointer<git_index>> out,
-    ffi.Pointer<ffi.Int8> index_path,
+    ffi.Pointer<ffi.Char> index_path,
   ) {
     return _git_index_open(
       out,
@@ -10184,11 +10168,11 @@ class Libgit2 {
 
   late final _git_index_openPtr = _lookup<
       ffi.NativeFunction<
-          ffi.Int32 Function(ffi.Pointer<ffi.Pointer<git_index>>,
-              ffi.Pointer<ffi.Int8>)>>('git_index_open');
+          ffi.Int Function(ffi.Pointer<ffi.Pointer<git_index>>,
+              ffi.Pointer<ffi.Char>)>>('git_index_open');
   late final _git_index_open = _git_index_openPtr.asFunction<
       int Function(
-          ffi.Pointer<ffi.Pointer<git_index>>, ffi.Pointer<ffi.Int8>)>();
+          ffi.Pointer<ffi.Pointer<git_index>>, ffi.Pointer<ffi.Char>)>();
 
   /// Create an in-memory index object.
   ///
@@ -10209,7 +10193,7 @@ class Libgit2 {
 
   late final _git_index_newPtr = _lookup<
       ffi.NativeFunction<
-          ffi.Int32 Function(
+          ffi.Int Function(
               ffi.Pointer<ffi.Pointer<git_index>>)>>('git_index_new');
   late final _git_index_new = _git_index_newPtr
       .asFunction<int Function(ffi.Pointer<ffi.Pointer<git_index>>)>();
@@ -10263,7 +10247,7 @@ class Libgit2 {
   }
 
   late final _git_index_capsPtr =
-      _lookup<ffi.NativeFunction<ffi.Int32 Function(ffi.Pointer<git_index>)>>(
+      _lookup<ffi.NativeFunction<ffi.Int Function(ffi.Pointer<git_index>)>>(
           'git_index_caps');
   late final _git_index_caps =
       _git_index_capsPtr.asFunction<int Function(ffi.Pointer<git_index>)>();
@@ -10289,8 +10273,8 @@ class Libgit2 {
 
   late final _git_index_set_capsPtr = _lookup<
       ffi.NativeFunction<
-          ffi.Int32 Function(
-              ffi.Pointer<git_index>, ffi.Int32)>>('git_index_set_caps');
+          ffi.Int Function(
+              ffi.Pointer<git_index>, ffi.Int)>>('git_index_set_caps');
   late final _git_index_set_caps = _git_index_set_capsPtr
       .asFunction<int Function(ffi.Pointer<git_index>, int)>();
 
@@ -10310,9 +10294,9 @@ class Libgit2 {
     );
   }
 
-  late final _git_index_versionPtr =
-      _lookup<ffi.NativeFunction<ffi.Uint32 Function(ffi.Pointer<git_index>)>>(
-          'git_index_version');
+  late final _git_index_versionPtr = _lookup<
+          ffi.NativeFunction<ffi.UnsignedInt Function(ffi.Pointer<git_index>)>>(
+      'git_index_version');
   late final _git_index_version =
       _git_index_versionPtr.asFunction<int Function(ffi.Pointer<git_index>)>();
 
@@ -10337,8 +10321,8 @@ class Libgit2 {
 
   late final _git_index_set_versionPtr = _lookup<
       ffi.NativeFunction<
-          ffi.Int32 Function(
-              ffi.Pointer<git_index>, ffi.Uint32)>>('git_index_set_version');
+          ffi.Int Function(ffi.Pointer<git_index>,
+              ffi.UnsignedInt)>>('git_index_set_version');
   late final _git_index_set_version = _git_index_set_versionPtr
       .asFunction<int Function(ffi.Pointer<git_index>, int)>();
 
@@ -10369,8 +10353,7 @@ class Libgit2 {
 
   late final _git_index_readPtr = _lookup<
       ffi.NativeFunction<
-          ffi.Int32 Function(
-              ffi.Pointer<git_index>, ffi.Int32)>>('git_index_read');
+          ffi.Int Function(ffi.Pointer<git_index>, ffi.Int)>>('git_index_read');
   late final _git_index_read = _git_index_readPtr
       .asFunction<int Function(ffi.Pointer<git_index>, int)>();
 
@@ -10388,7 +10371,7 @@ class Libgit2 {
   }
 
   late final _git_index_writePtr =
-      _lookup<ffi.NativeFunction<ffi.Int32 Function(ffi.Pointer<git_index>)>>(
+      _lookup<ffi.NativeFunction<ffi.Int Function(ffi.Pointer<git_index>)>>(
           'git_index_write');
   late final _git_index_write =
       _git_index_writePtr.asFunction<int Function(ffi.Pointer<git_index>)>();
@@ -10397,7 +10380,7 @@ class Libgit2 {
   ///
   /// @param index an existing index object
   /// @return path to index file or NULL for in-memory index
-  ffi.Pointer<ffi.Int8> git_index_path(
+  ffi.Pointer<ffi.Char> git_index_path(
     ffi.Pointer<git_index> index,
   ) {
     return _git_index_path(
@@ -10407,10 +10390,10 @@ class Libgit2 {
 
   late final _git_index_pathPtr = _lookup<
       ffi.NativeFunction<
-          ffi.Pointer<ffi.Int8> Function(
+          ffi.Pointer<ffi.Char> Function(
               ffi.Pointer<git_index>)>>('git_index_path');
   late final _git_index_path = _git_index_pathPtr
-      .asFunction<ffi.Pointer<ffi.Int8> Function(ffi.Pointer<git_index>)>();
+      .asFunction<ffi.Pointer<ffi.Char> Function(ffi.Pointer<git_index>)>();
 
   /// Get the checksum of the index
   ///
@@ -10455,7 +10438,7 @@ class Libgit2 {
 
   late final _git_index_read_treePtr = _lookup<
       ffi.NativeFunction<
-          ffi.Int32 Function(ffi.Pointer<git_index>,
+          ffi.Int Function(ffi.Pointer<git_index>,
               ffi.Pointer<git_tree>)>>('git_index_read_tree');
   late final _git_index_read_tree = _git_index_read_treePtr.asFunction<
       int Function(ffi.Pointer<git_index>, ffi.Pointer<git_tree>)>();
@@ -10489,7 +10472,7 @@ class Libgit2 {
 
   late final _git_index_write_treePtr = _lookup<
       ffi.NativeFunction<
-          ffi.Int32 Function(ffi.Pointer<git_oid>,
+          ffi.Int Function(ffi.Pointer<git_oid>,
               ffi.Pointer<git_index>)>>('git_index_write_tree');
   late final _git_index_write_tree = _git_index_write_treePtr
       .asFunction<int Function(ffi.Pointer<git_oid>, ffi.Pointer<git_index>)>();
@@ -10521,7 +10504,7 @@ class Libgit2 {
 
   late final _git_index_write_tree_toPtr = _lookup<
       ffi.NativeFunction<
-          ffi.Int32 Function(ffi.Pointer<git_oid>, ffi.Pointer<git_index>,
+          ffi.Int Function(ffi.Pointer<git_oid>, ffi.Pointer<git_index>,
               ffi.Pointer<git_repository>)>>('git_index_write_tree_to');
   late final _git_index_write_tree_to = _git_index_write_tree_toPtr.asFunction<
       int Function(ffi.Pointer<git_oid>, ffi.Pointer<git_index>,
@@ -10540,7 +10523,7 @@ class Libgit2 {
   }
 
   late final _git_index_entrycountPtr =
-      _lookup<ffi.NativeFunction<size_t Function(ffi.Pointer<git_index>)>>(
+      _lookup<ffi.NativeFunction<ffi.Size Function(ffi.Pointer<git_index>)>>(
           'git_index_entrycount');
   late final _git_index_entrycount = _git_index_entrycountPtr
       .asFunction<int Function(ffi.Pointer<git_index>)>();
@@ -10561,7 +10544,7 @@ class Libgit2 {
   }
 
   late final _git_index_clearPtr =
-      _lookup<ffi.NativeFunction<ffi.Int32 Function(ffi.Pointer<git_index>)>>(
+      _lookup<ffi.NativeFunction<ffi.Int Function(ffi.Pointer<git_index>)>>(
           'git_index_clear');
   late final _git_index_clear =
       _git_index_clearPtr.asFunction<int Function(ffi.Pointer<git_index>)>();
@@ -10588,7 +10571,7 @@ class Libgit2 {
   late final _git_index_get_byindexPtr = _lookup<
       ffi.NativeFunction<
           ffi.Pointer<git_index_entry> Function(
-              ffi.Pointer<git_index>, size_t)>>('git_index_get_byindex');
+              ffi.Pointer<git_index>, ffi.Size)>>('git_index_get_byindex');
   late final _git_index_get_byindex = _git_index_get_byindexPtr.asFunction<
       ffi.Pointer<git_index_entry> Function(ffi.Pointer<git_index>, int)>();
 
@@ -10604,7 +10587,7 @@ class Libgit2 {
   /// @return a pointer to the entry; NULL if it was not found
   ffi.Pointer<git_index_entry> git_index_get_bypath(
     ffi.Pointer<git_index> index,
-    ffi.Pointer<ffi.Int8> path,
+    ffi.Pointer<ffi.Char> path,
     int stage,
   ) {
     return _git_index_get_bypath(
@@ -10617,10 +10600,10 @@ class Libgit2 {
   late final _git_index_get_bypathPtr = _lookup<
       ffi.NativeFunction<
           ffi.Pointer<git_index_entry> Function(ffi.Pointer<git_index>,
-              ffi.Pointer<ffi.Int8>, ffi.Int32)>>('git_index_get_bypath');
+              ffi.Pointer<ffi.Char>, ffi.Int)>>('git_index_get_bypath');
   late final _git_index_get_bypath = _git_index_get_bypathPtr.asFunction<
       ffi.Pointer<git_index_entry> Function(
-          ffi.Pointer<git_index>, ffi.Pointer<ffi.Int8>, int)>();
+          ffi.Pointer<git_index>, ffi.Pointer<ffi.Char>, int)>();
 
   /// Remove an entry from the index
   ///
@@ -10630,7 +10613,7 @@ class Libgit2 {
   /// @return 0 or an error code
   int git_index_remove(
     ffi.Pointer<git_index> index,
-    ffi.Pointer<ffi.Int8> path,
+    ffi.Pointer<ffi.Char> path,
     int stage,
   ) {
     return _git_index_remove(
@@ -10642,10 +10625,10 @@ class Libgit2 {
 
   late final _git_index_removePtr = _lookup<
       ffi.NativeFunction<
-          ffi.Int32 Function(ffi.Pointer<git_index>, ffi.Pointer<ffi.Int8>,
-              ffi.Int32)>>('git_index_remove');
+          ffi.Int Function(ffi.Pointer<git_index>, ffi.Pointer<ffi.Char>,
+              ffi.Int)>>('git_index_remove');
   late final _git_index_remove = _git_index_removePtr.asFunction<
-      int Function(ffi.Pointer<git_index>, ffi.Pointer<ffi.Int8>, int)>();
+      int Function(ffi.Pointer<git_index>, ffi.Pointer<ffi.Char>, int)>();
 
   /// Remove all entries from the index under a given directory
   ///
@@ -10655,7 +10638,7 @@ class Libgit2 {
   /// @return 0 or an error code
   int git_index_remove_directory(
     ffi.Pointer<git_index> index,
-    ffi.Pointer<ffi.Int8> dir,
+    ffi.Pointer<ffi.Char> dir,
     int stage,
   ) {
     return _git_index_remove_directory(
@@ -10667,11 +10650,11 @@ class Libgit2 {
 
   late final _git_index_remove_directoryPtr = _lookup<
       ffi.NativeFunction<
-          ffi.Int32 Function(ffi.Pointer<git_index>, ffi.Pointer<ffi.Int8>,
-              ffi.Int32)>>('git_index_remove_directory');
+          ffi.Int Function(ffi.Pointer<git_index>, ffi.Pointer<ffi.Char>,
+              ffi.Int)>>('git_index_remove_directory');
   late final _git_index_remove_directory =
       _git_index_remove_directoryPtr.asFunction<
-          int Function(ffi.Pointer<git_index>, ffi.Pointer<ffi.Int8>, int)>();
+          int Function(ffi.Pointer<git_index>, ffi.Pointer<ffi.Char>, int)>();
 
   /// Add or update an index entry from an in-memory struct
   ///
@@ -10697,7 +10680,7 @@ class Libgit2 {
 
   late final _git_index_addPtr = _lookup<
       ffi.NativeFunction<
-          ffi.Int32 Function(ffi.Pointer<git_index>,
+          ffi.Int Function(ffi.Pointer<git_index>,
               ffi.Pointer<git_index_entry>)>>('git_index_add');
   late final _git_index_add = _git_index_addPtr.asFunction<
       int Function(ffi.Pointer<git_index>, ffi.Pointer<git_index_entry>)>();
@@ -10719,7 +10702,7 @@ class Libgit2 {
   }
 
   late final _git_index_entry_stagePtr = _lookup<
-          ffi.NativeFunction<ffi.Int32 Function(ffi.Pointer<git_index_entry>)>>(
+          ffi.NativeFunction<ffi.Int Function(ffi.Pointer<git_index_entry>)>>(
       'git_index_entry_stage');
   late final _git_index_entry_stage = _git_index_entry_stagePtr
       .asFunction<int Function(ffi.Pointer<git_index_entry>)>();
@@ -10738,7 +10721,7 @@ class Libgit2 {
   }
 
   late final _git_index_entry_is_conflictPtr = _lookup<
-          ffi.NativeFunction<ffi.Int32 Function(ffi.Pointer<git_index_entry>)>>(
+          ffi.NativeFunction<ffi.Int Function(ffi.Pointer<git_index_entry>)>>(
       'git_index_entry_is_conflict');
   late final _git_index_entry_is_conflict = _git_index_entry_is_conflictPtr
       .asFunction<int Function(ffi.Pointer<git_index_entry>)>();
@@ -10764,7 +10747,7 @@ class Libgit2 {
 
   late final _git_index_iterator_newPtr = _lookup<
       ffi.NativeFunction<
-          ffi.Int32 Function(ffi.Pointer<ffi.Pointer<git_index_iterator>>,
+          ffi.Int Function(ffi.Pointer<ffi.Pointer<git_index_iterator>>,
               ffi.Pointer<git_index>)>>('git_index_iterator_new');
   late final _git_index_iterator_new = _git_index_iterator_newPtr.asFunction<
       int Function(ffi.Pointer<ffi.Pointer<git_index_iterator>>,
@@ -10787,7 +10770,7 @@ class Libgit2 {
 
   late final _git_index_iterator_nextPtr = _lookup<
       ffi.NativeFunction<
-          ffi.Int32 Function(ffi.Pointer<ffi.Pointer<git_index_entry>>,
+          ffi.Int Function(ffi.Pointer<ffi.Pointer<git_index_entry>>,
               ffi.Pointer<git_index_iterator>)>>('git_index_iterator_next');
   late final _git_index_iterator_next = _git_index_iterator_nextPtr.asFunction<
       int Function(ffi.Pointer<ffi.Pointer<git_index_entry>>,
@@ -10831,7 +10814,7 @@ class Libgit2 {
   /// @return 0 or an error code
   int git_index_add_bypath(
     ffi.Pointer<git_index> index,
-    ffi.Pointer<ffi.Int8> path,
+    ffi.Pointer<ffi.Char> path,
   ) {
     return _git_index_add_bypath(
       index,
@@ -10841,10 +10824,10 @@ class Libgit2 {
 
   late final _git_index_add_bypathPtr = _lookup<
       ffi.NativeFunction<
-          ffi.Int32 Function(ffi.Pointer<git_index>,
-              ffi.Pointer<ffi.Int8>)>>('git_index_add_bypath');
+          ffi.Int Function(ffi.Pointer<git_index>,
+              ffi.Pointer<ffi.Char>)>>('git_index_add_bypath');
   late final _git_index_add_bypath = _git_index_add_bypathPtr.asFunction<
-      int Function(ffi.Pointer<git_index>, ffi.Pointer<ffi.Int8>)>();
+      int Function(ffi.Pointer<git_index>, ffi.Pointer<ffi.Char>)>();
 
   /// Add or update an index entry from a buffer in memory
   ///
@@ -10886,11 +10869,8 @@ class Libgit2 {
 
   late final _git_index_add_from_bufferPtr = _lookup<
       ffi.NativeFunction<
-          ffi.Int32 Function(
-              ffi.Pointer<git_index>,
-              ffi.Pointer<git_index_entry>,
-              ffi.Pointer<ffi.Void>,
-              size_t)>>('git_index_add_from_buffer');
+          ffi.Int Function(ffi.Pointer<git_index>, ffi.Pointer<git_index_entry>,
+              ffi.Pointer<ffi.Void>, ffi.Size)>>('git_index_add_from_buffer');
   late final _git_index_add_from_buffer =
       _git_index_add_from_bufferPtr.asFunction<
           int Function(ffi.Pointer<git_index>, ffi.Pointer<git_index_entry>,
@@ -10910,7 +10890,7 @@ class Libgit2 {
   /// @return 0 or an error code
   int git_index_remove_bypath(
     ffi.Pointer<git_index> index,
-    ffi.Pointer<ffi.Int8> path,
+    ffi.Pointer<ffi.Char> path,
   ) {
     return _git_index_remove_bypath(
       index,
@@ -10920,10 +10900,10 @@ class Libgit2 {
 
   late final _git_index_remove_bypathPtr = _lookup<
       ffi.NativeFunction<
-          ffi.Int32 Function(ffi.Pointer<git_index>,
-              ffi.Pointer<ffi.Int8>)>>('git_index_remove_bypath');
+          ffi.Int Function(ffi.Pointer<git_index>,
+              ffi.Pointer<ffi.Char>)>>('git_index_remove_bypath');
   late final _git_index_remove_bypath = _git_index_remove_bypathPtr.asFunction<
-      int Function(ffi.Pointer<git_index>, ffi.Pointer<ffi.Int8>)>();
+      int Function(ffi.Pointer<git_index>, ffi.Pointer<ffi.Char>)>();
 
   /// Add or update index entries matching files in the working directory.
   ///
@@ -10987,10 +10967,10 @@ class Libgit2 {
 
   late final _git_index_add_allPtr = _lookup<
       ffi.NativeFunction<
-          ffi.Int32 Function(
+          ffi.Int Function(
               ffi.Pointer<git_index>,
               ffi.Pointer<git_strarray>,
-              ffi.Uint32,
+              ffi.UnsignedInt,
               git_index_matched_path_cb,
               ffi.Pointer<ffi.Void>)>>('git_index_add_all');
   late final _git_index_add_all = _git_index_add_allPtr.asFunction<
@@ -11026,7 +11006,7 @@ class Libgit2 {
 
   late final _git_index_remove_allPtr = _lookup<
       ffi.NativeFunction<
-          ffi.Int32 Function(
+          ffi.Int Function(
               ffi.Pointer<git_index>,
               ffi.Pointer<git_strarray>,
               git_index_matched_path_cb,
@@ -11072,7 +11052,7 @@ class Libgit2 {
 
   late final _git_index_update_allPtr = _lookup<
       ffi.NativeFunction<
-          ffi.Int32 Function(
+          ffi.Int Function(
               ffi.Pointer<git_index>,
               ffi.Pointer<git_strarray>,
               git_index_matched_path_cb,
@@ -11089,9 +11069,9 @@ class Libgit2 {
   /// @param path path to search
   /// @return 0 or an error code
   int git_index_find(
-    ffi.Pointer<size_t> at_pos,
+    ffi.Pointer<ffi.Size> at_pos,
     ffi.Pointer<git_index> index,
-    ffi.Pointer<ffi.Int8> path,
+    ffi.Pointer<ffi.Char> path,
   ) {
     return _git_index_find(
       at_pos,
@@ -11102,11 +11082,11 @@ class Libgit2 {
 
   late final _git_index_findPtr = _lookup<
       ffi.NativeFunction<
-          ffi.Int32 Function(ffi.Pointer<size_t>, ffi.Pointer<git_index>,
-              ffi.Pointer<ffi.Int8>)>>('git_index_find');
+          ffi.Int Function(ffi.Pointer<ffi.Size>, ffi.Pointer<git_index>,
+              ffi.Pointer<ffi.Char>)>>('git_index_find');
   late final _git_index_find = _git_index_findPtr.asFunction<
-      int Function(ffi.Pointer<size_t>, ffi.Pointer<git_index>,
-          ffi.Pointer<ffi.Int8>)>();
+      int Function(ffi.Pointer<ffi.Size>, ffi.Pointer<git_index>,
+          ffi.Pointer<ffi.Char>)>();
 
   /// Find the first position of any entries matching a prefix. To find the first position
   /// of a path inside a given folder, suffix the prefix with a '/'.
@@ -11116,9 +11096,9 @@ class Libgit2 {
   /// @param prefix the prefix to search for
   /// @return 0 or an error code
   int git_index_find_prefix(
-    ffi.Pointer<size_t> at_pos,
+    ffi.Pointer<ffi.Size> at_pos,
     ffi.Pointer<git_index> index,
-    ffi.Pointer<ffi.Int8> prefix,
+    ffi.Pointer<ffi.Char> prefix,
   ) {
     return _git_index_find_prefix(
       at_pos,
@@ -11129,11 +11109,11 @@ class Libgit2 {
 
   late final _git_index_find_prefixPtr = _lookup<
       ffi.NativeFunction<
-          ffi.Int32 Function(ffi.Pointer<size_t>, ffi.Pointer<git_index>,
-              ffi.Pointer<ffi.Int8>)>>('git_index_find_prefix');
+          ffi.Int Function(ffi.Pointer<ffi.Size>, ffi.Pointer<git_index>,
+              ffi.Pointer<ffi.Char>)>>('git_index_find_prefix');
   late final _git_index_find_prefix = _git_index_find_prefixPtr.asFunction<
-      int Function(ffi.Pointer<size_t>, ffi.Pointer<git_index>,
-          ffi.Pointer<ffi.Int8>)>();
+      int Function(ffi.Pointer<ffi.Size>, ffi.Pointer<git_index>,
+          ffi.Pointer<ffi.Char>)>();
 
   /// Add or update index entries to represent a conflict.  Any staged
   /// entries that exist at the given paths will be removed.
@@ -11164,7 +11144,7 @@ class Libgit2 {
 
   late final _git_index_conflict_addPtr = _lookup<
       ffi.NativeFunction<
-          ffi.Int32 Function(
+          ffi.Int Function(
               ffi.Pointer<git_index>,
               ffi.Pointer<git_index_entry>,
               ffi.Pointer<git_index_entry>,
@@ -11190,7 +11170,7 @@ class Libgit2 {
     ffi.Pointer<ffi.Pointer<git_index_entry>> our_out,
     ffi.Pointer<ffi.Pointer<git_index_entry>> their_out,
     ffi.Pointer<git_index> index,
-    ffi.Pointer<ffi.Int8> path,
+    ffi.Pointer<ffi.Char> path,
   ) {
     return _git_index_conflict_get(
       ancestor_out,
@@ -11203,19 +11183,19 @@ class Libgit2 {
 
   late final _git_index_conflict_getPtr = _lookup<
       ffi.NativeFunction<
-          ffi.Int32 Function(
+          ffi.Int Function(
               ffi.Pointer<ffi.Pointer<git_index_entry>>,
               ffi.Pointer<ffi.Pointer<git_index_entry>>,
               ffi.Pointer<ffi.Pointer<git_index_entry>>,
               ffi.Pointer<git_index>,
-              ffi.Pointer<ffi.Int8>)>>('git_index_conflict_get');
+              ffi.Pointer<ffi.Char>)>>('git_index_conflict_get');
   late final _git_index_conflict_get = _git_index_conflict_getPtr.asFunction<
       int Function(
           ffi.Pointer<ffi.Pointer<git_index_entry>>,
           ffi.Pointer<ffi.Pointer<git_index_entry>>,
           ffi.Pointer<ffi.Pointer<git_index_entry>>,
           ffi.Pointer<git_index>,
-          ffi.Pointer<ffi.Int8>)>();
+          ffi.Pointer<ffi.Char>)>();
 
   /// Removes the index entries that represent a conflict of a single file.
   ///
@@ -11224,7 +11204,7 @@ class Libgit2 {
   /// @return 0 or an error code
   int git_index_conflict_remove(
     ffi.Pointer<git_index> index,
-    ffi.Pointer<ffi.Int8> path,
+    ffi.Pointer<ffi.Char> path,
   ) {
     return _git_index_conflict_remove(
       index,
@@ -11234,11 +11214,11 @@ class Libgit2 {
 
   late final _git_index_conflict_removePtr = _lookup<
       ffi.NativeFunction<
-          ffi.Int32 Function(ffi.Pointer<git_index>,
-              ffi.Pointer<ffi.Int8>)>>('git_index_conflict_remove');
+          ffi.Int Function(ffi.Pointer<git_index>,
+              ffi.Pointer<ffi.Char>)>>('git_index_conflict_remove');
   late final _git_index_conflict_remove =
       _git_index_conflict_removePtr.asFunction<
-          int Function(ffi.Pointer<git_index>, ffi.Pointer<ffi.Int8>)>();
+          int Function(ffi.Pointer<git_index>, ffi.Pointer<ffi.Char>)>();
 
   /// Remove all conflicts in the index (entries with a stage greater than 0).
   ///
@@ -11253,7 +11233,7 @@ class Libgit2 {
   }
 
   late final _git_index_conflict_cleanupPtr =
-      _lookup<ffi.NativeFunction<ffi.Int32 Function(ffi.Pointer<git_index>)>>(
+      _lookup<ffi.NativeFunction<ffi.Int Function(ffi.Pointer<git_index>)>>(
           'git_index_conflict_cleanup');
   late final _git_index_conflict_cleanup = _git_index_conflict_cleanupPtr
       .asFunction<int Function(ffi.Pointer<git_index>)>();
@@ -11271,7 +11251,7 @@ class Libgit2 {
   }
 
   late final _git_index_has_conflictsPtr =
-      _lookup<ffi.NativeFunction<ffi.Int32 Function(ffi.Pointer<git_index>)>>(
+      _lookup<ffi.NativeFunction<ffi.Int Function(ffi.Pointer<git_index>)>>(
           'git_index_has_conflicts');
   late final _git_index_has_conflicts = _git_index_has_conflictsPtr
       .asFunction<int Function(ffi.Pointer<git_index>)>();
@@ -11295,7 +11275,7 @@ class Libgit2 {
 
   late final _git_index_conflict_iterator_newPtr = _lookup<
       ffi.NativeFunction<
-          ffi.Int32 Function(
+          ffi.Int Function(
               ffi.Pointer<ffi.Pointer<git_index_conflict_iterator>>,
               ffi.Pointer<git_index>)>>('git_index_conflict_iterator_new');
   late final _git_index_conflict_iterator_new =
@@ -11328,7 +11308,7 @@ class Libgit2 {
 
   late final _git_index_conflict_nextPtr = _lookup<
           ffi.NativeFunction<
-              ffi.Int32 Function(
+              ffi.Int Function(
                   ffi.Pointer<ffi.Pointer<git_index_entry>>,
                   ffi.Pointer<ffi.Pointer<git_index_entry>>,
                   ffi.Pointer<ffi.Pointer<git_index_entry>>,
@@ -11379,8 +11359,8 @@ class Libgit2 {
 
   late final _git_merge_file_input_initPtr = _lookup<
       ffi.NativeFunction<
-          ffi.Int32 Function(ffi.Pointer<git_merge_file_input>,
-              ffi.Uint32)>>('git_merge_file_input_init');
+          ffi.Int Function(ffi.Pointer<git_merge_file_input>,
+              ffi.UnsignedInt)>>('git_merge_file_input_init');
   late final _git_merge_file_input_init = _git_merge_file_input_initPtr
       .asFunction<int Function(ffi.Pointer<git_merge_file_input>, int)>();
 
@@ -11404,8 +11384,8 @@ class Libgit2 {
 
   late final _git_merge_file_options_initPtr = _lookup<
       ffi.NativeFunction<
-          ffi.Int32 Function(ffi.Pointer<git_merge_file_options>,
-              ffi.Uint32)>>('git_merge_file_options_init');
+          ffi.Int Function(ffi.Pointer<git_merge_file_options>,
+              ffi.UnsignedInt)>>('git_merge_file_options_init');
   late final _git_merge_file_options_init = _git_merge_file_options_initPtr
       .asFunction<int Function(ffi.Pointer<git_merge_file_options>, int)>();
 
@@ -11429,8 +11409,8 @@ class Libgit2 {
 
   late final _git_merge_options_initPtr = _lookup<
       ffi.NativeFunction<
-          ffi.Int32 Function(ffi.Pointer<git_merge_options>,
-              ffi.Uint32)>>('git_merge_options_init');
+          ffi.Int Function(ffi.Pointer<git_merge_options>,
+              ffi.UnsignedInt)>>('git_merge_options_init');
   late final _git_merge_options_init = _git_merge_options_initPtr
       .asFunction<int Function(ffi.Pointer<git_merge_options>, int)>();
 
@@ -11461,12 +11441,12 @@ class Libgit2 {
 
   late final _git_merge_analysisPtr = _lookup<
       ffi.NativeFunction<
-          ffi.Int32 Function(
+          ffi.Int Function(
               ffi.Pointer<ffi.Int32>,
               ffi.Pointer<ffi.Int32>,
               ffi.Pointer<git_repository>,
               ffi.Pointer<ffi.Pointer<git_annotated_commit>>,
-              size_t)>>('git_merge_analysis');
+              ffi.Size)>>('git_merge_analysis');
   late final _git_merge_analysis = _git_merge_analysisPtr.asFunction<
       int Function(
           ffi.Pointer<ffi.Int32>,
@@ -11505,13 +11485,13 @@ class Libgit2 {
 
   late final _git_merge_analysis_for_refPtr = _lookup<
       ffi.NativeFunction<
-          ffi.Int32 Function(
+          ffi.Int Function(
               ffi.Pointer<ffi.Int32>,
               ffi.Pointer<ffi.Int32>,
               ffi.Pointer<git_repository>,
               ffi.Pointer<git_reference>,
               ffi.Pointer<ffi.Pointer<git_annotated_commit>>,
-              size_t)>>('git_merge_analysis_for_ref');
+              ffi.Size)>>('git_merge_analysis_for_ref');
   late final _git_merge_analysis_for_ref =
       _git_merge_analysis_for_refPtr.asFunction<
           int Function(
@@ -11545,7 +11525,7 @@ class Libgit2 {
 
   late final _git_merge_basePtr = _lookup<
       ffi.NativeFunction<
-          ffi.Int32 Function(ffi.Pointer<git_oid>, ffi.Pointer<git_repository>,
+          ffi.Int Function(ffi.Pointer<git_oid>, ffi.Pointer<git_repository>,
               ffi.Pointer<git_oid>, ffi.Pointer<git_oid>)>>('git_merge_base');
   late final _git_merge_base = _git_merge_basePtr.asFunction<
       int Function(ffi.Pointer<git_oid>, ffi.Pointer<git_repository>,
@@ -11574,7 +11554,7 @@ class Libgit2 {
 
   late final _git_merge_basesPtr = _lookup<
       ffi.NativeFunction<
-          ffi.Int32 Function(
+          ffi.Int Function(
               ffi.Pointer<git_oidarray>,
               ffi.Pointer<git_repository>,
               ffi.Pointer<git_oid>,
@@ -11606,8 +11586,8 @@ class Libgit2 {
 
   late final _git_merge_base_manyPtr = _lookup<
       ffi.NativeFunction<
-          ffi.Int32 Function(ffi.Pointer<git_oid>, ffi.Pointer<git_repository>,
-              size_t, ffi.Pointer<git_oid>)>>('git_merge_base_many');
+          ffi.Int Function(ffi.Pointer<git_oid>, ffi.Pointer<git_repository>,
+              ffi.Size, ffi.Pointer<git_oid>)>>('git_merge_base_many');
   late final _git_merge_base_many = _git_merge_base_manyPtr.asFunction<
       int Function(ffi.Pointer<git_oid>, ffi.Pointer<git_repository>, int,
           ffi.Pointer<git_oid>)>();
@@ -11635,10 +11615,10 @@ class Libgit2 {
 
   late final _git_merge_bases_manyPtr = _lookup<
       ffi.NativeFunction<
-          ffi.Int32 Function(
+          ffi.Int Function(
               ffi.Pointer<git_oidarray>,
               ffi.Pointer<git_repository>,
-              size_t,
+              ffi.Size,
               ffi.Pointer<git_oid>)>>('git_merge_bases_many');
   late final _git_merge_bases_many = _git_merge_bases_manyPtr.asFunction<
       int Function(ffi.Pointer<git_oidarray>, ffi.Pointer<git_repository>, int,
@@ -11667,8 +11647,8 @@ class Libgit2 {
 
   late final _git_merge_base_octopusPtr = _lookup<
       ffi.NativeFunction<
-          ffi.Int32 Function(ffi.Pointer<git_oid>, ffi.Pointer<git_repository>,
-              size_t, ffi.Pointer<git_oid>)>>('git_merge_base_octopus');
+          ffi.Int Function(ffi.Pointer<git_oid>, ffi.Pointer<git_repository>,
+              ffi.Size, ffi.Pointer<git_oid>)>>('git_merge_base_octopus');
   late final _git_merge_base_octopus = _git_merge_base_octopusPtr.asFunction<
       int Function(ffi.Pointer<git_oid>, ffi.Pointer<git_repository>, int,
           ffi.Pointer<git_oid>)>();
@@ -11705,7 +11685,7 @@ class Libgit2 {
 
   late final _git_merge_filePtr = _lookup<
       ffi.NativeFunction<
-          ffi.Int32 Function(
+          ffi.Int Function(
               ffi.Pointer<git_merge_file_result>,
               ffi.Pointer<git_merge_file_input>,
               ffi.Pointer<git_merge_file_input>,
@@ -11751,7 +11731,7 @@ class Libgit2 {
 
   late final _git_merge_file_from_indexPtr = _lookup<
           ffi.NativeFunction<
-              ffi.Int32 Function(
+              ffi.Int Function(
                   ffi.Pointer<git_merge_file_result>,
                   ffi.Pointer<git_repository>,
                   ffi.Pointer<git_index_entry>,
@@ -11821,7 +11801,7 @@ class Libgit2 {
 
   late final _git_merge_treesPtr = _lookup<
       ffi.NativeFunction<
-          ffi.Int32 Function(
+          ffi.Int Function(
               ffi.Pointer<ffi.Pointer<git_index>>,
               ffi.Pointer<git_repository>,
               ffi.Pointer<git_tree>,
@@ -11868,7 +11848,7 @@ class Libgit2 {
 
   late final _git_merge_commitsPtr = _lookup<
       ffi.NativeFunction<
-          ffi.Int32 Function(
+          ffi.Int Function(
               ffi.Pointer<ffi.Pointer<git_index>>,
               ffi.Pointer<git_repository>,
               ffi.Pointer<git_commit>,
@@ -11916,10 +11896,10 @@ class Libgit2 {
 
   late final _git_mergePtr = _lookup<
       ffi.NativeFunction<
-          ffi.Int32 Function(
+          ffi.Int Function(
               ffi.Pointer<git_repository>,
               ffi.Pointer<ffi.Pointer<git_annotated_commit>>,
-              size_t,
+              ffi.Size,
               ffi.Pointer<git_merge_options>,
               ffi.Pointer<git_checkout_options>)>>('git_merge');
   late final _git_merge = _git_mergePtr.asFunction<
@@ -11950,8 +11930,8 @@ class Libgit2 {
 
   late final _git_cherrypick_options_initPtr = _lookup<
       ffi.NativeFunction<
-          ffi.Int32 Function(ffi.Pointer<git_cherrypick_options>,
-              ffi.Uint32)>>('git_cherrypick_options_init');
+          ffi.Int Function(ffi.Pointer<git_cherrypick_options>,
+              ffi.UnsignedInt)>>('git_cherrypick_options_init');
   late final _git_cherrypick_options_init = _git_cherrypick_options_initPtr
       .asFunction<int Function(ffi.Pointer<git_cherrypick_options>, int)>();
 
@@ -11987,12 +11967,12 @@ class Libgit2 {
 
   late final _git_cherrypick_commitPtr = _lookup<
       ffi.NativeFunction<
-          ffi.Int32 Function(
+          ffi.Int Function(
               ffi.Pointer<ffi.Pointer<git_index>>,
               ffi.Pointer<git_repository>,
               ffi.Pointer<git_commit>,
               ffi.Pointer<git_commit>,
-              ffi.Uint32,
+              ffi.UnsignedInt,
               ffi.Pointer<git_merge_options>)>>('git_cherrypick_commit');
   late final _git_cherrypick_commit = _git_cherrypick_commitPtr.asFunction<
       int Function(
@@ -12023,9 +12003,7 @@ class Libgit2 {
 
   late final _git_cherrypickPtr = _lookup<
       ffi.NativeFunction<
-          ffi.Int32 Function(
-              ffi.Pointer<git_repository>,
-              ffi.Pointer<git_commit>,
+          ffi.Int Function(ffi.Pointer<git_repository>, ffi.Pointer<git_commit>,
               ffi.Pointer<git_cherrypick_options>)>>('git_cherrypick');
   late final _git_cherrypick = _git_cherrypickPtr.asFunction<
       int Function(ffi.Pointer<git_repository>, ffi.Pointer<git_commit>,
@@ -12039,7 +12017,7 @@ class Libgit2 {
   /// @return 0 if the refspec string could be parsed, -1 otherwise
   int git_refspec_parse(
     ffi.Pointer<ffi.Pointer<git_refspec>> refspec,
-    ffi.Pointer<ffi.Int8> input,
+    ffi.Pointer<ffi.Char> input,
     int is_fetch,
   ) {
     return _git_refspec_parse(
@@ -12051,11 +12029,11 @@ class Libgit2 {
 
   late final _git_refspec_parsePtr = _lookup<
       ffi.NativeFunction<
-          ffi.Int32 Function(ffi.Pointer<ffi.Pointer<git_refspec>>,
-              ffi.Pointer<ffi.Int8>, ffi.Int32)>>('git_refspec_parse');
+          ffi.Int Function(ffi.Pointer<ffi.Pointer<git_refspec>>,
+              ffi.Pointer<ffi.Char>, ffi.Int)>>('git_refspec_parse');
   late final _git_refspec_parse = _git_refspec_parsePtr.asFunction<
       int Function(
-          ffi.Pointer<ffi.Pointer<git_refspec>>, ffi.Pointer<ffi.Int8>, int)>();
+          ffi.Pointer<ffi.Pointer<git_refspec>>, ffi.Pointer<ffi.Char>, int)>();
 
   /// Free a refspec object which has been created by git_refspec_parse
   ///
@@ -12078,7 +12056,7 @@ class Libgit2 {
   ///
   /// @param refspec the refspec
   /// @return the refspec's source specifier
-  ffi.Pointer<ffi.Int8> git_refspec_src(
+  ffi.Pointer<ffi.Char> git_refspec_src(
     ffi.Pointer<git_refspec> refspec,
   ) {
     return _git_refspec_src(
@@ -12088,16 +12066,16 @@ class Libgit2 {
 
   late final _git_refspec_srcPtr = _lookup<
       ffi.NativeFunction<
-          ffi.Pointer<ffi.Int8> Function(
+          ffi.Pointer<ffi.Char> Function(
               ffi.Pointer<git_refspec>)>>('git_refspec_src');
   late final _git_refspec_src = _git_refspec_srcPtr
-      .asFunction<ffi.Pointer<ffi.Int8> Function(ffi.Pointer<git_refspec>)>();
+      .asFunction<ffi.Pointer<ffi.Char> Function(ffi.Pointer<git_refspec>)>();
 
   /// Get the destination specifier
   ///
   /// @param refspec the refspec
   /// @return the refspec's destination specifier
-  ffi.Pointer<ffi.Int8> git_refspec_dst(
+  ffi.Pointer<ffi.Char> git_refspec_dst(
     ffi.Pointer<git_refspec> refspec,
   ) {
     return _git_refspec_dst(
@@ -12107,16 +12085,16 @@ class Libgit2 {
 
   late final _git_refspec_dstPtr = _lookup<
       ffi.NativeFunction<
-          ffi.Pointer<ffi.Int8> Function(
+          ffi.Pointer<ffi.Char> Function(
               ffi.Pointer<git_refspec>)>>('git_refspec_dst');
   late final _git_refspec_dst = _git_refspec_dstPtr
-      .asFunction<ffi.Pointer<ffi.Int8> Function(ffi.Pointer<git_refspec>)>();
+      .asFunction<ffi.Pointer<ffi.Char> Function(ffi.Pointer<git_refspec>)>();
 
   /// Get the refspec's string
   ///
   /// @param refspec the refspec
   /// @returns the refspec's original string
-  ffi.Pointer<ffi.Int8> git_refspec_string(
+  ffi.Pointer<ffi.Char> git_refspec_string(
     ffi.Pointer<git_refspec> refspec,
   ) {
     return _git_refspec_string(
@@ -12126,10 +12104,10 @@ class Libgit2 {
 
   late final _git_refspec_stringPtr = _lookup<
       ffi.NativeFunction<
-          ffi.Pointer<ffi.Int8> Function(
+          ffi.Pointer<ffi.Char> Function(
               ffi.Pointer<git_refspec>)>>('git_refspec_string');
   late final _git_refspec_string = _git_refspec_stringPtr
-      .asFunction<ffi.Pointer<ffi.Int8> Function(ffi.Pointer<git_refspec>)>();
+      .asFunction<ffi.Pointer<ffi.Char> Function(ffi.Pointer<git_refspec>)>();
 
   /// Get the force update setting
   ///
@@ -12144,7 +12122,7 @@ class Libgit2 {
   }
 
   late final _git_refspec_forcePtr =
-      _lookup<ffi.NativeFunction<ffi.Int32 Function(ffi.Pointer<git_refspec>)>>(
+      _lookup<ffi.NativeFunction<ffi.Int Function(ffi.Pointer<git_refspec>)>>(
           'git_refspec_force');
   late final _git_refspec_force = _git_refspec_forcePtr
       .asFunction<int Function(ffi.Pointer<git_refspec>)>();
@@ -12174,7 +12152,7 @@ class Libgit2 {
   /// @return 1 if the refspec matches, 0 otherwise
   int git_refspec_src_matches(
     ffi.Pointer<git_refspec> refspec,
-    ffi.Pointer<ffi.Int8> refname,
+    ffi.Pointer<ffi.Char> refname,
   ) {
     return _git_refspec_src_matches(
       refspec,
@@ -12184,10 +12162,10 @@ class Libgit2 {
 
   late final _git_refspec_src_matchesPtr = _lookup<
       ffi.NativeFunction<
-          ffi.Int32 Function(ffi.Pointer<git_refspec>,
-              ffi.Pointer<ffi.Int8>)>>('git_refspec_src_matches');
+          ffi.Int Function(ffi.Pointer<git_refspec>,
+              ffi.Pointer<ffi.Char>)>>('git_refspec_src_matches');
   late final _git_refspec_src_matches = _git_refspec_src_matchesPtr.asFunction<
-      int Function(ffi.Pointer<git_refspec>, ffi.Pointer<ffi.Int8>)>();
+      int Function(ffi.Pointer<git_refspec>, ffi.Pointer<ffi.Char>)>();
 
   /// Check if a refspec's destination descriptor matches a reference
   ///
@@ -12196,7 +12174,7 @@ class Libgit2 {
   /// @return 1 if the refspec matches, 0 otherwise
   int git_refspec_dst_matches(
     ffi.Pointer<git_refspec> refspec,
-    ffi.Pointer<ffi.Int8> refname,
+    ffi.Pointer<ffi.Char> refname,
   ) {
     return _git_refspec_dst_matches(
       refspec,
@@ -12206,10 +12184,10 @@ class Libgit2 {
 
   late final _git_refspec_dst_matchesPtr = _lookup<
       ffi.NativeFunction<
-          ffi.Int32 Function(ffi.Pointer<git_refspec>,
-              ffi.Pointer<ffi.Int8>)>>('git_refspec_dst_matches');
+          ffi.Int Function(ffi.Pointer<git_refspec>,
+              ffi.Pointer<ffi.Char>)>>('git_refspec_dst_matches');
   late final _git_refspec_dst_matches = _git_refspec_dst_matchesPtr.asFunction<
-      int Function(ffi.Pointer<git_refspec>, ffi.Pointer<ffi.Int8>)>();
+      int Function(ffi.Pointer<git_refspec>, ffi.Pointer<ffi.Char>)>();
 
   /// Transform a reference to its target following the refspec's rules
   ///
@@ -12220,7 +12198,7 @@ class Libgit2 {
   int git_refspec_transform(
     ffi.Pointer<git_buf> out,
     ffi.Pointer<git_refspec> spec,
-    ffi.Pointer<ffi.Int8> name,
+    ffi.Pointer<ffi.Char> name,
   ) {
     return _git_refspec_transform(
       out,
@@ -12231,11 +12209,11 @@ class Libgit2 {
 
   late final _git_refspec_transformPtr = _lookup<
       ffi.NativeFunction<
-          ffi.Int32 Function(ffi.Pointer<git_buf>, ffi.Pointer<git_refspec>,
-              ffi.Pointer<ffi.Int8>)>>('git_refspec_transform');
+          ffi.Int Function(ffi.Pointer<git_buf>, ffi.Pointer<git_refspec>,
+              ffi.Pointer<ffi.Char>)>>('git_refspec_transform');
   late final _git_refspec_transform = _git_refspec_transformPtr.asFunction<
       int Function(ffi.Pointer<git_buf>, ffi.Pointer<git_refspec>,
-          ffi.Pointer<ffi.Int8>)>();
+          ffi.Pointer<ffi.Char>)>();
 
   /// Transform a target reference to its source reference following the refspec's rules
   ///
@@ -12246,7 +12224,7 @@ class Libgit2 {
   int git_refspec_rtransform(
     ffi.Pointer<git_buf> out,
     ffi.Pointer<git_refspec> spec,
-    ffi.Pointer<ffi.Int8> name,
+    ffi.Pointer<ffi.Char> name,
   ) {
     return _git_refspec_rtransform(
       out,
@@ -12257,11 +12235,11 @@ class Libgit2 {
 
   late final _git_refspec_rtransformPtr = _lookup<
       ffi.NativeFunction<
-          ffi.Int32 Function(ffi.Pointer<git_buf>, ffi.Pointer<git_refspec>,
-              ffi.Pointer<ffi.Int8>)>>('git_refspec_rtransform');
+          ffi.Int Function(ffi.Pointer<git_buf>, ffi.Pointer<git_refspec>,
+              ffi.Pointer<ffi.Char>)>>('git_refspec_rtransform');
   late final _git_refspec_rtransform = _git_refspec_rtransformPtr.asFunction<
       int Function(ffi.Pointer<git_buf>, ffi.Pointer<git_refspec>,
-          ffi.Pointer<ffi.Int8>)>();
+          ffi.Pointer<ffi.Char>)>();
 
   /// Free a credential.
   ///
@@ -12296,7 +12274,7 @@ class Libgit2 {
   }
 
   late final _git_credential_has_usernamePtr = _lookup<
-          ffi.NativeFunction<ffi.Int32 Function(ffi.Pointer<git_credential>)>>(
+          ffi.NativeFunction<ffi.Int Function(ffi.Pointer<git_credential>)>>(
       'git_credential_has_username');
   late final _git_credential_has_username = _git_credential_has_usernamePtr
       .asFunction<int Function(ffi.Pointer<git_credential>)>();
@@ -12305,7 +12283,7 @@ class Libgit2 {
   ///
   /// @param cred object to check
   /// @return the credential username, or NULL if not applicable
-  ffi.Pointer<ffi.Int8> git_credential_get_username(
+  ffi.Pointer<ffi.Char> git_credential_get_username(
     ffi.Pointer<git_credential> cred,
   ) {
     return _git_credential_get_username(
@@ -12315,11 +12293,11 @@ class Libgit2 {
 
   late final _git_credential_get_usernamePtr = _lookup<
       ffi.NativeFunction<
-          ffi.Pointer<ffi.Int8> Function(
+          ffi.Pointer<ffi.Char> Function(
               ffi.Pointer<git_credential>)>>('git_credential_get_username');
   late final _git_credential_get_username =
       _git_credential_get_usernamePtr.asFunction<
-          ffi.Pointer<ffi.Int8> Function(ffi.Pointer<git_credential>)>();
+          ffi.Pointer<ffi.Char> Function(ffi.Pointer<git_credential>)>();
 
   /// Create a new plain-text username and password credential object.
   /// The supplied credential parameter will be internally duplicated.
@@ -12330,8 +12308,8 @@ class Libgit2 {
   /// @return 0 for success or an error code for failure
   int git_credential_userpass_plaintext_new(
     ffi.Pointer<ffi.Pointer<git_credential>> out,
-    ffi.Pointer<ffi.Int8> username,
-    ffi.Pointer<ffi.Int8> password,
+    ffi.Pointer<ffi.Char> username,
+    ffi.Pointer<ffi.Char> password,
   ) {
     return _git_credential_userpass_plaintext_new(
       out,
@@ -12342,14 +12320,14 @@ class Libgit2 {
 
   late final _git_credential_userpass_plaintext_newPtr = _lookup<
       ffi.NativeFunction<
-          ffi.Int32 Function(
+          ffi.Int Function(
               ffi.Pointer<ffi.Pointer<git_credential>>,
-              ffi.Pointer<ffi.Int8>,
-              ffi.Pointer<ffi.Int8>)>>('git_credential_userpass_plaintext_new');
+              ffi.Pointer<ffi.Char>,
+              ffi.Pointer<ffi.Char>)>>('git_credential_userpass_plaintext_new');
   late final _git_credential_userpass_plaintext_new =
       _git_credential_userpass_plaintext_newPtr.asFunction<
           int Function(ffi.Pointer<ffi.Pointer<git_credential>>,
-              ffi.Pointer<ffi.Int8>, ffi.Pointer<ffi.Int8>)>();
+              ffi.Pointer<ffi.Char>, ffi.Pointer<ffi.Char>)>();
 
   /// Create a "default" credential usable for Negotiate mechanisms like NTLM
   /// or Kerberos authentication.
@@ -12366,7 +12344,7 @@ class Libgit2 {
 
   late final _git_credential_default_newPtr = _lookup<
           ffi.NativeFunction<
-              ffi.Int32 Function(ffi.Pointer<ffi.Pointer<git_credential>>)>>(
+              ffi.Int Function(ffi.Pointer<ffi.Pointer<git_credential>>)>>(
       'git_credential_default_new');
   late final _git_credential_default_new = _git_credential_default_newPtr
       .asFunction<int Function(ffi.Pointer<ffi.Pointer<git_credential>>)>();
@@ -12381,7 +12359,7 @@ class Libgit2 {
   /// @return 0 for success or an error code for failure
   int git_credential_username_new(
     ffi.Pointer<ffi.Pointer<git_credential>> out,
-    ffi.Pointer<ffi.Int8> username,
+    ffi.Pointer<ffi.Char> username,
   ) {
     return _git_credential_username_new(
       out,
@@ -12391,12 +12369,12 @@ class Libgit2 {
 
   late final _git_credential_username_newPtr = _lookup<
       ffi.NativeFunction<
-          ffi.Int32 Function(ffi.Pointer<ffi.Pointer<git_credential>>,
-              ffi.Pointer<ffi.Int8>)>>('git_credential_username_new');
+          ffi.Int Function(ffi.Pointer<ffi.Pointer<git_credential>>,
+              ffi.Pointer<ffi.Char>)>>('git_credential_username_new');
   late final _git_credential_username_new =
       _git_credential_username_newPtr.asFunction<
           int Function(ffi.Pointer<ffi.Pointer<git_credential>>,
-              ffi.Pointer<ffi.Int8>)>();
+              ffi.Pointer<ffi.Char>)>();
 
   /// Create a new passphrase-protected ssh key credential object.
   /// The supplied credential parameter will be internally duplicated.
@@ -12409,10 +12387,10 @@ class Libgit2 {
   /// @return 0 for success or an error code for failure
   int git_credential_ssh_key_new(
     ffi.Pointer<ffi.Pointer<git_credential>> out,
-    ffi.Pointer<ffi.Int8> username,
-    ffi.Pointer<ffi.Int8> publickey,
-    ffi.Pointer<ffi.Int8> privatekey,
-    ffi.Pointer<ffi.Int8> passphrase,
+    ffi.Pointer<ffi.Char> username,
+    ffi.Pointer<ffi.Char> publickey,
+    ffi.Pointer<ffi.Char> privatekey,
+    ffi.Pointer<ffi.Char> passphrase,
   ) {
     return _git_credential_ssh_key_new(
       out,
@@ -12425,20 +12403,20 @@ class Libgit2 {
 
   late final _git_credential_ssh_key_newPtr = _lookup<
       ffi.NativeFunction<
-          ffi.Int32 Function(
+          ffi.Int Function(
               ffi.Pointer<ffi.Pointer<git_credential>>,
-              ffi.Pointer<ffi.Int8>,
-              ffi.Pointer<ffi.Int8>,
-              ffi.Pointer<ffi.Int8>,
-              ffi.Pointer<ffi.Int8>)>>('git_credential_ssh_key_new');
+              ffi.Pointer<ffi.Char>,
+              ffi.Pointer<ffi.Char>,
+              ffi.Pointer<ffi.Char>,
+              ffi.Pointer<ffi.Char>)>>('git_credential_ssh_key_new');
   late final _git_credential_ssh_key_new =
       _git_credential_ssh_key_newPtr.asFunction<
           int Function(
               ffi.Pointer<ffi.Pointer<git_credential>>,
-              ffi.Pointer<ffi.Int8>,
-              ffi.Pointer<ffi.Int8>,
-              ffi.Pointer<ffi.Int8>,
-              ffi.Pointer<ffi.Int8>)>();
+              ffi.Pointer<ffi.Char>,
+              ffi.Pointer<ffi.Char>,
+              ffi.Pointer<ffi.Char>,
+              ffi.Pointer<ffi.Char>)>();
 
   /// Create a new ssh key credential object reading the keys from memory.
   ///
@@ -12450,10 +12428,10 @@ class Libgit2 {
   /// @return 0 for success or an error code for failure
   int git_credential_ssh_key_memory_new(
     ffi.Pointer<ffi.Pointer<git_credential>> out,
-    ffi.Pointer<ffi.Int8> username,
-    ffi.Pointer<ffi.Int8> publickey,
-    ffi.Pointer<ffi.Int8> privatekey,
-    ffi.Pointer<ffi.Int8> passphrase,
+    ffi.Pointer<ffi.Char> username,
+    ffi.Pointer<ffi.Char> publickey,
+    ffi.Pointer<ffi.Char> privatekey,
+    ffi.Pointer<ffi.Char> passphrase,
   ) {
     return _git_credential_ssh_key_memory_new(
       out,
@@ -12466,20 +12444,20 @@ class Libgit2 {
 
   late final _git_credential_ssh_key_memory_newPtr = _lookup<
       ffi.NativeFunction<
-          ffi.Int32 Function(
+          ffi.Int Function(
               ffi.Pointer<ffi.Pointer<git_credential>>,
-              ffi.Pointer<ffi.Int8>,
-              ffi.Pointer<ffi.Int8>,
-              ffi.Pointer<ffi.Int8>,
-              ffi.Pointer<ffi.Int8>)>>('git_credential_ssh_key_memory_new');
+              ffi.Pointer<ffi.Char>,
+              ffi.Pointer<ffi.Char>,
+              ffi.Pointer<ffi.Char>,
+              ffi.Pointer<ffi.Char>)>>('git_credential_ssh_key_memory_new');
   late final _git_credential_ssh_key_memory_new =
       _git_credential_ssh_key_memory_newPtr.asFunction<
           int Function(
               ffi.Pointer<ffi.Pointer<git_credential>>,
-              ffi.Pointer<ffi.Int8>,
-              ffi.Pointer<ffi.Int8>,
-              ffi.Pointer<ffi.Int8>,
-              ffi.Pointer<ffi.Int8>)>();
+              ffi.Pointer<ffi.Char>,
+              ffi.Pointer<ffi.Char>,
+              ffi.Pointer<ffi.Char>,
+              ffi.Pointer<ffi.Char>)>();
 
   /// Create a new ssh keyboard-interactive based credential object.
   /// The supplied credential parameter will be internally duplicated.
@@ -12491,7 +12469,7 @@ class Libgit2 {
   /// @return 0 for success or an error code for failure.
   int git_credential_ssh_interactive_new(
     ffi.Pointer<ffi.Pointer<git_credential>> out,
-    ffi.Pointer<ffi.Int8> username,
+    ffi.Pointer<ffi.Char> username,
     git_credential_ssh_interactive_cb prompt_callback,
     ffi.Pointer<ffi.Void> payload,
   ) {
@@ -12505,16 +12483,16 @@ class Libgit2 {
 
   late final _git_credential_ssh_interactive_newPtr = _lookup<
       ffi.NativeFunction<
-          ffi.Int32 Function(
+          ffi.Int Function(
               ffi.Pointer<ffi.Pointer<git_credential>>,
-              ffi.Pointer<ffi.Int8>,
+              ffi.Pointer<ffi.Char>,
               git_credential_ssh_interactive_cb,
               ffi.Pointer<ffi.Void>)>>('git_credential_ssh_interactive_new');
   late final _git_credential_ssh_interactive_new =
       _git_credential_ssh_interactive_newPtr.asFunction<
           int Function(
               ffi.Pointer<ffi.Pointer<git_credential>>,
-              ffi.Pointer<ffi.Int8>,
+              ffi.Pointer<ffi.Char>,
               git_credential_ssh_interactive_cb,
               ffi.Pointer<ffi.Void>)>();
 
@@ -12526,7 +12504,7 @@ class Libgit2 {
   /// @return 0 for success or an error code for failure
   int git_credential_ssh_key_from_agent(
     ffi.Pointer<ffi.Pointer<git_credential>> out,
-    ffi.Pointer<ffi.Int8> username,
+    ffi.Pointer<ffi.Char> username,
   ) {
     return _git_credential_ssh_key_from_agent(
       out,
@@ -12536,12 +12514,12 @@ class Libgit2 {
 
   late final _git_credential_ssh_key_from_agentPtr = _lookup<
       ffi.NativeFunction<
-          ffi.Int32 Function(ffi.Pointer<ffi.Pointer<git_credential>>,
-              ffi.Pointer<ffi.Int8>)>>('git_credential_ssh_key_from_agent');
+          ffi.Int Function(ffi.Pointer<ffi.Pointer<git_credential>>,
+              ffi.Pointer<ffi.Char>)>>('git_credential_ssh_key_from_agent');
   late final _git_credential_ssh_key_from_agent =
       _git_credential_ssh_key_from_agentPtr.asFunction<
           int Function(ffi.Pointer<ffi.Pointer<git_credential>>,
-              ffi.Pointer<ffi.Int8>)>();
+              ffi.Pointer<ffi.Char>)>();
 
   /// Create an ssh key credential with a custom signing function.
   ///
@@ -12561,8 +12539,8 @@ class Libgit2 {
   /// @return 0 for success or an error code for failure
   int git_credential_ssh_custom_new(
     ffi.Pointer<ffi.Pointer<git_credential>> out,
-    ffi.Pointer<ffi.Int8> username,
-    ffi.Pointer<ffi.Int8> publickey,
+    ffi.Pointer<ffi.Char> username,
+    ffi.Pointer<ffi.Char> publickey,
     int publickey_len,
     git_credential_sign_cb sign_callback,
     ffi.Pointer<ffi.Void> payload,
@@ -12579,19 +12557,19 @@ class Libgit2 {
 
   late final _git_credential_ssh_custom_newPtr = _lookup<
       ffi.NativeFunction<
-          ffi.Int32 Function(
+          ffi.Int Function(
               ffi.Pointer<ffi.Pointer<git_credential>>,
-              ffi.Pointer<ffi.Int8>,
-              ffi.Pointer<ffi.Int8>,
-              size_t,
+              ffi.Pointer<ffi.Char>,
+              ffi.Pointer<ffi.Char>,
+              ffi.Size,
               git_credential_sign_cb,
               ffi.Pointer<ffi.Void>)>>('git_credential_ssh_custom_new');
   late final _git_credential_ssh_custom_new =
       _git_credential_ssh_custom_newPtr.asFunction<
           int Function(
               ffi.Pointer<ffi.Pointer<git_credential>>,
-              ffi.Pointer<ffi.Int8>,
-              ffi.Pointer<ffi.Int8>,
+              ffi.Pointer<ffi.Char>,
+              ffi.Pointer<ffi.Char>,
               int,
               git_credential_sign_cb,
               ffi.Pointer<ffi.Void>)>();
@@ -12614,7 +12592,7 @@ class Libgit2 {
 
   late final _git_packbuilder_newPtr = _lookup<
       ffi.NativeFunction<
-          ffi.Int32 Function(ffi.Pointer<ffi.Pointer<git_packbuilder>>,
+          ffi.Int Function(ffi.Pointer<ffi.Pointer<git_packbuilder>>,
               ffi.Pointer<git_repository>)>>('git_packbuilder_new');
   late final _git_packbuilder_new = _git_packbuilder_newPtr.asFunction<
       int Function(ffi.Pointer<ffi.Pointer<git_packbuilder>>,
@@ -12641,8 +12619,8 @@ class Libgit2 {
 
   late final _git_packbuilder_set_threadsPtr = _lookup<
       ffi.NativeFunction<
-          ffi.Uint32 Function(ffi.Pointer<git_packbuilder>,
-              ffi.Uint32)>>('git_packbuilder_set_threads');
+          ffi.UnsignedInt Function(ffi.Pointer<git_packbuilder>,
+              ffi.UnsignedInt)>>('git_packbuilder_set_threads');
   late final _git_packbuilder_set_threads = _git_packbuilder_set_threadsPtr
       .asFunction<int Function(ffi.Pointer<git_packbuilder>, int)>();
 
@@ -12659,7 +12637,7 @@ class Libgit2 {
   int git_packbuilder_insert(
     ffi.Pointer<git_packbuilder> pb,
     ffi.Pointer<git_oid> id,
-    ffi.Pointer<ffi.Int8> name,
+    ffi.Pointer<ffi.Char> name,
   ) {
     return _git_packbuilder_insert(
       pb,
@@ -12670,11 +12648,11 @@ class Libgit2 {
 
   late final _git_packbuilder_insertPtr = _lookup<
       ffi.NativeFunction<
-          ffi.Int32 Function(ffi.Pointer<git_packbuilder>, ffi.Pointer<git_oid>,
-              ffi.Pointer<ffi.Int8>)>>('git_packbuilder_insert');
+          ffi.Int Function(ffi.Pointer<git_packbuilder>, ffi.Pointer<git_oid>,
+              ffi.Pointer<ffi.Char>)>>('git_packbuilder_insert');
   late final _git_packbuilder_insert = _git_packbuilder_insertPtr.asFunction<
       int Function(ffi.Pointer<git_packbuilder>, ffi.Pointer<git_oid>,
-          ffi.Pointer<ffi.Int8>)>();
+          ffi.Pointer<ffi.Char>)>();
 
   /// Insert a root tree object
   ///
@@ -12696,7 +12674,7 @@ class Libgit2 {
 
   late final _git_packbuilder_insert_treePtr = _lookup<
       ffi.NativeFunction<
-          ffi.Int32 Function(ffi.Pointer<git_packbuilder>,
+          ffi.Int Function(ffi.Pointer<git_packbuilder>,
               ffi.Pointer<git_oid>)>>('git_packbuilder_insert_tree');
   late final _git_packbuilder_insert_tree =
       _git_packbuilder_insert_treePtr.asFunction<
@@ -12722,7 +12700,7 @@ class Libgit2 {
 
   late final _git_packbuilder_insert_commitPtr = _lookup<
       ffi.NativeFunction<
-          ffi.Int32 Function(ffi.Pointer<git_packbuilder>,
+          ffi.Int Function(ffi.Pointer<git_packbuilder>,
               ffi.Pointer<git_oid>)>>('git_packbuilder_insert_commit');
   late final _git_packbuilder_insert_commit =
       _git_packbuilder_insert_commitPtr.asFunction<
@@ -12749,7 +12727,7 @@ class Libgit2 {
 
   late final _git_packbuilder_insert_walkPtr = _lookup<
       ffi.NativeFunction<
-          ffi.Int32 Function(ffi.Pointer<git_packbuilder>,
+          ffi.Int Function(ffi.Pointer<git_packbuilder>,
               ffi.Pointer<git_revwalk>)>>('git_packbuilder_insert_walk');
   late final _git_packbuilder_insert_walk =
       _git_packbuilder_insert_walkPtr.asFunction<
@@ -12767,7 +12745,7 @@ class Libgit2 {
   int git_packbuilder_insert_recur(
     ffi.Pointer<git_packbuilder> pb,
     ffi.Pointer<git_oid> id,
-    ffi.Pointer<ffi.Int8> name,
+    ffi.Pointer<ffi.Char> name,
   ) {
     return _git_packbuilder_insert_recur(
       pb,
@@ -12778,12 +12756,12 @@ class Libgit2 {
 
   late final _git_packbuilder_insert_recurPtr = _lookup<
       ffi.NativeFunction<
-          ffi.Int32 Function(ffi.Pointer<git_packbuilder>, ffi.Pointer<git_oid>,
-              ffi.Pointer<ffi.Int8>)>>('git_packbuilder_insert_recur');
+          ffi.Int Function(ffi.Pointer<git_packbuilder>, ffi.Pointer<git_oid>,
+              ffi.Pointer<ffi.Char>)>>('git_packbuilder_insert_recur');
   late final _git_packbuilder_insert_recur =
       _git_packbuilder_insert_recurPtr.asFunction<
           int Function(ffi.Pointer<git_packbuilder>, ffi.Pointer<git_oid>,
-              ffi.Pointer<ffi.Int8>)>();
+              ffi.Pointer<ffi.Char>)>();
 
   /// Write the contents of the packfile to an in-memory buffer
   ///
@@ -12805,7 +12783,7 @@ class Libgit2 {
 
   late final _git_packbuilder_write_bufPtr = _lookup<
       ffi.NativeFunction<
-          ffi.Int32 Function(ffi.Pointer<git_buf>,
+          ffi.Int Function(ffi.Pointer<git_buf>,
               ffi.Pointer<git_packbuilder>)>>('git_packbuilder_write_buf');
   late final _git_packbuilder_write_buf =
       _git_packbuilder_write_bufPtr.asFunction<
@@ -12822,7 +12800,7 @@ class Libgit2 {
   /// @return 0 or an error code
   int git_packbuilder_write(
     ffi.Pointer<git_packbuilder> pb,
-    ffi.Pointer<ffi.Int8> path,
+    ffi.Pointer<ffi.Char> path,
     int mode,
     git_indexer_progress_cb progress_cb,
     ffi.Pointer<ffi.Void> progress_cb_payload,
@@ -12838,14 +12816,14 @@ class Libgit2 {
 
   late final _git_packbuilder_writePtr = _lookup<
       ffi.NativeFunction<
-          ffi.Int32 Function(
+          ffi.Int Function(
               ffi.Pointer<git_packbuilder>,
-              ffi.Pointer<ffi.Int8>,
-              ffi.Uint32,
+              ffi.Pointer<ffi.Char>,
+              ffi.UnsignedInt,
               git_indexer_progress_cb,
               ffi.Pointer<ffi.Void>)>>('git_packbuilder_write');
   late final _git_packbuilder_write = _git_packbuilder_writePtr.asFunction<
-      int Function(ffi.Pointer<git_packbuilder>, ffi.Pointer<ffi.Int8>, int,
+      int Function(ffi.Pointer<git_packbuilder>, ffi.Pointer<ffi.Char>, int,
           git_indexer_progress_cb, ffi.Pointer<ffi.Void>)>();
 
   /// Get the packfile's hash
@@ -12878,7 +12856,7 @@ class Libgit2 {
   ///
   /// @param pb the packbuilder instance
   /// @return a NUL terminated string for the packfile name
-  ffi.Pointer<ffi.Int8> git_packbuilder_name(
+  ffi.Pointer<ffi.Char> git_packbuilder_name(
     ffi.Pointer<git_packbuilder> pb,
   ) {
     return _git_packbuilder_name(
@@ -12888,10 +12866,10 @@ class Libgit2 {
 
   late final _git_packbuilder_namePtr = _lookup<
       ffi.NativeFunction<
-          ffi.Pointer<ffi.Int8> Function(
+          ffi.Pointer<ffi.Char> Function(
               ffi.Pointer<git_packbuilder>)>>('git_packbuilder_name');
   late final _git_packbuilder_name = _git_packbuilder_namePtr.asFunction<
-      ffi.Pointer<ffi.Int8> Function(ffi.Pointer<git_packbuilder>)>();
+      ffi.Pointer<ffi.Char> Function(ffi.Pointer<git_packbuilder>)>();
 
   /// Create the new pack and pass each object to the callback
   ///
@@ -12913,7 +12891,7 @@ class Libgit2 {
 
   late final _git_packbuilder_foreachPtr = _lookup<
       ffi.NativeFunction<
-          ffi.Int32 Function(
+          ffi.Int Function(
               ffi.Pointer<git_packbuilder>,
               git_packbuilder_foreach_cb,
               ffi.Pointer<ffi.Void>)>>('git_packbuilder_foreach');
@@ -12934,7 +12912,7 @@ class Libgit2 {
   }
 
   late final _git_packbuilder_object_countPtr = _lookup<
-          ffi.NativeFunction<size_t Function(ffi.Pointer<git_packbuilder>)>>(
+          ffi.NativeFunction<ffi.Size Function(ffi.Pointer<git_packbuilder>)>>(
       'git_packbuilder_object_count');
   late final _git_packbuilder_object_count = _git_packbuilder_object_countPtr
       .asFunction<int Function(ffi.Pointer<git_packbuilder>)>();
@@ -12952,7 +12930,7 @@ class Libgit2 {
   }
 
   late final _git_packbuilder_writtenPtr = _lookup<
-          ffi.NativeFunction<size_t Function(ffi.Pointer<git_packbuilder>)>>(
+          ffi.NativeFunction<ffi.Size Function(ffi.Pointer<git_packbuilder>)>>(
       'git_packbuilder_written');
   late final _git_packbuilder_written = _git_packbuilder_writtenPtr
       .asFunction<int Function(ffi.Pointer<git_packbuilder>)>();
@@ -12979,7 +12957,7 @@ class Libgit2 {
 
   late final _git_packbuilder_set_callbacksPtr = _lookup<
       ffi.NativeFunction<
-          ffi.Int32 Function(
+          ffi.Int Function(
               ffi.Pointer<git_packbuilder>,
               git_packbuilder_progress,
               ffi.Pointer<ffi.Void>)>>('git_packbuilder_set_callbacks');
@@ -13025,8 +13003,8 @@ class Libgit2 {
 
   late final _git_proxy_options_initPtr = _lookup<
       ffi.NativeFunction<
-          ffi.Int32 Function(ffi.Pointer<git_proxy_options>,
-              ffi.Uint32)>>('git_proxy_options_init');
+          ffi.Int Function(ffi.Pointer<git_proxy_options>,
+              ffi.UnsignedInt)>>('git_proxy_options_init');
   late final _git_proxy_options_init = _git_proxy_options_initPtr
       .asFunction<int Function(ffi.Pointer<git_proxy_options>, int)>();
 
@@ -13040,8 +13018,8 @@ class Libgit2 {
   int git_remote_create(
     ffi.Pointer<ffi.Pointer<git_remote>> out,
     ffi.Pointer<git_repository> repo,
-    ffi.Pointer<ffi.Int8> name,
-    ffi.Pointer<ffi.Int8> url,
+    ffi.Pointer<ffi.Char> name,
+    ffi.Pointer<ffi.Char> url,
   ) {
     return _git_remote_create(
       out,
@@ -13053,17 +13031,17 @@ class Libgit2 {
 
   late final _git_remote_createPtr = _lookup<
       ffi.NativeFunction<
-          ffi.Int32 Function(
+          ffi.Int Function(
               ffi.Pointer<ffi.Pointer<git_remote>>,
               ffi.Pointer<git_repository>,
-              ffi.Pointer<ffi.Int8>,
-              ffi.Pointer<ffi.Int8>)>>('git_remote_create');
+              ffi.Pointer<ffi.Char>,
+              ffi.Pointer<ffi.Char>)>>('git_remote_create');
   late final _git_remote_create = _git_remote_createPtr.asFunction<
       int Function(
           ffi.Pointer<ffi.Pointer<git_remote>>,
           ffi.Pointer<git_repository>,
-          ffi.Pointer<ffi.Int8>,
-          ffi.Pointer<ffi.Int8>)>();
+          ffi.Pointer<ffi.Char>,
+          ffi.Pointer<ffi.Char>)>();
 
   /// Initialize git_remote_create_options structure
   ///
@@ -13085,8 +13063,8 @@ class Libgit2 {
 
   late final _git_remote_create_options_initPtr = _lookup<
       ffi.NativeFunction<
-          ffi.Int32 Function(ffi.Pointer<git_remote_create_options>,
-              ffi.Uint32)>>('git_remote_create_options_init');
+          ffi.Int Function(ffi.Pointer<git_remote_create_options>,
+              ffi.UnsignedInt)>>('git_remote_create_options_init');
   late final _git_remote_create_options_init =
       _git_remote_create_options_initPtr.asFunction<
           int Function(ffi.Pointer<git_remote_create_options>, int)>();
@@ -13103,7 +13081,7 @@ class Libgit2 {
   /// @return 0, GIT_EINVALIDSPEC, GIT_EEXISTS or an error code
   int git_remote_create_with_opts(
     ffi.Pointer<ffi.Pointer<git_remote>> out,
-    ffi.Pointer<ffi.Int8> url,
+    ffi.Pointer<ffi.Char> url,
     ffi.Pointer<git_remote_create_options> opts,
   ) {
     return _git_remote_create_with_opts(
@@ -13115,15 +13093,15 @@ class Libgit2 {
 
   late final _git_remote_create_with_optsPtr = _lookup<
           ffi.NativeFunction<
-              ffi.Int32 Function(
+              ffi.Int Function(
                   ffi.Pointer<ffi.Pointer<git_remote>>,
-                  ffi.Pointer<ffi.Int8>,
+                  ffi.Pointer<ffi.Char>,
                   ffi.Pointer<git_remote_create_options>)>>(
       'git_remote_create_with_opts');
   late final _git_remote_create_with_opts =
       _git_remote_create_with_optsPtr.asFunction<
           int Function(ffi.Pointer<ffi.Pointer<git_remote>>,
-              ffi.Pointer<ffi.Int8>, ffi.Pointer<git_remote_create_options>)>();
+              ffi.Pointer<ffi.Char>, ffi.Pointer<git_remote_create_options>)>();
 
   /// Add a remote with the provided fetch refspec (or default if NULL) to the repository's
   /// configuration.
@@ -13137,9 +13115,9 @@ class Libgit2 {
   int git_remote_create_with_fetchspec(
     ffi.Pointer<ffi.Pointer<git_remote>> out,
     ffi.Pointer<git_repository> repo,
-    ffi.Pointer<ffi.Int8> name,
-    ffi.Pointer<ffi.Int8> url,
-    ffi.Pointer<ffi.Int8> fetch,
+    ffi.Pointer<ffi.Char> name,
+    ffi.Pointer<ffi.Char> url,
+    ffi.Pointer<ffi.Char> fetch,
   ) {
     return _git_remote_create_with_fetchspec(
       out,
@@ -13152,20 +13130,20 @@ class Libgit2 {
 
   late final _git_remote_create_with_fetchspecPtr = _lookup<
       ffi.NativeFunction<
-          ffi.Int32 Function(
+          ffi.Int Function(
               ffi.Pointer<ffi.Pointer<git_remote>>,
               ffi.Pointer<git_repository>,
-              ffi.Pointer<ffi.Int8>,
-              ffi.Pointer<ffi.Int8>,
-              ffi.Pointer<ffi.Int8>)>>('git_remote_create_with_fetchspec');
+              ffi.Pointer<ffi.Char>,
+              ffi.Pointer<ffi.Char>,
+              ffi.Pointer<ffi.Char>)>>('git_remote_create_with_fetchspec');
   late final _git_remote_create_with_fetchspec =
       _git_remote_create_with_fetchspecPtr.asFunction<
           int Function(
               ffi.Pointer<ffi.Pointer<git_remote>>,
               ffi.Pointer<git_repository>,
-              ffi.Pointer<ffi.Int8>,
-              ffi.Pointer<ffi.Int8>,
-              ffi.Pointer<ffi.Int8>)>();
+              ffi.Pointer<ffi.Char>,
+              ffi.Pointer<ffi.Char>,
+              ffi.Pointer<ffi.Char>)>();
 
   /// Create an anonymous remote
   ///
@@ -13179,7 +13157,7 @@ class Libgit2 {
   int git_remote_create_anonymous(
     ffi.Pointer<ffi.Pointer<git_remote>> out,
     ffi.Pointer<git_repository> repo,
-    ffi.Pointer<ffi.Int8> url,
+    ffi.Pointer<ffi.Char> url,
   ) {
     return _git_remote_create_anonymous(
       out,
@@ -13190,14 +13168,14 @@ class Libgit2 {
 
   late final _git_remote_create_anonymousPtr = _lookup<
       ffi.NativeFunction<
-          ffi.Int32 Function(
+          ffi.Int Function(
               ffi.Pointer<ffi.Pointer<git_remote>>,
               ffi.Pointer<git_repository>,
-              ffi.Pointer<ffi.Int8>)>>('git_remote_create_anonymous');
+              ffi.Pointer<ffi.Char>)>>('git_remote_create_anonymous');
   late final _git_remote_create_anonymous =
       _git_remote_create_anonymousPtr.asFunction<
           int Function(ffi.Pointer<ffi.Pointer<git_remote>>,
-              ffi.Pointer<git_repository>, ffi.Pointer<ffi.Int8>)>();
+              ffi.Pointer<git_repository>, ffi.Pointer<ffi.Char>)>();
 
   /// Create a remote without a connected local repo
   ///
@@ -13213,7 +13191,7 @@ class Libgit2 {
   /// @return 0 or an error code
   int git_remote_create_detached(
     ffi.Pointer<ffi.Pointer<git_remote>> out,
-    ffi.Pointer<ffi.Int8> url,
+    ffi.Pointer<ffi.Char> url,
   ) {
     return _git_remote_create_detached(
       out,
@@ -13223,12 +13201,12 @@ class Libgit2 {
 
   late final _git_remote_create_detachedPtr = _lookup<
       ffi.NativeFunction<
-          ffi.Int32 Function(ffi.Pointer<ffi.Pointer<git_remote>>,
-              ffi.Pointer<ffi.Int8>)>>('git_remote_create_detached');
+          ffi.Int Function(ffi.Pointer<ffi.Pointer<git_remote>>,
+              ffi.Pointer<ffi.Char>)>>('git_remote_create_detached');
   late final _git_remote_create_detached =
       _git_remote_create_detachedPtr.asFunction<
           int Function(
-              ffi.Pointer<ffi.Pointer<git_remote>>, ffi.Pointer<ffi.Int8>)>();
+              ffi.Pointer<ffi.Pointer<git_remote>>, ffi.Pointer<ffi.Char>)>();
 
   /// Get the information for a particular remote
   ///
@@ -13242,7 +13220,7 @@ class Libgit2 {
   int git_remote_lookup(
     ffi.Pointer<ffi.Pointer<git_remote>> out,
     ffi.Pointer<git_repository> repo,
-    ffi.Pointer<ffi.Int8> name,
+    ffi.Pointer<ffi.Char> name,
   ) {
     return _git_remote_lookup(
       out,
@@ -13253,13 +13231,13 @@ class Libgit2 {
 
   late final _git_remote_lookupPtr = _lookup<
       ffi.NativeFunction<
-          ffi.Int32 Function(
+          ffi.Int Function(
               ffi.Pointer<ffi.Pointer<git_remote>>,
               ffi.Pointer<git_repository>,
-              ffi.Pointer<ffi.Int8>)>>('git_remote_lookup');
+              ffi.Pointer<ffi.Char>)>>('git_remote_lookup');
   late final _git_remote_lookup = _git_remote_lookupPtr.asFunction<
       int Function(ffi.Pointer<ffi.Pointer<git_remote>>,
-          ffi.Pointer<git_repository>, ffi.Pointer<ffi.Int8>)>();
+          ffi.Pointer<git_repository>, ffi.Pointer<ffi.Char>)>();
 
   /// Create a copy of an existing remote.  All internal strings are also
   /// duplicated. Callbacks are not duplicated.
@@ -13281,7 +13259,7 @@ class Libgit2 {
 
   late final _git_remote_dupPtr = _lookup<
       ffi.NativeFunction<
-          ffi.Int32 Function(ffi.Pointer<ffi.Pointer<git_remote>>,
+          ffi.Int Function(ffi.Pointer<ffi.Pointer<git_remote>>,
               ffi.Pointer<git_remote>)>>('git_remote_dup');
   late final _git_remote_dup = _git_remote_dupPtr.asFunction<
       int Function(
@@ -13310,7 +13288,7 @@ class Libgit2 {
   ///
   /// @param remote the remote
   /// @return a pointer to the name or NULL for in-memory remotes
-  ffi.Pointer<ffi.Int8> git_remote_name(
+  ffi.Pointer<ffi.Char> git_remote_name(
     ffi.Pointer<git_remote> remote,
   ) {
     return _git_remote_name(
@@ -13320,10 +13298,10 @@ class Libgit2 {
 
   late final _git_remote_namePtr = _lookup<
       ffi.NativeFunction<
-          ffi.Pointer<ffi.Int8> Function(
+          ffi.Pointer<ffi.Char> Function(
               ffi.Pointer<git_remote>)>>('git_remote_name');
   late final _git_remote_name = _git_remote_namePtr
-      .asFunction<ffi.Pointer<ffi.Int8> Function(ffi.Pointer<git_remote>)>();
+      .asFunction<ffi.Pointer<ffi.Char> Function(ffi.Pointer<git_remote>)>();
 
   /// Get the remote's url
   ///
@@ -13333,7 +13311,7 @@ class Libgit2 {
   ///
   /// @param remote the remote
   /// @return a pointer to the url
-  ffi.Pointer<ffi.Int8> git_remote_url(
+  ffi.Pointer<ffi.Char> git_remote_url(
     ffi.Pointer<git_remote> remote,
   ) {
     return _git_remote_url(
@@ -13343,10 +13321,10 @@ class Libgit2 {
 
   late final _git_remote_urlPtr = _lookup<
       ffi.NativeFunction<
-          ffi.Pointer<ffi.Int8> Function(
+          ffi.Pointer<ffi.Char> Function(
               ffi.Pointer<git_remote>)>>('git_remote_url');
   late final _git_remote_url = _git_remote_urlPtr
-      .asFunction<ffi.Pointer<ffi.Int8> Function(ffi.Pointer<git_remote>)>();
+      .asFunction<ffi.Pointer<ffi.Char> Function(ffi.Pointer<git_remote>)>();
 
   /// Get the remote's url for pushing.
   ///
@@ -13356,7 +13334,7 @@ class Libgit2 {
   ///
   /// @param remote the remote
   /// @return a pointer to the url or NULL if no special url for pushing is set
-  ffi.Pointer<ffi.Int8> git_remote_pushurl(
+  ffi.Pointer<ffi.Char> git_remote_pushurl(
     ffi.Pointer<git_remote> remote,
   ) {
     return _git_remote_pushurl(
@@ -13366,10 +13344,10 @@ class Libgit2 {
 
   late final _git_remote_pushurlPtr = _lookup<
       ffi.NativeFunction<
-          ffi.Pointer<ffi.Int8> Function(
+          ffi.Pointer<ffi.Char> Function(
               ffi.Pointer<git_remote>)>>('git_remote_pushurl');
   late final _git_remote_pushurl = _git_remote_pushurlPtr
-      .asFunction<ffi.Pointer<ffi.Int8> Function(ffi.Pointer<git_remote>)>();
+      .asFunction<ffi.Pointer<ffi.Char> Function(ffi.Pointer<git_remote>)>();
 
   /// Set the remote's url in the configuration
   ///
@@ -13382,8 +13360,8 @@ class Libgit2 {
   /// @return 0 or an error value
   int git_remote_set_url(
     ffi.Pointer<git_repository> repo,
-    ffi.Pointer<ffi.Int8> remote,
-    ffi.Pointer<ffi.Int8> url,
+    ffi.Pointer<ffi.Char> remote,
+    ffi.Pointer<ffi.Char> url,
   ) {
     return _git_remote_set_url(
       repo,
@@ -13394,11 +13372,11 @@ class Libgit2 {
 
   late final _git_remote_set_urlPtr = _lookup<
       ffi.NativeFunction<
-          ffi.Int32 Function(ffi.Pointer<git_repository>, ffi.Pointer<ffi.Int8>,
-              ffi.Pointer<ffi.Int8>)>>('git_remote_set_url');
+          ffi.Int Function(ffi.Pointer<git_repository>, ffi.Pointer<ffi.Char>,
+              ffi.Pointer<ffi.Char>)>>('git_remote_set_url');
   late final _git_remote_set_url = _git_remote_set_urlPtr.asFunction<
-      int Function(ffi.Pointer<git_repository>, ffi.Pointer<ffi.Int8>,
-          ffi.Pointer<ffi.Int8>)>();
+      int Function(ffi.Pointer<git_repository>, ffi.Pointer<ffi.Char>,
+          ffi.Pointer<ffi.Char>)>();
 
   /// Set the remote's url for pushing in the configuration.
   ///
@@ -13412,8 +13390,8 @@ class Libgit2 {
   /// @return 0, or an error code
   int git_remote_set_pushurl(
     ffi.Pointer<git_repository> repo,
-    ffi.Pointer<ffi.Int8> remote,
-    ffi.Pointer<ffi.Int8> url,
+    ffi.Pointer<ffi.Char> remote,
+    ffi.Pointer<ffi.Char> url,
   ) {
     return _git_remote_set_pushurl(
       repo,
@@ -13424,11 +13402,11 @@ class Libgit2 {
 
   late final _git_remote_set_pushurlPtr = _lookup<
       ffi.NativeFunction<
-          ffi.Int32 Function(ffi.Pointer<git_repository>, ffi.Pointer<ffi.Int8>,
-              ffi.Pointer<ffi.Int8>)>>('git_remote_set_pushurl');
+          ffi.Int Function(ffi.Pointer<git_repository>, ffi.Pointer<ffi.Char>,
+              ffi.Pointer<ffi.Char>)>>('git_remote_set_pushurl');
   late final _git_remote_set_pushurl = _git_remote_set_pushurlPtr.asFunction<
-      int Function(ffi.Pointer<git_repository>, ffi.Pointer<ffi.Int8>,
-          ffi.Pointer<ffi.Int8>)>();
+      int Function(ffi.Pointer<git_repository>, ffi.Pointer<ffi.Char>,
+          ffi.Pointer<ffi.Char>)>();
 
   /// Set the url for this particular url instance.  The URL in the
   /// configuration will be ignored, and will not be changed.
@@ -13438,7 +13416,7 @@ class Libgit2 {
   /// @return 0 or an error value
   int git_remote_set_instance_url(
     ffi.Pointer<git_remote> remote,
-    ffi.Pointer<ffi.Int8> url,
+    ffi.Pointer<ffi.Char> url,
   ) {
     return _git_remote_set_instance_url(
       remote,
@@ -13448,11 +13426,11 @@ class Libgit2 {
 
   late final _git_remote_set_instance_urlPtr = _lookup<
       ffi.NativeFunction<
-          ffi.Int32 Function(ffi.Pointer<git_remote>,
-              ffi.Pointer<ffi.Int8>)>>('git_remote_set_instance_url');
+          ffi.Int Function(ffi.Pointer<git_remote>,
+              ffi.Pointer<ffi.Char>)>>('git_remote_set_instance_url');
   late final _git_remote_set_instance_url =
       _git_remote_set_instance_urlPtr.asFunction<
-          int Function(ffi.Pointer<git_remote>, ffi.Pointer<ffi.Int8>)>();
+          int Function(ffi.Pointer<git_remote>, ffi.Pointer<ffi.Char>)>();
 
   /// Set the push url for this particular url instance.  The URL in the
   /// configuration will be ignored, and will not be changed.
@@ -13462,7 +13440,7 @@ class Libgit2 {
   /// @return 0 or an error value
   int git_remote_set_instance_pushurl(
     ffi.Pointer<git_remote> remote,
-    ffi.Pointer<ffi.Int8> url,
+    ffi.Pointer<ffi.Char> url,
   ) {
     return _git_remote_set_instance_pushurl(
       remote,
@@ -13472,11 +13450,11 @@ class Libgit2 {
 
   late final _git_remote_set_instance_pushurlPtr = _lookup<
       ffi.NativeFunction<
-          ffi.Int32 Function(ffi.Pointer<git_remote>,
-              ffi.Pointer<ffi.Int8>)>>('git_remote_set_instance_pushurl');
+          ffi.Int Function(ffi.Pointer<git_remote>,
+              ffi.Pointer<ffi.Char>)>>('git_remote_set_instance_pushurl');
   late final _git_remote_set_instance_pushurl =
       _git_remote_set_instance_pushurlPtr.asFunction<
-          int Function(ffi.Pointer<git_remote>, ffi.Pointer<ffi.Int8>)>();
+          int Function(ffi.Pointer<git_remote>, ffi.Pointer<ffi.Char>)>();
 
   /// Add a fetch refspec to the remote's configuration
   ///
@@ -13489,8 +13467,8 @@ class Libgit2 {
   /// @return 0, GIT_EINVALIDSPEC if refspec is invalid or an error value
   int git_remote_add_fetch(
     ffi.Pointer<git_repository> repo,
-    ffi.Pointer<ffi.Int8> remote,
-    ffi.Pointer<ffi.Int8> refspec,
+    ffi.Pointer<ffi.Char> remote,
+    ffi.Pointer<ffi.Char> refspec,
   ) {
     return _git_remote_add_fetch(
       repo,
@@ -13501,11 +13479,11 @@ class Libgit2 {
 
   late final _git_remote_add_fetchPtr = _lookup<
       ffi.NativeFunction<
-          ffi.Int32 Function(ffi.Pointer<git_repository>, ffi.Pointer<ffi.Int8>,
-              ffi.Pointer<ffi.Int8>)>>('git_remote_add_fetch');
+          ffi.Int Function(ffi.Pointer<git_repository>, ffi.Pointer<ffi.Char>,
+              ffi.Pointer<ffi.Char>)>>('git_remote_add_fetch');
   late final _git_remote_add_fetch = _git_remote_add_fetchPtr.asFunction<
-      int Function(ffi.Pointer<git_repository>, ffi.Pointer<ffi.Int8>,
-          ffi.Pointer<ffi.Int8>)>();
+      int Function(ffi.Pointer<git_repository>, ffi.Pointer<ffi.Char>,
+          ffi.Pointer<ffi.Char>)>();
 
   /// Get the remote's list of fetch refspecs
   ///
@@ -13527,7 +13505,7 @@ class Libgit2 {
 
   late final _git_remote_get_fetch_refspecsPtr = _lookup<
       ffi.NativeFunction<
-          ffi.Int32 Function(ffi.Pointer<git_strarray>,
+          ffi.Int Function(ffi.Pointer<git_strarray>,
               ffi.Pointer<git_remote>)>>('git_remote_get_fetch_refspecs');
   late final _git_remote_get_fetch_refspecs =
       _git_remote_get_fetch_refspecsPtr.asFunction<
@@ -13544,8 +13522,8 @@ class Libgit2 {
   /// @return 0, GIT_EINVALIDSPEC if refspec is invalid or an error value
   int git_remote_add_push(
     ffi.Pointer<git_repository> repo,
-    ffi.Pointer<ffi.Int8> remote,
-    ffi.Pointer<ffi.Int8> refspec,
+    ffi.Pointer<ffi.Char> remote,
+    ffi.Pointer<ffi.Char> refspec,
   ) {
     return _git_remote_add_push(
       repo,
@@ -13556,11 +13534,11 @@ class Libgit2 {
 
   late final _git_remote_add_pushPtr = _lookup<
       ffi.NativeFunction<
-          ffi.Int32 Function(ffi.Pointer<git_repository>, ffi.Pointer<ffi.Int8>,
-              ffi.Pointer<ffi.Int8>)>>('git_remote_add_push');
+          ffi.Int Function(ffi.Pointer<git_repository>, ffi.Pointer<ffi.Char>,
+              ffi.Pointer<ffi.Char>)>>('git_remote_add_push');
   late final _git_remote_add_push = _git_remote_add_pushPtr.asFunction<
-      int Function(ffi.Pointer<git_repository>, ffi.Pointer<ffi.Int8>,
-          ffi.Pointer<ffi.Int8>)>();
+      int Function(ffi.Pointer<git_repository>, ffi.Pointer<ffi.Char>,
+          ffi.Pointer<ffi.Char>)>();
 
   /// Get the remote's list of push refspecs
   ///
@@ -13582,7 +13560,7 @@ class Libgit2 {
 
   late final _git_remote_get_push_refspecsPtr = _lookup<
       ffi.NativeFunction<
-          ffi.Int32 Function(ffi.Pointer<git_strarray>,
+          ffi.Int Function(ffi.Pointer<git_strarray>,
               ffi.Pointer<git_remote>)>>('git_remote_get_push_refspecs');
   late final _git_remote_get_push_refspecs =
       _git_remote_get_push_refspecsPtr.asFunction<
@@ -13601,7 +13579,7 @@ class Libgit2 {
   }
 
   late final _git_remote_refspec_countPtr =
-      _lookup<ffi.NativeFunction<size_t Function(ffi.Pointer<git_remote>)>>(
+      _lookup<ffi.NativeFunction<ffi.Size Function(ffi.Pointer<git_remote>)>>(
           'git_remote_refspec_count');
   late final _git_remote_refspec_count = _git_remote_refspec_countPtr
       .asFunction<int Function(ffi.Pointer<git_remote>)>();
@@ -13624,7 +13602,7 @@ class Libgit2 {
   late final _git_remote_get_refspecPtr = _lookup<
       ffi.NativeFunction<
           ffi.Pointer<git_refspec> Function(
-              ffi.Pointer<git_remote>, size_t)>>('git_remote_get_refspec');
+              ffi.Pointer<git_remote>, ffi.Size)>>('git_remote_get_refspec');
   late final _git_remote_get_refspec = _git_remote_get_refspecPtr.asFunction<
       ffi.Pointer<git_refspec> Function(ffi.Pointer<git_remote>, int)>();
 
@@ -13648,7 +13626,7 @@ class Libgit2 {
   /// @return 0 on success, or an error code
   int git_remote_ls(
     ffi.Pointer<ffi.Pointer<ffi.Pointer<git_remote_head>>> out,
-    ffi.Pointer<size_t> size,
+    ffi.Pointer<ffi.Size> size,
     ffi.Pointer<git_remote> remote,
   ) {
     return _git_remote_ls(
@@ -13660,13 +13638,13 @@ class Libgit2 {
 
   late final _git_remote_lsPtr = _lookup<
       ffi.NativeFunction<
-          ffi.Int32 Function(
+          ffi.Int Function(
               ffi.Pointer<ffi.Pointer<ffi.Pointer<git_remote_head>>>,
-              ffi.Pointer<size_t>,
+              ffi.Pointer<ffi.Size>,
               ffi.Pointer<git_remote>)>>('git_remote_ls');
   late final _git_remote_ls = _git_remote_lsPtr.asFunction<
       int Function(ffi.Pointer<ffi.Pointer<ffi.Pointer<git_remote_head>>>,
-          ffi.Pointer<size_t>, ffi.Pointer<git_remote>)>();
+          ffi.Pointer<ffi.Size>, ffi.Pointer<git_remote>)>();
 
   /// Check whether the remote is connected
   ///
@@ -13684,7 +13662,7 @@ class Libgit2 {
   }
 
   late final _git_remote_connectedPtr =
-      _lookup<ffi.NativeFunction<ffi.Int32 Function(ffi.Pointer<git_remote>)>>(
+      _lookup<ffi.NativeFunction<ffi.Int Function(ffi.Pointer<git_remote>)>>(
           'git_remote_connected');
   late final _git_remote_connected = _git_remote_connectedPtr
       .asFunction<int Function(ffi.Pointer<git_remote>)>();
@@ -13705,7 +13683,7 @@ class Libgit2 {
   }
 
   late final _git_remote_stopPtr =
-      _lookup<ffi.NativeFunction<ffi.Int32 Function(ffi.Pointer<git_remote>)>>(
+      _lookup<ffi.NativeFunction<ffi.Int Function(ffi.Pointer<git_remote>)>>(
           'git_remote_stop');
   late final _git_remote_stop =
       _git_remote_stopPtr.asFunction<int Function(ffi.Pointer<git_remote>)>();
@@ -13725,7 +13703,7 @@ class Libgit2 {
   }
 
   late final _git_remote_disconnectPtr =
-      _lookup<ffi.NativeFunction<ffi.Int32 Function(ffi.Pointer<git_remote>)>>(
+      _lookup<ffi.NativeFunction<ffi.Int Function(ffi.Pointer<git_remote>)>>(
           'git_remote_disconnect');
   late final _git_remote_disconnect = _git_remote_disconnectPtr
       .asFunction<int Function(ffi.Pointer<git_remote>)>();
@@ -13769,7 +13747,7 @@ class Libgit2 {
 
   late final _git_remote_listPtr = _lookup<
       ffi.NativeFunction<
-          ffi.Int32 Function(ffi.Pointer<git_strarray>,
+          ffi.Int Function(ffi.Pointer<git_strarray>,
               ffi.Pointer<git_repository>)>>('git_remote_list');
   late final _git_remote_list = _git_remote_listPtr.asFunction<
       int Function(ffi.Pointer<git_strarray>, ffi.Pointer<git_repository>)>();
@@ -13792,8 +13770,8 @@ class Libgit2 {
 
   late final _git_remote_init_callbacksPtr = _lookup<
       ffi.NativeFunction<
-          ffi.Int32 Function(ffi.Pointer<git_remote_callbacks>,
-              ffi.Uint32)>>('git_remote_init_callbacks');
+          ffi.Int Function(ffi.Pointer<git_remote_callbacks>,
+              ffi.UnsignedInt)>>('git_remote_init_callbacks');
   late final _git_remote_init_callbacks = _git_remote_init_callbacksPtr
       .asFunction<int Function(ffi.Pointer<git_remote_callbacks>, int)>();
 
@@ -13817,8 +13795,8 @@ class Libgit2 {
 
   late final _git_fetch_options_initPtr = _lookup<
       ffi.NativeFunction<
-          ffi.Int32 Function(ffi.Pointer<git_fetch_options>,
-              ffi.Uint32)>>('git_fetch_options_init');
+          ffi.Int Function(ffi.Pointer<git_fetch_options>,
+              ffi.UnsignedInt)>>('git_fetch_options_init');
   late final _git_fetch_options_init = _git_fetch_options_initPtr
       .asFunction<int Function(ffi.Pointer<git_fetch_options>, int)>();
 
@@ -13842,8 +13820,8 @@ class Libgit2 {
 
   late final _git_push_options_initPtr = _lookup<
       ffi.NativeFunction<
-          ffi.Int32 Function(ffi.Pointer<git_push_options>,
-              ffi.Uint32)>>('git_push_options_init');
+          ffi.Int Function(ffi.Pointer<git_push_options>,
+              ffi.UnsignedInt)>>('git_push_options_init');
   late final _git_push_options_init = _git_push_options_initPtr
       .asFunction<int Function(ffi.Pointer<git_push_options>, int)>();
 
@@ -13868,8 +13846,8 @@ class Libgit2 {
 
   late final _git_remote_connect_options_initPtr = _lookup<
       ffi.NativeFunction<
-          ffi.Int32 Function(ffi.Pointer<git_remote_connect_options>,
-              ffi.Uint32)>>('git_remote_connect_options_init');
+          ffi.Int Function(ffi.Pointer<git_remote_connect_options>,
+              ffi.UnsignedInt)>>('git_remote_connect_options_init');
   late final _git_remote_connect_options_init =
       _git_remote_connect_options_initPtr.asFunction<
           int Function(ffi.Pointer<git_remote_connect_options>, int)>();
@@ -13905,7 +13883,7 @@ class Libgit2 {
 
   late final _git_remote_connectPtr = _lookup<
       ffi.NativeFunction<
-          ffi.Int32 Function(
+          ffi.Int Function(
               ffi.Pointer<git_remote>,
               ffi.Int32,
               ffi.Pointer<git_remote_callbacks>,
@@ -13949,7 +13927,7 @@ class Libgit2 {
 
   late final _git_remote_connect_extPtr = _lookup<
           ffi.NativeFunction<
-              ffi.Int32 Function(ffi.Pointer<git_remote>, ffi.Int32,
+              ffi.Int Function(ffi.Pointer<git_remote>, ffi.Int32,
                   ffi.Pointer<git_remote_connect_options>)>>(
       'git_remote_connect_ext');
   late final _git_remote_connect_ext = _git_remote_connect_extPtr.asFunction<
@@ -13988,7 +13966,7 @@ class Libgit2 {
 
   late final _git_remote_downloadPtr = _lookup<
       ffi.NativeFunction<
-          ffi.Int32 Function(ffi.Pointer<git_remote>, ffi.Pointer<git_strarray>,
+          ffi.Int Function(ffi.Pointer<git_remote>, ffi.Pointer<git_strarray>,
               ffi.Pointer<git_fetch_options>)>>('git_remote_download');
   late final _git_remote_download = _git_remote_downloadPtr.asFunction<
       int Function(ffi.Pointer<git_remote>, ffi.Pointer<git_strarray>,
@@ -14023,7 +14001,7 @@ class Libgit2 {
 
   late final _git_remote_uploadPtr = _lookup<
       ffi.NativeFunction<
-          ffi.Int32 Function(ffi.Pointer<git_remote>, ffi.Pointer<git_strarray>,
+          ffi.Int Function(ffi.Pointer<git_remote>, ffi.Pointer<git_strarray>,
               ffi.Pointer<git_push_options>)>>('git_remote_upload');
   late final _git_remote_upload = _git_remote_uploadPtr.asFunction<
       int Function(ffi.Pointer<git_remote>, ffi.Pointer<git_strarray>,
@@ -14049,7 +14027,7 @@ class Libgit2 {
     ffi.Pointer<git_remote_callbacks> callbacks,
     int update_fetchhead,
     int download_tags,
-    ffi.Pointer<ffi.Int8> reflog_message,
+    ffi.Pointer<ffi.Char> reflog_message,
   ) {
     return _git_remote_update_tips(
       remote,
@@ -14062,15 +14040,15 @@ class Libgit2 {
 
   late final _git_remote_update_tipsPtr = _lookup<
       ffi.NativeFunction<
-          ffi.Int32 Function(
+          ffi.Int Function(
               ffi.Pointer<git_remote>,
               ffi.Pointer<git_remote_callbacks>,
+              ffi.Int,
               ffi.Int32,
-              ffi.Int32,
-              ffi.Pointer<ffi.Int8>)>>('git_remote_update_tips');
+              ffi.Pointer<ffi.Char>)>>('git_remote_update_tips');
   late final _git_remote_update_tips = _git_remote_update_tipsPtr.asFunction<
       int Function(ffi.Pointer<git_remote>, ffi.Pointer<git_remote_callbacks>,
-          int, int, ffi.Pointer<ffi.Int8>)>();
+          int, int, ffi.Pointer<ffi.Char>)>();
 
   /// Download new data and update tips.
   ///
@@ -14092,7 +14070,7 @@ class Libgit2 {
     ffi.Pointer<git_remote> remote,
     ffi.Pointer<git_strarray> refspecs,
     ffi.Pointer<git_fetch_options> opts,
-    ffi.Pointer<ffi.Int8> reflog_message,
+    ffi.Pointer<ffi.Char> reflog_message,
   ) {
     return _git_remote_fetch(
       remote,
@@ -14104,14 +14082,14 @@ class Libgit2 {
 
   late final _git_remote_fetchPtr = _lookup<
       ffi.NativeFunction<
-          ffi.Int32 Function(
+          ffi.Int Function(
               ffi.Pointer<git_remote>,
               ffi.Pointer<git_strarray>,
               ffi.Pointer<git_fetch_options>,
-              ffi.Pointer<ffi.Int8>)>>('git_remote_fetch');
+              ffi.Pointer<ffi.Char>)>>('git_remote_fetch');
   late final _git_remote_fetch = _git_remote_fetchPtr.asFunction<
       int Function(ffi.Pointer<git_remote>, ffi.Pointer<git_strarray>,
-          ffi.Pointer<git_fetch_options>, ffi.Pointer<ffi.Int8>)>();
+          ffi.Pointer<git_fetch_options>, ffi.Pointer<ffi.Char>)>();
 
   /// Prune tracking refs that are no longer present on remote.
   ///
@@ -14133,7 +14111,7 @@ class Libgit2 {
 
   late final _git_remote_prunePtr = _lookup<
       ffi.NativeFunction<
-          ffi.Int32 Function(ffi.Pointer<git_remote>,
+          ffi.Int Function(ffi.Pointer<git_remote>,
               ffi.Pointer<git_remote_callbacks>)>>('git_remote_prune');
   late final _git_remote_prune = _git_remote_prunePtr.asFunction<
       int Function(
@@ -14164,7 +14142,7 @@ class Libgit2 {
 
   late final _git_remote_pushPtr = _lookup<
       ffi.NativeFunction<
-          ffi.Int32 Function(ffi.Pointer<git_remote>, ffi.Pointer<git_strarray>,
+          ffi.Int Function(ffi.Pointer<git_remote>, ffi.Pointer<git_strarray>,
               ffi.Pointer<git_push_options>)>>('git_remote_push');
   late final _git_remote_push = _git_remote_pushPtr.asFunction<
       int Function(ffi.Pointer<git_remote>, ffi.Pointer<git_strarray>,
@@ -14215,7 +14193,7 @@ class Libgit2 {
   /// @return 0, or an error code.
   int git_remote_set_autotag(
     ffi.Pointer<git_repository> repo,
-    ffi.Pointer<ffi.Int8> remote,
+    ffi.Pointer<ffi.Char> remote,
     int value,
   ) {
     return _git_remote_set_autotag(
@@ -14227,10 +14205,10 @@ class Libgit2 {
 
   late final _git_remote_set_autotagPtr = _lookup<
       ffi.NativeFunction<
-          ffi.Int32 Function(ffi.Pointer<git_repository>, ffi.Pointer<ffi.Int8>,
+          ffi.Int Function(ffi.Pointer<git_repository>, ffi.Pointer<ffi.Char>,
               ffi.Int32)>>('git_remote_set_autotag');
   late final _git_remote_set_autotag = _git_remote_set_autotagPtr.asFunction<
-      int Function(ffi.Pointer<git_repository>, ffi.Pointer<ffi.Int8>, int)>();
+      int Function(ffi.Pointer<git_repository>, ffi.Pointer<ffi.Char>, int)>();
 
   /// Retrieve the ref-prune setting
   ///
@@ -14245,7 +14223,7 @@ class Libgit2 {
   }
 
   late final _git_remote_prune_refsPtr =
-      _lookup<ffi.NativeFunction<ffi.Int32 Function(ffi.Pointer<git_remote>)>>(
+      _lookup<ffi.NativeFunction<ffi.Int Function(ffi.Pointer<git_remote>)>>(
           'git_remote_prune_refs');
   late final _git_remote_prune_refs = _git_remote_prune_refsPtr
       .asFunction<int Function(ffi.Pointer<git_remote>)>();
@@ -14271,8 +14249,8 @@ class Libgit2 {
   int git_remote_rename(
     ffi.Pointer<git_strarray> problems,
     ffi.Pointer<git_repository> repo,
-    ffi.Pointer<ffi.Int8> name,
-    ffi.Pointer<ffi.Int8> new_name,
+    ffi.Pointer<ffi.Char> name,
+    ffi.Pointer<ffi.Char> new_name,
   ) {
     return _git_remote_rename(
       problems,
@@ -14284,14 +14262,14 @@ class Libgit2 {
 
   late final _git_remote_renamePtr = _lookup<
       ffi.NativeFunction<
-          ffi.Int32 Function(
+          ffi.Int Function(
               ffi.Pointer<git_strarray>,
               ffi.Pointer<git_repository>,
-              ffi.Pointer<ffi.Int8>,
-              ffi.Pointer<ffi.Int8>)>>('git_remote_rename');
+              ffi.Pointer<ffi.Char>,
+              ffi.Pointer<ffi.Char>)>>('git_remote_rename');
   late final _git_remote_rename = _git_remote_renamePtr.asFunction<
       int Function(ffi.Pointer<git_strarray>, ffi.Pointer<git_repository>,
-          ffi.Pointer<ffi.Int8>, ffi.Pointer<ffi.Int8>)>();
+          ffi.Pointer<ffi.Char>, ffi.Pointer<ffi.Char>)>();
 
   /// Ensure the remote name is well-formed.
   ///
@@ -14299,8 +14277,8 @@ class Libgit2 {
   /// @param remote_name name to be checked.
   /// @return 0 on success or an error code
   int git_remote_name_is_valid(
-    ffi.Pointer<ffi.Int32> valid,
-    ffi.Pointer<ffi.Int8> remote_name,
+    ffi.Pointer<ffi.Int> valid,
+    ffi.Pointer<ffi.Char> remote_name,
   ) {
     return _git_remote_name_is_valid(
       valid,
@@ -14310,11 +14288,10 @@ class Libgit2 {
 
   late final _git_remote_name_is_validPtr = _lookup<
       ffi.NativeFunction<
-          ffi.Int32 Function(ffi.Pointer<ffi.Int32>,
-              ffi.Pointer<ffi.Int8>)>>('git_remote_name_is_valid');
-  late final _git_remote_name_is_valid =
-      _git_remote_name_is_validPtr.asFunction<
-          int Function(ffi.Pointer<ffi.Int32>, ffi.Pointer<ffi.Int8>)>();
+          ffi.Int Function(ffi.Pointer<ffi.Int>,
+              ffi.Pointer<ffi.Char>)>>('git_remote_name_is_valid');
+  late final _git_remote_name_is_valid = _git_remote_name_is_validPtr
+      .asFunction<int Function(ffi.Pointer<ffi.Int>, ffi.Pointer<ffi.Char>)>();
 
   /// Delete an existing persisted remote.
   ///
@@ -14326,7 +14303,7 @@ class Libgit2 {
   /// @return 0 on success, or an error code.
   int git_remote_delete(
     ffi.Pointer<git_repository> repo,
-    ffi.Pointer<ffi.Int8> name,
+    ffi.Pointer<ffi.Char> name,
   ) {
     return _git_remote_delete(
       repo,
@@ -14336,10 +14313,10 @@ class Libgit2 {
 
   late final _git_remote_deletePtr = _lookup<
       ffi.NativeFunction<
-          ffi.Int32 Function(ffi.Pointer<git_repository>,
-              ffi.Pointer<ffi.Int8>)>>('git_remote_delete');
+          ffi.Int Function(ffi.Pointer<git_repository>,
+              ffi.Pointer<ffi.Char>)>>('git_remote_delete');
   late final _git_remote_delete = _git_remote_deletePtr.asFunction<
-      int Function(ffi.Pointer<git_repository>, ffi.Pointer<ffi.Int8>)>();
+      int Function(ffi.Pointer<git_repository>, ffi.Pointer<ffi.Char>)>();
 
   /// Retrieve the name of the remote's default branch
   ///
@@ -14367,7 +14344,7 @@ class Libgit2 {
 
   late final _git_remote_default_branchPtr = _lookup<
       ffi.NativeFunction<
-          ffi.Int32 Function(ffi.Pointer<git_buf>,
+          ffi.Int Function(ffi.Pointer<git_buf>,
               ffi.Pointer<git_remote>)>>('git_remote_default_branch');
   late final _git_remote_default_branch =
       _git_remote_default_branchPtr.asFunction<
@@ -14393,8 +14370,8 @@ class Libgit2 {
 
   late final _git_clone_options_initPtr = _lookup<
       ffi.NativeFunction<
-          ffi.Int32 Function(ffi.Pointer<git_clone_options>,
-              ffi.Uint32)>>('git_clone_options_init');
+          ffi.Int Function(ffi.Pointer<git_clone_options>,
+              ffi.UnsignedInt)>>('git_clone_options_init');
   late final _git_clone_options_init = _git_clone_options_initPtr
       .asFunction<int Function(ffi.Pointer<git_clone_options>, int)>();
 
@@ -14414,8 +14391,8 @@ class Libgit2 {
   /// `git_error_last` for a detailed error message)
   int git_clone(
     ffi.Pointer<ffi.Pointer<git_repository>> out,
-    ffi.Pointer<ffi.Int8> url,
-    ffi.Pointer<ffi.Int8> local_path,
+    ffi.Pointer<ffi.Char> url,
+    ffi.Pointer<ffi.Char> local_path,
     ffi.Pointer<git_clone_options> options,
   ) {
     return _git_clone(
@@ -14428,16 +14405,16 @@ class Libgit2 {
 
   late final _git_clonePtr = _lookup<
       ffi.NativeFunction<
-          ffi.Int32 Function(
+          ffi.Int Function(
               ffi.Pointer<ffi.Pointer<git_repository>>,
-              ffi.Pointer<ffi.Int8>,
-              ffi.Pointer<ffi.Int8>,
+              ffi.Pointer<ffi.Char>,
+              ffi.Pointer<ffi.Char>,
               ffi.Pointer<git_clone_options>)>>('git_clone');
   late final _git_clone = _git_clonePtr.asFunction<
       int Function(
           ffi.Pointer<ffi.Pointer<git_repository>>,
-          ffi.Pointer<ffi.Int8>,
-          ffi.Pointer<ffi.Int8>,
+          ffi.Pointer<ffi.Char>,
+          ffi.Pointer<ffi.Char>,
           ffi.Pointer<git_clone_options>)>();
 
   /// Lookup a commit object from a repository.
@@ -14464,7 +14441,7 @@ class Libgit2 {
 
   late final _git_commit_lookupPtr = _lookup<
       ffi.NativeFunction<
-          ffi.Int32 Function(
+          ffi.Int Function(
               ffi.Pointer<ffi.Pointer<git_commit>>,
               ffi.Pointer<git_repository>,
               ffi.Pointer<git_oid>)>>('git_commit_lookup');
@@ -14502,11 +14479,11 @@ class Libgit2 {
 
   late final _git_commit_lookup_prefixPtr = _lookup<
       ffi.NativeFunction<
-          ffi.Int32 Function(
+          ffi.Int Function(
               ffi.Pointer<ffi.Pointer<git_commit>>,
               ffi.Pointer<git_repository>,
               ffi.Pointer<git_oid>,
-              size_t)>>('git_commit_lookup_prefix');
+              ffi.Size)>>('git_commit_lookup_prefix');
   late final _git_commit_lookup_prefix =
       _git_commit_lookup_prefixPtr.asFunction<
           int Function(ffi.Pointer<ffi.Pointer<git_commit>>,
@@ -14581,7 +14558,7 @@ class Libgit2 {
   ///
   /// @param commit a previously loaded commit.
   /// @return NULL, or the encoding
-  ffi.Pointer<ffi.Int8> git_commit_message_encoding(
+  ffi.Pointer<ffi.Char> git_commit_message_encoding(
     ffi.Pointer<git_commit> commit,
   ) {
     return _git_commit_message_encoding(
@@ -14591,10 +14568,10 @@ class Libgit2 {
 
   late final _git_commit_message_encodingPtr = _lookup<
       ffi.NativeFunction<
-          ffi.Pointer<ffi.Int8> Function(
+          ffi.Pointer<ffi.Char> Function(
               ffi.Pointer<git_commit>)>>('git_commit_message_encoding');
   late final _git_commit_message_encoding = _git_commit_message_encodingPtr
-      .asFunction<ffi.Pointer<ffi.Int8> Function(ffi.Pointer<git_commit>)>();
+      .asFunction<ffi.Pointer<ffi.Char> Function(ffi.Pointer<git_commit>)>();
 
   /// Get the full message of a commit.
   ///
@@ -14603,7 +14580,7 @@ class Libgit2 {
   ///
   /// @param commit a previously loaded commit.
   /// @return the message of a commit
-  ffi.Pointer<ffi.Int8> git_commit_message(
+  ffi.Pointer<ffi.Char> git_commit_message(
     ffi.Pointer<git_commit> commit,
   ) {
     return _git_commit_message(
@@ -14613,16 +14590,16 @@ class Libgit2 {
 
   late final _git_commit_messagePtr = _lookup<
       ffi.NativeFunction<
-          ffi.Pointer<ffi.Int8> Function(
+          ffi.Pointer<ffi.Char> Function(
               ffi.Pointer<git_commit>)>>('git_commit_message');
   late final _git_commit_message = _git_commit_messagePtr
-      .asFunction<ffi.Pointer<ffi.Int8> Function(ffi.Pointer<git_commit>)>();
+      .asFunction<ffi.Pointer<ffi.Char> Function(ffi.Pointer<git_commit>)>();
 
   /// Get the full raw message of a commit.
   ///
   /// @param commit a previously loaded commit.
   /// @return the raw message of a commit
-  ffi.Pointer<ffi.Int8> git_commit_message_raw(
+  ffi.Pointer<ffi.Char> git_commit_message_raw(
     ffi.Pointer<git_commit> commit,
   ) {
     return _git_commit_message_raw(
@@ -14632,10 +14609,10 @@ class Libgit2 {
 
   late final _git_commit_message_rawPtr = _lookup<
       ffi.NativeFunction<
-          ffi.Pointer<ffi.Int8> Function(
+          ffi.Pointer<ffi.Char> Function(
               ffi.Pointer<git_commit>)>>('git_commit_message_raw');
   late final _git_commit_message_raw = _git_commit_message_rawPtr
-      .asFunction<ffi.Pointer<ffi.Int8> Function(ffi.Pointer<git_commit>)>();
+      .asFunction<ffi.Pointer<ffi.Char> Function(ffi.Pointer<git_commit>)>();
 
   /// Get the short "summary" of the git commit message.
   ///
@@ -14644,7 +14621,7 @@ class Libgit2 {
   ///
   /// @param commit a previously loaded commit.
   /// @return the summary of a commit or NULL on error
-  ffi.Pointer<ffi.Int8> git_commit_summary(
+  ffi.Pointer<ffi.Char> git_commit_summary(
     ffi.Pointer<git_commit> commit,
   ) {
     return _git_commit_summary(
@@ -14654,10 +14631,10 @@ class Libgit2 {
 
   late final _git_commit_summaryPtr = _lookup<
       ffi.NativeFunction<
-          ffi.Pointer<ffi.Int8> Function(
+          ffi.Pointer<ffi.Char> Function(
               ffi.Pointer<git_commit>)>>('git_commit_summary');
   late final _git_commit_summary = _git_commit_summaryPtr
-      .asFunction<ffi.Pointer<ffi.Int8> Function(ffi.Pointer<git_commit>)>();
+      .asFunction<ffi.Pointer<ffi.Char> Function(ffi.Pointer<git_commit>)>();
 
   /// Get the long "body" of the git commit message.
   ///
@@ -14668,7 +14645,7 @@ class Libgit2 {
   /// @param commit a previously loaded commit.
   /// @return the body of a commit or NULL when no the message only
   /// consists of a summary
-  ffi.Pointer<ffi.Int8> git_commit_body(
+  ffi.Pointer<ffi.Char> git_commit_body(
     ffi.Pointer<git_commit> commit,
   ) {
     return _git_commit_body(
@@ -14678,10 +14655,10 @@ class Libgit2 {
 
   late final _git_commit_bodyPtr = _lookup<
       ffi.NativeFunction<
-          ffi.Pointer<ffi.Int8> Function(
+          ffi.Pointer<ffi.Char> Function(
               ffi.Pointer<git_commit>)>>('git_commit_body');
   late final _git_commit_body = _git_commit_bodyPtr
-      .asFunction<ffi.Pointer<ffi.Int8> Function(ffi.Pointer<git_commit>)>();
+      .asFunction<ffi.Pointer<ffi.Char> Function(ffi.Pointer<git_commit>)>();
 
   /// Get the commit time (i.e. committer time) of a commit.
   ///
@@ -14714,7 +14691,7 @@ class Libgit2 {
   }
 
   late final _git_commit_time_offsetPtr =
-      _lookup<ffi.NativeFunction<ffi.Int32 Function(ffi.Pointer<git_commit>)>>(
+      _lookup<ffi.NativeFunction<ffi.Int Function(ffi.Pointer<git_commit>)>>(
           'git_commit_time_offset');
   late final _git_commit_time_offset = _git_commit_time_offsetPtr
       .asFunction<int Function(ffi.Pointer<git_commit>)>();
@@ -14780,7 +14757,7 @@ class Libgit2 {
 
   late final _git_commit_committer_with_mailmapPtr = _lookup<
       ffi.NativeFunction<
-          ffi.Int32 Function(
+          ffi.Int Function(
               ffi.Pointer<ffi.Pointer<git_signature>>,
               ffi.Pointer<git_commit>,
               ffi.Pointer<git_mailmap>)>>('git_commit_committer_with_mailmap');
@@ -14812,7 +14789,7 @@ class Libgit2 {
 
   late final _git_commit_author_with_mailmapPtr = _lookup<
       ffi.NativeFunction<
-          ffi.Int32 Function(
+          ffi.Int Function(
               ffi.Pointer<ffi.Pointer<git_signature>>,
               ffi.Pointer<git_commit>,
               ffi.Pointer<git_mailmap>)>>('git_commit_author_with_mailmap');
@@ -14825,7 +14802,7 @@ class Libgit2 {
   ///
   /// @param commit a previously loaded commit
   /// @return the header text of the commit
-  ffi.Pointer<ffi.Int8> git_commit_raw_header(
+  ffi.Pointer<ffi.Char> git_commit_raw_header(
     ffi.Pointer<git_commit> commit,
   ) {
     return _git_commit_raw_header(
@@ -14835,10 +14812,10 @@ class Libgit2 {
 
   late final _git_commit_raw_headerPtr = _lookup<
       ffi.NativeFunction<
-          ffi.Pointer<ffi.Int8> Function(
+          ffi.Pointer<ffi.Char> Function(
               ffi.Pointer<git_commit>)>>('git_commit_raw_header');
   late final _git_commit_raw_header = _git_commit_raw_headerPtr
-      .asFunction<ffi.Pointer<ffi.Int8> Function(ffi.Pointer<git_commit>)>();
+      .asFunction<ffi.Pointer<ffi.Char> Function(ffi.Pointer<git_commit>)>();
 
   /// Get the tree pointed to by a commit.
   ///
@@ -14857,7 +14834,7 @@ class Libgit2 {
 
   late final _git_commit_treePtr = _lookup<
       ffi.NativeFunction<
-          ffi.Int32 Function(ffi.Pointer<ffi.Pointer<git_tree>>,
+          ffi.Int Function(ffi.Pointer<ffi.Pointer<git_tree>>,
               ffi.Pointer<git_commit>)>>('git_commit_tree');
   late final _git_commit_tree = _git_commit_treePtr.asFunction<
       int Function(
@@ -14896,9 +14873,10 @@ class Libgit2 {
     );
   }
 
-  late final _git_commit_parentcountPtr =
-      _lookup<ffi.NativeFunction<ffi.Uint32 Function(ffi.Pointer<git_commit>)>>(
-          'git_commit_parentcount');
+  late final _git_commit_parentcountPtr = _lookup<
+      ffi.NativeFunction<
+          ffi.UnsignedInt Function(
+              ffi.Pointer<git_commit>)>>('git_commit_parentcount');
   late final _git_commit_parentcount = _git_commit_parentcountPtr
       .asFunction<int Function(ffi.Pointer<git_commit>)>();
 
@@ -14922,8 +14900,8 @@ class Libgit2 {
 
   late final _git_commit_parentPtr = _lookup<
       ffi.NativeFunction<
-          ffi.Int32 Function(ffi.Pointer<ffi.Pointer<git_commit>>,
-              ffi.Pointer<git_commit>, ffi.Uint32)>>('git_commit_parent');
+          ffi.Int Function(ffi.Pointer<ffi.Pointer<git_commit>>,
+              ffi.Pointer<git_commit>, ffi.UnsignedInt)>>('git_commit_parent');
   late final _git_commit_parent = _git_commit_parentPtr.asFunction<
       int Function(ffi.Pointer<ffi.Pointer<git_commit>>,
           ffi.Pointer<git_commit>, int)>();
@@ -14947,8 +14925,8 @@ class Libgit2 {
 
   late final _git_commit_parent_idPtr = _lookup<
       ffi.NativeFunction<
-          ffi.Pointer<git_oid> Function(
-              ffi.Pointer<git_commit>, ffi.Uint32)>>('git_commit_parent_id');
+          ffi.Pointer<git_oid> Function(ffi.Pointer<git_commit>,
+              ffi.UnsignedInt)>>('git_commit_parent_id');
   late final _git_commit_parent_id = _git_commit_parent_idPtr.asFunction<
       ffi.Pointer<git_oid> Function(ffi.Pointer<git_commit>, int)>();
 
@@ -14978,10 +14956,10 @@ class Libgit2 {
 
   late final _git_commit_nth_gen_ancestorPtr = _lookup<
       ffi.NativeFunction<
-          ffi.Int32 Function(
+          ffi.Int Function(
               ffi.Pointer<ffi.Pointer<git_commit>>,
               ffi.Pointer<git_commit>,
-              ffi.Uint32)>>('git_commit_nth_gen_ancestor');
+              ffi.UnsignedInt)>>('git_commit_nth_gen_ancestor');
   late final _git_commit_nth_gen_ancestor =
       _git_commit_nth_gen_ancestorPtr.asFunction<
           int Function(ffi.Pointer<ffi.Pointer<git_commit>>,
@@ -14998,7 +14976,7 @@ class Libgit2 {
   int git_commit_header_field(
     ffi.Pointer<git_buf> out,
     ffi.Pointer<git_commit> commit,
-    ffi.Pointer<ffi.Int8> field,
+    ffi.Pointer<ffi.Char> field,
   ) {
     return _git_commit_header_field(
       out,
@@ -15009,11 +14987,11 @@ class Libgit2 {
 
   late final _git_commit_header_fieldPtr = _lookup<
       ffi.NativeFunction<
-          ffi.Int32 Function(ffi.Pointer<git_buf>, ffi.Pointer<git_commit>,
-              ffi.Pointer<ffi.Int8>)>>('git_commit_header_field');
+          ffi.Int Function(ffi.Pointer<git_buf>, ffi.Pointer<git_commit>,
+              ffi.Pointer<ffi.Char>)>>('git_commit_header_field');
   late final _git_commit_header_field = _git_commit_header_fieldPtr.asFunction<
       int Function(ffi.Pointer<git_buf>, ffi.Pointer<git_commit>,
-          ffi.Pointer<ffi.Int8>)>();
+          ffi.Pointer<ffi.Char>)>();
 
   /// Extract the signature from a commit
   ///
@@ -15036,7 +15014,7 @@ class Libgit2 {
     ffi.Pointer<git_buf> signed_data,
     ffi.Pointer<git_repository> repo,
     ffi.Pointer<git_oid> commit_id,
-    ffi.Pointer<ffi.Int8> field,
+    ffi.Pointer<ffi.Char> field,
   ) {
     return _git_commit_extract_signature(
       signature,
@@ -15049,12 +15027,12 @@ class Libgit2 {
 
   late final _git_commit_extract_signaturePtr = _lookup<
       ffi.NativeFunction<
-          ffi.Int32 Function(
+          ffi.Int Function(
               ffi.Pointer<git_buf>,
               ffi.Pointer<git_buf>,
               ffi.Pointer<git_repository>,
               ffi.Pointer<git_oid>,
-              ffi.Pointer<ffi.Int8>)>>('git_commit_extract_signature');
+              ffi.Pointer<ffi.Char>)>>('git_commit_extract_signature');
   late final _git_commit_extract_signature =
       _git_commit_extract_signaturePtr.asFunction<
           int Function(
@@ -15062,7 +15040,7 @@ class Libgit2 {
               ffi.Pointer<git_buf>,
               ffi.Pointer<git_repository>,
               ffi.Pointer<git_oid>,
-              ffi.Pointer<ffi.Int8>)>();
+              ffi.Pointer<ffi.Char>)>();
 
   /// Create new commit in the repository from a list of `git_object` pointers
   ///
@@ -15109,11 +15087,11 @@ class Libgit2 {
   int git_commit_create(
     ffi.Pointer<git_oid> id,
     ffi.Pointer<git_repository> repo,
-    ffi.Pointer<ffi.Int8> update_ref,
+    ffi.Pointer<ffi.Char> update_ref,
     ffi.Pointer<git_signature> author,
     ffi.Pointer<git_signature> committer,
-    ffi.Pointer<ffi.Int8> message_encoding,
-    ffi.Pointer<ffi.Int8> message,
+    ffi.Pointer<ffi.Char> message_encoding,
+    ffi.Pointer<ffi.Char> message,
     ffi.Pointer<git_tree> tree,
     int parent_count,
     ffi.Pointer<ffi.Pointer<git_commit>> parents,
@@ -15134,26 +15112,26 @@ class Libgit2 {
 
   late final _git_commit_createPtr = _lookup<
       ffi.NativeFunction<
-          ffi.Int32 Function(
+          ffi.Int Function(
               ffi.Pointer<git_oid>,
               ffi.Pointer<git_repository>,
-              ffi.Pointer<ffi.Int8>,
+              ffi.Pointer<ffi.Char>,
               ffi.Pointer<git_signature>,
               ffi.Pointer<git_signature>,
-              ffi.Pointer<ffi.Int8>,
-              ffi.Pointer<ffi.Int8>,
+              ffi.Pointer<ffi.Char>,
+              ffi.Pointer<ffi.Char>,
               ffi.Pointer<git_tree>,
-              size_t,
+              ffi.Size,
               ffi.Pointer<ffi.Pointer<git_commit>>)>>('git_commit_create');
   late final _git_commit_create = _git_commit_createPtr.asFunction<
       int Function(
           ffi.Pointer<git_oid>,
           ffi.Pointer<git_repository>,
-          ffi.Pointer<ffi.Int8>,
+          ffi.Pointer<ffi.Char>,
           ffi.Pointer<git_signature>,
           ffi.Pointer<git_signature>,
-          ffi.Pointer<ffi.Int8>,
-          ffi.Pointer<ffi.Int8>,
+          ffi.Pointer<ffi.Char>,
+          ffi.Pointer<ffi.Char>,
           ffi.Pointer<git_tree>,
           int,
           ffi.Pointer<ffi.Pointer<git_commit>>)>();
@@ -15173,11 +15151,11 @@ class Libgit2 {
   int git_commit_create_v(
     ffi.Pointer<git_oid> id,
     ffi.Pointer<git_repository> repo,
-    ffi.Pointer<ffi.Int8> update_ref,
+    ffi.Pointer<ffi.Char> update_ref,
     ffi.Pointer<git_signature> author,
     ffi.Pointer<git_signature> committer,
-    ffi.Pointer<ffi.Int8> message_encoding,
-    ffi.Pointer<ffi.Int8> message,
+    ffi.Pointer<ffi.Char> message_encoding,
+    ffi.Pointer<ffi.Char> message,
     ffi.Pointer<git_tree> tree,
     int parent_count,
   ) {
@@ -15196,25 +15174,25 @@ class Libgit2 {
 
   late final _git_commit_create_vPtr = _lookup<
       ffi.NativeFunction<
-          ffi.Int32 Function(
+          ffi.Int Function(
               ffi.Pointer<git_oid>,
               ffi.Pointer<git_repository>,
-              ffi.Pointer<ffi.Int8>,
+              ffi.Pointer<ffi.Char>,
               ffi.Pointer<git_signature>,
               ffi.Pointer<git_signature>,
-              ffi.Pointer<ffi.Int8>,
-              ffi.Pointer<ffi.Int8>,
+              ffi.Pointer<ffi.Char>,
+              ffi.Pointer<ffi.Char>,
               ffi.Pointer<git_tree>,
-              size_t)>>('git_commit_create_v');
+              ffi.Size)>>('git_commit_create_v');
   late final _git_commit_create_v = _git_commit_create_vPtr.asFunction<
       int Function(
           ffi.Pointer<git_oid>,
           ffi.Pointer<git_repository>,
-          ffi.Pointer<ffi.Int8>,
+          ffi.Pointer<ffi.Char>,
           ffi.Pointer<git_signature>,
           ffi.Pointer<git_signature>,
-          ffi.Pointer<ffi.Int8>,
-          ffi.Pointer<ffi.Int8>,
+          ffi.Pointer<ffi.Char>,
+          ffi.Pointer<ffi.Char>,
           ffi.Pointer<git_tree>,
           int)>();
 
@@ -15240,11 +15218,11 @@ class Libgit2 {
   int git_commit_amend(
     ffi.Pointer<git_oid> id,
     ffi.Pointer<git_commit> commit_to_amend,
-    ffi.Pointer<ffi.Int8> update_ref,
+    ffi.Pointer<ffi.Char> update_ref,
     ffi.Pointer<git_signature> author,
     ffi.Pointer<git_signature> committer,
-    ffi.Pointer<ffi.Int8> message_encoding,
-    ffi.Pointer<ffi.Int8> message,
+    ffi.Pointer<ffi.Char> message_encoding,
+    ffi.Pointer<ffi.Char> message,
     ffi.Pointer<git_tree> tree,
   ) {
     return _git_commit_amend(
@@ -15261,24 +15239,24 @@ class Libgit2 {
 
   late final _git_commit_amendPtr = _lookup<
       ffi.NativeFunction<
-          ffi.Int32 Function(
+          ffi.Int Function(
               ffi.Pointer<git_oid>,
               ffi.Pointer<git_commit>,
-              ffi.Pointer<ffi.Int8>,
+              ffi.Pointer<ffi.Char>,
               ffi.Pointer<git_signature>,
               ffi.Pointer<git_signature>,
-              ffi.Pointer<ffi.Int8>,
-              ffi.Pointer<ffi.Int8>,
+              ffi.Pointer<ffi.Char>,
+              ffi.Pointer<ffi.Char>,
               ffi.Pointer<git_tree>)>>('git_commit_amend');
   late final _git_commit_amend = _git_commit_amendPtr.asFunction<
       int Function(
           ffi.Pointer<git_oid>,
           ffi.Pointer<git_commit>,
-          ffi.Pointer<ffi.Int8>,
+          ffi.Pointer<ffi.Char>,
           ffi.Pointer<git_signature>,
           ffi.Pointer<git_signature>,
-          ffi.Pointer<ffi.Int8>,
-          ffi.Pointer<ffi.Int8>,
+          ffi.Pointer<ffi.Char>,
+          ffi.Pointer<ffi.Char>,
           ffi.Pointer<git_tree>)>();
 
   /// Create a commit and write it into a buffer
@@ -15319,8 +15297,8 @@ class Libgit2 {
     ffi.Pointer<git_repository> repo,
     ffi.Pointer<git_signature> author,
     ffi.Pointer<git_signature> committer,
-    ffi.Pointer<ffi.Int8> message_encoding,
-    ffi.Pointer<ffi.Int8> message,
+    ffi.Pointer<ffi.Char> message_encoding,
+    ffi.Pointer<ffi.Char> message,
     ffi.Pointer<git_tree> tree,
     int parent_count,
     ffi.Pointer<ffi.Pointer<git_commit>> parents,
@@ -15340,15 +15318,15 @@ class Libgit2 {
 
   late final _git_commit_create_bufferPtr = _lookup<
           ffi.NativeFunction<
-              ffi.Int32 Function(
+              ffi.Int Function(
                   ffi.Pointer<git_buf>,
                   ffi.Pointer<git_repository>,
                   ffi.Pointer<git_signature>,
                   ffi.Pointer<git_signature>,
-                  ffi.Pointer<ffi.Int8>,
-                  ffi.Pointer<ffi.Int8>,
+                  ffi.Pointer<ffi.Char>,
+                  ffi.Pointer<ffi.Char>,
                   ffi.Pointer<git_tree>,
-                  size_t,
+                  ffi.Size,
                   ffi.Pointer<ffi.Pointer<git_commit>>)>>(
       'git_commit_create_buffer');
   late final _git_commit_create_buffer =
@@ -15358,8 +15336,8 @@ class Libgit2 {
               ffi.Pointer<git_repository>,
               ffi.Pointer<git_signature>,
               ffi.Pointer<git_signature>,
-              ffi.Pointer<ffi.Int8>,
-              ffi.Pointer<ffi.Int8>,
+              ffi.Pointer<ffi.Char>,
+              ffi.Pointer<ffi.Char>,
               ffi.Pointer<git_tree>,
               int,
               ffi.Pointer<ffi.Pointer<git_commit>>)>();
@@ -15381,9 +15359,9 @@ class Libgit2 {
   int git_commit_create_with_signature(
     ffi.Pointer<git_oid> out,
     ffi.Pointer<git_repository> repo,
-    ffi.Pointer<ffi.Int8> commit_content,
-    ffi.Pointer<ffi.Int8> signature,
-    ffi.Pointer<ffi.Int8> signature_field,
+    ffi.Pointer<ffi.Char> commit_content,
+    ffi.Pointer<ffi.Char> signature,
+    ffi.Pointer<ffi.Char> signature_field,
   ) {
     return _git_commit_create_with_signature(
       out,
@@ -15396,20 +15374,20 @@ class Libgit2 {
 
   late final _git_commit_create_with_signaturePtr = _lookup<
       ffi.NativeFunction<
-          ffi.Int32 Function(
+          ffi.Int Function(
               ffi.Pointer<git_oid>,
               ffi.Pointer<git_repository>,
-              ffi.Pointer<ffi.Int8>,
-              ffi.Pointer<ffi.Int8>,
-              ffi.Pointer<ffi.Int8>)>>('git_commit_create_with_signature');
+              ffi.Pointer<ffi.Char>,
+              ffi.Pointer<ffi.Char>,
+              ffi.Pointer<ffi.Char>)>>('git_commit_create_with_signature');
   late final _git_commit_create_with_signature =
       _git_commit_create_with_signaturePtr.asFunction<
           int Function(
               ffi.Pointer<git_oid>,
               ffi.Pointer<git_repository>,
-              ffi.Pointer<ffi.Int8>,
-              ffi.Pointer<ffi.Int8>,
-              ffi.Pointer<ffi.Int8>)>();
+              ffi.Pointer<ffi.Char>,
+              ffi.Pointer<ffi.Char>,
+              ffi.Pointer<ffi.Char>)>();
 
   /// Create an in-memory copy of a commit. The copy must be explicitly
   /// free'd or it will leak.
@@ -15429,7 +15407,7 @@ class Libgit2 {
 
   late final _git_commit_dupPtr = _lookup<
       ffi.NativeFunction<
-          ffi.Int32 Function(ffi.Pointer<ffi.Pointer<git_commit>>,
+          ffi.Int Function(ffi.Pointer<ffi.Pointer<git_commit>>,
               ffi.Pointer<git_commit>)>>('git_commit_dup');
   late final _git_commit_dup = _git_commit_dupPtr.asFunction<
       int Function(
@@ -15476,7 +15454,7 @@ class Libgit2 {
   }
 
   late final _git_config_find_globalPtr =
-      _lookup<ffi.NativeFunction<ffi.Int32 Function(ffi.Pointer<git_buf>)>>(
+      _lookup<ffi.NativeFunction<ffi.Int Function(ffi.Pointer<git_buf>)>>(
           'git_config_find_global');
   late final _git_config_find_global = _git_config_find_globalPtr
       .asFunction<int Function(ffi.Pointer<git_buf>)>();
@@ -15503,7 +15481,7 @@ class Libgit2 {
   }
 
   late final _git_config_find_xdgPtr =
-      _lookup<ffi.NativeFunction<ffi.Int32 Function(ffi.Pointer<git_buf>)>>(
+      _lookup<ffi.NativeFunction<ffi.Int Function(ffi.Pointer<git_buf>)>>(
           'git_config_find_xdg');
   late final _git_config_find_xdg =
       _git_config_find_xdgPtr.asFunction<int Function(ffi.Pointer<git_buf>)>();
@@ -15525,7 +15503,7 @@ class Libgit2 {
   }
 
   late final _git_config_find_systemPtr =
-      _lookup<ffi.NativeFunction<ffi.Int32 Function(ffi.Pointer<git_buf>)>>(
+      _lookup<ffi.NativeFunction<ffi.Int Function(ffi.Pointer<git_buf>)>>(
           'git_config_find_system');
   late final _git_config_find_system = _git_config_find_systemPtr
       .asFunction<int Function(ffi.Pointer<git_buf>)>();
@@ -15546,7 +15524,7 @@ class Libgit2 {
   }
 
   late final _git_config_find_programdataPtr =
-      _lookup<ffi.NativeFunction<ffi.Int32 Function(ffi.Pointer<git_buf>)>>(
+      _lookup<ffi.NativeFunction<ffi.Int Function(ffi.Pointer<git_buf>)>>(
           'git_config_find_programdata');
   late final _git_config_find_programdata = _git_config_find_programdataPtr
       .asFunction<int Function(ffi.Pointer<git_buf>)>();
@@ -15569,7 +15547,7 @@ class Libgit2 {
 
   late final _git_config_open_defaultPtr = _lookup<
           ffi.NativeFunction<
-              ffi.Int32 Function(ffi.Pointer<ffi.Pointer<git_config>>)>>(
+              ffi.Int Function(ffi.Pointer<ffi.Pointer<git_config>>)>>(
       'git_config_open_default');
   late final _git_config_open_default = _git_config_open_defaultPtr
       .asFunction<int Function(ffi.Pointer<ffi.Pointer<git_config>>)>();
@@ -15591,7 +15569,7 @@ class Libgit2 {
 
   late final _git_config_newPtr = _lookup<
       ffi.NativeFunction<
-          ffi.Int32 Function(
+          ffi.Int Function(
               ffi.Pointer<ffi.Pointer<git_config>>)>>('git_config_new');
   late final _git_config_new = _git_config_newPtr
       .asFunction<int Function(ffi.Pointer<ffi.Pointer<git_config>>)>();
@@ -15623,7 +15601,7 @@ class Libgit2 {
   /// GIT_ENOTFOUND when the file doesn't exist or error code
   int git_config_add_file_ondisk(
     ffi.Pointer<git_config> cfg,
-    ffi.Pointer<ffi.Int8> path,
+    ffi.Pointer<ffi.Char> path,
     int level,
     ffi.Pointer<git_repository> repo,
     int force,
@@ -15639,15 +15617,15 @@ class Libgit2 {
 
   late final _git_config_add_file_ondiskPtr = _lookup<
       ffi.NativeFunction<
-          ffi.Int32 Function(
+          ffi.Int Function(
               ffi.Pointer<git_config>,
-              ffi.Pointer<ffi.Int8>,
+              ffi.Pointer<ffi.Char>,
               ffi.Int32,
               ffi.Pointer<git_repository>,
-              ffi.Int32)>>('git_config_add_file_ondisk');
+              ffi.Int)>>('git_config_add_file_ondisk');
   late final _git_config_add_file_ondisk =
       _git_config_add_file_ondiskPtr.asFunction<
-          int Function(ffi.Pointer<git_config>, ffi.Pointer<ffi.Int8>, int,
+          int Function(ffi.Pointer<git_config>, ffi.Pointer<ffi.Char>, int,
               ffi.Pointer<git_repository>, int)>();
 
   /// Create a new config instance containing a single on-disk file
@@ -15662,7 +15640,7 @@ class Libgit2 {
   /// @return 0 on success, or an error code
   int git_config_open_ondisk(
     ffi.Pointer<ffi.Pointer<git_config>> out,
-    ffi.Pointer<ffi.Int8> path,
+    ffi.Pointer<ffi.Char> path,
   ) {
     return _git_config_open_ondisk(
       out,
@@ -15672,11 +15650,11 @@ class Libgit2 {
 
   late final _git_config_open_ondiskPtr = _lookup<
       ffi.NativeFunction<
-          ffi.Int32 Function(ffi.Pointer<ffi.Pointer<git_config>>,
-              ffi.Pointer<ffi.Int8>)>>('git_config_open_ondisk');
+          ffi.Int Function(ffi.Pointer<ffi.Pointer<git_config>>,
+              ffi.Pointer<ffi.Char>)>>('git_config_open_ondisk');
   late final _git_config_open_ondisk = _git_config_open_ondiskPtr.asFunction<
       int Function(
-          ffi.Pointer<ffi.Pointer<git_config>>, ffi.Pointer<ffi.Int8>)>();
+          ffi.Pointer<ffi.Pointer<git_config>>, ffi.Pointer<ffi.Char>)>();
 
   /// Build a single-level focused config object from a multi-level one.
   ///
@@ -15706,7 +15684,7 @@ class Libgit2 {
 
   late final _git_config_open_levelPtr = _lookup<
       ffi.NativeFunction<
-          ffi.Int32 Function(ffi.Pointer<ffi.Pointer<git_config>>,
+          ffi.Int Function(ffi.Pointer<ffi.Pointer<git_config>>,
               ffi.Pointer<git_config>, ffi.Int32)>>('git_config_open_level');
   late final _git_config_open_level = _git_config_open_levelPtr.asFunction<
       int Function(ffi.Pointer<ffi.Pointer<git_config>>,
@@ -15735,7 +15713,7 @@ class Libgit2 {
 
   late final _git_config_open_globalPtr = _lookup<
       ffi.NativeFunction<
-          ffi.Int32 Function(ffi.Pointer<ffi.Pointer<git_config>>,
+          ffi.Int Function(ffi.Pointer<ffi.Pointer<git_config>>,
               ffi.Pointer<git_config>)>>('git_config_open_global');
   late final _git_config_open_global = _git_config_open_globalPtr.asFunction<
       int Function(
@@ -15765,7 +15743,7 @@ class Libgit2 {
 
   late final _git_config_snapshotPtr = _lookup<
       ffi.NativeFunction<
-          ffi.Int32 Function(ffi.Pointer<ffi.Pointer<git_config>>,
+          ffi.Int Function(ffi.Pointer<ffi.Pointer<git_config>>,
               ffi.Pointer<git_config>)>>('git_config_snapshot');
   late final _git_config_snapshot = _git_config_snapshotPtr.asFunction<
       int Function(
@@ -15799,7 +15777,7 @@ class Libgit2 {
   int git_config_get_entry(
     ffi.Pointer<ffi.Pointer<git_config_entry>> out,
     ffi.Pointer<git_config> cfg,
-    ffi.Pointer<ffi.Int8> name,
+    ffi.Pointer<ffi.Char> name,
   ) {
     return _git_config_get_entry(
       out,
@@ -15810,13 +15788,13 @@ class Libgit2 {
 
   late final _git_config_get_entryPtr = _lookup<
       ffi.NativeFunction<
-          ffi.Int32 Function(
+          ffi.Int Function(
               ffi.Pointer<ffi.Pointer<git_config_entry>>,
               ffi.Pointer<git_config>,
-              ffi.Pointer<ffi.Int8>)>>('git_config_get_entry');
+              ffi.Pointer<ffi.Char>)>>('git_config_get_entry');
   late final _git_config_get_entry = _git_config_get_entryPtr.asFunction<
       int Function(ffi.Pointer<ffi.Pointer<git_config_entry>>,
-          ffi.Pointer<git_config>, ffi.Pointer<ffi.Int8>)>();
+          ffi.Pointer<git_config>, ffi.Pointer<ffi.Char>)>();
 
   /// Get the value of an integer config variable.
   ///
@@ -15831,7 +15809,7 @@ class Libgit2 {
   int git_config_get_int32(
     ffi.Pointer<ffi.Int32> out,
     ffi.Pointer<git_config> cfg,
-    ffi.Pointer<ffi.Int8> name,
+    ffi.Pointer<ffi.Char> name,
   ) {
     return _git_config_get_int32(
       out,
@@ -15842,11 +15820,11 @@ class Libgit2 {
 
   late final _git_config_get_int32Ptr = _lookup<
       ffi.NativeFunction<
-          ffi.Int32 Function(ffi.Pointer<ffi.Int32>, ffi.Pointer<git_config>,
-              ffi.Pointer<ffi.Int8>)>>('git_config_get_int32');
+          ffi.Int Function(ffi.Pointer<ffi.Int32>, ffi.Pointer<git_config>,
+              ffi.Pointer<ffi.Char>)>>('git_config_get_int32');
   late final _git_config_get_int32 = _git_config_get_int32Ptr.asFunction<
       int Function(ffi.Pointer<ffi.Int32>, ffi.Pointer<git_config>,
-          ffi.Pointer<ffi.Int8>)>();
+          ffi.Pointer<ffi.Char>)>();
 
   /// Get the value of a long integer config variable.
   ///
@@ -15861,7 +15839,7 @@ class Libgit2 {
   int git_config_get_int64(
     ffi.Pointer<ffi.Int64> out,
     ffi.Pointer<git_config> cfg,
-    ffi.Pointer<ffi.Int8> name,
+    ffi.Pointer<ffi.Char> name,
   ) {
     return _git_config_get_int64(
       out,
@@ -15872,11 +15850,11 @@ class Libgit2 {
 
   late final _git_config_get_int64Ptr = _lookup<
       ffi.NativeFunction<
-          ffi.Int32 Function(ffi.Pointer<ffi.Int64>, ffi.Pointer<git_config>,
-              ffi.Pointer<ffi.Int8>)>>('git_config_get_int64');
+          ffi.Int Function(ffi.Pointer<ffi.Int64>, ffi.Pointer<git_config>,
+              ffi.Pointer<ffi.Char>)>>('git_config_get_int64');
   late final _git_config_get_int64 = _git_config_get_int64Ptr.asFunction<
       int Function(ffi.Pointer<ffi.Int64>, ffi.Pointer<git_config>,
-          ffi.Pointer<ffi.Int8>)>();
+          ffi.Pointer<ffi.Char>)>();
 
   /// Get the value of a boolean config variable.
   ///
@@ -15892,9 +15870,9 @@ class Libgit2 {
   /// @param name the variable's name
   /// @return 0 or an error code
   int git_config_get_bool(
-    ffi.Pointer<ffi.Int32> out,
+    ffi.Pointer<ffi.Int> out,
     ffi.Pointer<git_config> cfg,
-    ffi.Pointer<ffi.Int8> name,
+    ffi.Pointer<ffi.Char> name,
   ) {
     return _git_config_get_bool(
       out,
@@ -15905,11 +15883,11 @@ class Libgit2 {
 
   late final _git_config_get_boolPtr = _lookup<
       ffi.NativeFunction<
-          ffi.Int32 Function(ffi.Pointer<ffi.Int32>, ffi.Pointer<git_config>,
-              ffi.Pointer<ffi.Int8>)>>('git_config_get_bool');
+          ffi.Int Function(ffi.Pointer<ffi.Int>, ffi.Pointer<git_config>,
+              ffi.Pointer<ffi.Char>)>>('git_config_get_bool');
   late final _git_config_get_bool = _git_config_get_boolPtr.asFunction<
-      int Function(ffi.Pointer<ffi.Int32>, ffi.Pointer<git_config>,
-          ffi.Pointer<ffi.Int8>)>();
+      int Function(ffi.Pointer<ffi.Int>, ffi.Pointer<git_config>,
+          ffi.Pointer<ffi.Char>)>();
 
   /// Get the value of a path config variable.
   ///
@@ -15928,7 +15906,7 @@ class Libgit2 {
   int git_config_get_path(
     ffi.Pointer<git_buf> out,
     ffi.Pointer<git_config> cfg,
-    ffi.Pointer<ffi.Int8> name,
+    ffi.Pointer<ffi.Char> name,
   ) {
     return _git_config_get_path(
       out,
@@ -15939,11 +15917,11 @@ class Libgit2 {
 
   late final _git_config_get_pathPtr = _lookup<
       ffi.NativeFunction<
-          ffi.Int32 Function(ffi.Pointer<git_buf>, ffi.Pointer<git_config>,
-              ffi.Pointer<ffi.Int8>)>>('git_config_get_path');
+          ffi.Int Function(ffi.Pointer<git_buf>, ffi.Pointer<git_config>,
+              ffi.Pointer<ffi.Char>)>>('git_config_get_path');
   late final _git_config_get_path = _git_config_get_pathPtr.asFunction<
       int Function(ffi.Pointer<git_buf>, ffi.Pointer<git_config>,
-          ffi.Pointer<ffi.Int8>)>();
+          ffi.Pointer<ffi.Char>)>();
 
   /// Get the value of a string config variable.
   ///
@@ -15960,9 +15938,9 @@ class Libgit2 {
   /// @param name the variable's name
   /// @return 0 or an error code
   int git_config_get_string(
-    ffi.Pointer<ffi.Pointer<ffi.Int8>> out,
+    ffi.Pointer<ffi.Pointer<ffi.Char>> out,
     ffi.Pointer<git_config> cfg,
-    ffi.Pointer<ffi.Int8> name,
+    ffi.Pointer<ffi.Char> name,
   ) {
     return _git_config_get_string(
       out,
@@ -15973,13 +15951,13 @@ class Libgit2 {
 
   late final _git_config_get_stringPtr = _lookup<
       ffi.NativeFunction<
-          ffi.Int32 Function(
-              ffi.Pointer<ffi.Pointer<ffi.Int8>>,
+          ffi.Int Function(
+              ffi.Pointer<ffi.Pointer<ffi.Char>>,
               ffi.Pointer<git_config>,
-              ffi.Pointer<ffi.Int8>)>>('git_config_get_string');
+              ffi.Pointer<ffi.Char>)>>('git_config_get_string');
   late final _git_config_get_string = _git_config_get_stringPtr.asFunction<
-      int Function(ffi.Pointer<ffi.Pointer<ffi.Int8>>, ffi.Pointer<git_config>,
-          ffi.Pointer<ffi.Int8>)>();
+      int Function(ffi.Pointer<ffi.Pointer<ffi.Char>>, ffi.Pointer<git_config>,
+          ffi.Pointer<ffi.Char>)>();
 
   /// Get the value of a string config variable.
   ///
@@ -15996,7 +15974,7 @@ class Libgit2 {
   int git_config_get_string_buf(
     ffi.Pointer<git_buf> out,
     ffi.Pointer<git_config> cfg,
-    ffi.Pointer<ffi.Int8> name,
+    ffi.Pointer<ffi.Char> name,
   ) {
     return _git_config_get_string_buf(
       out,
@@ -16007,12 +15985,12 @@ class Libgit2 {
 
   late final _git_config_get_string_bufPtr = _lookup<
       ffi.NativeFunction<
-          ffi.Int32 Function(ffi.Pointer<git_buf>, ffi.Pointer<git_config>,
-              ffi.Pointer<ffi.Int8>)>>('git_config_get_string_buf');
+          ffi.Int Function(ffi.Pointer<git_buf>, ffi.Pointer<git_config>,
+              ffi.Pointer<ffi.Char>)>>('git_config_get_string_buf');
   late final _git_config_get_string_buf =
       _git_config_get_string_bufPtr.asFunction<
           int Function(ffi.Pointer<git_buf>, ffi.Pointer<git_config>,
-              ffi.Pointer<ffi.Int8>)>();
+              ffi.Pointer<ffi.Char>)>();
 
   /// Get each value of a multivar in a foreach callback
   ///
@@ -16031,8 +16009,8 @@ class Libgit2 {
   /// @return 0 or an error code.
   int git_config_get_multivar_foreach(
     ffi.Pointer<git_config> cfg,
-    ffi.Pointer<ffi.Int8> name,
-    ffi.Pointer<ffi.Int8> regexp,
+    ffi.Pointer<ffi.Char> name,
+    ffi.Pointer<ffi.Char> regexp,
     git_config_foreach_cb callback,
     ffi.Pointer<ffi.Void> payload,
   ) {
@@ -16047,18 +16025,18 @@ class Libgit2 {
 
   late final _git_config_get_multivar_foreachPtr = _lookup<
       ffi.NativeFunction<
-          ffi.Int32 Function(
+          ffi.Int Function(
               ffi.Pointer<git_config>,
-              ffi.Pointer<ffi.Int8>,
-              ffi.Pointer<ffi.Int8>,
+              ffi.Pointer<ffi.Char>,
+              ffi.Pointer<ffi.Char>,
               git_config_foreach_cb,
               ffi.Pointer<ffi.Void>)>>('git_config_get_multivar_foreach');
   late final _git_config_get_multivar_foreach =
       _git_config_get_multivar_foreachPtr.asFunction<
           int Function(
               ffi.Pointer<git_config>,
-              ffi.Pointer<ffi.Int8>,
-              ffi.Pointer<ffi.Int8>,
+              ffi.Pointer<ffi.Char>,
+              ffi.Pointer<ffi.Char>,
               git_config_foreach_cb,
               ffi.Pointer<ffi.Void>)>();
 
@@ -16077,8 +16055,8 @@ class Libgit2 {
   int git_config_multivar_iterator_new(
     ffi.Pointer<ffi.Pointer<git_config_iterator>> out,
     ffi.Pointer<git_config> cfg,
-    ffi.Pointer<ffi.Int8> name,
-    ffi.Pointer<ffi.Int8> regexp,
+    ffi.Pointer<ffi.Char> name,
+    ffi.Pointer<ffi.Char> regexp,
   ) {
     return _git_config_multivar_iterator_new(
       out,
@@ -16090,18 +16068,18 @@ class Libgit2 {
 
   late final _git_config_multivar_iterator_newPtr = _lookup<
       ffi.NativeFunction<
-          ffi.Int32 Function(
+          ffi.Int Function(
               ffi.Pointer<ffi.Pointer<git_config_iterator>>,
               ffi.Pointer<git_config>,
-              ffi.Pointer<ffi.Int8>,
-              ffi.Pointer<ffi.Int8>)>>('git_config_multivar_iterator_new');
+              ffi.Pointer<ffi.Char>,
+              ffi.Pointer<ffi.Char>)>>('git_config_multivar_iterator_new');
   late final _git_config_multivar_iterator_new =
       _git_config_multivar_iterator_newPtr.asFunction<
           int Function(
               ffi.Pointer<ffi.Pointer<git_config_iterator>>,
               ffi.Pointer<git_config>,
-              ffi.Pointer<ffi.Int8>,
-              ffi.Pointer<ffi.Int8>)>();
+              ffi.Pointer<ffi.Char>,
+              ffi.Pointer<ffi.Char>)>();
 
   /// Return the current entry and advance the iterator
   ///
@@ -16123,7 +16101,7 @@ class Libgit2 {
 
   late final _git_config_nextPtr = _lookup<
       ffi.NativeFunction<
-          ffi.Int32 Function(ffi.Pointer<ffi.Pointer<git_config_entry>>,
+          ffi.Int Function(ffi.Pointer<ffi.Pointer<git_config_entry>>,
               ffi.Pointer<git_config_iterator>)>>('git_config_next');
   late final _git_config_next = _git_config_nextPtr.asFunction<
       int Function(ffi.Pointer<ffi.Pointer<git_config_entry>>,
@@ -16156,7 +16134,7 @@ class Libgit2 {
   /// @return 0 or an error code
   int git_config_set_int32(
     ffi.Pointer<git_config> cfg,
-    ffi.Pointer<ffi.Int8> name,
+    ffi.Pointer<ffi.Char> name,
     int value,
   ) {
     return _git_config_set_int32(
@@ -16168,10 +16146,10 @@ class Libgit2 {
 
   late final _git_config_set_int32Ptr = _lookup<
       ffi.NativeFunction<
-          ffi.Int32 Function(ffi.Pointer<git_config>, ffi.Pointer<ffi.Int8>,
+          ffi.Int Function(ffi.Pointer<git_config>, ffi.Pointer<ffi.Char>,
               ffi.Int32)>>('git_config_set_int32');
   late final _git_config_set_int32 = _git_config_set_int32Ptr.asFunction<
-      int Function(ffi.Pointer<git_config>, ffi.Pointer<ffi.Int8>, int)>();
+      int Function(ffi.Pointer<git_config>, ffi.Pointer<ffi.Char>, int)>();
 
   /// Set the value of a long integer config variable in the config file
   /// with the highest level (usually the local one).
@@ -16182,7 +16160,7 @@ class Libgit2 {
   /// @return 0 or an error code
   int git_config_set_int64(
     ffi.Pointer<git_config> cfg,
-    ffi.Pointer<ffi.Int8> name,
+    ffi.Pointer<ffi.Char> name,
     int value,
   ) {
     return _git_config_set_int64(
@@ -16194,10 +16172,10 @@ class Libgit2 {
 
   late final _git_config_set_int64Ptr = _lookup<
       ffi.NativeFunction<
-          ffi.Int32 Function(ffi.Pointer<git_config>, ffi.Pointer<ffi.Int8>,
+          ffi.Int Function(ffi.Pointer<git_config>, ffi.Pointer<ffi.Char>,
               ffi.Int64)>>('git_config_set_int64');
   late final _git_config_set_int64 = _git_config_set_int64Ptr.asFunction<
-      int Function(ffi.Pointer<git_config>, ffi.Pointer<ffi.Int8>, int)>();
+      int Function(ffi.Pointer<git_config>, ffi.Pointer<ffi.Char>, int)>();
 
   /// Set the value of a boolean config variable in the config file
   /// with the highest level (usually the local one).
@@ -16208,7 +16186,7 @@ class Libgit2 {
   /// @return 0 or an error code
   int git_config_set_bool(
     ffi.Pointer<git_config> cfg,
-    ffi.Pointer<ffi.Int8> name,
+    ffi.Pointer<ffi.Char> name,
     int value,
   ) {
     return _git_config_set_bool(
@@ -16220,10 +16198,10 @@ class Libgit2 {
 
   late final _git_config_set_boolPtr = _lookup<
       ffi.NativeFunction<
-          ffi.Int32 Function(ffi.Pointer<git_config>, ffi.Pointer<ffi.Int8>,
-              ffi.Int32)>>('git_config_set_bool');
+          ffi.Int Function(ffi.Pointer<git_config>, ffi.Pointer<ffi.Char>,
+              ffi.Int)>>('git_config_set_bool');
   late final _git_config_set_bool = _git_config_set_boolPtr.asFunction<
-      int Function(ffi.Pointer<git_config>, ffi.Pointer<ffi.Int8>, int)>();
+      int Function(ffi.Pointer<git_config>, ffi.Pointer<ffi.Char>, int)>();
 
   /// Set the value of a string config variable in the config file
   /// with the highest level (usually the local one).
@@ -16237,8 +16215,8 @@ class Libgit2 {
   /// @return 0 or an error code
   int git_config_set_string(
     ffi.Pointer<git_config> cfg,
-    ffi.Pointer<ffi.Int8> name,
-    ffi.Pointer<ffi.Int8> value,
+    ffi.Pointer<ffi.Char> name,
+    ffi.Pointer<ffi.Char> value,
   ) {
     return _git_config_set_string(
       cfg,
@@ -16249,11 +16227,11 @@ class Libgit2 {
 
   late final _git_config_set_stringPtr = _lookup<
       ffi.NativeFunction<
-          ffi.Int32 Function(ffi.Pointer<git_config>, ffi.Pointer<ffi.Int8>,
-              ffi.Pointer<ffi.Int8>)>>('git_config_set_string');
+          ffi.Int Function(ffi.Pointer<git_config>, ffi.Pointer<ffi.Char>,
+              ffi.Pointer<ffi.Char>)>>('git_config_set_string');
   late final _git_config_set_string = _git_config_set_stringPtr.asFunction<
-      int Function(ffi.Pointer<git_config>, ffi.Pointer<ffi.Int8>,
-          ffi.Pointer<ffi.Int8>)>();
+      int Function(ffi.Pointer<git_config>, ffi.Pointer<ffi.Char>,
+          ffi.Pointer<ffi.Char>)>();
 
   /// Set a multivar in the local config file.
   ///
@@ -16266,9 +16244,9 @@ class Libgit2 {
   /// @return 0 or an error code.
   int git_config_set_multivar(
     ffi.Pointer<git_config> cfg,
-    ffi.Pointer<ffi.Int8> name,
-    ffi.Pointer<ffi.Int8> regexp,
-    ffi.Pointer<ffi.Int8> value,
+    ffi.Pointer<ffi.Char> name,
+    ffi.Pointer<ffi.Char> regexp,
+    ffi.Pointer<ffi.Char> value,
   ) {
     return _git_config_set_multivar(
       cfg,
@@ -16280,14 +16258,14 @@ class Libgit2 {
 
   late final _git_config_set_multivarPtr = _lookup<
       ffi.NativeFunction<
-          ffi.Int32 Function(
+          ffi.Int Function(
               ffi.Pointer<git_config>,
-              ffi.Pointer<ffi.Int8>,
-              ffi.Pointer<ffi.Int8>,
-              ffi.Pointer<ffi.Int8>)>>('git_config_set_multivar');
+              ffi.Pointer<ffi.Char>,
+              ffi.Pointer<ffi.Char>,
+              ffi.Pointer<ffi.Char>)>>('git_config_set_multivar');
   late final _git_config_set_multivar = _git_config_set_multivarPtr.asFunction<
-      int Function(ffi.Pointer<git_config>, ffi.Pointer<ffi.Int8>,
-          ffi.Pointer<ffi.Int8>, ffi.Pointer<ffi.Int8>)>();
+      int Function(ffi.Pointer<git_config>, ffi.Pointer<ffi.Char>,
+          ffi.Pointer<ffi.Char>, ffi.Pointer<ffi.Char>)>();
 
   /// Delete a config variable from the config file
   /// with the highest level (usually the local one).
@@ -16297,7 +16275,7 @@ class Libgit2 {
   /// @return 0 or an error code.
   int git_config_delete_entry(
     ffi.Pointer<git_config> cfg,
-    ffi.Pointer<ffi.Int8> name,
+    ffi.Pointer<ffi.Char> name,
   ) {
     return _git_config_delete_entry(
       cfg,
@@ -16307,10 +16285,10 @@ class Libgit2 {
 
   late final _git_config_delete_entryPtr = _lookup<
       ffi.NativeFunction<
-          ffi.Int32 Function(ffi.Pointer<git_config>,
-              ffi.Pointer<ffi.Int8>)>>('git_config_delete_entry');
+          ffi.Int Function(ffi.Pointer<git_config>,
+              ffi.Pointer<ffi.Char>)>>('git_config_delete_entry');
   late final _git_config_delete_entry = _git_config_delete_entryPtr.asFunction<
-      int Function(ffi.Pointer<git_config>, ffi.Pointer<ffi.Int8>)>();
+      int Function(ffi.Pointer<git_config>, ffi.Pointer<ffi.Char>)>();
 
   /// Deletes one or several entries from a multivar in the local config file.
   ///
@@ -16323,8 +16301,8 @@ class Libgit2 {
   /// @return 0 or an error code
   int git_config_delete_multivar(
     ffi.Pointer<git_config> cfg,
-    ffi.Pointer<ffi.Int8> name,
-    ffi.Pointer<ffi.Int8> regexp,
+    ffi.Pointer<ffi.Char> name,
+    ffi.Pointer<ffi.Char> regexp,
   ) {
     return _git_config_delete_multivar(
       cfg,
@@ -16335,12 +16313,12 @@ class Libgit2 {
 
   late final _git_config_delete_multivarPtr = _lookup<
       ffi.NativeFunction<
-          ffi.Int32 Function(ffi.Pointer<git_config>, ffi.Pointer<ffi.Int8>,
-              ffi.Pointer<ffi.Int8>)>>('git_config_delete_multivar');
+          ffi.Int Function(ffi.Pointer<git_config>, ffi.Pointer<ffi.Char>,
+              ffi.Pointer<ffi.Char>)>>('git_config_delete_multivar');
   late final _git_config_delete_multivar =
       _git_config_delete_multivarPtr.asFunction<
-          int Function(ffi.Pointer<git_config>, ffi.Pointer<ffi.Int8>,
-              ffi.Pointer<ffi.Int8>)>();
+          int Function(ffi.Pointer<git_config>, ffi.Pointer<ffi.Char>,
+              ffi.Pointer<ffi.Char>)>();
 
   /// Perform an operation on each config variable.
   ///
@@ -16370,7 +16348,7 @@ class Libgit2 {
 
   late final _git_config_foreachPtr = _lookup<
       ffi.NativeFunction<
-          ffi.Int32 Function(ffi.Pointer<git_config>, git_config_foreach_cb,
+          ffi.Int Function(ffi.Pointer<git_config>, git_config_foreach_cb,
               ffi.Pointer<ffi.Void>)>>('git_config_foreach');
   late final _git_config_foreach = _git_config_foreachPtr.asFunction<
       int Function(ffi.Pointer<git_config>, git_config_foreach_cb,
@@ -16396,7 +16374,7 @@ class Libgit2 {
 
   late final _git_config_iterator_newPtr = _lookup<
       ffi.NativeFunction<
-          ffi.Int32 Function(ffi.Pointer<ffi.Pointer<git_config_iterator>>,
+          ffi.Int Function(ffi.Pointer<ffi.Pointer<git_config_iterator>>,
               ffi.Pointer<git_config>)>>('git_config_iterator_new');
   late final _git_config_iterator_new = _git_config_iterator_newPtr.asFunction<
       int Function(ffi.Pointer<ffi.Pointer<git_config_iterator>>,
@@ -16418,7 +16396,7 @@ class Libgit2 {
   int git_config_iterator_glob_new(
     ffi.Pointer<ffi.Pointer<git_config_iterator>> out,
     ffi.Pointer<git_config> cfg,
-    ffi.Pointer<ffi.Int8> regexp,
+    ffi.Pointer<ffi.Char> regexp,
   ) {
     return _git_config_iterator_glob_new(
       out,
@@ -16429,14 +16407,14 @@ class Libgit2 {
 
   late final _git_config_iterator_glob_newPtr = _lookup<
       ffi.NativeFunction<
-          ffi.Int32 Function(
+          ffi.Int Function(
               ffi.Pointer<ffi.Pointer<git_config_iterator>>,
               ffi.Pointer<git_config>,
-              ffi.Pointer<ffi.Int8>)>>('git_config_iterator_glob_new');
+              ffi.Pointer<ffi.Char>)>>('git_config_iterator_glob_new');
   late final _git_config_iterator_glob_new =
       _git_config_iterator_glob_newPtr.asFunction<
           int Function(ffi.Pointer<ffi.Pointer<git_config_iterator>>,
-              ffi.Pointer<git_config>, ffi.Pointer<ffi.Int8>)>();
+              ffi.Pointer<git_config>, ffi.Pointer<ffi.Char>)>();
 
   /// Perform an operation on each config variable matching a regular expression.
   ///
@@ -16458,7 +16436,7 @@ class Libgit2 {
   /// @return 0 or the return value of the callback which didn't return 0
   int git_config_foreach_match(
     ffi.Pointer<git_config> cfg,
-    ffi.Pointer<ffi.Int8> regexp,
+    ffi.Pointer<ffi.Char> regexp,
     git_config_foreach_cb callback,
     ffi.Pointer<ffi.Void> payload,
   ) {
@@ -16472,14 +16450,14 @@ class Libgit2 {
 
   late final _git_config_foreach_matchPtr = _lookup<
       ffi.NativeFunction<
-          ffi.Int32 Function(
+          ffi.Int Function(
               ffi.Pointer<git_config>,
-              ffi.Pointer<ffi.Int8>,
+              ffi.Pointer<ffi.Char>,
               git_config_foreach_cb,
               ffi.Pointer<ffi.Void>)>>('git_config_foreach_match');
   late final _git_config_foreach_match =
       _git_config_foreach_matchPtr.asFunction<
-          int Function(ffi.Pointer<git_config>, ffi.Pointer<ffi.Int8>,
+          int Function(ffi.Pointer<git_config>, ffi.Pointer<ffi.Char>,
               git_config_foreach_cb, ffi.Pointer<ffi.Void>)>();
 
   /// Query the value of a config variable and return it mapped to
@@ -16515,9 +16493,9 @@ class Libgit2 {
   /// @param map_n number of mapping objects in `maps`
   /// @return 0 on success, error code otherwise
   int git_config_get_mapped(
-    ffi.Pointer<ffi.Int32> out,
+    ffi.Pointer<ffi.Int> out,
     ffi.Pointer<git_config> cfg,
-    ffi.Pointer<ffi.Int8> name,
+    ffi.Pointer<ffi.Char> name,
     ffi.Pointer<git_configmap> maps,
     int map_n,
   ) {
@@ -16532,15 +16510,15 @@ class Libgit2 {
 
   late final _git_config_get_mappedPtr = _lookup<
       ffi.NativeFunction<
-          ffi.Int32 Function(
-              ffi.Pointer<ffi.Int32>,
+          ffi.Int Function(
+              ffi.Pointer<ffi.Int>,
               ffi.Pointer<git_config>,
-              ffi.Pointer<ffi.Int8>,
+              ffi.Pointer<ffi.Char>,
               ffi.Pointer<git_configmap>,
-              size_t)>>('git_config_get_mapped');
+              ffi.Size)>>('git_config_get_mapped');
   late final _git_config_get_mapped = _git_config_get_mappedPtr.asFunction<
-      int Function(ffi.Pointer<ffi.Int32>, ffi.Pointer<git_config>,
-          ffi.Pointer<ffi.Int8>, ffi.Pointer<git_configmap>, int)>();
+      int Function(ffi.Pointer<ffi.Int>, ffi.Pointer<git_config>,
+          ffi.Pointer<ffi.Char>, ffi.Pointer<git_configmap>, int)>();
 
   /// Maps a string value to an integer constant
   ///
@@ -16550,10 +16528,10 @@ class Libgit2 {
   /// @param value value to parse
   /// @return 0 or an error code.
   int git_config_lookup_map_value(
-    ffi.Pointer<ffi.Int32> out,
+    ffi.Pointer<ffi.Int> out,
     ffi.Pointer<git_configmap> maps,
     int map_n,
-    ffi.Pointer<ffi.Int8> value,
+    ffi.Pointer<ffi.Char> value,
   ) {
     return _git_config_lookup_map_value(
       out,
@@ -16565,12 +16543,12 @@ class Libgit2 {
 
   late final _git_config_lookup_map_valuePtr = _lookup<
       ffi.NativeFunction<
-          ffi.Int32 Function(ffi.Pointer<ffi.Int32>, ffi.Pointer<git_configmap>,
-              size_t, ffi.Pointer<ffi.Int8>)>>('git_config_lookup_map_value');
+          ffi.Int Function(ffi.Pointer<ffi.Int>, ffi.Pointer<git_configmap>,
+              ffi.Size, ffi.Pointer<ffi.Char>)>>('git_config_lookup_map_value');
   late final _git_config_lookup_map_value =
       _git_config_lookup_map_valuePtr.asFunction<
-          int Function(ffi.Pointer<ffi.Int32>, ffi.Pointer<git_configmap>, int,
-              ffi.Pointer<ffi.Int8>)>();
+          int Function(ffi.Pointer<ffi.Int>, ffi.Pointer<git_configmap>, int,
+              ffi.Pointer<ffi.Char>)>();
 
   /// Parse a string value as a bool.
   ///
@@ -16582,8 +16560,8 @@ class Libgit2 {
   /// @param value value to parse
   /// @return 0 or an error code.
   int git_config_parse_bool(
-    ffi.Pointer<ffi.Int32> out,
-    ffi.Pointer<ffi.Int8> value,
+    ffi.Pointer<ffi.Int> out,
+    ffi.Pointer<ffi.Char> value,
   ) {
     return _git_config_parse_bool(
       out,
@@ -16593,10 +16571,10 @@ class Libgit2 {
 
   late final _git_config_parse_boolPtr = _lookup<
       ffi.NativeFunction<
-          ffi.Int32 Function(ffi.Pointer<ffi.Int32>,
-              ffi.Pointer<ffi.Int8>)>>('git_config_parse_bool');
-  late final _git_config_parse_bool = _git_config_parse_boolPtr.asFunction<
-      int Function(ffi.Pointer<ffi.Int32>, ffi.Pointer<ffi.Int8>)>();
+          ffi.Int Function(ffi.Pointer<ffi.Int>,
+              ffi.Pointer<ffi.Char>)>>('git_config_parse_bool');
+  late final _git_config_parse_bool = _git_config_parse_boolPtr
+      .asFunction<int Function(ffi.Pointer<ffi.Int>, ffi.Pointer<ffi.Char>)>();
 
   /// Parse a string value as an int32.
   ///
@@ -16609,7 +16587,7 @@ class Libgit2 {
   /// @return 0 or an error code.
   int git_config_parse_int32(
     ffi.Pointer<ffi.Int32> out,
-    ffi.Pointer<ffi.Int8> value,
+    ffi.Pointer<ffi.Char> value,
   ) {
     return _git_config_parse_int32(
       out,
@@ -16619,10 +16597,10 @@ class Libgit2 {
 
   late final _git_config_parse_int32Ptr = _lookup<
       ffi.NativeFunction<
-          ffi.Int32 Function(ffi.Pointer<ffi.Int32>,
-              ffi.Pointer<ffi.Int8>)>>('git_config_parse_int32');
+          ffi.Int Function(ffi.Pointer<ffi.Int32>,
+              ffi.Pointer<ffi.Char>)>>('git_config_parse_int32');
   late final _git_config_parse_int32 = _git_config_parse_int32Ptr.asFunction<
-      int Function(ffi.Pointer<ffi.Int32>, ffi.Pointer<ffi.Int8>)>();
+      int Function(ffi.Pointer<ffi.Int32>, ffi.Pointer<ffi.Char>)>();
 
   /// Parse a string value as an int64.
   ///
@@ -16635,7 +16613,7 @@ class Libgit2 {
   /// @return 0 or an error code.
   int git_config_parse_int64(
     ffi.Pointer<ffi.Int64> out,
-    ffi.Pointer<ffi.Int8> value,
+    ffi.Pointer<ffi.Char> value,
   ) {
     return _git_config_parse_int64(
       out,
@@ -16645,10 +16623,10 @@ class Libgit2 {
 
   late final _git_config_parse_int64Ptr = _lookup<
       ffi.NativeFunction<
-          ffi.Int32 Function(ffi.Pointer<ffi.Int64>,
-              ffi.Pointer<ffi.Int8>)>>('git_config_parse_int64');
+          ffi.Int Function(ffi.Pointer<ffi.Int64>,
+              ffi.Pointer<ffi.Char>)>>('git_config_parse_int64');
   late final _git_config_parse_int64 = _git_config_parse_int64Ptr.asFunction<
-      int Function(ffi.Pointer<ffi.Int64>, ffi.Pointer<ffi.Int8>)>();
+      int Function(ffi.Pointer<ffi.Int64>, ffi.Pointer<ffi.Char>)>();
 
   /// Parse a string value as a path.
   ///
@@ -16664,7 +16642,7 @@ class Libgit2 {
   /// @return 0 or an error code.
   int git_config_parse_path(
     ffi.Pointer<git_buf> out,
-    ffi.Pointer<ffi.Int8> value,
+    ffi.Pointer<ffi.Char> value,
   ) {
     return _git_config_parse_path(
       out,
@@ -16674,10 +16652,10 @@ class Libgit2 {
 
   late final _git_config_parse_pathPtr = _lookup<
       ffi.NativeFunction<
-          ffi.Int32 Function(ffi.Pointer<git_buf>,
-              ffi.Pointer<ffi.Int8>)>>('git_config_parse_path');
+          ffi.Int Function(ffi.Pointer<git_buf>,
+              ffi.Pointer<ffi.Char>)>>('git_config_parse_path');
   late final _git_config_parse_path = _git_config_parse_pathPtr
-      .asFunction<int Function(ffi.Pointer<git_buf>, ffi.Pointer<ffi.Int8>)>();
+      .asFunction<int Function(ffi.Pointer<git_buf>, ffi.Pointer<ffi.Char>)>();
 
   /// Perform an operation on each config variable in a given config backend,
   /// matching a regular expression.
@@ -16696,7 +16674,7 @@ class Libgit2 {
   /// @return 0 or an error code.
   int git_config_backend_foreach_match(
     ffi.Pointer<git_config_backend> backend,
-    ffi.Pointer<ffi.Int8> regexp,
+    ffi.Pointer<ffi.Char> regexp,
     git_config_foreach_cb callback,
     ffi.Pointer<ffi.Void> payload,
   ) {
@@ -16710,14 +16688,14 @@ class Libgit2 {
 
   late final _git_config_backend_foreach_matchPtr = _lookup<
       ffi.NativeFunction<
-          ffi.Int32 Function(
+          ffi.Int Function(
               ffi.Pointer<git_config_backend>,
-              ffi.Pointer<ffi.Int8>,
+              ffi.Pointer<ffi.Char>,
               git_config_foreach_cb,
               ffi.Pointer<ffi.Void>)>>('git_config_backend_foreach_match');
   late final _git_config_backend_foreach_match =
       _git_config_backend_foreach_matchPtr.asFunction<
-          int Function(ffi.Pointer<git_config_backend>, ffi.Pointer<ffi.Int8>,
+          int Function(ffi.Pointer<git_config_backend>, ffi.Pointer<ffi.Char>,
               git_config_foreach_cb, ffi.Pointer<ffi.Void>)>();
 
   /// Lock the backend with the highest priority
@@ -16746,7 +16724,7 @@ class Libgit2 {
 
   late final _git_config_lockPtr = _lookup<
       ffi.NativeFunction<
-          ffi.Int32 Function(ffi.Pointer<ffi.Pointer<git_transaction>>,
+          ffi.Int Function(ffi.Pointer<ffi.Pointer<git_transaction>>,
               ffi.Pointer<git_config>)>>('git_config_lock');
   late final _git_config_lock = _git_config_lockPtr.asFunction<
       int Function(ffi.Pointer<ffi.Pointer<git_transaction>>,
@@ -16772,8 +16750,8 @@ class Libgit2 {
 
   late final _git_describe_options_initPtr = _lookup<
       ffi.NativeFunction<
-          ffi.Int32 Function(ffi.Pointer<git_describe_options>,
-              ffi.Uint32)>>('git_describe_options_init');
+          ffi.Int Function(ffi.Pointer<git_describe_options>,
+              ffi.UnsignedInt)>>('git_describe_options_init');
   late final _git_describe_options_init = _git_describe_options_initPtr
       .asFunction<int Function(ffi.Pointer<git_describe_options>, int)>();
 
@@ -16797,8 +16775,8 @@ class Libgit2 {
 
   late final _git_describe_format_options_initPtr = _lookup<
       ffi.NativeFunction<
-          ffi.Int32 Function(ffi.Pointer<git_describe_format_options>,
-              ffi.Uint32)>>('git_describe_format_options_init');
+          ffi.Int Function(ffi.Pointer<git_describe_format_options>,
+              ffi.UnsignedInt)>>('git_describe_format_options_init');
   late final _git_describe_format_options_init =
       _git_describe_format_options_initPtr.asFunction<
           int Function(ffi.Pointer<git_describe_format_options>, int)>();
@@ -16826,7 +16804,7 @@ class Libgit2 {
 
   late final _git_describe_commitPtr = _lookup<
       ffi.NativeFunction<
-          ffi.Int32 Function(
+          ffi.Int Function(
               ffi.Pointer<ffi.Pointer<git_describe_result>>,
               ffi.Pointer<git_object>,
               ffi.Pointer<git_describe_options>)>>('git_describe_commit');
@@ -16859,7 +16837,7 @@ class Libgit2 {
 
   late final _git_describe_workdirPtr = _lookup<
       ffi.NativeFunction<
-          ffi.Int32 Function(
+          ffi.Int Function(
               ffi.Pointer<ffi.Pointer<git_describe_result>>,
               ffi.Pointer<git_repository>,
               ffi.Pointer<git_describe_options>)>>('git_describe_workdir');
@@ -16888,7 +16866,7 @@ class Libgit2 {
 
   late final _git_describe_formatPtr = _lookup<
           ffi.NativeFunction<
-              ffi.Int32 Function(
+              ffi.Int Function(
                   ffi.Pointer<git_buf>,
                   ffi.Pointer<git_describe_result>,
                   ffi.Pointer<git_describe_format_options>)>>(
@@ -16961,7 +16939,7 @@ class Libgit2 {
   /// @return 0 on success or -1 on failure
   int git_error_set_str(
     int error_class,
-    ffi.Pointer<ffi.Int8> string,
+    ffi.Pointer<ffi.Char> string,
   ) {
     return _git_error_set_str(
       error_class,
@@ -16970,11 +16948,10 @@ class Libgit2 {
   }
 
   late final _git_error_set_strPtr = _lookup<
-      ffi.NativeFunction<
-          ffi.Int32 Function(
-              ffi.Int32, ffi.Pointer<ffi.Int8>)>>('git_error_set_str');
+          ffi.NativeFunction<ffi.Int Function(ffi.Int, ffi.Pointer<ffi.Char>)>>(
+      'git_error_set_str');
   late final _git_error_set_str = _git_error_set_strPtr
-      .asFunction<int Function(int, ffi.Pointer<ffi.Int8>)>();
+      .asFunction<int Function(int, ffi.Pointer<ffi.Char>)>();
 
   /// Set the error message to a special value for memory allocation failure.
   ///
@@ -17009,7 +16986,7 @@ class Libgit2 {
     ffi.Pointer<ffi.Pointer<git_filter_list>> filters,
     ffi.Pointer<git_repository> repo,
     ffi.Pointer<git_blob> blob,
-    ffi.Pointer<ffi.Int8> path,
+    ffi.Pointer<ffi.Char> path,
     int mode,
     int flags,
   ) {
@@ -17025,11 +17002,11 @@ class Libgit2 {
 
   late final _git_filter_list_loadPtr = _lookup<
       ffi.NativeFunction<
-          ffi.Int32 Function(
+          ffi.Int Function(
               ffi.Pointer<ffi.Pointer<git_filter_list>>,
               ffi.Pointer<git_repository>,
               ffi.Pointer<git_blob>,
-              ffi.Pointer<ffi.Int8>,
+              ffi.Pointer<ffi.Char>,
               ffi.Int32,
               ffi.Uint32)>>('git_filter_list_load');
   late final _git_filter_list_load = _git_filter_list_loadPtr.asFunction<
@@ -17037,7 +17014,7 @@ class Libgit2 {
           ffi.Pointer<ffi.Pointer<git_filter_list>>,
           ffi.Pointer<git_repository>,
           ffi.Pointer<git_blob>,
-          ffi.Pointer<ffi.Int8>,
+          ffi.Pointer<ffi.Char>,
           int,
           int)>();
 
@@ -17058,7 +17035,7 @@ class Libgit2 {
     ffi.Pointer<ffi.Pointer<git_filter_list>> filters,
     ffi.Pointer<git_repository> repo,
     ffi.Pointer<git_blob> blob,
-    ffi.Pointer<ffi.Int8> path,
+    ffi.Pointer<ffi.Char> path,
     int mode,
     ffi.Pointer<git_filter_options> opts,
   ) {
@@ -17074,11 +17051,11 @@ class Libgit2 {
 
   late final _git_filter_list_load_extPtr = _lookup<
       ffi.NativeFunction<
-          ffi.Int32 Function(
+          ffi.Int Function(
               ffi.Pointer<ffi.Pointer<git_filter_list>>,
               ffi.Pointer<git_repository>,
               ffi.Pointer<git_blob>,
-              ffi.Pointer<ffi.Int8>,
+              ffi.Pointer<ffi.Char>,
               ffi.Int32,
               ffi.Pointer<git_filter_options>)>>('git_filter_list_load_ext');
   late final _git_filter_list_load_ext =
@@ -17087,7 +17064,7 @@ class Libgit2 {
               ffi.Pointer<ffi.Pointer<git_filter_list>>,
               ffi.Pointer<git_repository>,
               ffi.Pointer<git_blob>,
-              ffi.Pointer<ffi.Int8>,
+              ffi.Pointer<ffi.Char>,
               int,
               ffi.Pointer<git_filter_options>)>();
 
@@ -17103,7 +17080,7 @@ class Libgit2 {
   /// @return 1 if the filter is in the list, 0 otherwise
   int git_filter_list_contains(
     ffi.Pointer<git_filter_list> filters,
-    ffi.Pointer<ffi.Int8> name,
+    ffi.Pointer<ffi.Char> name,
   ) {
     return _git_filter_list_contains(
       filters,
@@ -17113,11 +17090,11 @@ class Libgit2 {
 
   late final _git_filter_list_containsPtr = _lookup<
       ffi.NativeFunction<
-          ffi.Int32 Function(ffi.Pointer<git_filter_list>,
-              ffi.Pointer<ffi.Int8>)>>('git_filter_list_contains');
+          ffi.Int Function(ffi.Pointer<git_filter_list>,
+              ffi.Pointer<ffi.Char>)>>('git_filter_list_contains');
   late final _git_filter_list_contains =
       _git_filter_list_containsPtr.asFunction<
-          int Function(ffi.Pointer<git_filter_list>, ffi.Pointer<ffi.Int8>)>();
+          int Function(ffi.Pointer<git_filter_list>, ffi.Pointer<ffi.Char>)>();
 
   /// Apply filter list to a data buffer.
   ///
@@ -17129,7 +17106,7 @@ class Libgit2 {
   int git_filter_list_apply_to_buffer(
     ffi.Pointer<git_buf> out,
     ffi.Pointer<git_filter_list> filters,
-    ffi.Pointer<ffi.Int8> in1,
+    ffi.Pointer<ffi.Char> in1,
     int in_len,
   ) {
     return _git_filter_list_apply_to_buffer(
@@ -17142,15 +17119,15 @@ class Libgit2 {
 
   late final _git_filter_list_apply_to_bufferPtr = _lookup<
       ffi.NativeFunction<
-          ffi.Int32 Function(
+          ffi.Int Function(
               ffi.Pointer<git_buf>,
               ffi.Pointer<git_filter_list>,
-              ffi.Pointer<ffi.Int8>,
-              size_t)>>('git_filter_list_apply_to_buffer');
+              ffi.Pointer<ffi.Char>,
+              ffi.Size)>>('git_filter_list_apply_to_buffer');
   late final _git_filter_list_apply_to_buffer =
       _git_filter_list_apply_to_bufferPtr.asFunction<
           int Function(ffi.Pointer<git_buf>, ffi.Pointer<git_filter_list>,
-              ffi.Pointer<ffi.Int8>, int)>();
+              ffi.Pointer<ffi.Char>, int)>();
 
   /// Apply a filter list to the contents of a file on disk
   ///
@@ -17164,7 +17141,7 @@ class Libgit2 {
     ffi.Pointer<git_buf> out,
     ffi.Pointer<git_filter_list> filters,
     ffi.Pointer<git_repository> repo,
-    ffi.Pointer<ffi.Int8> path,
+    ffi.Pointer<ffi.Char> path,
   ) {
     return _git_filter_list_apply_to_file(
       out,
@@ -17176,15 +17153,15 @@ class Libgit2 {
 
   late final _git_filter_list_apply_to_filePtr = _lookup<
       ffi.NativeFunction<
-          ffi.Int32 Function(
+          ffi.Int Function(
               ffi.Pointer<git_buf>,
               ffi.Pointer<git_filter_list>,
               ffi.Pointer<git_repository>,
-              ffi.Pointer<ffi.Int8>)>>('git_filter_list_apply_to_file');
+              ffi.Pointer<ffi.Char>)>>('git_filter_list_apply_to_file');
   late final _git_filter_list_apply_to_file =
       _git_filter_list_apply_to_filePtr.asFunction<
           int Function(ffi.Pointer<git_buf>, ffi.Pointer<git_filter_list>,
-              ffi.Pointer<git_repository>, ffi.Pointer<ffi.Int8>)>();
+              ffi.Pointer<git_repository>, ffi.Pointer<ffi.Char>)>();
 
   /// Apply a filter list to the contents of a blob
   ///
@@ -17206,7 +17183,7 @@ class Libgit2 {
 
   late final _git_filter_list_apply_to_blobPtr = _lookup<
       ffi.NativeFunction<
-          ffi.Int32 Function(ffi.Pointer<git_buf>, ffi.Pointer<git_filter_list>,
+          ffi.Int Function(ffi.Pointer<git_buf>, ffi.Pointer<git_filter_list>,
               ffi.Pointer<git_blob>)>>('git_filter_list_apply_to_blob');
   late final _git_filter_list_apply_to_blob =
       _git_filter_list_apply_to_blobPtr.asFunction<
@@ -17222,7 +17199,7 @@ class Libgit2 {
   /// @return 0 or an error code.
   int git_filter_list_stream_buffer(
     ffi.Pointer<git_filter_list> filters,
-    ffi.Pointer<ffi.Int8> buffer,
+    ffi.Pointer<ffi.Char> buffer,
     int len,
     ffi.Pointer<git_writestream> target,
   ) {
@@ -17236,14 +17213,14 @@ class Libgit2 {
 
   late final _git_filter_list_stream_bufferPtr = _lookup<
       ffi.NativeFunction<
-          ffi.Int32 Function(
+          ffi.Int Function(
               ffi.Pointer<git_filter_list>,
-              ffi.Pointer<ffi.Int8>,
-              size_t,
+              ffi.Pointer<ffi.Char>,
+              ffi.Size,
               ffi.Pointer<git_writestream>)>>('git_filter_list_stream_buffer');
   late final _git_filter_list_stream_buffer =
       _git_filter_list_stream_bufferPtr.asFunction<
-          int Function(ffi.Pointer<git_filter_list>, ffi.Pointer<ffi.Int8>, int,
+          int Function(ffi.Pointer<git_filter_list>, ffi.Pointer<ffi.Char>, int,
               ffi.Pointer<git_writestream>)>();
 
   /// Apply a filter list to a file as a stream
@@ -17257,7 +17234,7 @@ class Libgit2 {
   int git_filter_list_stream_file(
     ffi.Pointer<git_filter_list> filters,
     ffi.Pointer<git_repository> repo,
-    ffi.Pointer<ffi.Int8> path,
+    ffi.Pointer<ffi.Char> path,
     ffi.Pointer<git_writestream> target,
   ) {
     return _git_filter_list_stream_file(
@@ -17270,17 +17247,17 @@ class Libgit2 {
 
   late final _git_filter_list_stream_filePtr = _lookup<
       ffi.NativeFunction<
-          ffi.Int32 Function(
+          ffi.Int Function(
               ffi.Pointer<git_filter_list>,
               ffi.Pointer<git_repository>,
-              ffi.Pointer<ffi.Int8>,
+              ffi.Pointer<ffi.Char>,
               ffi.Pointer<git_writestream>)>>('git_filter_list_stream_file');
   late final _git_filter_list_stream_file =
       _git_filter_list_stream_filePtr.asFunction<
           int Function(
               ffi.Pointer<git_filter_list>,
               ffi.Pointer<git_repository>,
-              ffi.Pointer<ffi.Int8>,
+              ffi.Pointer<ffi.Char>,
               ffi.Pointer<git_writestream>)>();
 
   /// Apply a filter list to a blob as a stream
@@ -17303,9 +17280,7 @@ class Libgit2 {
 
   late final _git_filter_list_stream_blobPtr = _lookup<
       ffi.NativeFunction<
-          ffi.Int32 Function(
-              ffi.Pointer<git_filter_list>,
-              ffi.Pointer<git_blob>,
+          ffi.Int Function(ffi.Pointer<git_filter_list>, ffi.Pointer<git_blob>,
               ffi.Pointer<git_writestream>)>>('git_filter_list_stream_blob');
   late final _git_filter_list_stream_blob =
       _git_filter_list_stream_blobPtr.asFunction<
@@ -17349,8 +17324,8 @@ class Libgit2 {
 
   late final _git_rebase_options_initPtr = _lookup<
       ffi.NativeFunction<
-          ffi.Int32 Function(ffi.Pointer<git_rebase_options>,
-              ffi.Uint32)>>('git_rebase_options_init');
+          ffi.Int Function(ffi.Pointer<git_rebase_options>,
+              ffi.UnsignedInt)>>('git_rebase_options_init');
   late final _git_rebase_options_init = _git_rebase_options_initPtr
       .asFunction<int Function(ffi.Pointer<git_rebase_options>, int)>();
 
@@ -17389,7 +17364,7 @@ class Libgit2 {
 
   late final _git_rebase_initPtr = _lookup<
       ffi.NativeFunction<
-          ffi.Int32 Function(
+          ffi.Int Function(
               ffi.Pointer<ffi.Pointer<git_rebase>>,
               ffi.Pointer<git_repository>,
               ffi.Pointer<git_annotated_commit>,
@@ -17426,7 +17401,7 @@ class Libgit2 {
 
   late final _git_rebase_openPtr = _lookup<
       ffi.NativeFunction<
-          ffi.Int32 Function(
+          ffi.Int Function(
               ffi.Pointer<ffi.Pointer<git_rebase>>,
               ffi.Pointer<git_repository>,
               ffi.Pointer<git_rebase_options>)>>('git_rebase_open');
@@ -17438,7 +17413,7 @@ class Libgit2 {
   ///
   /// @param rebase The in-progress rebase.
   /// @return The original `HEAD` ref name
-  ffi.Pointer<ffi.Int8> git_rebase_orig_head_name(
+  ffi.Pointer<ffi.Char> git_rebase_orig_head_name(
     ffi.Pointer<git_rebase> rebase,
   ) {
     return _git_rebase_orig_head_name(
@@ -17448,10 +17423,10 @@ class Libgit2 {
 
   late final _git_rebase_orig_head_namePtr = _lookup<
       ffi.NativeFunction<
-          ffi.Pointer<ffi.Int8> Function(
+          ffi.Pointer<ffi.Char> Function(
               ffi.Pointer<git_rebase>)>>('git_rebase_orig_head_name');
   late final _git_rebase_orig_head_name = _git_rebase_orig_head_namePtr
-      .asFunction<ffi.Pointer<ffi.Int8> Function(ffi.Pointer<git_rebase>)>();
+      .asFunction<ffi.Pointer<ffi.Char> Function(ffi.Pointer<git_rebase>)>();
 
   /// Gets the original `HEAD` id for merge rebases.
   ///
@@ -17476,7 +17451,7 @@ class Libgit2 {
   ///
   /// @param rebase The in-progress rebase.
   /// @return The `onto` ref name
-  ffi.Pointer<ffi.Int8> git_rebase_onto_name(
+  ffi.Pointer<ffi.Char> git_rebase_onto_name(
     ffi.Pointer<git_rebase> rebase,
   ) {
     return _git_rebase_onto_name(
@@ -17486,10 +17461,10 @@ class Libgit2 {
 
   late final _git_rebase_onto_namePtr = _lookup<
       ffi.NativeFunction<
-          ffi.Pointer<ffi.Int8> Function(
+          ffi.Pointer<ffi.Char> Function(
               ffi.Pointer<git_rebase>)>>('git_rebase_onto_name');
   late final _git_rebase_onto_name = _git_rebase_onto_namePtr
-      .asFunction<ffi.Pointer<ffi.Int8> Function(ffi.Pointer<git_rebase>)>();
+      .asFunction<ffi.Pointer<ffi.Char> Function(ffi.Pointer<git_rebase>)>();
 
   /// Gets the `onto` id for merge rebases.
   ///
@@ -17523,7 +17498,7 @@ class Libgit2 {
   }
 
   late final _git_rebase_operation_entrycountPtr =
-      _lookup<ffi.NativeFunction<size_t Function(ffi.Pointer<git_rebase>)>>(
+      _lookup<ffi.NativeFunction<ffi.Size Function(ffi.Pointer<git_rebase>)>>(
           'git_rebase_operation_entrycount');
   late final _git_rebase_operation_entrycount =
       _git_rebase_operation_entrycountPtr
@@ -17545,7 +17520,7 @@ class Libgit2 {
   }
 
   late final _git_rebase_operation_currentPtr =
-      _lookup<ffi.NativeFunction<size_t Function(ffi.Pointer<git_rebase>)>>(
+      _lookup<ffi.NativeFunction<ffi.Size Function(ffi.Pointer<git_rebase>)>>(
           'git_rebase_operation_current');
   late final _git_rebase_operation_current = _git_rebase_operation_currentPtr
       .asFunction<int Function(ffi.Pointer<git_rebase>)>();
@@ -17568,7 +17543,7 @@ class Libgit2 {
   late final _git_rebase_operation_byindexPtr = _lookup<
       ffi.NativeFunction<
           ffi.Pointer<git_rebase_operation> Function(ffi.Pointer<git_rebase>,
-              size_t)>>('git_rebase_operation_byindex');
+              ffi.Size)>>('git_rebase_operation_byindex');
   late final _git_rebase_operation_byindex =
       _git_rebase_operation_byindexPtr.asFunction<
           ffi.Pointer<git_rebase_operation> Function(
@@ -17595,7 +17570,7 @@ class Libgit2 {
 
   late final _git_rebase_nextPtr = _lookup<
       ffi.NativeFunction<
-          ffi.Int32 Function(ffi.Pointer<ffi.Pointer<git_rebase_operation>>,
+          ffi.Int Function(ffi.Pointer<ffi.Pointer<git_rebase_operation>>,
               ffi.Pointer<git_rebase>)>>('git_rebase_next');
   late final _git_rebase_next = _git_rebase_nextPtr.asFunction<
       int Function(ffi.Pointer<ffi.Pointer<git_rebase_operation>>,
@@ -17626,7 +17601,7 @@ class Libgit2 {
 
   late final _git_rebase_inmemory_indexPtr = _lookup<
       ffi.NativeFunction<
-          ffi.Int32 Function(ffi.Pointer<ffi.Pointer<git_index>>,
+          ffi.Int Function(ffi.Pointer<ffi.Pointer<git_index>>,
               ffi.Pointer<git_rebase>)>>('git_rebase_inmemory_index');
   late final _git_rebase_inmemory_index =
       _git_rebase_inmemory_indexPtr.asFunction<
@@ -17658,8 +17633,8 @@ class Libgit2 {
     ffi.Pointer<git_rebase> rebase,
     ffi.Pointer<git_signature> author,
     ffi.Pointer<git_signature> committer,
-    ffi.Pointer<ffi.Int8> message_encoding,
-    ffi.Pointer<ffi.Int8> message,
+    ffi.Pointer<ffi.Char> message_encoding,
+    ffi.Pointer<ffi.Char> message,
   ) {
     return _git_rebase_commit(
       id,
@@ -17673,21 +17648,21 @@ class Libgit2 {
 
   late final _git_rebase_commitPtr = _lookup<
       ffi.NativeFunction<
-          ffi.Int32 Function(
+          ffi.Int Function(
               ffi.Pointer<git_oid>,
               ffi.Pointer<git_rebase>,
               ffi.Pointer<git_signature>,
               ffi.Pointer<git_signature>,
-              ffi.Pointer<ffi.Int8>,
-              ffi.Pointer<ffi.Int8>)>>('git_rebase_commit');
+              ffi.Pointer<ffi.Char>,
+              ffi.Pointer<ffi.Char>)>>('git_rebase_commit');
   late final _git_rebase_commit = _git_rebase_commitPtr.asFunction<
       int Function(
           ffi.Pointer<git_oid>,
           ffi.Pointer<git_rebase>,
           ffi.Pointer<git_signature>,
           ffi.Pointer<git_signature>,
-          ffi.Pointer<ffi.Int8>,
-          ffi.Pointer<ffi.Int8>)>();
+          ffi.Pointer<ffi.Char>,
+          ffi.Pointer<ffi.Char>)>();
 
   /// Aborts a rebase that is currently in progress, resetting the repository
   /// and working directory to their state before rebase began.
@@ -17704,7 +17679,7 @@ class Libgit2 {
   }
 
   late final _git_rebase_abortPtr =
-      _lookup<ffi.NativeFunction<ffi.Int32 Function(ffi.Pointer<git_rebase>)>>(
+      _lookup<ffi.NativeFunction<ffi.Int Function(ffi.Pointer<git_rebase>)>>(
           'git_rebase_abort');
   late final _git_rebase_abort =
       _git_rebase_abortPtr.asFunction<int Function(ffi.Pointer<git_rebase>)>();
@@ -17727,7 +17702,7 @@ class Libgit2 {
 
   late final _git_rebase_finishPtr = _lookup<
       ffi.NativeFunction<
-          ffi.Int32 Function(ffi.Pointer<git_rebase>,
+          ffi.Int Function(ffi.Pointer<git_rebase>,
               ffi.Pointer<git_signature>)>>('git_rebase_finish');
   late final _git_rebase_finish = _git_rebase_finishPtr.asFunction<
       int Function(ffi.Pointer<git_rebase>, ffi.Pointer<git_signature>)>();
@@ -17767,7 +17742,7 @@ class Libgit2 {
   }
 
   late final _git_trace_setPtr =
-      _lookup<ffi.NativeFunction<ffi.Int32 Function(ffi.Int32, git_trace_cb)>>(
+      _lookup<ffi.NativeFunction<ffi.Int Function(ffi.Int32, git_trace_cb)>>(
           'git_trace_set');
   late final _git_trace_set =
       _git_trace_setPtr.asFunction<int Function(int, git_trace_cb)>();
@@ -17792,8 +17767,8 @@ class Libgit2 {
 
   late final _git_revert_options_initPtr = _lookup<
       ffi.NativeFunction<
-          ffi.Int32 Function(ffi.Pointer<git_revert_options>,
-              ffi.Uint32)>>('git_revert_options_init');
+          ffi.Int Function(ffi.Pointer<git_revert_options>,
+              ffi.UnsignedInt)>>('git_revert_options_init');
   late final _git_revert_options_init = _git_revert_options_initPtr
       .asFunction<int Function(ffi.Pointer<git_revert_options>, int)>();
 
@@ -17829,12 +17804,12 @@ class Libgit2 {
 
   late final _git_revert_commitPtr = _lookup<
       ffi.NativeFunction<
-          ffi.Int32 Function(
+          ffi.Int Function(
               ffi.Pointer<ffi.Pointer<git_index>>,
               ffi.Pointer<git_repository>,
               ffi.Pointer<git_commit>,
               ffi.Pointer<git_commit>,
-              ffi.Uint32,
+              ffi.UnsignedInt,
               ffi.Pointer<git_merge_options>)>>('git_revert_commit');
   late final _git_revert_commit = _git_revert_commitPtr.asFunction<
       int Function(
@@ -17865,9 +17840,7 @@ class Libgit2 {
 
   late final _git_revertPtr = _lookup<
       ffi.NativeFunction<
-          ffi.Int32 Function(
-              ffi.Pointer<git_repository>,
-              ffi.Pointer<git_commit>,
+          ffi.Int Function(ffi.Pointer<git_repository>, ffi.Pointer<git_commit>,
               ffi.Pointer<git_revert_options>)>>('git_revert');
   late final _git_revert = _git_revertPtr.asFunction<
       int Function(ffi.Pointer<git_repository>, ffi.Pointer<git_commit>,
@@ -17889,7 +17862,7 @@ class Libgit2 {
   int git_revparse_single(
     ffi.Pointer<ffi.Pointer<git_object>> out,
     ffi.Pointer<git_repository> repo,
-    ffi.Pointer<ffi.Int8> spec,
+    ffi.Pointer<ffi.Char> spec,
   ) {
     return _git_revparse_single(
       out,
@@ -17900,13 +17873,13 @@ class Libgit2 {
 
   late final _git_revparse_singlePtr = _lookup<
       ffi.NativeFunction<
-          ffi.Int32 Function(
+          ffi.Int Function(
               ffi.Pointer<ffi.Pointer<git_object>>,
               ffi.Pointer<git_repository>,
-              ffi.Pointer<ffi.Int8>)>>('git_revparse_single');
+              ffi.Pointer<ffi.Char>)>>('git_revparse_single');
   late final _git_revparse_single = _git_revparse_singlePtr.asFunction<
       int Function(ffi.Pointer<ffi.Pointer<git_object>>,
-          ffi.Pointer<git_repository>, ffi.Pointer<ffi.Int8>)>();
+          ffi.Pointer<git_repository>, ffi.Pointer<ffi.Char>)>();
 
   /// Find a single object and intermediate reference by a revision string.
   ///
@@ -17931,7 +17904,7 @@ class Libgit2 {
     ffi.Pointer<ffi.Pointer<git_object>> object_out,
     ffi.Pointer<ffi.Pointer<git_reference>> reference_out,
     ffi.Pointer<git_repository> repo,
-    ffi.Pointer<ffi.Int8> spec,
+    ffi.Pointer<ffi.Char> spec,
   ) {
     return _git_revparse_ext(
       object_out,
@@ -17943,17 +17916,17 @@ class Libgit2 {
 
   late final _git_revparse_extPtr = _lookup<
       ffi.NativeFunction<
-          ffi.Int32 Function(
+          ffi.Int Function(
               ffi.Pointer<ffi.Pointer<git_object>>,
               ffi.Pointer<ffi.Pointer<git_reference>>,
               ffi.Pointer<git_repository>,
-              ffi.Pointer<ffi.Int8>)>>('git_revparse_ext');
+              ffi.Pointer<ffi.Char>)>>('git_revparse_ext');
   late final _git_revparse_ext = _git_revparse_extPtr.asFunction<
       int Function(
           ffi.Pointer<ffi.Pointer<git_object>>,
           ffi.Pointer<ffi.Pointer<git_reference>>,
           ffi.Pointer<git_repository>,
-          ffi.Pointer<ffi.Int8>)>();
+          ffi.Pointer<ffi.Char>)>();
 
   /// Parse a revision string for `from`, `to`, and intent.
   ///
@@ -17969,7 +17942,7 @@ class Libgit2 {
   int git_revparse(
     ffi.Pointer<git_revspec> revspec,
     ffi.Pointer<git_repository> repo,
-    ffi.Pointer<ffi.Int8> spec,
+    ffi.Pointer<ffi.Char> spec,
   ) {
     return _git_revparse(
       revspec,
@@ -17980,13 +17953,13 @@ class Libgit2 {
 
   late final _git_revparsePtr = _lookup<
       ffi.NativeFunction<
-          ffi.Int32 Function(
+          ffi.Int Function(
               ffi.Pointer<git_revspec>,
               ffi.Pointer<git_repository>,
-              ffi.Pointer<ffi.Int8>)>>('git_revparse');
+              ffi.Pointer<ffi.Char>)>>('git_revparse');
   late final _git_revparse = _git_revparsePtr.asFunction<
       int Function(ffi.Pointer<git_revspec>, ffi.Pointer<git_repository>,
-          ffi.Pointer<ffi.Int8>)>();
+          ffi.Pointer<ffi.Char>)>();
 
   /// Save the local modifications to a new stash.
   ///
@@ -18007,7 +17980,7 @@ class Libgit2 {
     ffi.Pointer<git_oid> out,
     ffi.Pointer<git_repository> repo,
     ffi.Pointer<git_signature> stasher,
-    ffi.Pointer<ffi.Int8> message,
+    ffi.Pointer<ffi.Char> message,
     int flags,
   ) {
     return _git_stash_save(
@@ -18021,15 +17994,15 @@ class Libgit2 {
 
   late final _git_stash_savePtr = _lookup<
       ffi.NativeFunction<
-          ffi.Int32 Function(
+          ffi.Int Function(
               ffi.Pointer<git_oid>,
               ffi.Pointer<git_repository>,
               ffi.Pointer<git_signature>,
-              ffi.Pointer<ffi.Int8>,
+              ffi.Pointer<ffi.Char>,
               ffi.Uint32)>>('git_stash_save');
   late final _git_stash_save = _git_stash_savePtr.asFunction<
       int Function(ffi.Pointer<git_oid>, ffi.Pointer<git_repository>,
-          ffi.Pointer<git_signature>, ffi.Pointer<ffi.Int8>, int)>();
+          ffi.Pointer<git_signature>, ffi.Pointer<ffi.Char>, int)>();
 
   /// Initialize git_stash_apply_options structure
   ///
@@ -18051,8 +18024,8 @@ class Libgit2 {
 
   late final _git_stash_apply_options_initPtr = _lookup<
       ffi.NativeFunction<
-          ffi.Int32 Function(ffi.Pointer<git_stash_apply_options>,
-              ffi.Uint32)>>('git_stash_apply_options_init');
+          ffi.Int Function(ffi.Pointer<git_stash_apply_options>,
+              ffi.UnsignedInt)>>('git_stash_apply_options_init');
   late final _git_stash_apply_options_init = _git_stash_apply_options_initPtr
       .asFunction<int Function(ffi.Pointer<git_stash_apply_options>, int)>();
 
@@ -18094,7 +18067,7 @@ class Libgit2 {
 
   late final _git_stash_applyPtr = _lookup<
       ffi.NativeFunction<
-          ffi.Int32 Function(ffi.Pointer<git_repository>, size_t,
+          ffi.Int Function(ffi.Pointer<git_repository>, ffi.Size,
               ffi.Pointer<git_stash_apply_options>)>>('git_stash_apply');
   late final _git_stash_apply = _git_stash_applyPtr.asFunction<
       int Function(ffi.Pointer<git_repository>, int,
@@ -18126,7 +18099,7 @@ class Libgit2 {
 
   late final _git_stash_foreachPtr = _lookup<
       ffi.NativeFunction<
-          ffi.Int32 Function(ffi.Pointer<git_repository>, git_stash_cb,
+          ffi.Int Function(ffi.Pointer<git_repository>, git_stash_cb,
               ffi.Pointer<ffi.Void>)>>('git_stash_foreach');
   late final _git_stash_foreach = _git_stash_foreachPtr.asFunction<
       int Function(
@@ -18153,8 +18126,8 @@ class Libgit2 {
 
   late final _git_stash_dropPtr = _lookup<
       ffi.NativeFunction<
-          ffi.Int32 Function(
-              ffi.Pointer<git_repository>, size_t)>>('git_stash_drop');
+          ffi.Int Function(
+              ffi.Pointer<git_repository>, ffi.Size)>>('git_stash_drop');
   late final _git_stash_drop = _git_stash_dropPtr
       .asFunction<int Function(ffi.Pointer<git_repository>, int)>();
 
@@ -18182,7 +18155,7 @@ class Libgit2 {
 
   late final _git_stash_popPtr = _lookup<
       ffi.NativeFunction<
-          ffi.Int32 Function(ffi.Pointer<git_repository>, size_t,
+          ffi.Int Function(ffi.Pointer<git_repository>, ffi.Size,
               ffi.Pointer<git_stash_apply_options>)>>('git_stash_pop');
   late final _git_stash_pop = _git_stash_popPtr.asFunction<
       int Function(ffi.Pointer<git_repository>, int,
@@ -18208,8 +18181,8 @@ class Libgit2 {
 
   late final _git_status_options_initPtr = _lookup<
       ffi.NativeFunction<
-          ffi.Int32 Function(ffi.Pointer<git_status_options>,
-              ffi.Uint32)>>('git_status_options_init');
+          ffi.Int Function(ffi.Pointer<git_status_options>,
+              ffi.UnsignedInt)>>('git_status_options_init');
   late final _git_status_options_init = _git_status_options_initPtr
       .asFunction<int Function(ffi.Pointer<git_status_options>, int)>();
 
@@ -18240,7 +18213,7 @@ class Libgit2 {
 
   late final _git_status_foreachPtr = _lookup<
       ffi.NativeFunction<
-          ffi.Int32 Function(ffi.Pointer<git_repository>, git_status_cb,
+          ffi.Int Function(ffi.Pointer<git_repository>, git_status_cb,
               ffi.Pointer<ffi.Void>)>>('git_status_foreach');
   late final _git_status_foreach = _git_status_foreachPtr.asFunction<
       int Function(
@@ -18279,7 +18252,7 @@ class Libgit2 {
 
   late final _git_status_foreach_extPtr = _lookup<
       ffi.NativeFunction<
-          ffi.Int32 Function(
+          ffi.Int Function(
               ffi.Pointer<git_repository>,
               ffi.Pointer<git_status_options>,
               git_status_cb,
@@ -18313,9 +18286,9 @@ class Libgit2 {
   /// index, and work tree, GIT_EAMBIGUOUS if `path` matches multiple files
   /// or if it refers to a folder, and -1 on other errors.
   int git_status_file(
-    ffi.Pointer<ffi.Uint32> status_flags,
+    ffi.Pointer<ffi.UnsignedInt> status_flags,
     ffi.Pointer<git_repository> repo,
-    ffi.Pointer<ffi.Int8> path,
+    ffi.Pointer<ffi.Char> path,
   ) {
     return _git_status_file(
       status_flags,
@@ -18326,13 +18299,13 @@ class Libgit2 {
 
   late final _git_status_filePtr = _lookup<
       ffi.NativeFunction<
-          ffi.Int32 Function(
-              ffi.Pointer<ffi.Uint32>,
+          ffi.Int Function(
+              ffi.Pointer<ffi.UnsignedInt>,
               ffi.Pointer<git_repository>,
-              ffi.Pointer<ffi.Int8>)>>('git_status_file');
+              ffi.Pointer<ffi.Char>)>>('git_status_file');
   late final _git_status_file = _git_status_filePtr.asFunction<
-      int Function(ffi.Pointer<ffi.Uint32>, ffi.Pointer<git_repository>,
-          ffi.Pointer<ffi.Int8>)>();
+      int Function(ffi.Pointer<ffi.UnsignedInt>, ffi.Pointer<git_repository>,
+          ffi.Pointer<ffi.Char>)>();
 
   /// Gather file status information and populate the `git_status_list`.
   ///
@@ -18359,7 +18332,7 @@ class Libgit2 {
 
   late final _git_status_list_newPtr = _lookup<
       ffi.NativeFunction<
-          ffi.Int32 Function(
+          ffi.Int Function(
               ffi.Pointer<ffi.Pointer<git_status_list>>,
               ffi.Pointer<git_repository>,
               ffi.Pointer<git_status_options>)>>('git_status_list_new');
@@ -18383,7 +18356,7 @@ class Libgit2 {
   }
 
   late final _git_status_list_entrycountPtr = _lookup<
-          ffi.NativeFunction<size_t Function(ffi.Pointer<git_status_list>)>>(
+          ffi.NativeFunction<ffi.Size Function(ffi.Pointer<git_status_list>)>>(
       'git_status_list_entrycount');
   late final _git_status_list_entrycount = _git_status_list_entrycountPtr
       .asFunction<int Function(ffi.Pointer<git_status_list>)>();
@@ -18408,7 +18381,7 @@ class Libgit2 {
   late final _git_status_byindexPtr = _lookup<
       ffi.NativeFunction<
           ffi.Pointer<git_status_entry> Function(
-              ffi.Pointer<git_status_list>, size_t)>>('git_status_byindex');
+              ffi.Pointer<git_status_list>, ffi.Size)>>('git_status_byindex');
   late final _git_status_byindex = _git_status_byindexPtr.asFunction<
       ffi.Pointer<git_status_entry> Function(
           ffi.Pointer<git_status_list>, int)>();
@@ -18445,9 +18418,9 @@ class Libgit2 {
   /// @return 0 if ignore rules could be processed for the file (regardless
   /// of whether it exists or not), or an error < 0 if they could not.
   int git_status_should_ignore(
-    ffi.Pointer<ffi.Int32> ignored,
+    ffi.Pointer<ffi.Int> ignored,
     ffi.Pointer<git_repository> repo,
-    ffi.Pointer<ffi.Int8> path,
+    ffi.Pointer<ffi.Char> path,
   ) {
     return _git_status_should_ignore(
       ignored,
@@ -18458,14 +18431,12 @@ class Libgit2 {
 
   late final _git_status_should_ignorePtr = _lookup<
       ffi.NativeFunction<
-          ffi.Int32 Function(
-              ffi.Pointer<ffi.Int32>,
-              ffi.Pointer<git_repository>,
-              ffi.Pointer<ffi.Int8>)>>('git_status_should_ignore');
+          ffi.Int Function(ffi.Pointer<ffi.Int>, ffi.Pointer<git_repository>,
+              ffi.Pointer<ffi.Char>)>>('git_status_should_ignore');
   late final _git_status_should_ignore =
       _git_status_should_ignorePtr.asFunction<
-          int Function(ffi.Pointer<ffi.Int32>, ffi.Pointer<git_repository>,
-              ffi.Pointer<ffi.Int8>)>();
+          int Function(ffi.Pointer<ffi.Int>, ffi.Pointer<git_repository>,
+              ffi.Pointer<ffi.Char>)>();
 
   /// Initialize git_submodule_update_options structure
   ///
@@ -18487,8 +18458,8 @@ class Libgit2 {
 
   late final _git_submodule_update_options_initPtr = _lookup<
       ffi.NativeFunction<
-          ffi.Int32 Function(ffi.Pointer<git_submodule_update_options>,
-              ffi.Uint32)>>('git_submodule_update_options_init');
+          ffi.Int Function(ffi.Pointer<git_submodule_update_options>,
+              ffi.UnsignedInt)>>('git_submodule_update_options_init');
   late final _git_submodule_update_options_init =
       _git_submodule_update_options_initPtr.asFunction<
           int Function(ffi.Pointer<git_submodule_update_options>, int)>();
@@ -18523,7 +18494,7 @@ class Libgit2 {
 
   late final _git_submodule_updatePtr = _lookup<
           ffi.NativeFunction<
-              ffi.Int32 Function(ffi.Pointer<git_submodule>, ffi.Int32,
+              ffi.Int Function(ffi.Pointer<git_submodule>, ffi.Int,
                   ffi.Pointer<git_submodule_update_options>)>>(
       'git_submodule_update');
   late final _git_submodule_update = _git_submodule_updatePtr.asFunction<
@@ -18558,7 +18529,7 @@ class Libgit2 {
   int git_submodule_lookup(
     ffi.Pointer<ffi.Pointer<git_submodule>> out,
     ffi.Pointer<git_repository> repo,
-    ffi.Pointer<ffi.Int8> name,
+    ffi.Pointer<ffi.Char> name,
   ) {
     return _git_submodule_lookup(
       out,
@@ -18569,13 +18540,13 @@ class Libgit2 {
 
   late final _git_submodule_lookupPtr = _lookup<
       ffi.NativeFunction<
-          ffi.Int32 Function(
+          ffi.Int Function(
               ffi.Pointer<ffi.Pointer<git_submodule>>,
               ffi.Pointer<git_repository>,
-              ffi.Pointer<ffi.Int8>)>>('git_submodule_lookup');
+              ffi.Pointer<ffi.Char>)>>('git_submodule_lookup');
   late final _git_submodule_lookup = _git_submodule_lookupPtr.asFunction<
       int Function(ffi.Pointer<ffi.Pointer<git_submodule>>,
-          ffi.Pointer<git_repository>, ffi.Pointer<ffi.Int8>)>();
+          ffi.Pointer<git_repository>, ffi.Pointer<ffi.Char>)>();
 
   /// Create an in-memory copy of a submodule. The copy must be explicitly
   /// free'd or it will leak.
@@ -18595,7 +18566,7 @@ class Libgit2 {
 
   late final _git_submodule_dupPtr = _lookup<
       ffi.NativeFunction<
-          ffi.Int32 Function(ffi.Pointer<ffi.Pointer<git_submodule>>,
+          ffi.Int Function(ffi.Pointer<ffi.Pointer<git_submodule>>,
               ffi.Pointer<git_submodule>)>>('git_submodule_dup');
   late final _git_submodule_dup = _git_submodule_dupPtr.asFunction<
       int Function(ffi.Pointer<ffi.Pointer<git_submodule>>,
@@ -18648,7 +18619,7 @@ class Libgit2 {
 
   late final _git_submodule_foreachPtr = _lookup<
       ffi.NativeFunction<
-          ffi.Int32 Function(ffi.Pointer<git_repository>, git_submodule_cb,
+          ffi.Int Function(ffi.Pointer<git_repository>, git_submodule_cb,
               ffi.Pointer<ffi.Void>)>>('git_submodule_foreach');
   late final _git_submodule_foreach = _git_submodule_foreachPtr.asFunction<
       int Function(ffi.Pointer<git_repository>, git_submodule_cb,
@@ -18681,8 +18652,8 @@ class Libgit2 {
   int git_submodule_add_setup(
     ffi.Pointer<ffi.Pointer<git_submodule>> out,
     ffi.Pointer<git_repository> repo,
-    ffi.Pointer<ffi.Int8> url,
-    ffi.Pointer<ffi.Int8> path,
+    ffi.Pointer<ffi.Char> url,
+    ffi.Pointer<ffi.Char> path,
     int use_gitlink,
   ) {
     return _git_submodule_add_setup(
@@ -18696,18 +18667,18 @@ class Libgit2 {
 
   late final _git_submodule_add_setupPtr = _lookup<
       ffi.NativeFunction<
-          ffi.Int32 Function(
+          ffi.Int Function(
               ffi.Pointer<ffi.Pointer<git_submodule>>,
               ffi.Pointer<git_repository>,
-              ffi.Pointer<ffi.Int8>,
-              ffi.Pointer<ffi.Int8>,
-              ffi.Int32)>>('git_submodule_add_setup');
+              ffi.Pointer<ffi.Char>,
+              ffi.Pointer<ffi.Char>,
+              ffi.Int)>>('git_submodule_add_setup');
   late final _git_submodule_add_setup = _git_submodule_add_setupPtr.asFunction<
       int Function(
           ffi.Pointer<ffi.Pointer<git_submodule>>,
           ffi.Pointer<git_repository>,
-          ffi.Pointer<ffi.Int8>,
-          ffi.Pointer<ffi.Int8>,
+          ffi.Pointer<ffi.Char>,
+          ffi.Pointer<ffi.Char>,
           int)>();
 
   /// Perform the clone step for a newly created submodule.
@@ -18733,7 +18704,7 @@ class Libgit2 {
 
   late final _git_submodule_clonePtr = _lookup<
           ffi.NativeFunction<
-              ffi.Int32 Function(
+              ffi.Int Function(
                   ffi.Pointer<ffi.Pointer<git_repository>>,
                   ffi.Pointer<git_submodule>,
                   ffi.Pointer<git_submodule_update_options>)>>(
@@ -18761,9 +18732,9 @@ class Libgit2 {
     );
   }
 
-  late final _git_submodule_add_finalizePtr = _lookup<
-          ffi.NativeFunction<ffi.Int32 Function(ffi.Pointer<git_submodule>)>>(
-      'git_submodule_add_finalize');
+  late final _git_submodule_add_finalizePtr =
+      _lookup<ffi.NativeFunction<ffi.Int Function(ffi.Pointer<git_submodule>)>>(
+          'git_submodule_add_finalize');
   late final _git_submodule_add_finalize = _git_submodule_add_finalizePtr
       .asFunction<int Function(ffi.Pointer<git_submodule>)>();
 
@@ -18787,8 +18758,8 @@ class Libgit2 {
 
   late final _git_submodule_add_to_indexPtr = _lookup<
       ffi.NativeFunction<
-          ffi.Int32 Function(ffi.Pointer<git_submodule>,
-              ffi.Int32)>>('git_submodule_add_to_index');
+          ffi.Int Function(ffi.Pointer<git_submodule>,
+              ffi.Int)>>('git_submodule_add_to_index');
   late final _git_submodule_add_to_index = _git_submodule_add_to_indexPtr
       .asFunction<int Function(ffi.Pointer<git_submodule>, int)>();
 
@@ -18820,7 +18791,7 @@ class Libgit2 {
   ///
   /// @param submodule Pointer to submodule object
   /// @return Pointer to the submodule name
-  ffi.Pointer<ffi.Int8> git_submodule_name(
+  ffi.Pointer<ffi.Char> git_submodule_name(
     ffi.Pointer<git_submodule> submodule,
   ) {
     return _git_submodule_name(
@@ -18830,10 +18801,10 @@ class Libgit2 {
 
   late final _git_submodule_namePtr = _lookup<
       ffi.NativeFunction<
-          ffi.Pointer<ffi.Int8> Function(
+          ffi.Pointer<ffi.Char> Function(
               ffi.Pointer<git_submodule>)>>('git_submodule_name');
   late final _git_submodule_name = _git_submodule_namePtr
-      .asFunction<ffi.Pointer<ffi.Int8> Function(ffi.Pointer<git_submodule>)>();
+      .asFunction<ffi.Pointer<ffi.Char> Function(ffi.Pointer<git_submodule>)>();
 
   /// Get the path to the submodule.
   ///
@@ -18842,7 +18813,7 @@ class Libgit2 {
   ///
   /// @param submodule Pointer to submodule object
   /// @return Pointer to the submodule path
-  ffi.Pointer<ffi.Int8> git_submodule_path(
+  ffi.Pointer<ffi.Char> git_submodule_path(
     ffi.Pointer<git_submodule> submodule,
   ) {
     return _git_submodule_path(
@@ -18852,16 +18823,16 @@ class Libgit2 {
 
   late final _git_submodule_pathPtr = _lookup<
       ffi.NativeFunction<
-          ffi.Pointer<ffi.Int8> Function(
+          ffi.Pointer<ffi.Char> Function(
               ffi.Pointer<git_submodule>)>>('git_submodule_path');
   late final _git_submodule_path = _git_submodule_pathPtr
-      .asFunction<ffi.Pointer<ffi.Int8> Function(ffi.Pointer<git_submodule>)>();
+      .asFunction<ffi.Pointer<ffi.Char> Function(ffi.Pointer<git_submodule>)>();
 
   /// Get the URL for the submodule.
   ///
   /// @param submodule Pointer to submodule object
   /// @return Pointer to the submodule url
-  ffi.Pointer<ffi.Int8> git_submodule_url(
+  ffi.Pointer<ffi.Char> git_submodule_url(
     ffi.Pointer<git_submodule> submodule,
   ) {
     return _git_submodule_url(
@@ -18871,10 +18842,10 @@ class Libgit2 {
 
   late final _git_submodule_urlPtr = _lookup<
       ffi.NativeFunction<
-          ffi.Pointer<ffi.Int8> Function(
+          ffi.Pointer<ffi.Char> Function(
               ffi.Pointer<git_submodule>)>>('git_submodule_url');
   late final _git_submodule_url = _git_submodule_urlPtr
-      .asFunction<ffi.Pointer<ffi.Int8> Function(ffi.Pointer<git_submodule>)>();
+      .asFunction<ffi.Pointer<ffi.Char> Function(ffi.Pointer<git_submodule>)>();
 
   /// Resolve a submodule url relative to the given repository.
   ///
@@ -18885,7 +18856,7 @@ class Libgit2 {
   int git_submodule_resolve_url(
     ffi.Pointer<git_buf> out,
     ffi.Pointer<git_repository> repo,
-    ffi.Pointer<ffi.Int8> url,
+    ffi.Pointer<ffi.Char> url,
   ) {
     return _git_submodule_resolve_url(
       out,
@@ -18896,18 +18867,18 @@ class Libgit2 {
 
   late final _git_submodule_resolve_urlPtr = _lookup<
       ffi.NativeFunction<
-          ffi.Int32 Function(ffi.Pointer<git_buf>, ffi.Pointer<git_repository>,
-              ffi.Pointer<ffi.Int8>)>>('git_submodule_resolve_url');
+          ffi.Int Function(ffi.Pointer<git_buf>, ffi.Pointer<git_repository>,
+              ffi.Pointer<ffi.Char>)>>('git_submodule_resolve_url');
   late final _git_submodule_resolve_url =
       _git_submodule_resolve_urlPtr.asFunction<
           int Function(ffi.Pointer<git_buf>, ffi.Pointer<git_repository>,
-              ffi.Pointer<ffi.Int8>)>();
+              ffi.Pointer<ffi.Char>)>();
 
   /// Get the branch for the submodule.
   ///
   /// @param submodule Pointer to submodule object
   /// @return Pointer to the submodule branch
-  ffi.Pointer<ffi.Int8> git_submodule_branch(
+  ffi.Pointer<ffi.Char> git_submodule_branch(
     ffi.Pointer<git_submodule> submodule,
   ) {
     return _git_submodule_branch(
@@ -18917,10 +18888,10 @@ class Libgit2 {
 
   late final _git_submodule_branchPtr = _lookup<
       ffi.NativeFunction<
-          ffi.Pointer<ffi.Int8> Function(
+          ffi.Pointer<ffi.Char> Function(
               ffi.Pointer<git_submodule>)>>('git_submodule_branch');
   late final _git_submodule_branch = _git_submodule_branchPtr
-      .asFunction<ffi.Pointer<ffi.Int8> Function(ffi.Pointer<git_submodule>)>();
+      .asFunction<ffi.Pointer<ffi.Char> Function(ffi.Pointer<git_submodule>)>();
 
   /// Set the branch for the submodule in the configuration
   ///
@@ -18933,8 +18904,8 @@ class Libgit2 {
   /// @return 0 on success, <0 on failure
   int git_submodule_set_branch(
     ffi.Pointer<git_repository> repo,
-    ffi.Pointer<ffi.Int8> name,
-    ffi.Pointer<ffi.Int8> branch,
+    ffi.Pointer<ffi.Char> name,
+    ffi.Pointer<ffi.Char> branch,
   ) {
     return _git_submodule_set_branch(
       repo,
@@ -18945,12 +18916,12 @@ class Libgit2 {
 
   late final _git_submodule_set_branchPtr = _lookup<
       ffi.NativeFunction<
-          ffi.Int32 Function(ffi.Pointer<git_repository>, ffi.Pointer<ffi.Int8>,
-              ffi.Pointer<ffi.Int8>)>>('git_submodule_set_branch');
+          ffi.Int Function(ffi.Pointer<git_repository>, ffi.Pointer<ffi.Char>,
+              ffi.Pointer<ffi.Char>)>>('git_submodule_set_branch');
   late final _git_submodule_set_branch =
       _git_submodule_set_branchPtr.asFunction<
-          int Function(ffi.Pointer<git_repository>, ffi.Pointer<ffi.Int8>,
-              ffi.Pointer<ffi.Int8>)>();
+          int Function(ffi.Pointer<git_repository>, ffi.Pointer<ffi.Char>,
+              ffi.Pointer<ffi.Char>)>();
 
   /// Set the URL for the submodule in the configuration
   ///
@@ -18964,8 +18935,8 @@ class Libgit2 {
   /// @return 0 on success, <0 on failure
   int git_submodule_set_url(
     ffi.Pointer<git_repository> repo,
-    ffi.Pointer<ffi.Int8> name,
-    ffi.Pointer<ffi.Int8> url,
+    ffi.Pointer<ffi.Char> name,
+    ffi.Pointer<ffi.Char> url,
   ) {
     return _git_submodule_set_url(
       repo,
@@ -18976,11 +18947,11 @@ class Libgit2 {
 
   late final _git_submodule_set_urlPtr = _lookup<
       ffi.NativeFunction<
-          ffi.Int32 Function(ffi.Pointer<git_repository>, ffi.Pointer<ffi.Int8>,
-              ffi.Pointer<ffi.Int8>)>>('git_submodule_set_url');
+          ffi.Int Function(ffi.Pointer<git_repository>, ffi.Pointer<ffi.Char>,
+              ffi.Pointer<ffi.Char>)>>('git_submodule_set_url');
   late final _git_submodule_set_url = _git_submodule_set_urlPtr.asFunction<
-      int Function(ffi.Pointer<git_repository>, ffi.Pointer<ffi.Int8>,
-          ffi.Pointer<ffi.Int8>)>();
+      int Function(ffi.Pointer<git_repository>, ffi.Pointer<ffi.Char>,
+          ffi.Pointer<ffi.Char>)>();
 
   /// Get the OID for the submodule in the index.
   ///
@@ -19089,7 +19060,7 @@ class Libgit2 {
   /// @return 0 or an error code
   int git_submodule_set_ignore(
     ffi.Pointer<git_repository> repo,
-    ffi.Pointer<ffi.Int8> name,
+    ffi.Pointer<ffi.Char> name,
     int ignore,
   ) {
     return _git_submodule_set_ignore(
@@ -19101,12 +19072,12 @@ class Libgit2 {
 
   late final _git_submodule_set_ignorePtr = _lookup<
       ffi.NativeFunction<
-          ffi.Int32 Function(ffi.Pointer<git_repository>, ffi.Pointer<ffi.Int8>,
+          ffi.Int Function(ffi.Pointer<git_repository>, ffi.Pointer<ffi.Char>,
               ffi.Int32)>>('git_submodule_set_ignore');
   late final _git_submodule_set_ignore =
       _git_submodule_set_ignorePtr.asFunction<
           int Function(
-              ffi.Pointer<git_repository>, ffi.Pointer<ffi.Int8>, int)>();
+              ffi.Pointer<git_repository>, ffi.Pointer<ffi.Char>, int)>();
 
   /// Get the update rule that will be used for the submodule.
   ///
@@ -19140,7 +19111,7 @@ class Libgit2 {
   /// @return 0 or an error code
   int git_submodule_set_update(
     ffi.Pointer<git_repository> repo,
-    ffi.Pointer<ffi.Int8> name,
+    ffi.Pointer<ffi.Char> name,
     int update,
   ) {
     return _git_submodule_set_update(
@@ -19152,12 +19123,12 @@ class Libgit2 {
 
   late final _git_submodule_set_updatePtr = _lookup<
       ffi.NativeFunction<
-          ffi.Int32 Function(ffi.Pointer<git_repository>, ffi.Pointer<ffi.Int8>,
+          ffi.Int Function(ffi.Pointer<git_repository>, ffi.Pointer<ffi.Char>,
               ffi.Int32)>>('git_submodule_set_update');
   late final _git_submodule_set_update =
       _git_submodule_set_updatePtr.asFunction<
           int Function(
-              ffi.Pointer<git_repository>, ffi.Pointer<ffi.Int8>, int)>();
+              ffi.Pointer<git_repository>, ffi.Pointer<ffi.Char>, int)>();
 
   /// Read the fetchRecurseSubmodules rule for a submodule.
   ///
@@ -19193,7 +19164,7 @@ class Libgit2 {
   /// @return old value for fetchRecurseSubmodules
   int git_submodule_set_fetch_recurse_submodules(
     ffi.Pointer<git_repository> repo,
-    ffi.Pointer<ffi.Int8> name,
+    ffi.Pointer<ffi.Char> name,
     int fetch_recurse_submodules,
   ) {
     return _git_submodule_set_fetch_recurse_submodules(
@@ -19205,12 +19176,12 @@ class Libgit2 {
 
   late final _git_submodule_set_fetch_recurse_submodulesPtr = _lookup<
       ffi.NativeFunction<
-          ffi.Int32 Function(ffi.Pointer<git_repository>, ffi.Pointer<ffi.Int8>,
+          ffi.Int Function(ffi.Pointer<git_repository>, ffi.Pointer<ffi.Char>,
               ffi.Int32)>>('git_submodule_set_fetch_recurse_submodules');
   late final _git_submodule_set_fetch_recurse_submodules =
       _git_submodule_set_fetch_recurse_submodulesPtr.asFunction<
           int Function(
-              ffi.Pointer<git_repository>, ffi.Pointer<ffi.Int8>, int)>();
+              ffi.Pointer<git_repository>, ffi.Pointer<ffi.Char>, int)>();
 
   /// Copy submodule info into ".git/config" file.
   ///
@@ -19235,8 +19206,8 @@ class Libgit2 {
 
   late final _git_submodule_initPtr = _lookup<
       ffi.NativeFunction<
-          ffi.Int32 Function(
-              ffi.Pointer<git_submodule>, ffi.Int32)>>('git_submodule_init');
+          ffi.Int Function(
+              ffi.Pointer<git_submodule>, ffi.Int)>>('git_submodule_init');
   late final _git_submodule_init = _git_submodule_initPtr
       .asFunction<int Function(ffi.Pointer<git_submodule>, int)>();
 
@@ -19265,10 +19236,8 @@ class Libgit2 {
 
   late final _git_submodule_repo_initPtr = _lookup<
       ffi.NativeFunction<
-          ffi.Int32 Function(
-              ffi.Pointer<ffi.Pointer<git_repository>>,
-              ffi.Pointer<git_submodule>,
-              ffi.Int32)>>('git_submodule_repo_init');
+          ffi.Int Function(ffi.Pointer<ffi.Pointer<git_repository>>,
+              ffi.Pointer<git_submodule>, ffi.Int)>>('git_submodule_repo_init');
   late final _git_submodule_repo_init = _git_submodule_repo_initPtr.asFunction<
       int Function(ffi.Pointer<ffi.Pointer<git_repository>>,
           ffi.Pointer<git_submodule>, int)>();
@@ -19290,9 +19259,9 @@ class Libgit2 {
     );
   }
 
-  late final _git_submodule_syncPtr = _lookup<
-          ffi.NativeFunction<ffi.Int32 Function(ffi.Pointer<git_submodule>)>>(
-      'git_submodule_sync');
+  late final _git_submodule_syncPtr =
+      _lookup<ffi.NativeFunction<ffi.Int Function(ffi.Pointer<git_submodule>)>>(
+          'git_submodule_sync');
   late final _git_submodule_sync = _git_submodule_syncPtr
       .asFunction<int Function(ffi.Pointer<git_submodule>)>();
 
@@ -19318,7 +19287,7 @@ class Libgit2 {
 
   late final _git_submodule_openPtr = _lookup<
       ffi.NativeFunction<
-          ffi.Int32 Function(ffi.Pointer<ffi.Pointer<git_repository>>,
+          ffi.Int Function(ffi.Pointer<ffi.Pointer<git_repository>>,
               ffi.Pointer<git_submodule>)>>('git_submodule_open');
   late final _git_submodule_open = _git_submodule_openPtr.asFunction<
       int Function(ffi.Pointer<ffi.Pointer<git_repository>>,
@@ -19344,8 +19313,8 @@ class Libgit2 {
 
   late final _git_submodule_reloadPtr = _lookup<
       ffi.NativeFunction<
-          ffi.Int32 Function(
-              ffi.Pointer<git_submodule>, ffi.Int32)>>('git_submodule_reload');
+          ffi.Int Function(
+              ffi.Pointer<git_submodule>, ffi.Int)>>('git_submodule_reload');
   late final _git_submodule_reload = _git_submodule_reloadPtr
       .asFunction<int Function(ffi.Pointer<git_submodule>, int)>();
 
@@ -19362,9 +19331,9 @@ class Libgit2 {
   /// @param ignore the ignore rules to follow
   /// @return 0 on success, <0 on error
   int git_submodule_status(
-    ffi.Pointer<ffi.Uint32> status,
+    ffi.Pointer<ffi.UnsignedInt> status,
     ffi.Pointer<git_repository> repo,
-    ffi.Pointer<ffi.Int8> name,
+    ffi.Pointer<ffi.Char> name,
     int ignore,
   ) {
     return _git_submodule_status(
@@ -19377,14 +19346,14 @@ class Libgit2 {
 
   late final _git_submodule_statusPtr = _lookup<
       ffi.NativeFunction<
-          ffi.Int32 Function(
-              ffi.Pointer<ffi.Uint32>,
+          ffi.Int Function(
+              ffi.Pointer<ffi.UnsignedInt>,
               ffi.Pointer<git_repository>,
-              ffi.Pointer<ffi.Int8>,
+              ffi.Pointer<ffi.Char>,
               ffi.Int32)>>('git_submodule_status');
   late final _git_submodule_status = _git_submodule_statusPtr.asFunction<
-      int Function(ffi.Pointer<ffi.Uint32>, ffi.Pointer<git_repository>,
-          ffi.Pointer<ffi.Int8>, int)>();
+      int Function(ffi.Pointer<ffi.UnsignedInt>, ffi.Pointer<git_repository>,
+          ffi.Pointer<ffi.Char>, int)>();
 
   /// Get the locations of submodule information.
   ///
@@ -19399,7 +19368,7 @@ class Libgit2 {
   /// @param submodule Submodule for which to get status
   /// @return 0 on success, <0 on error
   int git_submodule_location(
-    ffi.Pointer<ffi.Uint32> location_status,
+    ffi.Pointer<ffi.UnsignedInt> location_status,
     ffi.Pointer<git_submodule> submodule,
   ) {
     return _git_submodule_location(
@@ -19410,10 +19379,10 @@ class Libgit2 {
 
   late final _git_submodule_locationPtr = _lookup<
       ffi.NativeFunction<
-          ffi.Int32 Function(ffi.Pointer<ffi.Uint32>,
+          ffi.Int Function(ffi.Pointer<ffi.UnsignedInt>,
               ffi.Pointer<git_submodule>)>>('git_submodule_location');
   late final _git_submodule_location = _git_submodule_locationPtr.asFunction<
-      int Function(ffi.Pointer<ffi.Uint32>, ffi.Pointer<git_submodule>)>();
+      int Function(ffi.Pointer<ffi.UnsignedInt>, ffi.Pointer<git_submodule>)>();
 
   /// List names of linked working trees
   ///
@@ -19435,7 +19404,7 @@ class Libgit2 {
 
   late final _git_worktree_listPtr = _lookup<
       ffi.NativeFunction<
-          ffi.Int32 Function(ffi.Pointer<git_strarray>,
+          ffi.Int Function(ffi.Pointer<git_strarray>,
               ffi.Pointer<git_repository>)>>('git_worktree_list');
   late final _git_worktree_list = _git_worktree_listPtr.asFunction<
       int Function(ffi.Pointer<git_strarray>, ffi.Pointer<git_repository>)>();
@@ -19449,7 +19418,7 @@ class Libgit2 {
   int git_worktree_lookup(
     ffi.Pointer<ffi.Pointer<git_worktree>> out,
     ffi.Pointer<git_repository> repo,
-    ffi.Pointer<ffi.Int8> name,
+    ffi.Pointer<ffi.Char> name,
   ) {
     return _git_worktree_lookup(
       out,
@@ -19460,13 +19429,13 @@ class Libgit2 {
 
   late final _git_worktree_lookupPtr = _lookup<
       ffi.NativeFunction<
-          ffi.Int32 Function(
+          ffi.Int Function(
               ffi.Pointer<ffi.Pointer<git_worktree>>,
               ffi.Pointer<git_repository>,
-              ffi.Pointer<ffi.Int8>)>>('git_worktree_lookup');
+              ffi.Pointer<ffi.Char>)>>('git_worktree_lookup');
   late final _git_worktree_lookup = _git_worktree_lookupPtr.asFunction<
       int Function(ffi.Pointer<ffi.Pointer<git_worktree>>,
-          ffi.Pointer<git_repository>, ffi.Pointer<ffi.Int8>)>();
+          ffi.Pointer<git_repository>, ffi.Pointer<ffi.Char>)>();
 
   /// Open a worktree of a given repository
   ///
@@ -19489,7 +19458,7 @@ class Libgit2 {
 
   late final _git_worktree_open_from_repositoryPtr = _lookup<
           ffi.NativeFunction<
-              ffi.Int32 Function(ffi.Pointer<ffi.Pointer<git_worktree>>,
+              ffi.Int Function(ffi.Pointer<ffi.Pointer<git_worktree>>,
                   ffi.Pointer<git_repository>)>>(
       'git_worktree_open_from_repository');
   late final _git_worktree_open_from_repository =
@@ -19530,9 +19499,9 @@ class Libgit2 {
     );
   }
 
-  late final _git_worktree_validatePtr = _lookup<
-          ffi.NativeFunction<ffi.Int32 Function(ffi.Pointer<git_worktree>)>>(
-      'git_worktree_validate');
+  late final _git_worktree_validatePtr =
+      _lookup<ffi.NativeFunction<ffi.Int Function(ffi.Pointer<git_worktree>)>>(
+          'git_worktree_validate');
   late final _git_worktree_validate = _git_worktree_validatePtr
       .asFunction<int Function(ffi.Pointer<git_worktree>)>();
 
@@ -19556,8 +19525,8 @@ class Libgit2 {
 
   late final _git_worktree_add_options_initPtr = _lookup<
       ffi.NativeFunction<
-          ffi.Int32 Function(ffi.Pointer<git_worktree_add_options>,
-              ffi.Uint32)>>('git_worktree_add_options_init');
+          ffi.Int Function(ffi.Pointer<git_worktree_add_options>,
+              ffi.UnsignedInt)>>('git_worktree_add_options_init');
   late final _git_worktree_add_options_init = _git_worktree_add_options_initPtr
       .asFunction<int Function(ffi.Pointer<git_worktree_add_options>, int)>();
 
@@ -19576,8 +19545,8 @@ class Libgit2 {
   int git_worktree_add(
     ffi.Pointer<ffi.Pointer<git_worktree>> out,
     ffi.Pointer<git_repository> repo,
-    ffi.Pointer<ffi.Int8> name,
-    ffi.Pointer<ffi.Int8> path,
+    ffi.Pointer<ffi.Char> name,
+    ffi.Pointer<ffi.Char> path,
     ffi.Pointer<git_worktree_add_options> opts,
   ) {
     return _git_worktree_add(
@@ -19591,18 +19560,18 @@ class Libgit2 {
 
   late final _git_worktree_addPtr = _lookup<
       ffi.NativeFunction<
-          ffi.Int32 Function(
+          ffi.Int Function(
               ffi.Pointer<ffi.Pointer<git_worktree>>,
               ffi.Pointer<git_repository>,
-              ffi.Pointer<ffi.Int8>,
-              ffi.Pointer<ffi.Int8>,
+              ffi.Pointer<ffi.Char>,
+              ffi.Pointer<ffi.Char>,
               ffi.Pointer<git_worktree_add_options>)>>('git_worktree_add');
   late final _git_worktree_add = _git_worktree_addPtr.asFunction<
       int Function(
           ffi.Pointer<ffi.Pointer<git_worktree>>,
           ffi.Pointer<git_repository>,
-          ffi.Pointer<ffi.Int8>,
-          ffi.Pointer<ffi.Int8>,
+          ffi.Pointer<ffi.Char>,
+          ffi.Pointer<ffi.Char>,
           ffi.Pointer<git_worktree_add_options>)>();
 
   /// Lock worktree if not already locked
@@ -19615,7 +19584,7 @@ class Libgit2 {
   /// @return 0 on success, non-zero otherwise
   int git_worktree_lock(
     ffi.Pointer<git_worktree> wt,
-    ffi.Pointer<ffi.Int8> reason,
+    ffi.Pointer<ffi.Char> reason,
   ) {
     return _git_worktree_lock(
       wt,
@@ -19625,10 +19594,10 @@ class Libgit2 {
 
   late final _git_worktree_lockPtr = _lookup<
       ffi.NativeFunction<
-          ffi.Int32 Function(ffi.Pointer<git_worktree>,
-              ffi.Pointer<ffi.Int8>)>>('git_worktree_lock');
+          ffi.Int Function(ffi.Pointer<git_worktree>,
+              ffi.Pointer<ffi.Char>)>>('git_worktree_lock');
   late final _git_worktree_lock = _git_worktree_lockPtr.asFunction<
-      int Function(ffi.Pointer<git_worktree>, ffi.Pointer<ffi.Int8>)>();
+      int Function(ffi.Pointer<git_worktree>, ffi.Pointer<ffi.Char>)>();
 
   /// Unlock a locked worktree
   ///
@@ -19643,9 +19612,9 @@ class Libgit2 {
     );
   }
 
-  late final _git_worktree_unlockPtr = _lookup<
-          ffi.NativeFunction<ffi.Int32 Function(ffi.Pointer<git_worktree>)>>(
-      'git_worktree_unlock');
+  late final _git_worktree_unlockPtr =
+      _lookup<ffi.NativeFunction<ffi.Int Function(ffi.Pointer<git_worktree>)>>(
+          'git_worktree_unlock');
   late final _git_worktree_unlock = _git_worktree_unlockPtr
       .asFunction<int Function(ffi.Pointer<git_worktree>)>();
 
@@ -19671,7 +19640,7 @@ class Libgit2 {
 
   late final _git_worktree_is_lockedPtr = _lookup<
       ffi.NativeFunction<
-          ffi.Int32 Function(ffi.Pointer<git_buf>,
+          ffi.Int Function(ffi.Pointer<git_buf>,
               ffi.Pointer<git_worktree>)>>('git_worktree_is_locked');
   late final _git_worktree_is_locked = _git_worktree_is_lockedPtr.asFunction<
       int Function(ffi.Pointer<git_buf>, ffi.Pointer<git_worktree>)>();
@@ -19681,7 +19650,7 @@ class Libgit2 {
   /// @param wt Worktree to get the name for
   /// @return The worktree's name. The pointer returned is valid for the
   /// lifetime of the git_worktree
-  ffi.Pointer<ffi.Int8> git_worktree_name(
+  ffi.Pointer<ffi.Char> git_worktree_name(
     ffi.Pointer<git_worktree> wt,
   ) {
     return _git_worktree_name(
@@ -19691,17 +19660,17 @@ class Libgit2 {
 
   late final _git_worktree_namePtr = _lookup<
       ffi.NativeFunction<
-          ffi.Pointer<ffi.Int8> Function(
+          ffi.Pointer<ffi.Char> Function(
               ffi.Pointer<git_worktree>)>>('git_worktree_name');
   late final _git_worktree_name = _git_worktree_namePtr
-      .asFunction<ffi.Pointer<ffi.Int8> Function(ffi.Pointer<git_worktree>)>();
+      .asFunction<ffi.Pointer<ffi.Char> Function(ffi.Pointer<git_worktree>)>();
 
   /// Retrieve the filesystem path for the worktree
   ///
   /// @param wt Worktree to get the path for
   /// @return The worktree's filesystem path. The pointer returned
   /// is valid for the lifetime of the git_worktree.
-  ffi.Pointer<ffi.Int8> git_worktree_path(
+  ffi.Pointer<ffi.Char> git_worktree_path(
     ffi.Pointer<git_worktree> wt,
   ) {
     return _git_worktree_path(
@@ -19711,10 +19680,10 @@ class Libgit2 {
 
   late final _git_worktree_pathPtr = _lookup<
       ffi.NativeFunction<
-          ffi.Pointer<ffi.Int8> Function(
+          ffi.Pointer<ffi.Char> Function(
               ffi.Pointer<git_worktree>)>>('git_worktree_path');
   late final _git_worktree_path = _git_worktree_pathPtr
-      .asFunction<ffi.Pointer<ffi.Int8> Function(ffi.Pointer<git_worktree>)>();
+      .asFunction<ffi.Pointer<ffi.Char> Function(ffi.Pointer<git_worktree>)>();
 
   /// Initialize git_worktree_prune_options structure
   ///
@@ -19736,8 +19705,8 @@ class Libgit2 {
 
   late final _git_worktree_prune_options_initPtr = _lookup<
       ffi.NativeFunction<
-          ffi.Int32 Function(ffi.Pointer<git_worktree_prune_options>,
-              ffi.Uint32)>>('git_worktree_prune_options_init');
+          ffi.Int Function(ffi.Pointer<git_worktree_prune_options>,
+              ffi.UnsignedInt)>>('git_worktree_prune_options_init');
   late final _git_worktree_prune_options_init =
       _git_worktree_prune_options_initPtr.asFunction<
           int Function(ffi.Pointer<git_worktree_prune_options>, int)>();
@@ -19770,7 +19739,7 @@ class Libgit2 {
 
   late final _git_worktree_is_prunablePtr = _lookup<
           ffi.NativeFunction<
-              ffi.Int32 Function(ffi.Pointer<git_worktree>,
+              ffi.Int Function(ffi.Pointer<git_worktree>,
                   ffi.Pointer<git_worktree_prune_options>)>>(
       'git_worktree_is_prunable');
   late final _git_worktree_is_prunable =
@@ -19800,7 +19769,7 @@ class Libgit2 {
 
   late final _git_worktree_prunePtr = _lookup<
       ffi.NativeFunction<
-          ffi.Int32 Function(ffi.Pointer<git_worktree>,
+          ffi.Int Function(ffi.Pointer<git_worktree>,
               ffi.Pointer<git_worktree_prune_options>)>>('git_worktree_prune');
   late final _git_worktree_prune = _git_worktree_prunePtr.asFunction<
       int Function(ffi.Pointer<git_worktree>,
@@ -19820,8 +19789,8 @@ class Libgit2 {
   /// @return 0 or an error code.
   int git_credential_userpass(
     ffi.Pointer<ffi.Pointer<git_credential>> out,
-    ffi.Pointer<ffi.Int8> url,
-    ffi.Pointer<ffi.Int8> user_from_url,
+    ffi.Pointer<ffi.Char> url,
+    ffi.Pointer<ffi.Char> user_from_url,
     int allowed_types,
     ffi.Pointer<ffi.Void> payload,
   ) {
@@ -19836,24 +19805,24 @@ class Libgit2 {
 
   late final _git_credential_userpassPtr = _lookup<
       ffi.NativeFunction<
-          ffi.Int32 Function(
+          ffi.Int Function(
               ffi.Pointer<ffi.Pointer<git_credential>>,
-              ffi.Pointer<ffi.Int8>,
-              ffi.Pointer<ffi.Int8>,
-              ffi.Uint32,
+              ffi.Pointer<ffi.Char>,
+              ffi.Pointer<ffi.Char>,
+              ffi.UnsignedInt,
               ffi.Pointer<ffi.Void>)>>('git_credential_userpass');
   late final _git_credential_userpass = _git_credential_userpassPtr.asFunction<
       int Function(
           ffi.Pointer<ffi.Pointer<git_credential>>,
-          ffi.Pointer<ffi.Int8>,
-          ffi.Pointer<ffi.Int8>,
+          ffi.Pointer<ffi.Char>,
+          ffi.Pointer<ffi.Char>,
           int,
           ffi.Pointer<ffi.Void>)>();
 
   int git_blob_create_fromworkdir(
     ffi.Pointer<git_oid> id,
     ffi.Pointer<git_repository> repo,
-    ffi.Pointer<ffi.Int8> relative_path,
+    ffi.Pointer<ffi.Char> relative_path,
   ) {
     return _git_blob_create_fromworkdir(
       id,
@@ -19864,17 +19833,17 @@ class Libgit2 {
 
   late final _git_blob_create_fromworkdirPtr = _lookup<
       ffi.NativeFunction<
-          ffi.Int32 Function(ffi.Pointer<git_oid>, ffi.Pointer<git_repository>,
-              ffi.Pointer<ffi.Int8>)>>('git_blob_create_fromworkdir');
+          ffi.Int Function(ffi.Pointer<git_oid>, ffi.Pointer<git_repository>,
+              ffi.Pointer<ffi.Char>)>>('git_blob_create_fromworkdir');
   late final _git_blob_create_fromworkdir =
       _git_blob_create_fromworkdirPtr.asFunction<
           int Function(ffi.Pointer<git_oid>, ffi.Pointer<git_repository>,
-              ffi.Pointer<ffi.Int8>)>();
+              ffi.Pointer<ffi.Char>)>();
 
   int git_blob_create_fromdisk(
     ffi.Pointer<git_oid> id,
     ffi.Pointer<git_repository> repo,
-    ffi.Pointer<ffi.Int8> path,
+    ffi.Pointer<ffi.Char> path,
   ) {
     return _git_blob_create_fromdisk(
       id,
@@ -19885,17 +19854,17 @@ class Libgit2 {
 
   late final _git_blob_create_fromdiskPtr = _lookup<
       ffi.NativeFunction<
-          ffi.Int32 Function(ffi.Pointer<git_oid>, ffi.Pointer<git_repository>,
-              ffi.Pointer<ffi.Int8>)>>('git_blob_create_fromdisk');
+          ffi.Int Function(ffi.Pointer<git_oid>, ffi.Pointer<git_repository>,
+              ffi.Pointer<ffi.Char>)>>('git_blob_create_fromdisk');
   late final _git_blob_create_fromdisk =
       _git_blob_create_fromdiskPtr.asFunction<
           int Function(ffi.Pointer<git_oid>, ffi.Pointer<git_repository>,
-              ffi.Pointer<ffi.Int8>)>();
+              ffi.Pointer<ffi.Char>)>();
 
   int git_blob_create_fromstream(
     ffi.Pointer<ffi.Pointer<git_writestream>> out,
     ffi.Pointer<git_repository> repo,
-    ffi.Pointer<ffi.Int8> hintpath,
+    ffi.Pointer<ffi.Char> hintpath,
   ) {
     return _git_blob_create_fromstream(
       out,
@@ -19906,14 +19875,14 @@ class Libgit2 {
 
   late final _git_blob_create_fromstreamPtr = _lookup<
       ffi.NativeFunction<
-          ffi.Int32 Function(
+          ffi.Int Function(
               ffi.Pointer<ffi.Pointer<git_writestream>>,
               ffi.Pointer<git_repository>,
-              ffi.Pointer<ffi.Int8>)>>('git_blob_create_fromstream');
+              ffi.Pointer<ffi.Char>)>>('git_blob_create_fromstream');
   late final _git_blob_create_fromstream =
       _git_blob_create_fromstreamPtr.asFunction<
           int Function(ffi.Pointer<ffi.Pointer<git_writestream>>,
-              ffi.Pointer<git_repository>, ffi.Pointer<ffi.Int8>)>();
+              ffi.Pointer<git_repository>, ffi.Pointer<ffi.Char>)>();
 
   int git_blob_create_fromstream_commit(
     ffi.Pointer<git_oid> out,
@@ -19927,7 +19896,7 @@ class Libgit2 {
 
   late final _git_blob_create_fromstream_commitPtr = _lookup<
           ffi.NativeFunction<
-              ffi.Int32 Function(
+              ffi.Int Function(
                   ffi.Pointer<git_oid>, ffi.Pointer<git_writestream>)>>(
       'git_blob_create_fromstream_commit');
   late final _git_blob_create_fromstream_commit =
@@ -19950,8 +19919,8 @@ class Libgit2 {
 
   late final _git_blob_create_frombufferPtr = _lookup<
       ffi.NativeFunction<
-          ffi.Int32 Function(ffi.Pointer<git_oid>, ffi.Pointer<git_repository>,
-              ffi.Pointer<ffi.Void>, size_t)>>('git_blob_create_frombuffer');
+          ffi.Int Function(ffi.Pointer<git_oid>, ffi.Pointer<git_repository>,
+              ffi.Pointer<ffi.Void>, ffi.Size)>>('git_blob_create_frombuffer');
   late final _git_blob_create_frombuffer =
       _git_blob_create_frombufferPtr.asFunction<
           int Function(ffi.Pointer<git_oid>, ffi.Pointer<git_repository>,
@@ -19964,7 +19933,7 @@ class Libgit2 {
   int git_blob_filtered_content(
     ffi.Pointer<git_buf> out,
     ffi.Pointer<git_blob> blob,
-    ffi.Pointer<ffi.Int8> as_path,
+    ffi.Pointer<ffi.Char> as_path,
     int check_for_binary_data,
   ) {
     return _git_blob_filtered_content(
@@ -19977,12 +19946,12 @@ class Libgit2 {
 
   late final _git_blob_filtered_contentPtr = _lookup<
       ffi.NativeFunction<
-          ffi.Int32 Function(ffi.Pointer<git_buf>, ffi.Pointer<git_blob>,
-              ffi.Pointer<ffi.Int8>, ffi.Int32)>>('git_blob_filtered_content');
+          ffi.Int Function(ffi.Pointer<git_buf>, ffi.Pointer<git_blob>,
+              ffi.Pointer<ffi.Char>, ffi.Int)>>('git_blob_filtered_content');
   late final _git_blob_filtered_content =
       _git_blob_filtered_contentPtr.asFunction<
           int Function(ffi.Pointer<git_buf>, ffi.Pointer<git_blob>,
-              ffi.Pointer<ffi.Int8>, int)>();
+              ffi.Pointer<ffi.Char>, int)>();
 
   /// Deprecated in favor of `git_filter_list_stream_buffer`.
   ///
@@ -20002,7 +19971,7 @@ class Libgit2 {
 
   late final _git_filter_list_stream_dataPtr = _lookup<
       ffi.NativeFunction<
-          ffi.Int32 Function(ffi.Pointer<git_filter_list>, ffi.Pointer<git_buf>,
+          ffi.Int Function(ffi.Pointer<git_filter_list>, ffi.Pointer<git_buf>,
               ffi.Pointer<git_writestream>)>>('git_filter_list_stream_data');
   late final _git_filter_list_stream_data =
       _git_filter_list_stream_dataPtr.asFunction<
@@ -20027,7 +19996,7 @@ class Libgit2 {
 
   late final _git_filter_list_apply_to_dataPtr = _lookup<
       ffi.NativeFunction<
-          ffi.Int32 Function(ffi.Pointer<git_buf>, ffi.Pointer<git_filter_list>,
+          ffi.Int Function(ffi.Pointer<git_buf>, ffi.Pointer<git_filter_list>,
               ffi.Pointer<git_buf>)>>('git_filter_list_apply_to_data');
   late final _git_filter_list_apply_to_data =
       _git_filter_list_apply_to_dataPtr.asFunction<
@@ -20057,7 +20026,7 @@ class Libgit2 {
 
   late final _git_treebuilder_write_with_bufferPtr = _lookup<
       ffi.NativeFunction<
-          ffi.Int32 Function(ffi.Pointer<git_oid>, ffi.Pointer<git_treebuilder>,
+          ffi.Int Function(ffi.Pointer<git_oid>, ffi.Pointer<git_treebuilder>,
               ffi.Pointer<git_buf>)>>('git_treebuilder_write_with_buffer');
   late final _git_treebuilder_write_with_buffer =
       _git_treebuilder_write_with_bufferPtr.asFunction<
@@ -20094,7 +20063,7 @@ class Libgit2 {
   }
 
   late final _git_buf_growPtr = _lookup<
-          ffi.NativeFunction<ffi.Int32 Function(ffi.Pointer<git_buf>, size_t)>>(
+          ffi.NativeFunction<ffi.Int Function(ffi.Pointer<git_buf>, ffi.Size)>>(
       'git_buf_grow');
   late final _git_buf_grow =
       _git_buf_growPtr.asFunction<int Function(ffi.Pointer<git_buf>, int)>();
@@ -20119,8 +20088,8 @@ class Libgit2 {
 
   late final _git_buf_setPtr = _lookup<
       ffi.NativeFunction<
-          ffi.Int32 Function(ffi.Pointer<git_buf>, ffi.Pointer<ffi.Void>,
-              size_t)>>('git_buf_set');
+          ffi.Int Function(ffi.Pointer<git_buf>, ffi.Pointer<ffi.Void>,
+              ffi.Size)>>('git_buf_set');
   late final _git_buf_set = _git_buf_setPtr.asFunction<
       int Function(ffi.Pointer<git_buf>, ffi.Pointer<ffi.Void>, int)>();
 
@@ -20137,7 +20106,7 @@ class Libgit2 {
   }
 
   late final _git_buf_is_binaryPtr =
-      _lookup<ffi.NativeFunction<ffi.Int32 Function(ffi.Pointer<git_buf>)>>(
+      _lookup<ffi.NativeFunction<ffi.Int Function(ffi.Pointer<git_buf>)>>(
           'git_buf_is_binary');
   late final _git_buf_is_binary =
       _git_buf_is_binaryPtr.asFunction<int Function(ffi.Pointer<git_buf>)>();
@@ -20155,7 +20124,7 @@ class Libgit2 {
   }
 
   late final _git_buf_contains_nulPtr =
-      _lookup<ffi.NativeFunction<ffi.Int32 Function(ffi.Pointer<git_buf>)>>(
+      _lookup<ffi.NativeFunction<ffi.Int Function(ffi.Pointer<git_buf>)>>(
           'git_buf_contains_nul');
   late final _git_buf_contains_nul =
       _git_buf_contains_nulPtr.asFunction<int Function(ffi.Pointer<git_buf>)>();
@@ -20200,7 +20169,7 @@ class Libgit2 {
 
   late final _git_diff_format_emailPtr = _lookup<
           ffi.NativeFunction<
-              ffi.Int32 Function(ffi.Pointer<git_buf>, ffi.Pointer<git_diff>,
+              ffi.Int Function(ffi.Pointer<git_buf>, ffi.Pointer<git_diff>,
                   ffi.Pointer<git_diff_format_email_options>)>>(
       'git_diff_format_email');
   late final _git_diff_format_email = _git_diff_format_emailPtr.asFunction<
@@ -20233,12 +20202,12 @@ class Libgit2 {
 
   late final _git_diff_commit_as_emailPtr = _lookup<
       ffi.NativeFunction<
-          ffi.Int32 Function(
+          ffi.Int Function(
               ffi.Pointer<git_buf>,
               ffi.Pointer<git_repository>,
               ffi.Pointer<git_commit>,
-              size_t,
-              size_t,
+              ffi.Size,
+              ffi.Size,
               ffi.Uint32,
               ffi.Pointer<git_diff_options>)>>('git_diff_commit_as_email');
   late final _git_diff_commit_as_email =
@@ -20272,8 +20241,8 @@ class Libgit2 {
 
   late final _git_diff_format_email_options_initPtr = _lookup<
       ffi.NativeFunction<
-          ffi.Int32 Function(ffi.Pointer<git_diff_format_email_options>,
-              ffi.Uint32)>>('git_diff_format_email_options_init');
+          ffi.Int Function(ffi.Pointer<git_diff_format_email_options>,
+              ffi.UnsignedInt)>>('git_diff_format_email_options_init');
   late final _git_diff_format_email_options_init =
       _git_diff_format_email_options_initPtr.asFunction<
           int Function(ffi.Pointer<git_diff_format_email_options>, int)>();
@@ -20323,7 +20292,7 @@ class Libgit2 {
   /// @see git_error_set_str
   void giterr_set_str(
     int error_class,
-    ffi.Pointer<ffi.Int8> string,
+    ffi.Pointer<ffi.Char> string,
   ) {
     return _giterr_set_str(
       error_class,
@@ -20333,10 +20302,9 @@ class Libgit2 {
 
   late final _giterr_set_strPtr = _lookup<
       ffi.NativeFunction<
-          ffi.Void Function(
-              ffi.Int32, ffi.Pointer<ffi.Int8>)>>('giterr_set_str');
+          ffi.Void Function(ffi.Int, ffi.Pointer<ffi.Char>)>>('giterr_set_str');
   late final _giterr_set_str = _giterr_set_strPtr
-      .asFunction<void Function(int, ffi.Pointer<ffi.Int8>)>();
+      .asFunction<void Function(int, ffi.Pointer<ffi.Char>)>();
 
   /// Indicates that an out-of-memory situation occurred.  This is an alias
   /// of `git_error_set_oom` and is preserved for backward compatibility.
@@ -20370,11 +20338,8 @@ class Libgit2 {
 
   late final _git_index_add_frombufferPtr = _lookup<
       ffi.NativeFunction<
-          ffi.Int32 Function(
-              ffi.Pointer<git_index>,
-              ffi.Pointer<git_index_entry>,
-              ffi.Pointer<ffi.Void>,
-              size_t)>>('git_index_add_frombuffer');
+          ffi.Int Function(ffi.Pointer<git_index>, ffi.Pointer<git_index_entry>,
+              ffi.Pointer<ffi.Void>, ffi.Size)>>('git_index_add_frombuffer');
   late final _git_index_add_frombuffer =
       _git_index_add_frombufferPtr.asFunction<
           int Function(ffi.Pointer<git_index>, ffi.Pointer<git_index_entry>,
@@ -20399,7 +20364,7 @@ class Libgit2 {
   }
 
   late final _git_object__sizePtr =
-      _lookup<ffi.NativeFunction<size_t Function(ffi.Int32)>>(
+      _lookup<ffi.NativeFunction<ffi.Size Function(ffi.Int32)>>(
           'git_object__size');
   late final _git_object__size =
       _git_object__sizePtr.asFunction<int Function(int)>();
@@ -20410,7 +20375,7 @@ class Libgit2 {
   /// @param remote_name name to be checked.
   /// @return 1 if the reference name is acceptable; 0 if it isn't
   int git_remote_is_valid_name(
-    ffi.Pointer<ffi.Int8> remote_name,
+    ffi.Pointer<ffi.Char> remote_name,
   ) {
     return _git_remote_is_valid_name(
       remote_name,
@@ -20418,10 +20383,10 @@ class Libgit2 {
   }
 
   late final _git_remote_is_valid_namePtr =
-      _lookup<ffi.NativeFunction<ffi.Int32 Function(ffi.Pointer<ffi.Int8>)>>(
+      _lookup<ffi.NativeFunction<ffi.Int Function(ffi.Pointer<ffi.Char>)>>(
           'git_remote_is_valid_name');
   late final _git_remote_is_valid_name = _git_remote_is_valid_namePtr
-      .asFunction<int Function(ffi.Pointer<ffi.Int8>)>();
+      .asFunction<int Function(ffi.Pointer<ffi.Char>)>();
 
   /// Ensure the reference name is well-formed.
   ///
@@ -20437,7 +20402,7 @@ class Libgit2 {
   /// @param refname name to be checked.
   /// @return 1 if the reference name is acceptable; 0 if it isn't
   int git_reference_is_valid_name(
-    ffi.Pointer<ffi.Int8> refname,
+    ffi.Pointer<ffi.Char> refname,
   ) {
     return _git_reference_is_valid_name(
       refname,
@@ -20445,15 +20410,15 @@ class Libgit2 {
   }
 
   late final _git_reference_is_valid_namePtr =
-      _lookup<ffi.NativeFunction<ffi.Int32 Function(ffi.Pointer<ffi.Int8>)>>(
+      _lookup<ffi.NativeFunction<ffi.Int Function(ffi.Pointer<ffi.Char>)>>(
           'git_reference_is_valid_name');
   late final _git_reference_is_valid_name = _git_reference_is_valid_namePtr
-      .asFunction<int Function(ffi.Pointer<ffi.Int8>)>();
+      .asFunction<int Function(ffi.Pointer<ffi.Char>)>();
 
   int git_tag_create_frombuffer(
     ffi.Pointer<git_oid> oid,
     ffi.Pointer<git_repository> repo,
-    ffi.Pointer<ffi.Int8> buffer,
+    ffi.Pointer<ffi.Char> buffer,
     int force,
   ) {
     return _git_tag_create_frombuffer(
@@ -20466,12 +20431,12 @@ class Libgit2 {
 
   late final _git_tag_create_frombufferPtr = _lookup<
       ffi.NativeFunction<
-          ffi.Int32 Function(ffi.Pointer<git_oid>, ffi.Pointer<git_repository>,
-              ffi.Pointer<ffi.Int8>, ffi.Int32)>>('git_tag_create_frombuffer');
+          ffi.Int Function(ffi.Pointer<git_oid>, ffi.Pointer<git_repository>,
+              ffi.Pointer<ffi.Char>, ffi.Int)>>('git_tag_create_frombuffer');
   late final _git_tag_create_frombuffer =
       _git_tag_create_frombufferPtr.asFunction<
           int Function(ffi.Pointer<git_oid>, ffi.Pointer<git_repository>,
-              ffi.Pointer<ffi.Int8>, int)>();
+              ffi.Pointer<ffi.Char>, int)>();
 
   void git_cred_free(
     ffi.Pointer<git_credential> cred,
@@ -20496,12 +20461,12 @@ class Libgit2 {
   }
 
   late final _git_cred_has_usernamePtr = _lookup<
-          ffi.NativeFunction<ffi.Int32 Function(ffi.Pointer<git_credential>)>>(
+          ffi.NativeFunction<ffi.Int Function(ffi.Pointer<git_credential>)>>(
       'git_cred_has_username');
   late final _git_cred_has_username = _git_cred_has_usernamePtr
       .asFunction<int Function(ffi.Pointer<git_credential>)>();
 
-  ffi.Pointer<ffi.Int8> git_cred_get_username(
+  ffi.Pointer<ffi.Char> git_cred_get_username(
     ffi.Pointer<git_credential> cred,
   ) {
     return _git_cred_get_username(
@@ -20511,15 +20476,15 @@ class Libgit2 {
 
   late final _git_cred_get_usernamePtr = _lookup<
       ffi.NativeFunction<
-          ffi.Pointer<ffi.Int8> Function(
+          ffi.Pointer<ffi.Char> Function(
               ffi.Pointer<git_credential>)>>('git_cred_get_username');
   late final _git_cred_get_username = _git_cred_get_usernamePtr.asFunction<
-      ffi.Pointer<ffi.Int8> Function(ffi.Pointer<git_credential>)>();
+      ffi.Pointer<ffi.Char> Function(ffi.Pointer<git_credential>)>();
 
   int git_cred_userpass_plaintext_new(
     ffi.Pointer<ffi.Pointer<git_credential>> out,
-    ffi.Pointer<ffi.Int8> username,
-    ffi.Pointer<ffi.Int8> password,
+    ffi.Pointer<ffi.Char> username,
+    ffi.Pointer<ffi.Char> password,
   ) {
     return _git_cred_userpass_plaintext_new(
       out,
@@ -20530,14 +20495,14 @@ class Libgit2 {
 
   late final _git_cred_userpass_plaintext_newPtr = _lookup<
       ffi.NativeFunction<
-          ffi.Int32 Function(
+          ffi.Int Function(
               ffi.Pointer<ffi.Pointer<git_credential>>,
-              ffi.Pointer<ffi.Int8>,
-              ffi.Pointer<ffi.Int8>)>>('git_cred_userpass_plaintext_new');
+              ffi.Pointer<ffi.Char>,
+              ffi.Pointer<ffi.Char>)>>('git_cred_userpass_plaintext_new');
   late final _git_cred_userpass_plaintext_new =
       _git_cred_userpass_plaintext_newPtr.asFunction<
           int Function(ffi.Pointer<ffi.Pointer<git_credential>>,
-              ffi.Pointer<ffi.Int8>, ffi.Pointer<ffi.Int8>)>();
+              ffi.Pointer<ffi.Char>, ffi.Pointer<ffi.Char>)>();
 
   int git_cred_default_new(
     ffi.Pointer<ffi.Pointer<git_credential>> out,
@@ -20549,14 +20514,14 @@ class Libgit2 {
 
   late final _git_cred_default_newPtr = _lookup<
           ffi.NativeFunction<
-              ffi.Int32 Function(ffi.Pointer<ffi.Pointer<git_credential>>)>>(
+              ffi.Int Function(ffi.Pointer<ffi.Pointer<git_credential>>)>>(
       'git_cred_default_new');
   late final _git_cred_default_new = _git_cred_default_newPtr
       .asFunction<int Function(ffi.Pointer<ffi.Pointer<git_credential>>)>();
 
   int git_cred_username_new(
     ffi.Pointer<ffi.Pointer<git_credential>> out,
-    ffi.Pointer<ffi.Int8> username,
+    ffi.Pointer<ffi.Char> username,
   ) {
     return _git_cred_username_new(
       out,
@@ -20566,18 +20531,18 @@ class Libgit2 {
 
   late final _git_cred_username_newPtr = _lookup<
       ffi.NativeFunction<
-          ffi.Int32 Function(ffi.Pointer<ffi.Pointer<git_credential>>,
-              ffi.Pointer<ffi.Int8>)>>('git_cred_username_new');
+          ffi.Int Function(ffi.Pointer<ffi.Pointer<git_credential>>,
+              ffi.Pointer<ffi.Char>)>>('git_cred_username_new');
   late final _git_cred_username_new = _git_cred_username_newPtr.asFunction<
       int Function(
-          ffi.Pointer<ffi.Pointer<git_credential>>, ffi.Pointer<ffi.Int8>)>();
+          ffi.Pointer<ffi.Pointer<git_credential>>, ffi.Pointer<ffi.Char>)>();
 
   int git_cred_ssh_key_new(
     ffi.Pointer<ffi.Pointer<git_credential>> out,
-    ffi.Pointer<ffi.Int8> username,
-    ffi.Pointer<ffi.Int8> publickey,
-    ffi.Pointer<ffi.Int8> privatekey,
-    ffi.Pointer<ffi.Int8> passphrase,
+    ffi.Pointer<ffi.Char> username,
+    ffi.Pointer<ffi.Char> publickey,
+    ffi.Pointer<ffi.Char> privatekey,
+    ffi.Pointer<ffi.Char> passphrase,
   ) {
     return _git_cred_ssh_key_new(
       out,
@@ -20590,26 +20555,26 @@ class Libgit2 {
 
   late final _git_cred_ssh_key_newPtr = _lookup<
       ffi.NativeFunction<
-          ffi.Int32 Function(
+          ffi.Int Function(
               ffi.Pointer<ffi.Pointer<git_credential>>,
-              ffi.Pointer<ffi.Int8>,
-              ffi.Pointer<ffi.Int8>,
-              ffi.Pointer<ffi.Int8>,
-              ffi.Pointer<ffi.Int8>)>>('git_cred_ssh_key_new');
+              ffi.Pointer<ffi.Char>,
+              ffi.Pointer<ffi.Char>,
+              ffi.Pointer<ffi.Char>,
+              ffi.Pointer<ffi.Char>)>>('git_cred_ssh_key_new');
   late final _git_cred_ssh_key_new = _git_cred_ssh_key_newPtr.asFunction<
       int Function(
           ffi.Pointer<ffi.Pointer<git_credential>>,
-          ffi.Pointer<ffi.Int8>,
-          ffi.Pointer<ffi.Int8>,
-          ffi.Pointer<ffi.Int8>,
-          ffi.Pointer<ffi.Int8>)>();
+          ffi.Pointer<ffi.Char>,
+          ffi.Pointer<ffi.Char>,
+          ffi.Pointer<ffi.Char>,
+          ffi.Pointer<ffi.Char>)>();
 
   int git_cred_ssh_key_memory_new(
     ffi.Pointer<ffi.Pointer<git_credential>> out,
-    ffi.Pointer<ffi.Int8> username,
-    ffi.Pointer<ffi.Int8> publickey,
-    ffi.Pointer<ffi.Int8> privatekey,
-    ffi.Pointer<ffi.Int8> passphrase,
+    ffi.Pointer<ffi.Char> username,
+    ffi.Pointer<ffi.Char> publickey,
+    ffi.Pointer<ffi.Char> privatekey,
+    ffi.Pointer<ffi.Char> passphrase,
   ) {
     return _git_cred_ssh_key_memory_new(
       out,
@@ -20622,24 +20587,24 @@ class Libgit2 {
 
   late final _git_cred_ssh_key_memory_newPtr = _lookup<
       ffi.NativeFunction<
-          ffi.Int32 Function(
+          ffi.Int Function(
               ffi.Pointer<ffi.Pointer<git_credential>>,
-              ffi.Pointer<ffi.Int8>,
-              ffi.Pointer<ffi.Int8>,
-              ffi.Pointer<ffi.Int8>,
-              ffi.Pointer<ffi.Int8>)>>('git_cred_ssh_key_memory_new');
+              ffi.Pointer<ffi.Char>,
+              ffi.Pointer<ffi.Char>,
+              ffi.Pointer<ffi.Char>,
+              ffi.Pointer<ffi.Char>)>>('git_cred_ssh_key_memory_new');
   late final _git_cred_ssh_key_memory_new =
       _git_cred_ssh_key_memory_newPtr.asFunction<
           int Function(
               ffi.Pointer<ffi.Pointer<git_credential>>,
-              ffi.Pointer<ffi.Int8>,
-              ffi.Pointer<ffi.Int8>,
-              ffi.Pointer<ffi.Int8>,
-              ffi.Pointer<ffi.Int8>)>();
+              ffi.Pointer<ffi.Char>,
+              ffi.Pointer<ffi.Char>,
+              ffi.Pointer<ffi.Char>,
+              ffi.Pointer<ffi.Char>)>();
 
   int git_cred_ssh_interactive_new(
     ffi.Pointer<ffi.Pointer<git_credential>> out,
-    ffi.Pointer<ffi.Int8> username,
+    ffi.Pointer<ffi.Char> username,
     git_credential_ssh_interactive_cb prompt_callback,
     ffi.Pointer<ffi.Void> payload,
   ) {
@@ -20653,22 +20618,22 @@ class Libgit2 {
 
   late final _git_cred_ssh_interactive_newPtr = _lookup<
       ffi.NativeFunction<
-          ffi.Int32 Function(
+          ffi.Int Function(
               ffi.Pointer<ffi.Pointer<git_credential>>,
-              ffi.Pointer<ffi.Int8>,
+              ffi.Pointer<ffi.Char>,
               git_credential_ssh_interactive_cb,
               ffi.Pointer<ffi.Void>)>>('git_cred_ssh_interactive_new');
   late final _git_cred_ssh_interactive_new =
       _git_cred_ssh_interactive_newPtr.asFunction<
           int Function(
               ffi.Pointer<ffi.Pointer<git_credential>>,
-              ffi.Pointer<ffi.Int8>,
+              ffi.Pointer<ffi.Char>,
               git_credential_ssh_interactive_cb,
               ffi.Pointer<ffi.Void>)>();
 
   int git_cred_ssh_key_from_agent(
     ffi.Pointer<ffi.Pointer<git_credential>> out,
-    ffi.Pointer<ffi.Int8> username,
+    ffi.Pointer<ffi.Char> username,
   ) {
     return _git_cred_ssh_key_from_agent(
       out,
@@ -20678,17 +20643,17 @@ class Libgit2 {
 
   late final _git_cred_ssh_key_from_agentPtr = _lookup<
       ffi.NativeFunction<
-          ffi.Int32 Function(ffi.Pointer<ffi.Pointer<git_credential>>,
-              ffi.Pointer<ffi.Int8>)>>('git_cred_ssh_key_from_agent');
+          ffi.Int Function(ffi.Pointer<ffi.Pointer<git_credential>>,
+              ffi.Pointer<ffi.Char>)>>('git_cred_ssh_key_from_agent');
   late final _git_cred_ssh_key_from_agent =
       _git_cred_ssh_key_from_agentPtr.asFunction<
           int Function(ffi.Pointer<ffi.Pointer<git_credential>>,
-              ffi.Pointer<ffi.Int8>)>();
+              ffi.Pointer<ffi.Char>)>();
 
   int git_cred_ssh_custom_new(
     ffi.Pointer<ffi.Pointer<git_credential>> out,
-    ffi.Pointer<ffi.Int8> username,
-    ffi.Pointer<ffi.Int8> publickey,
+    ffi.Pointer<ffi.Char> username,
+    ffi.Pointer<ffi.Char> publickey,
     int publickey_len,
     git_credential_sign_cb sign_callback,
     ffi.Pointer<ffi.Void> payload,
@@ -20705,26 +20670,26 @@ class Libgit2 {
 
   late final _git_cred_ssh_custom_newPtr = _lookup<
       ffi.NativeFunction<
-          ffi.Int32 Function(
+          ffi.Int Function(
               ffi.Pointer<ffi.Pointer<git_credential>>,
-              ffi.Pointer<ffi.Int8>,
-              ffi.Pointer<ffi.Int8>,
-              size_t,
+              ffi.Pointer<ffi.Char>,
+              ffi.Pointer<ffi.Char>,
+              ffi.Size,
               git_credential_sign_cb,
               ffi.Pointer<ffi.Void>)>>('git_cred_ssh_custom_new');
   late final _git_cred_ssh_custom_new = _git_cred_ssh_custom_newPtr.asFunction<
       int Function(
           ffi.Pointer<ffi.Pointer<git_credential>>,
-          ffi.Pointer<ffi.Int8>,
-          ffi.Pointer<ffi.Int8>,
+          ffi.Pointer<ffi.Char>,
+          ffi.Pointer<ffi.Char>,
           int,
           git_credential_sign_cb,
           ffi.Pointer<ffi.Void>)>();
 
   int git_cred_userpass(
     ffi.Pointer<ffi.Pointer<git_credential>> out,
-    ffi.Pointer<ffi.Int8> url,
-    ffi.Pointer<ffi.Int8> user_from_url,
+    ffi.Pointer<ffi.Char> url,
+    ffi.Pointer<ffi.Char> user_from_url,
     int allowed_types,
     ffi.Pointer<ffi.Void> payload,
   ) {
@@ -20739,17 +20704,17 @@ class Libgit2 {
 
   late final _git_cred_userpassPtr = _lookup<
       ffi.NativeFunction<
-          ffi.Int32 Function(
+          ffi.Int Function(
               ffi.Pointer<ffi.Pointer<git_credential>>,
-              ffi.Pointer<ffi.Int8>,
-              ffi.Pointer<ffi.Int8>,
-              ffi.Uint32,
+              ffi.Pointer<ffi.Char>,
+              ffi.Pointer<ffi.Char>,
+              ffi.UnsignedInt,
               ffi.Pointer<ffi.Void>)>>('git_cred_userpass');
   late final _git_cred_userpass = _git_cred_userpassPtr.asFunction<
       int Function(
           ffi.Pointer<ffi.Pointer<git_credential>>,
-          ffi.Pointer<ffi.Int8>,
-          ffi.Pointer<ffi.Int8>,
+          ffi.Pointer<ffi.Char>,
+          ffi.Pointer<ffi.Char>,
           int,
           ffi.Pointer<ffi.Void>)>();
 
@@ -20771,7 +20736,7 @@ class Libgit2 {
   }
 
   late final _git_oid_iszeroPtr =
-      _lookup<ffi.NativeFunction<ffi.Int32 Function(ffi.Pointer<git_oid>)>>(
+      _lookup<ffi.NativeFunction<ffi.Int Function(ffi.Pointer<git_oid>)>>(
           'git_oid_iszero');
   late final _git_oid_iszero =
       _git_oid_iszeroPtr.asFunction<int Function(ffi.Pointer<git_oid>)>();
@@ -20797,6 +20762,31 @@ class Libgit2 {
           'git_oidarray_free');
   late final _git_oidarray_free = _git_oidarray_freePtr
       .asFunction<void Function(ffi.Pointer<git_oidarray>)>();
+
+  /// Copy a string array object from source to target.
+  ///
+  /// Note: target is overwritten and hence should be empty, otherwise its
+  /// contents are leaked.  Call git_strarray_free() if necessary.
+  ///
+  /// @param tgt target
+  /// @param src source
+  /// @return 0 on success, < 0 on allocation failure
+  int git_strarray_copy1(
+    ffi.Pointer<git_strarray> tgt,
+    ffi.Pointer<git_strarray> src,
+  ) {
+    return _git_strarray_copy1(
+      tgt,
+      src,
+    );
+  }
+
+  late final _git_strarray_copy1Ptr = _lookup<
+      ffi.NativeFunction<
+          ffi.Int Function(ffi.Pointer<git_strarray>,
+              ffi.Pointer<git_strarray>)>>('git_strarray_copy');
+  late final _git_strarray_copy1 = _git_strarray_copy1Ptr.asFunction<
+      int Function(ffi.Pointer<git_strarray>, ffi.Pointer<git_strarray>)>();
 
   /// Free the memory referred to by the git_strarray.  This is an alias of
   /// `git_strarray_dispose` and is preserved for backward compatibility.
@@ -20841,8 +20831,8 @@ class Libgit2 {
 
   late final _git_blame_init_optionsPtr = _lookup<
       ffi.NativeFunction<
-          ffi.Int32 Function(ffi.Pointer<git_blame_options>,
-              ffi.Uint32)>>('git_blame_init_options');
+          ffi.Int Function(ffi.Pointer<git_blame_options>,
+              ffi.UnsignedInt)>>('git_blame_init_options');
   late final _git_blame_init_options = _git_blame_init_optionsPtr
       .asFunction<int Function(ffi.Pointer<git_blame_options>, int)>();
 
@@ -20858,8 +20848,8 @@ class Libgit2 {
 
   late final _git_checkout_init_optionsPtr = _lookup<
       ffi.NativeFunction<
-          ffi.Int32 Function(ffi.Pointer<git_checkout_options>,
-              ffi.Uint32)>>('git_checkout_init_options');
+          ffi.Int Function(ffi.Pointer<git_checkout_options>,
+              ffi.UnsignedInt)>>('git_checkout_init_options');
   late final _git_checkout_init_options = _git_checkout_init_optionsPtr
       .asFunction<int Function(ffi.Pointer<git_checkout_options>, int)>();
 
@@ -20875,8 +20865,8 @@ class Libgit2 {
 
   late final _git_cherrypick_init_optionsPtr = _lookup<
       ffi.NativeFunction<
-          ffi.Int32 Function(ffi.Pointer<git_cherrypick_options>,
-              ffi.Uint32)>>('git_cherrypick_init_options');
+          ffi.Int Function(ffi.Pointer<git_cherrypick_options>,
+              ffi.UnsignedInt)>>('git_cherrypick_init_options');
   late final _git_cherrypick_init_options = _git_cherrypick_init_optionsPtr
       .asFunction<int Function(ffi.Pointer<git_cherrypick_options>, int)>();
 
@@ -20892,8 +20882,8 @@ class Libgit2 {
 
   late final _git_clone_init_optionsPtr = _lookup<
       ffi.NativeFunction<
-          ffi.Int32 Function(ffi.Pointer<git_clone_options>,
-              ffi.Uint32)>>('git_clone_init_options');
+          ffi.Int Function(ffi.Pointer<git_clone_options>,
+              ffi.UnsignedInt)>>('git_clone_init_options');
   late final _git_clone_init_options = _git_clone_init_optionsPtr
       .asFunction<int Function(ffi.Pointer<git_clone_options>, int)>();
 
@@ -20909,8 +20899,8 @@ class Libgit2 {
 
   late final _git_describe_init_optionsPtr = _lookup<
       ffi.NativeFunction<
-          ffi.Int32 Function(ffi.Pointer<git_describe_options>,
-              ffi.Uint32)>>('git_describe_init_options');
+          ffi.Int Function(ffi.Pointer<git_describe_options>,
+              ffi.UnsignedInt)>>('git_describe_init_options');
   late final _git_describe_init_options = _git_describe_init_optionsPtr
       .asFunction<int Function(ffi.Pointer<git_describe_options>, int)>();
 
@@ -20926,8 +20916,8 @@ class Libgit2 {
 
   late final _git_describe_init_format_optionsPtr = _lookup<
       ffi.NativeFunction<
-          ffi.Int32 Function(ffi.Pointer<git_describe_format_options>,
-              ffi.Uint32)>>('git_describe_init_format_options');
+          ffi.Int Function(ffi.Pointer<git_describe_format_options>,
+              ffi.UnsignedInt)>>('git_describe_init_format_options');
   late final _git_describe_init_format_options =
       _git_describe_init_format_optionsPtr.asFunction<
           int Function(ffi.Pointer<git_describe_format_options>, int)>();
@@ -20944,8 +20934,8 @@ class Libgit2 {
 
   late final _git_diff_init_optionsPtr = _lookup<
       ffi.NativeFunction<
-          ffi.Int32 Function(ffi.Pointer<git_diff_options>,
-              ffi.Uint32)>>('git_diff_init_options');
+          ffi.Int Function(ffi.Pointer<git_diff_options>,
+              ffi.UnsignedInt)>>('git_diff_init_options');
   late final _git_diff_init_options = _git_diff_init_optionsPtr
       .asFunction<int Function(ffi.Pointer<git_diff_options>, int)>();
 
@@ -20961,8 +20951,8 @@ class Libgit2 {
 
   late final _git_diff_find_init_optionsPtr = _lookup<
       ffi.NativeFunction<
-          ffi.Int32 Function(ffi.Pointer<git_diff_find_options>,
-              ffi.Uint32)>>('git_diff_find_init_options');
+          ffi.Int Function(ffi.Pointer<git_diff_find_options>,
+              ffi.UnsignedInt)>>('git_diff_find_init_options');
   late final _git_diff_find_init_options = _git_diff_find_init_optionsPtr
       .asFunction<int Function(ffi.Pointer<git_diff_find_options>, int)>();
 
@@ -20978,8 +20968,8 @@ class Libgit2 {
 
   late final _git_diff_format_email_init_optionsPtr = _lookup<
       ffi.NativeFunction<
-          ffi.Int32 Function(ffi.Pointer<git_diff_format_email_options>,
-              ffi.Uint32)>>('git_diff_format_email_init_options');
+          ffi.Int Function(ffi.Pointer<git_diff_format_email_options>,
+              ffi.UnsignedInt)>>('git_diff_format_email_init_options');
   late final _git_diff_format_email_init_options =
       _git_diff_format_email_init_optionsPtr.asFunction<
           int Function(ffi.Pointer<git_diff_format_email_options>, int)>();
@@ -20996,8 +20986,8 @@ class Libgit2 {
 
   late final _git_diff_patchid_init_optionsPtr = _lookup<
       ffi.NativeFunction<
-          ffi.Int32 Function(ffi.Pointer<git_diff_patchid_options>,
-              ffi.Uint32)>>('git_diff_patchid_init_options');
+          ffi.Int Function(ffi.Pointer<git_diff_patchid_options>,
+              ffi.UnsignedInt)>>('git_diff_patchid_init_options');
   late final _git_diff_patchid_init_options = _git_diff_patchid_init_optionsPtr
       .asFunction<int Function(ffi.Pointer<git_diff_patchid_options>, int)>();
 
@@ -21013,8 +21003,8 @@ class Libgit2 {
 
   late final _git_fetch_init_optionsPtr = _lookup<
       ffi.NativeFunction<
-          ffi.Int32 Function(ffi.Pointer<git_fetch_options>,
-              ffi.Uint32)>>('git_fetch_init_options');
+          ffi.Int Function(ffi.Pointer<git_fetch_options>,
+              ffi.UnsignedInt)>>('git_fetch_init_options');
   late final _git_fetch_init_options = _git_fetch_init_optionsPtr
       .asFunction<int Function(ffi.Pointer<git_fetch_options>, int)>();
 
@@ -21030,8 +21020,8 @@ class Libgit2 {
 
   late final _git_indexer_init_optionsPtr = _lookup<
       ffi.NativeFunction<
-          ffi.Int32 Function(ffi.Pointer<git_indexer_options>,
-              ffi.Uint32)>>('git_indexer_init_options');
+          ffi.Int Function(ffi.Pointer<git_indexer_options>,
+              ffi.UnsignedInt)>>('git_indexer_init_options');
   late final _git_indexer_init_options = _git_indexer_init_optionsPtr
       .asFunction<int Function(ffi.Pointer<git_indexer_options>, int)>();
 
@@ -21047,8 +21037,8 @@ class Libgit2 {
 
   late final _git_merge_init_optionsPtr = _lookup<
       ffi.NativeFunction<
-          ffi.Int32 Function(ffi.Pointer<git_merge_options>,
-              ffi.Uint32)>>('git_merge_init_options');
+          ffi.Int Function(ffi.Pointer<git_merge_options>,
+              ffi.UnsignedInt)>>('git_merge_init_options');
   late final _git_merge_init_options = _git_merge_init_optionsPtr
       .asFunction<int Function(ffi.Pointer<git_merge_options>, int)>();
 
@@ -21064,8 +21054,8 @@ class Libgit2 {
 
   late final _git_merge_file_init_inputPtr = _lookup<
       ffi.NativeFunction<
-          ffi.Int32 Function(ffi.Pointer<git_merge_file_input>,
-              ffi.Uint32)>>('git_merge_file_init_input');
+          ffi.Int Function(ffi.Pointer<git_merge_file_input>,
+              ffi.UnsignedInt)>>('git_merge_file_init_input');
   late final _git_merge_file_init_input = _git_merge_file_init_inputPtr
       .asFunction<int Function(ffi.Pointer<git_merge_file_input>, int)>();
 
@@ -21081,8 +21071,8 @@ class Libgit2 {
 
   late final _git_merge_file_init_optionsPtr = _lookup<
       ffi.NativeFunction<
-          ffi.Int32 Function(ffi.Pointer<git_merge_file_options>,
-              ffi.Uint32)>>('git_merge_file_init_options');
+          ffi.Int Function(ffi.Pointer<git_merge_file_options>,
+              ffi.UnsignedInt)>>('git_merge_file_init_options');
   late final _git_merge_file_init_options = _git_merge_file_init_optionsPtr
       .asFunction<int Function(ffi.Pointer<git_merge_file_options>, int)>();
 
@@ -21098,8 +21088,8 @@ class Libgit2 {
 
   late final _git_proxy_init_optionsPtr = _lookup<
       ffi.NativeFunction<
-          ffi.Int32 Function(ffi.Pointer<git_proxy_options>,
-              ffi.Uint32)>>('git_proxy_init_options');
+          ffi.Int Function(ffi.Pointer<git_proxy_options>,
+              ffi.UnsignedInt)>>('git_proxy_init_options');
   late final _git_proxy_init_options = _git_proxy_init_optionsPtr
       .asFunction<int Function(ffi.Pointer<git_proxy_options>, int)>();
 
@@ -21115,8 +21105,8 @@ class Libgit2 {
 
   late final _git_push_init_optionsPtr = _lookup<
       ffi.NativeFunction<
-          ffi.Int32 Function(ffi.Pointer<git_push_options>,
-              ffi.Uint32)>>('git_push_init_options');
+          ffi.Int Function(ffi.Pointer<git_push_options>,
+              ffi.UnsignedInt)>>('git_push_init_options');
   late final _git_push_init_options = _git_push_init_optionsPtr
       .asFunction<int Function(ffi.Pointer<git_push_options>, int)>();
 
@@ -21132,8 +21122,8 @@ class Libgit2 {
 
   late final _git_rebase_init_optionsPtr = _lookup<
       ffi.NativeFunction<
-          ffi.Int32 Function(ffi.Pointer<git_rebase_options>,
-              ffi.Uint32)>>('git_rebase_init_options');
+          ffi.Int Function(ffi.Pointer<git_rebase_options>,
+              ffi.UnsignedInt)>>('git_rebase_init_options');
   late final _git_rebase_init_options = _git_rebase_init_optionsPtr
       .asFunction<int Function(ffi.Pointer<git_rebase_options>, int)>();
 
@@ -21149,8 +21139,8 @@ class Libgit2 {
 
   late final _git_remote_create_init_optionsPtr = _lookup<
       ffi.NativeFunction<
-          ffi.Int32 Function(ffi.Pointer<git_remote_create_options>,
-              ffi.Uint32)>>('git_remote_create_init_options');
+          ffi.Int Function(ffi.Pointer<git_remote_create_options>,
+              ffi.UnsignedInt)>>('git_remote_create_init_options');
   late final _git_remote_create_init_options =
       _git_remote_create_init_optionsPtr.asFunction<
           int Function(ffi.Pointer<git_remote_create_options>, int)>();
@@ -21167,8 +21157,8 @@ class Libgit2 {
 
   late final _git_repository_init_init_optionsPtr = _lookup<
       ffi.NativeFunction<
-          ffi.Int32 Function(ffi.Pointer<git_repository_init_options>,
-              ffi.Uint32)>>('git_repository_init_init_options');
+          ffi.Int Function(ffi.Pointer<git_repository_init_options>,
+              ffi.UnsignedInt)>>('git_repository_init_init_options');
   late final _git_repository_init_init_options =
       _git_repository_init_init_optionsPtr.asFunction<
           int Function(ffi.Pointer<git_repository_init_options>, int)>();
@@ -21185,8 +21175,8 @@ class Libgit2 {
 
   late final _git_revert_init_optionsPtr = _lookup<
       ffi.NativeFunction<
-          ffi.Int32 Function(ffi.Pointer<git_revert_options>,
-              ffi.Uint32)>>('git_revert_init_options');
+          ffi.Int Function(ffi.Pointer<git_revert_options>,
+              ffi.UnsignedInt)>>('git_revert_init_options');
   late final _git_revert_init_options = _git_revert_init_optionsPtr
       .asFunction<int Function(ffi.Pointer<git_revert_options>, int)>();
 
@@ -21202,8 +21192,8 @@ class Libgit2 {
 
   late final _git_stash_apply_init_optionsPtr = _lookup<
       ffi.NativeFunction<
-          ffi.Int32 Function(ffi.Pointer<git_stash_apply_options>,
-              ffi.Uint32)>>('git_stash_apply_init_options');
+          ffi.Int Function(ffi.Pointer<git_stash_apply_options>,
+              ffi.UnsignedInt)>>('git_stash_apply_init_options');
   late final _git_stash_apply_init_options = _git_stash_apply_init_optionsPtr
       .asFunction<int Function(ffi.Pointer<git_stash_apply_options>, int)>();
 
@@ -21219,8 +21209,8 @@ class Libgit2 {
 
   late final _git_status_init_optionsPtr = _lookup<
       ffi.NativeFunction<
-          ffi.Int32 Function(ffi.Pointer<git_status_options>,
-              ffi.Uint32)>>('git_status_init_options');
+          ffi.Int Function(ffi.Pointer<git_status_options>,
+              ffi.UnsignedInt)>>('git_status_init_options');
   late final _git_status_init_options = _git_status_init_optionsPtr
       .asFunction<int Function(ffi.Pointer<git_status_options>, int)>();
 
@@ -21236,8 +21226,8 @@ class Libgit2 {
 
   late final _git_submodule_update_init_optionsPtr = _lookup<
       ffi.NativeFunction<
-          ffi.Int32 Function(ffi.Pointer<git_submodule_update_options>,
-              ffi.Uint32)>>('git_submodule_update_init_options');
+          ffi.Int Function(ffi.Pointer<git_submodule_update_options>,
+              ffi.UnsignedInt)>>('git_submodule_update_init_options');
   late final _git_submodule_update_init_options =
       _git_submodule_update_init_optionsPtr.asFunction<
           int Function(ffi.Pointer<git_submodule_update_options>, int)>();
@@ -21254,8 +21244,8 @@ class Libgit2 {
 
   late final _git_worktree_add_init_optionsPtr = _lookup<
       ffi.NativeFunction<
-          ffi.Int32 Function(ffi.Pointer<git_worktree_add_options>,
-              ffi.Uint32)>>('git_worktree_add_init_options');
+          ffi.Int Function(ffi.Pointer<git_worktree_add_options>,
+              ffi.UnsignedInt)>>('git_worktree_add_init_options');
   late final _git_worktree_add_init_options = _git_worktree_add_init_optionsPtr
       .asFunction<int Function(ffi.Pointer<git_worktree_add_options>, int)>();
 
@@ -21271,8 +21261,8 @@ class Libgit2 {
 
   late final _git_worktree_prune_init_optionsPtr = _lookup<
       ffi.NativeFunction<
-          ffi.Int32 Function(ffi.Pointer<git_worktree_prune_options>,
-              ffi.Uint32)>>('git_worktree_prune_init_options');
+          ffi.Int Function(ffi.Pointer<git_worktree_prune_options>,
+              ffi.UnsignedInt)>>('git_worktree_prune_init_options');
   late final _git_worktree_prune_init_options =
       _git_worktree_prune_init_optionsPtr.asFunction<
           int Function(ffi.Pointer<git_worktree_prune_options>, int)>();
@@ -21294,8 +21284,8 @@ class Libgit2 {
     int patch_idx,
     int patch_count,
     ffi.Pointer<git_oid> commit_id,
-    ffi.Pointer<ffi.Int8> summary,
-    ffi.Pointer<ffi.Int8> body,
+    ffi.Pointer<ffi.Char> summary,
+    ffi.Pointer<ffi.Char> body,
     ffi.Pointer<git_signature> author,
     ffi.Pointer<git_email_create_options> opts,
   ) {
@@ -21314,14 +21304,14 @@ class Libgit2 {
 
   late final _git_email_create_from_diffPtr = _lookup<
           ffi.NativeFunction<
-              ffi.Int32 Function(
+              ffi.Int Function(
                   ffi.Pointer<git_buf>,
                   ffi.Pointer<git_diff>,
-                  size_t,
-                  size_t,
+                  ffi.Size,
+                  ffi.Size,
                   ffi.Pointer<git_oid>,
-                  ffi.Pointer<ffi.Int8>,
-                  ffi.Pointer<ffi.Int8>,
+                  ffi.Pointer<ffi.Char>,
+                  ffi.Pointer<ffi.Char>,
                   ffi.Pointer<git_signature>,
                   ffi.Pointer<git_email_create_options>)>>(
       'git_email_create_from_diff');
@@ -21333,8 +21323,8 @@ class Libgit2 {
               int,
               int,
               ffi.Pointer<git_oid>,
-              ffi.Pointer<ffi.Int8>,
-              ffi.Pointer<ffi.Int8>,
+              ffi.Pointer<ffi.Char>,
+              ffi.Pointer<ffi.Char>,
               ffi.Pointer<git_signature>,
               ffi.Pointer<git_email_create_options>)>();
 
@@ -21358,7 +21348,7 @@ class Libgit2 {
 
   late final _git_email_create_from_commitPtr = _lookup<
           ffi.NativeFunction<
-              ffi.Int32 Function(ffi.Pointer<git_buf>, ffi.Pointer<git_commit>,
+              ffi.Int Function(ffi.Pointer<git_buf>, ffi.Pointer<git_commit>,
                   ffi.Pointer<git_email_create_options>)>>(
       'git_email_create_from_commit');
   late final _git_email_create_from_commit =
@@ -21381,7 +21371,7 @@ class Libgit2 {
   }
 
   late final _git_libgit2_initPtr =
-      _lookup<ffi.NativeFunction<ffi.Int32 Function()>>('git_libgit2_init');
+      _lookup<ffi.NativeFunction<ffi.Int Function()>>('git_libgit2_init');
   late final _git_libgit2_init =
       _git_libgit2_initPtr.asFunction<int Function()>();
 
@@ -21399,7 +21389,7 @@ class Libgit2 {
   }
 
   late final _git_libgit2_shutdownPtr =
-      _lookup<ffi.NativeFunction<ffi.Int32 Function()>>('git_libgit2_shutdown');
+      _lookup<ffi.NativeFunction<ffi.Int Function()>>('git_libgit2_shutdown');
   late final _git_libgit2_shutdown =
       _git_libgit2_shutdownPtr.asFunction<int Function()>();
 
@@ -21417,8 +21407,8 @@ class Libgit2 {
   /// @param upstream the commit for upstream
   /// @return 0 or an error code.
   int git_graph_ahead_behind(
-    ffi.Pointer<size_t> ahead,
-    ffi.Pointer<size_t> behind,
+    ffi.Pointer<ffi.Size> ahead,
+    ffi.Pointer<ffi.Size> behind,
     ffi.Pointer<git_repository> repo,
     ffi.Pointer<git_oid> local,
     ffi.Pointer<git_oid> upstream,
@@ -21434,16 +21424,16 @@ class Libgit2 {
 
   late final _git_graph_ahead_behindPtr = _lookup<
       ffi.NativeFunction<
-          ffi.Int32 Function(
-              ffi.Pointer<size_t>,
-              ffi.Pointer<size_t>,
+          ffi.Int Function(
+              ffi.Pointer<ffi.Size>,
+              ffi.Pointer<ffi.Size>,
               ffi.Pointer<git_repository>,
               ffi.Pointer<git_oid>,
               ffi.Pointer<git_oid>)>>('git_graph_ahead_behind');
   late final _git_graph_ahead_behind = _git_graph_ahead_behindPtr.asFunction<
       int Function(
-          ffi.Pointer<size_t>,
-          ffi.Pointer<size_t>,
+          ffi.Pointer<ffi.Size>,
+          ffi.Pointer<ffi.Size>,
           ffi.Pointer<git_repository>,
           ffi.Pointer<git_oid>,
           ffi.Pointer<git_oid>)>();
@@ -21472,7 +21462,7 @@ class Libgit2 {
 
   late final _git_graph_descendant_ofPtr = _lookup<
       ffi.NativeFunction<
-          ffi.Int32 Function(ffi.Pointer<git_repository>, ffi.Pointer<git_oid>,
+          ffi.Int Function(ffi.Pointer<git_repository>, ffi.Pointer<git_oid>,
               ffi.Pointer<git_oid>)>>('git_graph_descendant_of');
   late final _git_graph_descendant_of = _git_graph_descendant_ofPtr.asFunction<
       int Function(ffi.Pointer<git_repository>, ffi.Pointer<git_oid>,
@@ -21503,8 +21493,8 @@ class Libgit2 {
 
   late final _git_graph_reachable_from_anyPtr = _lookup<
       ffi.NativeFunction<
-          ffi.Int32 Function(ffi.Pointer<git_repository>, ffi.Pointer<git_oid>,
-              ffi.Pointer<git_oid>, size_t)>>('git_graph_reachable_from_any');
+          ffi.Int Function(ffi.Pointer<git_repository>, ffi.Pointer<git_oid>,
+              ffi.Pointer<git_oid>, ffi.Size)>>('git_graph_reachable_from_any');
   late final _git_graph_reachable_from_any =
       _git_graph_reachable_from_anyPtr.asFunction<
           int Function(ffi.Pointer<git_repository>, ffi.Pointer<git_oid>,
@@ -21532,7 +21522,7 @@ class Libgit2 {
   /// @return 0 on success
   int git_ignore_add_rule(
     ffi.Pointer<git_repository> repo,
-    ffi.Pointer<ffi.Int8> rules,
+    ffi.Pointer<ffi.Char> rules,
   ) {
     return _git_ignore_add_rule(
       repo,
@@ -21542,10 +21532,10 @@ class Libgit2 {
 
   late final _git_ignore_add_rulePtr = _lookup<
       ffi.NativeFunction<
-          ffi.Int32 Function(ffi.Pointer<git_repository>,
-              ffi.Pointer<ffi.Int8>)>>('git_ignore_add_rule');
+          ffi.Int Function(ffi.Pointer<git_repository>,
+              ffi.Pointer<ffi.Char>)>>('git_ignore_add_rule');
   late final _git_ignore_add_rule = _git_ignore_add_rulePtr.asFunction<
-      int Function(ffi.Pointer<git_repository>, ffi.Pointer<ffi.Int8>)>();
+      int Function(ffi.Pointer<git_repository>, ffi.Pointer<ffi.Char>)>();
 
   /// Clear ignore rules that were explicitly added.
   ///
@@ -21565,7 +21555,7 @@ class Libgit2 {
   }
 
   late final _git_ignore_clear_internal_rulesPtr = _lookup<
-          ffi.NativeFunction<ffi.Int32 Function(ffi.Pointer<git_repository>)>>(
+          ffi.NativeFunction<ffi.Int Function(ffi.Pointer<git_repository>)>>(
       'git_ignore_clear_internal_rules');
   late final _git_ignore_clear_internal_rules =
       _git_ignore_clear_internal_rulesPtr
@@ -21586,9 +21576,9 @@ class Libgit2 {
   /// @return 0 if ignore rules could be processed for the file (regardless
   /// of whether it exists or not), or an error < 0 if they could not.
   int git_ignore_path_is_ignored(
-    ffi.Pointer<ffi.Int32> ignored,
+    ffi.Pointer<ffi.Int> ignored,
     ffi.Pointer<git_repository> repo,
-    ffi.Pointer<ffi.Int8> path,
+    ffi.Pointer<ffi.Char> path,
   ) {
     return _git_ignore_path_is_ignored(
       ignored,
@@ -21599,14 +21589,12 @@ class Libgit2 {
 
   late final _git_ignore_path_is_ignoredPtr = _lookup<
       ffi.NativeFunction<
-          ffi.Int32 Function(
-              ffi.Pointer<ffi.Int32>,
-              ffi.Pointer<git_repository>,
-              ffi.Pointer<ffi.Int8>)>>('git_ignore_path_is_ignored');
+          ffi.Int Function(ffi.Pointer<ffi.Int>, ffi.Pointer<git_repository>,
+              ffi.Pointer<ffi.Char>)>>('git_ignore_path_is_ignored');
   late final _git_ignore_path_is_ignored =
       _git_ignore_path_is_ignoredPtr.asFunction<
-          int Function(ffi.Pointer<ffi.Int32>, ffi.Pointer<git_repository>,
-              ffi.Pointer<ffi.Int8>)>();
+          int Function(ffi.Pointer<ffi.Int>, ffi.Pointer<git_repository>,
+              ffi.Pointer<ffi.Char>)>();
 
   /// Allocate a new mailmap object.
   ///
@@ -21625,7 +21613,7 @@ class Libgit2 {
 
   late final _git_mailmap_newPtr = _lookup<
       ffi.NativeFunction<
-          ffi.Int32 Function(
+          ffi.Int Function(
               ffi.Pointer<ffi.Pointer<git_mailmap>>)>>('git_mailmap_new');
   late final _git_mailmap_new = _git_mailmap_newPtr
       .asFunction<int Function(ffi.Pointer<ffi.Pointer<git_mailmap>>)>();
@@ -21658,10 +21646,10 @@ class Libgit2 {
   /// @return 0 on success, or an error code
   int git_mailmap_add_entry(
     ffi.Pointer<git_mailmap> mm,
-    ffi.Pointer<ffi.Int8> real_name,
-    ffi.Pointer<ffi.Int8> real_email,
-    ffi.Pointer<ffi.Int8> replace_name,
-    ffi.Pointer<ffi.Int8> replace_email,
+    ffi.Pointer<ffi.Char> real_name,
+    ffi.Pointer<ffi.Char> real_email,
+    ffi.Pointer<ffi.Char> replace_name,
+    ffi.Pointer<ffi.Char> replace_email,
   ) {
     return _git_mailmap_add_entry(
       mm,
@@ -21674,19 +21662,19 @@ class Libgit2 {
 
   late final _git_mailmap_add_entryPtr = _lookup<
       ffi.NativeFunction<
-          ffi.Int32 Function(
+          ffi.Int Function(
               ffi.Pointer<git_mailmap>,
-              ffi.Pointer<ffi.Int8>,
-              ffi.Pointer<ffi.Int8>,
-              ffi.Pointer<ffi.Int8>,
-              ffi.Pointer<ffi.Int8>)>>('git_mailmap_add_entry');
+              ffi.Pointer<ffi.Char>,
+              ffi.Pointer<ffi.Char>,
+              ffi.Pointer<ffi.Char>,
+              ffi.Pointer<ffi.Char>)>>('git_mailmap_add_entry');
   late final _git_mailmap_add_entry = _git_mailmap_add_entryPtr.asFunction<
       int Function(
           ffi.Pointer<git_mailmap>,
-          ffi.Pointer<ffi.Int8>,
-          ffi.Pointer<ffi.Int8>,
-          ffi.Pointer<ffi.Int8>,
-          ffi.Pointer<ffi.Int8>)>();
+          ffi.Pointer<ffi.Char>,
+          ffi.Pointer<ffi.Char>,
+          ffi.Pointer<ffi.Char>,
+          ffi.Pointer<ffi.Char>)>();
 
   /// Create a new mailmap instance containing a single mailmap file
   ///
@@ -21696,7 +21684,7 @@ class Libgit2 {
   /// @return 0 on success, or an error code
   int git_mailmap_from_buffer(
     ffi.Pointer<ffi.Pointer<git_mailmap>> out,
-    ffi.Pointer<ffi.Int8> buf,
+    ffi.Pointer<ffi.Char> buf,
     int len,
   ) {
     return _git_mailmap_from_buffer(
@@ -21708,11 +21696,11 @@ class Libgit2 {
 
   late final _git_mailmap_from_bufferPtr = _lookup<
       ffi.NativeFunction<
-          ffi.Int32 Function(ffi.Pointer<ffi.Pointer<git_mailmap>>,
-              ffi.Pointer<ffi.Int8>, size_t)>>('git_mailmap_from_buffer');
+          ffi.Int Function(ffi.Pointer<ffi.Pointer<git_mailmap>>,
+              ffi.Pointer<ffi.Char>, ffi.Size)>>('git_mailmap_from_buffer');
   late final _git_mailmap_from_buffer = _git_mailmap_from_bufferPtr.asFunction<
       int Function(
-          ffi.Pointer<ffi.Pointer<git_mailmap>>, ffi.Pointer<ffi.Int8>, int)>();
+          ffi.Pointer<ffi.Pointer<git_mailmap>>, ffi.Pointer<ffi.Char>, int)>();
 
   /// Create a new mailmap instance from a repository, loading mailmap files based
   /// on the repository's configuration.
@@ -21738,7 +21726,7 @@ class Libgit2 {
 
   late final _git_mailmap_from_repositoryPtr = _lookup<
       ffi.NativeFunction<
-          ffi.Int32 Function(ffi.Pointer<ffi.Pointer<git_mailmap>>,
+          ffi.Int Function(ffi.Pointer<ffi.Pointer<git_mailmap>>,
               ffi.Pointer<git_repository>)>>('git_mailmap_from_repository');
   late final _git_mailmap_from_repository =
       _git_mailmap_from_repositoryPtr.asFunction<
@@ -21756,11 +21744,11 @@ class Libgit2 {
   /// @param email the email to look up
   /// @return 0 on success, or an error code
   int git_mailmap_resolve(
-    ffi.Pointer<ffi.Pointer<ffi.Int8>> real_name,
-    ffi.Pointer<ffi.Pointer<ffi.Int8>> real_email,
+    ffi.Pointer<ffi.Pointer<ffi.Char>> real_name,
+    ffi.Pointer<ffi.Pointer<ffi.Char>> real_email,
     ffi.Pointer<git_mailmap> mm,
-    ffi.Pointer<ffi.Int8> name,
-    ffi.Pointer<ffi.Int8> email,
+    ffi.Pointer<ffi.Char> name,
+    ffi.Pointer<ffi.Char> email,
   ) {
     return _git_mailmap_resolve(
       real_name,
@@ -21773,19 +21761,19 @@ class Libgit2 {
 
   late final _git_mailmap_resolvePtr = _lookup<
       ffi.NativeFunction<
-          ffi.Int32 Function(
-              ffi.Pointer<ffi.Pointer<ffi.Int8>>,
-              ffi.Pointer<ffi.Pointer<ffi.Int8>>,
+          ffi.Int Function(
+              ffi.Pointer<ffi.Pointer<ffi.Char>>,
+              ffi.Pointer<ffi.Pointer<ffi.Char>>,
               ffi.Pointer<git_mailmap>,
-              ffi.Pointer<ffi.Int8>,
-              ffi.Pointer<ffi.Int8>)>>('git_mailmap_resolve');
+              ffi.Pointer<ffi.Char>,
+              ffi.Pointer<ffi.Char>)>>('git_mailmap_resolve');
   late final _git_mailmap_resolve = _git_mailmap_resolvePtr.asFunction<
       int Function(
-          ffi.Pointer<ffi.Pointer<ffi.Int8>>,
-          ffi.Pointer<ffi.Pointer<ffi.Int8>>,
+          ffi.Pointer<ffi.Pointer<ffi.Char>>,
+          ffi.Pointer<ffi.Pointer<ffi.Char>>,
           ffi.Pointer<git_mailmap>,
-          ffi.Pointer<ffi.Int8>,
-          ffi.Pointer<ffi.Int8>)>();
+          ffi.Pointer<ffi.Char>,
+          ffi.Pointer<ffi.Char>)>();
 
   /// Resolve a signature to use real names and emails with a mailmap.
   ///
@@ -21809,7 +21797,7 @@ class Libgit2 {
 
   late final _git_mailmap_resolve_signaturePtr = _lookup<
       ffi.NativeFunction<
-          ffi.Int32 Function(
+          ffi.Int Function(
               ffi.Pointer<ffi.Pointer<git_signature>>,
               ffi.Pointer<git_mailmap>,
               ffi.Pointer<git_signature>)>>('git_mailmap_resolve_signature');
@@ -21835,7 +21823,7 @@ class Libgit2 {
   /// @return 0 or an error code.
   int git_message_prettify(
     ffi.Pointer<git_buf> out,
-    ffi.Pointer<ffi.Int8> message,
+    ffi.Pointer<ffi.Char> message,
     int strip_comments,
     int comment_char,
   ) {
@@ -21849,10 +21837,10 @@ class Libgit2 {
 
   late final _git_message_prettifyPtr = _lookup<
       ffi.NativeFunction<
-          ffi.Int32 Function(ffi.Pointer<git_buf>, ffi.Pointer<ffi.Int8>,
-              ffi.Int32, ffi.Int8)>>('git_message_prettify');
+          ffi.Int Function(ffi.Pointer<git_buf>, ffi.Pointer<ffi.Char>, ffi.Int,
+              ffi.Char)>>('git_message_prettify');
   late final _git_message_prettify = _git_message_prettifyPtr.asFunction<
-      int Function(ffi.Pointer<git_buf>, ffi.Pointer<ffi.Int8>, int, int)>();
+      int Function(ffi.Pointer<git_buf>, ffi.Pointer<ffi.Char>, int, int)>();
 
   /// Parse trailers out of a message, filling the array pointed to by +arr+.
   ///
@@ -21865,7 +21853,7 @@ class Libgit2 {
   /// @return 0 on success, or non-zero on error.
   int git_message_trailers(
     ffi.Pointer<git_message_trailer_array> arr,
-    ffi.Pointer<ffi.Int8> message,
+    ffi.Pointer<ffi.Char> message,
   ) {
     return _git_message_trailers(
       arr,
@@ -21875,11 +21863,11 @@ class Libgit2 {
 
   late final _git_message_trailersPtr = _lookup<
       ffi.NativeFunction<
-          ffi.Int32 Function(ffi.Pointer<git_message_trailer_array>,
-              ffi.Pointer<ffi.Int8>)>>('git_message_trailers');
+          ffi.Int Function(ffi.Pointer<git_message_trailer_array>,
+              ffi.Pointer<ffi.Char>)>>('git_message_trailers');
   late final _git_message_trailers = _git_message_trailersPtr.asFunction<
       int Function(
-          ffi.Pointer<git_message_trailer_array>, ffi.Pointer<ffi.Int8>)>();
+          ffi.Pointer<git_message_trailer_array>, ffi.Pointer<ffi.Char>)>();
 
   /// Clean's up any allocated memory in the git_message_trailer_array filled by
   /// a call to git_message_trailers.
@@ -21914,7 +21902,7 @@ class Libgit2 {
   int git_note_iterator_new(
     ffi.Pointer<ffi.Pointer<git_note_iterator>> out,
     ffi.Pointer<git_repository> repo,
-    ffi.Pointer<ffi.Int8> notes_ref,
+    ffi.Pointer<ffi.Char> notes_ref,
   ) {
     return _git_note_iterator_new(
       out,
@@ -21925,13 +21913,13 @@ class Libgit2 {
 
   late final _git_note_iterator_newPtr = _lookup<
       ffi.NativeFunction<
-          ffi.Int32 Function(
+          ffi.Int Function(
               ffi.Pointer<ffi.Pointer<git_note_iterator>>,
               ffi.Pointer<git_repository>,
-              ffi.Pointer<ffi.Int8>)>>('git_note_iterator_new');
+              ffi.Pointer<ffi.Char>)>>('git_note_iterator_new');
   late final _git_note_iterator_new = _git_note_iterator_newPtr.asFunction<
       int Function(ffi.Pointer<ffi.Pointer<git_note_iterator>>,
-          ffi.Pointer<git_repository>, ffi.Pointer<ffi.Int8>)>();
+          ffi.Pointer<git_repository>, ffi.Pointer<ffi.Char>)>();
 
   /// Creates a new iterator for notes from a commit
   ///
@@ -21953,7 +21941,7 @@ class Libgit2 {
 
   late final _git_note_commit_iterator_newPtr = _lookup<
       ffi.NativeFunction<
-          ffi.Int32 Function(ffi.Pointer<ffi.Pointer<git_note_iterator>>,
+          ffi.Int Function(ffi.Pointer<ffi.Pointer<git_note_iterator>>,
               ffi.Pointer<git_commit>)>>('git_note_commit_iterator_new');
   late final _git_note_commit_iterator_new =
       _git_note_commit_iterator_newPtr.asFunction<
@@ -22001,7 +21989,7 @@ class Libgit2 {
 
   late final _git_note_nextPtr = _lookup<
       ffi.NativeFunction<
-          ffi.Int32 Function(ffi.Pointer<git_oid>, ffi.Pointer<git_oid>,
+          ffi.Int Function(ffi.Pointer<git_oid>, ffi.Pointer<git_oid>,
               ffi.Pointer<git_note_iterator>)>>('git_note_next');
   late final _git_note_next = _git_note_nextPtr.asFunction<
       int Function(ffi.Pointer<git_oid>, ffi.Pointer<git_oid>,
@@ -22021,7 +22009,7 @@ class Libgit2 {
   int git_note_read(
     ffi.Pointer<ffi.Pointer<git_note>> out,
     ffi.Pointer<git_repository> repo,
-    ffi.Pointer<ffi.Int8> notes_ref,
+    ffi.Pointer<ffi.Char> notes_ref,
     ffi.Pointer<git_oid> oid,
   ) {
     return _git_note_read(
@@ -22034,16 +22022,16 @@ class Libgit2 {
 
   late final _git_note_readPtr = _lookup<
       ffi.NativeFunction<
-          ffi.Int32 Function(
+          ffi.Int Function(
               ffi.Pointer<ffi.Pointer<git_note>>,
               ffi.Pointer<git_repository>,
-              ffi.Pointer<ffi.Int8>,
+              ffi.Pointer<ffi.Char>,
               ffi.Pointer<git_oid>)>>('git_note_read');
   late final _git_note_read = _git_note_readPtr.asFunction<
       int Function(
           ffi.Pointer<ffi.Pointer<git_note>>,
           ffi.Pointer<git_repository>,
-          ffi.Pointer<ffi.Int8>,
+          ffi.Pointer<ffi.Char>,
           ffi.Pointer<git_oid>)>();
 
   /// Read the note for an object from a note commit
@@ -22072,7 +22060,7 @@ class Libgit2 {
 
   late final _git_note_commit_readPtr = _lookup<
       ffi.NativeFunction<
-          ffi.Int32 Function(
+          ffi.Int Function(
               ffi.Pointer<ffi.Pointer<git_note>>,
               ffi.Pointer<git_repository>,
               ffi.Pointer<git_commit>,
@@ -22126,7 +22114,7 @@ class Libgit2 {
   ///
   /// @param note the note
   /// @return the note message
-  ffi.Pointer<ffi.Int8> git_note_message(
+  ffi.Pointer<ffi.Char> git_note_message(
     ffi.Pointer<git_note> note,
   ) {
     return _git_note_message(
@@ -22136,10 +22124,10 @@ class Libgit2 {
 
   late final _git_note_messagePtr = _lookup<
       ffi.NativeFunction<
-          ffi.Pointer<ffi.Int8> Function(
+          ffi.Pointer<ffi.Char> Function(
               ffi.Pointer<git_note>)>>('git_note_message');
   late final _git_note_message = _git_note_messagePtr
-      .asFunction<ffi.Pointer<ffi.Int8> Function(ffi.Pointer<git_note>)>();
+      .asFunction<ffi.Pointer<ffi.Char> Function(ffi.Pointer<git_note>)>();
 
   /// Get the note object's id
   ///
@@ -22175,11 +22163,11 @@ class Libgit2 {
   int git_note_create(
     ffi.Pointer<git_oid> out,
     ffi.Pointer<git_repository> repo,
-    ffi.Pointer<ffi.Int8> notes_ref,
+    ffi.Pointer<ffi.Char> notes_ref,
     ffi.Pointer<git_signature> author,
     ffi.Pointer<git_signature> committer,
     ffi.Pointer<git_oid> oid,
-    ffi.Pointer<ffi.Int8> note,
+    ffi.Pointer<ffi.Char> note,
     int force,
   ) {
     return _git_note_create(
@@ -22196,24 +22184,24 @@ class Libgit2 {
 
   late final _git_note_createPtr = _lookup<
       ffi.NativeFunction<
-          ffi.Int32 Function(
+          ffi.Int Function(
               ffi.Pointer<git_oid>,
               ffi.Pointer<git_repository>,
-              ffi.Pointer<ffi.Int8>,
+              ffi.Pointer<ffi.Char>,
               ffi.Pointer<git_signature>,
               ffi.Pointer<git_signature>,
               ffi.Pointer<git_oid>,
-              ffi.Pointer<ffi.Int8>,
-              ffi.Int32)>>('git_note_create');
+              ffi.Pointer<ffi.Char>,
+              ffi.Int)>>('git_note_create');
   late final _git_note_create = _git_note_createPtr.asFunction<
       int Function(
           ffi.Pointer<git_oid>,
           ffi.Pointer<git_repository>,
-          ffi.Pointer<ffi.Int8>,
+          ffi.Pointer<ffi.Char>,
           ffi.Pointer<git_signature>,
           ffi.Pointer<git_signature>,
           ffi.Pointer<git_oid>,
-          ffi.Pointer<ffi.Int8>,
+          ffi.Pointer<ffi.Char>,
           int)>();
 
   /// Add a note for an object from a commit
@@ -22242,7 +22230,7 @@ class Libgit2 {
     ffi.Pointer<git_signature> author,
     ffi.Pointer<git_signature> committer,
     ffi.Pointer<git_oid> oid,
-    ffi.Pointer<ffi.Int8> note,
+    ffi.Pointer<ffi.Char> note,
     int allow_note_overwrite,
   ) {
     return _git_note_commit_create(
@@ -22260,7 +22248,7 @@ class Libgit2 {
 
   late final _git_note_commit_createPtr = _lookup<
       ffi.NativeFunction<
-          ffi.Int32 Function(
+          ffi.Int Function(
               ffi.Pointer<git_oid>,
               ffi.Pointer<git_oid>,
               ffi.Pointer<git_repository>,
@@ -22268,8 +22256,8 @@ class Libgit2 {
               ffi.Pointer<git_signature>,
               ffi.Pointer<git_signature>,
               ffi.Pointer<git_oid>,
-              ffi.Pointer<ffi.Int8>,
-              ffi.Int32)>>('git_note_commit_create');
+              ffi.Pointer<ffi.Char>,
+              ffi.Int)>>('git_note_commit_create');
   late final _git_note_commit_create = _git_note_commit_createPtr.asFunction<
       int Function(
           ffi.Pointer<git_oid>,
@@ -22279,7 +22267,7 @@ class Libgit2 {
           ffi.Pointer<git_signature>,
           ffi.Pointer<git_signature>,
           ffi.Pointer<git_oid>,
-          ffi.Pointer<ffi.Int8>,
+          ffi.Pointer<ffi.Char>,
           int)>();
 
   /// Remove the note for an object
@@ -22294,7 +22282,7 @@ class Libgit2 {
   /// @return 0 or an error code
   int git_note_remove(
     ffi.Pointer<git_repository> repo,
-    ffi.Pointer<ffi.Int8> notes_ref,
+    ffi.Pointer<ffi.Char> notes_ref,
     ffi.Pointer<git_signature> author,
     ffi.Pointer<git_signature> committer,
     ffi.Pointer<git_oid> oid,
@@ -22310,16 +22298,16 @@ class Libgit2 {
 
   late final _git_note_removePtr = _lookup<
       ffi.NativeFunction<
-          ffi.Int32 Function(
+          ffi.Int Function(
               ffi.Pointer<git_repository>,
-              ffi.Pointer<ffi.Int8>,
+              ffi.Pointer<ffi.Char>,
               ffi.Pointer<git_signature>,
               ffi.Pointer<git_signature>,
               ffi.Pointer<git_oid>)>>('git_note_remove');
   late final _git_note_remove = _git_note_removePtr.asFunction<
       int Function(
           ffi.Pointer<git_repository>,
-          ffi.Pointer<ffi.Int8>,
+          ffi.Pointer<ffi.Char>,
           ffi.Pointer<git_signature>,
           ffi.Pointer<git_signature>,
           ffi.Pointer<git_oid>)>();
@@ -22360,7 +22348,7 @@ class Libgit2 {
 
   late final _git_note_commit_removePtr = _lookup<
       ffi.NativeFunction<
-          ffi.Int32 Function(
+          ffi.Int Function(
               ffi.Pointer<git_oid>,
               ffi.Pointer<git_repository>,
               ffi.Pointer<git_commit>,
@@ -22411,7 +22399,7 @@ class Libgit2 {
 
   late final _git_note_default_refPtr = _lookup<
       ffi.NativeFunction<
-          ffi.Int32 Function(ffi.Pointer<git_buf>,
+          ffi.Int Function(ffi.Pointer<git_buf>,
               ffi.Pointer<git_repository>)>>('git_note_default_ref');
   late final _git_note_default_ref = _git_note_default_refPtr.asFunction<
       int Function(ffi.Pointer<git_buf>, ffi.Pointer<git_repository>)>();
@@ -22432,7 +22420,7 @@ class Libgit2 {
   /// @return 0 on success, non-zero callback return value, or error code
   int git_note_foreach(
     ffi.Pointer<git_repository> repo,
-    ffi.Pointer<ffi.Int8> notes_ref,
+    ffi.Pointer<ffi.Char> notes_ref,
     git_note_foreach_cb note_cb,
     ffi.Pointer<ffi.Void> payload,
   ) {
@@ -22446,10 +22434,10 @@ class Libgit2 {
 
   late final _git_note_foreachPtr = _lookup<
       ffi.NativeFunction<
-          ffi.Int32 Function(ffi.Pointer<git_repository>, ffi.Pointer<ffi.Int8>,
+          ffi.Int Function(ffi.Pointer<git_repository>, ffi.Pointer<ffi.Char>,
               git_note_foreach_cb, ffi.Pointer<ffi.Void>)>>('git_note_foreach');
   late final _git_note_foreach = _git_note_foreachPtr.asFunction<
-      int Function(ffi.Pointer<git_repository>, ffi.Pointer<ffi.Int8>,
+      int Function(ffi.Pointer<git_repository>, ffi.Pointer<ffi.Char>,
           git_note_foreach_cb, ffi.Pointer<ffi.Void>)>();
 
   /// Create a new object database with no backends.
@@ -22470,8 +22458,7 @@ class Libgit2 {
 
   late final _git_odb_newPtr = _lookup<
       ffi.NativeFunction<
-          ffi.Int32 Function(
-              ffi.Pointer<ffi.Pointer<git_odb>>)>>('git_odb_new');
+          ffi.Int Function(ffi.Pointer<ffi.Pointer<git_odb>>)>>('git_odb_new');
   late final _git_odb_new = _git_odb_newPtr
       .asFunction<int Function(ffi.Pointer<ffi.Pointer<git_odb>>)>();
 
@@ -22491,7 +22478,7 @@ class Libgit2 {
   /// @return 0 or an error code
   int git_odb_open(
     ffi.Pointer<ffi.Pointer<git_odb>> out,
-    ffi.Pointer<ffi.Int8> objects_dir,
+    ffi.Pointer<ffi.Char> objects_dir,
   ) {
     return _git_odb_open(
       out,
@@ -22501,10 +22488,10 @@ class Libgit2 {
 
   late final _git_odb_openPtr = _lookup<
       ffi.NativeFunction<
-          ffi.Int32 Function(ffi.Pointer<ffi.Pointer<git_odb>>,
-              ffi.Pointer<ffi.Int8>)>>('git_odb_open');
+          ffi.Int Function(ffi.Pointer<ffi.Pointer<git_odb>>,
+              ffi.Pointer<ffi.Char>)>>('git_odb_open');
   late final _git_odb_open = _git_odb_openPtr.asFunction<
-      int Function(ffi.Pointer<ffi.Pointer<git_odb>>, ffi.Pointer<ffi.Int8>)>();
+      int Function(ffi.Pointer<ffi.Pointer<git_odb>>, ffi.Pointer<ffi.Char>)>();
 
   /// Add an on-disk alternate to an existing Object DB.
   ///
@@ -22521,7 +22508,7 @@ class Libgit2 {
   /// @return 0 on success, error code otherwise
   int git_odb_add_disk_alternate(
     ffi.Pointer<git_odb> odb,
-    ffi.Pointer<ffi.Int8> path,
+    ffi.Pointer<ffi.Char> path,
   ) {
     return _git_odb_add_disk_alternate(
       odb,
@@ -22531,10 +22518,10 @@ class Libgit2 {
 
   late final _git_odb_add_disk_alternatePtr = _lookup<
       ffi.NativeFunction<
-          ffi.Int32 Function(ffi.Pointer<git_odb>,
-              ffi.Pointer<ffi.Int8>)>>('git_odb_add_disk_alternate');
+          ffi.Int Function(ffi.Pointer<git_odb>,
+              ffi.Pointer<ffi.Char>)>>('git_odb_add_disk_alternate');
   late final _git_odb_add_disk_alternate = _git_odb_add_disk_alternatePtr
-      .asFunction<int Function(ffi.Pointer<git_odb>, ffi.Pointer<ffi.Int8>)>();
+      .asFunction<int Function(ffi.Pointer<git_odb>, ffi.Pointer<ffi.Char>)>();
 
   /// Close an open object database.
   ///
@@ -22581,7 +22568,7 @@ class Libgit2 {
 
   late final _git_odb_readPtr = _lookup<
       ffi.NativeFunction<
-          ffi.Int32 Function(ffi.Pointer<ffi.Pointer<git_odb_object>>,
+          ffi.Int Function(ffi.Pointer<ffi.Pointer<git_odb_object>>,
               ffi.Pointer<git_odb>, ffi.Pointer<git_oid>)>>('git_odb_read');
   late final _git_odb_read = _git_odb_readPtr.asFunction<
       int Function(ffi.Pointer<ffi.Pointer<git_odb_object>>,
@@ -22627,11 +22614,11 @@ class Libgit2 {
 
   late final _git_odb_read_prefixPtr = _lookup<
       ffi.NativeFunction<
-          ffi.Int32 Function(
+          ffi.Int Function(
               ffi.Pointer<ffi.Pointer<git_odb_object>>,
               ffi.Pointer<git_odb>,
               ffi.Pointer<git_oid>,
-              size_t)>>('git_odb_read_prefix');
+              ffi.Size)>>('git_odb_read_prefix');
   late final _git_odb_read_prefix = _git_odb_read_prefixPtr.asFunction<
       int Function(ffi.Pointer<ffi.Pointer<git_odb_object>>,
           ffi.Pointer<git_odb>, ffi.Pointer<git_oid>, int)>();
@@ -22652,7 +22639,7 @@ class Libgit2 {
   /// @return 0 if the object was read, GIT_ENOTFOUND if the object is not
   /// in the database.
   int git_odb_read_header(
-    ffi.Pointer<size_t> len_out,
+    ffi.Pointer<ffi.Size> len_out,
     ffi.Pointer<ffi.Int32> type_out,
     ffi.Pointer<git_odb> db,
     ffi.Pointer<git_oid> id,
@@ -22667,13 +22654,13 @@ class Libgit2 {
 
   late final _git_odb_read_headerPtr = _lookup<
       ffi.NativeFunction<
-          ffi.Int32 Function(
-              ffi.Pointer<size_t>,
+          ffi.Int Function(
+              ffi.Pointer<ffi.Size>,
               ffi.Pointer<ffi.Int32>,
               ffi.Pointer<git_odb>,
               ffi.Pointer<git_oid>)>>('git_odb_read_header');
   late final _git_odb_read_header = _git_odb_read_headerPtr.asFunction<
-      int Function(ffi.Pointer<size_t>, ffi.Pointer<ffi.Int32>,
+      int Function(ffi.Pointer<ffi.Size>, ffi.Pointer<ffi.Int32>,
           ffi.Pointer<git_odb>, ffi.Pointer<git_oid>)>();
 
   /// Determine if the given object can be found in the object database.
@@ -22693,7 +22680,7 @@ class Libgit2 {
 
   late final _git_odb_existsPtr = _lookup<
       ffi.NativeFunction<
-          ffi.Int32 Function(
+          ffi.Int Function(
               ffi.Pointer<git_odb>, ffi.Pointer<git_oid>)>>('git_odb_exists');
   late final _git_odb_exists = _git_odb_existsPtr
       .asFunction<int Function(ffi.Pointer<git_odb>, ffi.Pointer<git_oid>)>();
@@ -22719,8 +22706,8 @@ class Libgit2 {
 
   late final _git_odb_exists_extPtr = _lookup<
       ffi.NativeFunction<
-          ffi.Int32 Function(ffi.Pointer<git_odb>, ffi.Pointer<git_oid>,
-              ffi.Uint32)>>('git_odb_exists_ext');
+          ffi.Int Function(ffi.Pointer<git_odb>, ffi.Pointer<git_oid>,
+              ffi.UnsignedInt)>>('git_odb_exists_ext');
   late final _git_odb_exists_ext = _git_odb_exists_extPtr.asFunction<
       int Function(ffi.Pointer<git_odb>, ffi.Pointer<git_oid>, int)>();
 
@@ -22749,8 +22736,8 @@ class Libgit2 {
 
   late final _git_odb_exists_prefixPtr = _lookup<
       ffi.NativeFunction<
-          ffi.Int32 Function(ffi.Pointer<git_oid>, ffi.Pointer<git_odb>,
-              ffi.Pointer<git_oid>, size_t)>>('git_odb_exists_prefix');
+          ffi.Int Function(ffi.Pointer<git_oid>, ffi.Pointer<git_odb>,
+              ffi.Pointer<git_oid>, ffi.Size)>>('git_odb_exists_prefix');
   late final _git_odb_exists_prefix = _git_odb_exists_prefixPtr.asFunction<
       int Function(ffi.Pointer<git_oid>, ffi.Pointer<git_odb>,
           ffi.Pointer<git_oid>, int)>();
@@ -22786,8 +22773,8 @@ class Libgit2 {
 
   late final _git_odb_expand_idsPtr = _lookup<
       ffi.NativeFunction<
-          ffi.Int32 Function(ffi.Pointer<git_odb>,
-              ffi.Pointer<git_odb_expand_id>, size_t)>>('git_odb_expand_ids');
+          ffi.Int Function(ffi.Pointer<git_odb>, ffi.Pointer<git_odb_expand_id>,
+              ffi.Size)>>('git_odb_expand_ids');
   late final _git_odb_expand_ids = _git_odb_expand_idsPtr.asFunction<
       int Function(
           ffi.Pointer<git_odb>, ffi.Pointer<git_odb_expand_id>, int)>();
@@ -22817,7 +22804,7 @@ class Libgit2 {
   }
 
   late final _git_odb_refreshPtr =
-      _lookup<ffi.NativeFunction<ffi.Int32 Function(ffi.Pointer<git_odb>)>>(
+      _lookup<ffi.NativeFunction<ffi.Int Function(ffi.Pointer<git_odb>)>>(
           'git_odb_refresh');
   late final _git_odb_refresh =
       _git_odb_refreshPtr.asFunction<int Function(ffi.Pointer<git_odb>)>();
@@ -22847,7 +22834,7 @@ class Libgit2 {
 
   late final _git_odb_foreachPtr = _lookup<
       ffi.NativeFunction<
-          ffi.Int32 Function(ffi.Pointer<git_odb>, git_odb_foreach_cb,
+          ffi.Int Function(ffi.Pointer<git_odb>, git_odb_foreach_cb,
               ffi.Pointer<ffi.Void>)>>('git_odb_foreach');
   late final _git_odb_foreach = _git_odb_foreachPtr.asFunction<
       int Function(
@@ -22887,8 +22874,8 @@ class Libgit2 {
 
   late final _git_odb_writePtr = _lookup<
       ffi.NativeFunction<
-          ffi.Int32 Function(ffi.Pointer<git_oid>, ffi.Pointer<git_odb>,
-              ffi.Pointer<ffi.Void>, size_t, ffi.Int32)>>('git_odb_write');
+          ffi.Int Function(ffi.Pointer<git_oid>, ffi.Pointer<git_odb>,
+              ffi.Pointer<ffi.Void>, ffi.Size, ffi.Int32)>>('git_odb_write');
   late final _git_odb_write = _git_odb_writePtr.asFunction<
       int Function(ffi.Pointer<git_oid>, ffi.Pointer<git_odb>,
           ffi.Pointer<ffi.Void>, int, int)>();
@@ -22928,7 +22915,7 @@ class Libgit2 {
 
   late final _git_odb_open_wstreamPtr = _lookup<
       ffi.NativeFunction<
-          ffi.Int32 Function(
+          ffi.Int Function(
               ffi.Pointer<ffi.Pointer<git_odb_stream>>,
               ffi.Pointer<git_odb>,
               git_object_size_t,
@@ -22948,7 +22935,7 @@ class Libgit2 {
   /// @return 0 if the write succeeded, error code otherwise
   int git_odb_stream_write(
     ffi.Pointer<git_odb_stream> stream,
-    ffi.Pointer<ffi.Int8> buffer,
+    ffi.Pointer<ffi.Char> buffer,
     int len,
   ) {
     return _git_odb_stream_write(
@@ -22960,10 +22947,10 @@ class Libgit2 {
 
   late final _git_odb_stream_writePtr = _lookup<
       ffi.NativeFunction<
-          ffi.Int32 Function(ffi.Pointer<git_odb_stream>, ffi.Pointer<ffi.Int8>,
-              size_t)>>('git_odb_stream_write');
+          ffi.Int Function(ffi.Pointer<git_odb_stream>, ffi.Pointer<ffi.Char>,
+              ffi.Size)>>('git_odb_stream_write');
   late final _git_odb_stream_write = _git_odb_stream_writePtr.asFunction<
-      int Function(ffi.Pointer<git_odb_stream>, ffi.Pointer<ffi.Int8>, int)>();
+      int Function(ffi.Pointer<git_odb_stream>, ffi.Pointer<ffi.Char>, int)>();
 
   /// Finish writing to an odb stream
   ///
@@ -22988,7 +22975,7 @@ class Libgit2 {
 
   late final _git_odb_stream_finalize_writePtr = _lookup<
       ffi.NativeFunction<
-          ffi.Int32 Function(ffi.Pointer<git_oid>,
+          ffi.Int Function(ffi.Pointer<git_oid>,
               ffi.Pointer<git_odb_stream>)>>('git_odb_stream_finalize_write');
   late final _git_odb_stream_finalize_write =
       _git_odb_stream_finalize_writePtr.asFunction<
@@ -23004,7 +22991,7 @@ class Libgit2 {
   /// @return 0 if the read succeeded, error code otherwise
   int git_odb_stream_read(
     ffi.Pointer<git_odb_stream> stream,
-    ffi.Pointer<ffi.Int8> buffer,
+    ffi.Pointer<ffi.Char> buffer,
     int len,
   ) {
     return _git_odb_stream_read(
@@ -23016,10 +23003,10 @@ class Libgit2 {
 
   late final _git_odb_stream_readPtr = _lookup<
       ffi.NativeFunction<
-          ffi.Int32 Function(ffi.Pointer<git_odb_stream>, ffi.Pointer<ffi.Int8>,
-              size_t)>>('git_odb_stream_read');
+          ffi.Int Function(ffi.Pointer<git_odb_stream>, ffi.Pointer<ffi.Char>,
+              ffi.Size)>>('git_odb_stream_read');
   late final _git_odb_stream_read = _git_odb_stream_readPtr.asFunction<
-      int Function(ffi.Pointer<git_odb_stream>, ffi.Pointer<ffi.Int8>, int)>();
+      int Function(ffi.Pointer<git_odb_stream>, ffi.Pointer<ffi.Char>, int)>();
 
   /// Free an odb stream
   ///
@@ -23064,7 +23051,7 @@ class Libgit2 {
   /// @return 0 if the stream was created, error code otherwise
   int git_odb_open_rstream(
     ffi.Pointer<ffi.Pointer<git_odb_stream>> out,
-    ffi.Pointer<size_t> len,
+    ffi.Pointer<ffi.Size> len,
     ffi.Pointer<ffi.Int32> type,
     ffi.Pointer<git_odb> db,
     ffi.Pointer<git_oid> oid,
@@ -23080,16 +23067,16 @@ class Libgit2 {
 
   late final _git_odb_open_rstreamPtr = _lookup<
       ffi.NativeFunction<
-          ffi.Int32 Function(
+          ffi.Int Function(
               ffi.Pointer<ffi.Pointer<git_odb_stream>>,
-              ffi.Pointer<size_t>,
+              ffi.Pointer<ffi.Size>,
               ffi.Pointer<ffi.Int32>,
               ffi.Pointer<git_odb>,
               ffi.Pointer<git_oid>)>>('git_odb_open_rstream');
   late final _git_odb_open_rstream = _git_odb_open_rstreamPtr.asFunction<
       int Function(
           ffi.Pointer<ffi.Pointer<git_odb_stream>>,
-          ffi.Pointer<size_t>,
+          ffi.Pointer<ffi.Size>,
           ffi.Pointer<ffi.Int32>,
           ffi.Pointer<git_odb>,
           ffi.Pointer<git_oid>)>();
@@ -23127,7 +23114,7 @@ class Libgit2 {
 
   late final _git_odb_write_packPtr = _lookup<
       ffi.NativeFunction<
-          ffi.Int32 Function(
+          ffi.Int Function(
               ffi.Pointer<ffi.Pointer<git_odb_writepack>>,
               ffi.Pointer<git_odb>,
               git_indexer_progress_cb,
@@ -23158,7 +23145,7 @@ class Libgit2 {
   }
 
   late final _git_odb_write_multi_pack_indexPtr =
-      _lookup<ffi.NativeFunction<ffi.Int32 Function(ffi.Pointer<git_odb>)>>(
+      _lookup<ffi.NativeFunction<ffi.Int Function(ffi.Pointer<git_odb>)>>(
           'git_odb_write_multi_pack_index');
   late final _git_odb_write_multi_pack_index =
       _git_odb_write_multi_pack_indexPtr
@@ -23190,8 +23177,8 @@ class Libgit2 {
 
   late final _git_odb_hashPtr = _lookup<
       ffi.NativeFunction<
-          ffi.Int32 Function(ffi.Pointer<git_oid>, ffi.Pointer<ffi.Void>,
-              size_t, ffi.Int32)>>('git_odb_hash');
+          ffi.Int Function(ffi.Pointer<git_oid>, ffi.Pointer<ffi.Void>,
+              ffi.Size, ffi.Int32)>>('git_odb_hash');
   late final _git_odb_hash = _git_odb_hashPtr.asFunction<
       int Function(ffi.Pointer<git_oid>, ffi.Pointer<ffi.Void>, int, int)>();
 
@@ -23208,7 +23195,7 @@ class Libgit2 {
   /// @return 0 or an error code
   int git_odb_hashfile(
     ffi.Pointer<git_oid> out,
-    ffi.Pointer<ffi.Int8> path,
+    ffi.Pointer<ffi.Char> path,
     int type,
   ) {
     return _git_odb_hashfile(
@@ -23220,10 +23207,10 @@ class Libgit2 {
 
   late final _git_odb_hashfilePtr = _lookup<
       ffi.NativeFunction<
-          ffi.Int32 Function(ffi.Pointer<git_oid>, ffi.Pointer<ffi.Int8>,
+          ffi.Int Function(ffi.Pointer<git_oid>, ffi.Pointer<ffi.Char>,
               ffi.Int32)>>('git_odb_hashfile');
   late final _git_odb_hashfile = _git_odb_hashfilePtr.asFunction<
-      int Function(ffi.Pointer<git_oid>, ffi.Pointer<ffi.Int8>, int)>();
+      int Function(ffi.Pointer<git_oid>, ffi.Pointer<ffi.Char>, int)>();
 
   /// Create a copy of an odb_object
   ///
@@ -23247,7 +23234,7 @@ class Libgit2 {
 
   late final _git_odb_object_dupPtr = _lookup<
       ffi.NativeFunction<
-          ffi.Int32 Function(ffi.Pointer<ffi.Pointer<git_odb_object>>,
+          ffi.Int Function(ffi.Pointer<ffi.Pointer<git_odb_object>>,
               ffi.Pointer<git_odb_object>)>>('git_odb_object_dup');
   late final _git_odb_object_dup = _git_odb_object_dupPtr.asFunction<
       int Function(ffi.Pointer<ffi.Pointer<git_odb_object>>,
@@ -23333,9 +23320,9 @@ class Libgit2 {
     );
   }
 
-  late final _git_odb_object_sizePtr =
-      _lookup<ffi.NativeFunction<size_t Function(ffi.Pointer<git_odb_object>)>>(
-          'git_odb_object_size');
+  late final _git_odb_object_sizePtr = _lookup<
+          ffi.NativeFunction<ffi.Size Function(ffi.Pointer<git_odb_object>)>>(
+      'git_odb_object_size');
   late final _git_odb_object_size = _git_odb_object_sizePtr
       .asFunction<int Function(ffi.Pointer<git_odb_object>)>();
 
@@ -23382,8 +23369,8 @@ class Libgit2 {
 
   late final _git_odb_add_backendPtr = _lookup<
       ffi.NativeFunction<
-          ffi.Int32 Function(ffi.Pointer<git_odb>, ffi.Pointer<git_odb_backend>,
-              ffi.Int32)>>('git_odb_add_backend');
+          ffi.Int Function(ffi.Pointer<git_odb>, ffi.Pointer<git_odb_backend>,
+              ffi.Int)>>('git_odb_add_backend');
   late final _git_odb_add_backend = _git_odb_add_backendPtr.asFunction<
       int Function(ffi.Pointer<git_odb>, ffi.Pointer<git_odb_backend>, int)>();
 
@@ -23418,8 +23405,8 @@ class Libgit2 {
 
   late final _git_odb_add_alternatePtr = _lookup<
       ffi.NativeFunction<
-          ffi.Int32 Function(ffi.Pointer<git_odb>, ffi.Pointer<git_odb_backend>,
-              ffi.Int32)>>('git_odb_add_alternate');
+          ffi.Int Function(ffi.Pointer<git_odb>, ffi.Pointer<git_odb_backend>,
+              ffi.Int)>>('git_odb_add_alternate');
   late final _git_odb_add_alternate = _git_odb_add_alternatePtr.asFunction<
       int Function(ffi.Pointer<git_odb>, ffi.Pointer<git_odb_backend>, int)>();
 
@@ -23436,7 +23423,7 @@ class Libgit2 {
   }
 
   late final _git_odb_num_backendsPtr =
-      _lookup<ffi.NativeFunction<size_t Function(ffi.Pointer<git_odb>)>>(
+      _lookup<ffi.NativeFunction<ffi.Size Function(ffi.Pointer<git_odb>)>>(
           'git_odb_num_backends');
   late final _git_odb_num_backends =
       _git_odb_num_backendsPtr.asFunction<int Function(ffi.Pointer<git_odb>)>();
@@ -23461,8 +23448,8 @@ class Libgit2 {
 
   late final _git_odb_get_backendPtr = _lookup<
       ffi.NativeFunction<
-          ffi.Int32 Function(ffi.Pointer<ffi.Pointer<git_odb_backend>>,
-              ffi.Pointer<git_odb>, size_t)>>('git_odb_get_backend');
+          ffi.Int Function(ffi.Pointer<ffi.Pointer<git_odb_backend>>,
+              ffi.Pointer<git_odb>, ffi.Size)>>('git_odb_get_backend');
   late final _git_odb_get_backend = _git_odb_get_backendPtr.asFunction<
       int Function(ffi.Pointer<ffi.Pointer<git_odb_backend>>,
           ffi.Pointer<git_odb>, int)>();
@@ -23490,7 +23477,7 @@ class Libgit2 {
 
   late final _git_odb_set_commit_graphPtr = _lookup<
       ffi.NativeFunction<
-          ffi.Int32 Function(ffi.Pointer<git_odb>,
+          ffi.Int Function(ffi.Pointer<git_odb>,
               ffi.Pointer<git_commit_graph>)>>('git_odb_set_commit_graph');
   late final _git_odb_set_commit_graph =
       _git_odb_set_commit_graphPtr.asFunction<
@@ -23504,7 +23491,7 @@ class Libgit2 {
   /// @return 0 or an error code
   int git_odb_backend_pack(
     ffi.Pointer<ffi.Pointer<git_odb_backend>> out,
-    ffi.Pointer<ffi.Int8> objects_dir,
+    ffi.Pointer<ffi.Char> objects_dir,
   ) {
     return _git_odb_backend_pack(
       out,
@@ -23514,11 +23501,11 @@ class Libgit2 {
 
   late final _git_odb_backend_packPtr = _lookup<
       ffi.NativeFunction<
-          ffi.Int32 Function(ffi.Pointer<ffi.Pointer<git_odb_backend>>,
-              ffi.Pointer<ffi.Int8>)>>('git_odb_backend_pack');
+          ffi.Int Function(ffi.Pointer<ffi.Pointer<git_odb_backend>>,
+              ffi.Pointer<ffi.Char>)>>('git_odb_backend_pack');
   late final _git_odb_backend_pack = _git_odb_backend_packPtr.asFunction<
       int Function(
-          ffi.Pointer<ffi.Pointer<git_odb_backend>>, ffi.Pointer<ffi.Int8>)>();
+          ffi.Pointer<ffi.Pointer<git_odb_backend>>, ffi.Pointer<ffi.Char>)>();
 
   /// Create a backend for loose objects
   ///
@@ -23532,7 +23519,7 @@ class Libgit2 {
   /// @return 0 or an error code
   int git_odb_backend_loose(
     ffi.Pointer<ffi.Pointer<git_odb_backend>> out,
-    ffi.Pointer<ffi.Int8> objects_dir,
+    ffi.Pointer<ffi.Char> objects_dir,
     int compression_level,
     int do_fsync,
     int dir_mode,
@@ -23550,16 +23537,16 @@ class Libgit2 {
 
   late final _git_odb_backend_loosePtr = _lookup<
       ffi.NativeFunction<
-          ffi.Int32 Function(
+          ffi.Int Function(
               ffi.Pointer<ffi.Pointer<git_odb_backend>>,
-              ffi.Pointer<ffi.Int8>,
-              ffi.Int32,
-              ffi.Int32,
-              ffi.Uint32,
-              ffi.Uint32)>>('git_odb_backend_loose');
+              ffi.Pointer<ffi.Char>,
+              ffi.Int,
+              ffi.Int,
+              ffi.UnsignedInt,
+              ffi.UnsignedInt)>>('git_odb_backend_loose');
   late final _git_odb_backend_loose = _git_odb_backend_loosePtr.asFunction<
       int Function(ffi.Pointer<ffi.Pointer<git_odb_backend>>,
-          ffi.Pointer<ffi.Int8>, int, int, int, int)>();
+          ffi.Pointer<ffi.Char>, int, int, int, int)>();
 
   /// Create a backend out of a single packfile
   ///
@@ -23572,7 +23559,7 @@ class Libgit2 {
   /// @return 0 or an error code
   int git_odb_backend_one_pack(
     ffi.Pointer<ffi.Pointer<git_odb_backend>> out,
-    ffi.Pointer<ffi.Int8> index_file,
+    ffi.Pointer<ffi.Char> index_file,
   ) {
     return _git_odb_backend_one_pack(
       out,
@@ -23582,12 +23569,12 @@ class Libgit2 {
 
   late final _git_odb_backend_one_packPtr = _lookup<
       ffi.NativeFunction<
-          ffi.Int32 Function(ffi.Pointer<ffi.Pointer<git_odb_backend>>,
-              ffi.Pointer<ffi.Int8>)>>('git_odb_backend_one_pack');
+          ffi.Int Function(ffi.Pointer<ffi.Pointer<git_odb_backend>>,
+              ffi.Pointer<ffi.Char>)>>('git_odb_backend_one_pack');
   late final _git_odb_backend_one_pack =
       _git_odb_backend_one_packPtr.asFunction<
           int Function(ffi.Pointer<ffi.Pointer<git_odb_backend>>,
-              ffi.Pointer<ffi.Int8>)>();
+              ffi.Pointer<ffi.Char>)>();
 
   /// Get the repository associated with this patch. May be NULL.
   ///
@@ -23640,8 +23627,8 @@ class Libgit2 {
 
   late final _git_patch_from_diffPtr = _lookup<
       ffi.NativeFunction<
-          ffi.Int32 Function(ffi.Pointer<ffi.Pointer<git_patch>>,
-              ffi.Pointer<git_diff>, size_t)>>('git_patch_from_diff');
+          ffi.Int Function(ffi.Pointer<ffi.Pointer<git_patch>>,
+              ffi.Pointer<git_diff>, ffi.Size)>>('git_patch_from_diff');
   late final _git_patch_from_diff = _git_patch_from_diffPtr.asFunction<
       int Function(
           ffi.Pointer<ffi.Pointer<git_patch>>, ffi.Pointer<git_diff>, int)>();
@@ -23663,9 +23650,9 @@ class Libgit2 {
   int git_patch_from_blobs(
     ffi.Pointer<ffi.Pointer<git_patch>> out,
     ffi.Pointer<git_blob> old_blob,
-    ffi.Pointer<ffi.Int8> old_as_path,
+    ffi.Pointer<ffi.Char> old_as_path,
     ffi.Pointer<git_blob> new_blob,
-    ffi.Pointer<ffi.Int8> new_as_path,
+    ffi.Pointer<ffi.Char> new_as_path,
     ffi.Pointer<git_diff_options> opts,
   ) {
     return _git_patch_from_blobs(
@@ -23680,20 +23667,20 @@ class Libgit2 {
 
   late final _git_patch_from_blobsPtr = _lookup<
       ffi.NativeFunction<
-          ffi.Int32 Function(
+          ffi.Int Function(
               ffi.Pointer<ffi.Pointer<git_patch>>,
               ffi.Pointer<git_blob>,
-              ffi.Pointer<ffi.Int8>,
+              ffi.Pointer<ffi.Char>,
               ffi.Pointer<git_blob>,
-              ffi.Pointer<ffi.Int8>,
+              ffi.Pointer<ffi.Char>,
               ffi.Pointer<git_diff_options>)>>('git_patch_from_blobs');
   late final _git_patch_from_blobs = _git_patch_from_blobsPtr.asFunction<
       int Function(
           ffi.Pointer<ffi.Pointer<git_patch>>,
           ffi.Pointer<git_blob>,
-          ffi.Pointer<ffi.Int8>,
+          ffi.Pointer<ffi.Char>,
           ffi.Pointer<git_blob>,
-          ffi.Pointer<ffi.Int8>,
+          ffi.Pointer<ffi.Char>,
           ffi.Pointer<git_diff_options>)>();
 
   /// Directly generate a patch from the difference between a blob and a buffer.
@@ -23714,10 +23701,10 @@ class Libgit2 {
   int git_patch_from_blob_and_buffer(
     ffi.Pointer<ffi.Pointer<git_patch>> out,
     ffi.Pointer<git_blob> old_blob,
-    ffi.Pointer<ffi.Int8> old_as_path,
+    ffi.Pointer<ffi.Char> old_as_path,
     ffi.Pointer<ffi.Void> buffer,
     int buffer_len,
-    ffi.Pointer<ffi.Int8> buffer_as_path,
+    ffi.Pointer<ffi.Char> buffer_as_path,
     ffi.Pointer<git_diff_options> opts,
   ) {
     return _git_patch_from_blob_and_buffer(
@@ -23733,13 +23720,13 @@ class Libgit2 {
 
   late final _git_patch_from_blob_and_bufferPtr = _lookup<
           ffi.NativeFunction<
-              ffi.Int32 Function(
+              ffi.Int Function(
                   ffi.Pointer<ffi.Pointer<git_patch>>,
                   ffi.Pointer<git_blob>,
-                  ffi.Pointer<ffi.Int8>,
+                  ffi.Pointer<ffi.Char>,
                   ffi.Pointer<ffi.Void>,
-                  size_t,
-                  ffi.Pointer<ffi.Int8>,
+                  ffi.Size,
+                  ffi.Pointer<ffi.Char>,
                   ffi.Pointer<git_diff_options>)>>(
       'git_patch_from_blob_and_buffer');
   late final _git_patch_from_blob_and_buffer =
@@ -23747,10 +23734,10 @@ class Libgit2 {
           int Function(
               ffi.Pointer<ffi.Pointer<git_patch>>,
               ffi.Pointer<git_blob>,
-              ffi.Pointer<ffi.Int8>,
+              ffi.Pointer<ffi.Char>,
               ffi.Pointer<ffi.Void>,
               int,
-              ffi.Pointer<ffi.Int8>,
+              ffi.Pointer<ffi.Char>,
               ffi.Pointer<git_diff_options>)>();
 
   /// Directly generate a patch from the difference between two buffers.
@@ -23773,10 +23760,10 @@ class Libgit2 {
     ffi.Pointer<ffi.Pointer<git_patch>> out,
     ffi.Pointer<ffi.Void> old_buffer,
     int old_len,
-    ffi.Pointer<ffi.Int8> old_as_path,
+    ffi.Pointer<ffi.Char> old_as_path,
     ffi.Pointer<ffi.Void> new_buffer,
     int new_len,
-    ffi.Pointer<ffi.Int8> new_as_path,
+    ffi.Pointer<ffi.Char> new_as_path,
     ffi.Pointer<git_diff_options> opts,
   ) {
     return _git_patch_from_buffers(
@@ -23793,24 +23780,24 @@ class Libgit2 {
 
   late final _git_patch_from_buffersPtr = _lookup<
       ffi.NativeFunction<
-          ffi.Int32 Function(
+          ffi.Int Function(
               ffi.Pointer<ffi.Pointer<git_patch>>,
               ffi.Pointer<ffi.Void>,
-              size_t,
-              ffi.Pointer<ffi.Int8>,
+              ffi.Size,
+              ffi.Pointer<ffi.Char>,
               ffi.Pointer<ffi.Void>,
-              size_t,
-              ffi.Pointer<ffi.Int8>,
+              ffi.Size,
+              ffi.Pointer<ffi.Char>,
               ffi.Pointer<git_diff_options>)>>('git_patch_from_buffers');
   late final _git_patch_from_buffers = _git_patch_from_buffersPtr.asFunction<
       int Function(
           ffi.Pointer<ffi.Pointer<git_patch>>,
           ffi.Pointer<ffi.Void>,
           int,
-          ffi.Pointer<ffi.Int8>,
+          ffi.Pointer<ffi.Char>,
           ffi.Pointer<ffi.Void>,
           int,
-          ffi.Pointer<ffi.Int8>,
+          ffi.Pointer<ffi.Char>,
           ffi.Pointer<git_diff_options>)>();
 
   /// Free a git_patch object.
@@ -23863,7 +23850,7 @@ class Libgit2 {
   }
 
   late final _git_patch_num_hunksPtr =
-      _lookup<ffi.NativeFunction<size_t Function(ffi.Pointer<git_patch>)>>(
+      _lookup<ffi.NativeFunction<ffi.Size Function(ffi.Pointer<git_patch>)>>(
           'git_patch_num_hunks');
   late final _git_patch_num_hunks = _git_patch_num_hunksPtr
       .asFunction<int Function(ffi.Pointer<git_patch>)>();
@@ -23883,9 +23870,9 @@ class Libgit2 {
   /// @param patch The git_patch object
   /// @return 0 on success, <0 on error
   int git_patch_line_stats(
-    ffi.Pointer<size_t> total_context,
-    ffi.Pointer<size_t> total_additions,
-    ffi.Pointer<size_t> total_deletions,
+    ffi.Pointer<ffi.Size> total_context,
+    ffi.Pointer<ffi.Size> total_additions,
+    ffi.Pointer<ffi.Size> total_deletions,
     ffi.Pointer<git_patch> patch,
   ) {
     return _git_patch_line_stats(
@@ -23898,14 +23885,14 @@ class Libgit2 {
 
   late final _git_patch_line_statsPtr = _lookup<
       ffi.NativeFunction<
-          ffi.Int32 Function(
-              ffi.Pointer<size_t>,
-              ffi.Pointer<size_t>,
-              ffi.Pointer<size_t>,
+          ffi.Int Function(
+              ffi.Pointer<ffi.Size>,
+              ffi.Pointer<ffi.Size>,
+              ffi.Pointer<ffi.Size>,
               ffi.Pointer<git_patch>)>>('git_patch_line_stats');
   late final _git_patch_line_stats = _git_patch_line_statsPtr.asFunction<
-      int Function(ffi.Pointer<size_t>, ffi.Pointer<size_t>,
-          ffi.Pointer<size_t>, ffi.Pointer<git_patch>)>();
+      int Function(ffi.Pointer<ffi.Size>, ffi.Pointer<ffi.Size>,
+          ffi.Pointer<ffi.Size>, ffi.Pointer<git_patch>)>();
 
   /// Get the information about a hunk in a patch
   ///
@@ -23920,7 +23907,7 @@ class Libgit2 {
   /// @return 0 on success, GIT_ENOTFOUND if hunk_idx out of range, <0 on error
   int git_patch_get_hunk(
     ffi.Pointer<ffi.Pointer<git_diff_hunk>> out,
-    ffi.Pointer<size_t> lines_in_hunk,
+    ffi.Pointer<ffi.Size> lines_in_hunk,
     ffi.Pointer<git_patch> patch,
     int hunk_idx,
   ) {
@@ -23934,14 +23921,14 @@ class Libgit2 {
 
   late final _git_patch_get_hunkPtr = _lookup<
       ffi.NativeFunction<
-          ffi.Int32 Function(
+          ffi.Int Function(
               ffi.Pointer<ffi.Pointer<git_diff_hunk>>,
-              ffi.Pointer<size_t>,
+              ffi.Pointer<ffi.Size>,
               ffi.Pointer<git_patch>,
-              size_t)>>('git_patch_get_hunk');
+              ffi.Size)>>('git_patch_get_hunk');
   late final _git_patch_get_hunk = _git_patch_get_hunkPtr.asFunction<
-      int Function(ffi.Pointer<ffi.Pointer<git_diff_hunk>>, ffi.Pointer<size_t>,
-          ffi.Pointer<git_patch>, int)>();
+      int Function(ffi.Pointer<ffi.Pointer<git_diff_hunk>>,
+          ffi.Pointer<ffi.Size>, ffi.Pointer<git_patch>, int)>();
 
   /// Get the number of lines in a hunk.
   ///
@@ -23960,8 +23947,8 @@ class Libgit2 {
 
   late final _git_patch_num_lines_in_hunkPtr = _lookup<
       ffi.NativeFunction<
-          ffi.Int32 Function(
-              ffi.Pointer<git_patch>, size_t)>>('git_patch_num_lines_in_hunk');
+          ffi.Int Function(ffi.Pointer<git_patch>,
+              ffi.Size)>>('git_patch_num_lines_in_hunk');
   late final _git_patch_num_lines_in_hunk = _git_patch_num_lines_in_hunkPtr
       .asFunction<int Function(ffi.Pointer<git_patch>, int)>();
 
@@ -23993,11 +23980,11 @@ class Libgit2 {
 
   late final _git_patch_get_line_in_hunkPtr = _lookup<
       ffi.NativeFunction<
-          ffi.Int32 Function(
+          ffi.Int Function(
               ffi.Pointer<ffi.Pointer<git_diff_line>>,
               ffi.Pointer<git_patch>,
-              size_t,
-              size_t)>>('git_patch_get_line_in_hunk');
+              ffi.Size,
+              ffi.Size)>>('git_patch_get_line_in_hunk');
   late final _git_patch_get_line_in_hunk =
       _git_patch_get_line_in_hunkPtr.asFunction<
           int Function(ffi.Pointer<ffi.Pointer<git_diff_line>>,
@@ -24033,8 +24020,8 @@ class Libgit2 {
 
   late final _git_patch_sizePtr = _lookup<
       ffi.NativeFunction<
-          size_t Function(ffi.Pointer<git_patch>, ffi.Int32, ffi.Int32,
-              ffi.Int32)>>('git_patch_size');
+          ffi.Size Function(ffi.Pointer<git_patch>, ffi.Int, ffi.Int,
+              ffi.Int)>>('git_patch_size');
   late final _git_patch_size = _git_patch_sizePtr
       .asFunction<int Function(ffi.Pointer<git_patch>, int, int, int)>();
 
@@ -24062,7 +24049,7 @@ class Libgit2 {
 
   late final _git_patch_printPtr = _lookup<
       ffi.NativeFunction<
-          ffi.Int32 Function(ffi.Pointer<git_patch>, git_diff_line_cb,
+          ffi.Int Function(ffi.Pointer<git_patch>, git_diff_line_cb,
               ffi.Pointer<ffi.Void>)>>('git_patch_print');
   late final _git_patch_print = _git_patch_printPtr.asFunction<
       int Function(
@@ -24085,7 +24072,7 @@ class Libgit2 {
 
   late final _git_patch_to_bufPtr = _lookup<
       ffi.NativeFunction<
-          ffi.Int32 Function(ffi.Pointer<git_buf>,
+          ffi.Int Function(ffi.Pointer<git_buf>,
               ffi.Pointer<git_patch>)>>('git_patch_to_buf');
   late final _git_patch_to_buf = _git_patch_to_bufPtr
       .asFunction<int Function(ffi.Pointer<git_buf>, ffi.Pointer<git_patch>)>();
@@ -24107,7 +24094,7 @@ class Libgit2 {
 
   late final _git_pathspec_newPtr = _lookup<
       ffi.NativeFunction<
-          ffi.Int32 Function(ffi.Pointer<ffi.Pointer<git_pathspec>>,
+          ffi.Int Function(ffi.Pointer<ffi.Pointer<git_pathspec>>,
               ffi.Pointer<git_strarray>)>>('git_pathspec_new');
   late final _git_pathspec_new = _git_pathspec_newPtr.asFunction<
       int Function(
@@ -24144,7 +24131,7 @@ class Libgit2 {
   int git_pathspec_matches_path(
     ffi.Pointer<git_pathspec> ps,
     int flags,
-    ffi.Pointer<ffi.Int8> path,
+    ffi.Pointer<ffi.Char> path,
   ) {
     return _git_pathspec_matches_path(
       ps,
@@ -24155,12 +24142,12 @@ class Libgit2 {
 
   late final _git_pathspec_matches_pathPtr = _lookup<
       ffi.NativeFunction<
-          ffi.Int32 Function(ffi.Pointer<git_pathspec>, ffi.Uint32,
-              ffi.Pointer<ffi.Int8>)>>('git_pathspec_matches_path');
+          ffi.Int Function(ffi.Pointer<git_pathspec>, ffi.Uint32,
+              ffi.Pointer<ffi.Char>)>>('git_pathspec_matches_path');
   late final _git_pathspec_matches_path =
       _git_pathspec_matches_pathPtr.asFunction<
           int Function(
-              ffi.Pointer<git_pathspec>, int, ffi.Pointer<ffi.Int8>)>();
+              ffi.Pointer<git_pathspec>, int, ffi.Pointer<ffi.Char>)>();
 
   /// Match a pathspec against the working directory of a repository.
   ///
@@ -24198,7 +24185,7 @@ class Libgit2 {
 
   late final _git_pathspec_match_workdirPtr = _lookup<
       ffi.NativeFunction<
-          ffi.Int32 Function(
+          ffi.Int Function(
               ffi.Pointer<ffi.Pointer<git_pathspec_match_list>>,
               ffi.Pointer<git_repository>,
               ffi.Uint32,
@@ -24245,7 +24232,7 @@ class Libgit2 {
 
   late final _git_pathspec_match_indexPtr = _lookup<
       ffi.NativeFunction<
-          ffi.Int32 Function(
+          ffi.Int Function(
               ffi.Pointer<ffi.Pointer<git_pathspec_match_list>>,
               ffi.Pointer<git_index>,
               ffi.Uint32,
@@ -24287,7 +24274,7 @@ class Libgit2 {
 
   late final _git_pathspec_match_treePtr = _lookup<
       ffi.NativeFunction<
-          ffi.Int32 Function(
+          ffi.Int Function(
               ffi.Pointer<ffi.Pointer<git_pathspec_match_list>>,
               ffi.Pointer<git_tree>,
               ffi.Uint32,
@@ -24328,7 +24315,7 @@ class Libgit2 {
 
   late final _git_pathspec_match_diffPtr = _lookup<
       ffi.NativeFunction<
-          ffi.Int32 Function(
+          ffi.Int Function(
               ffi.Pointer<ffi.Pointer<git_pathspec_match_list>>,
               ffi.Pointer<git_diff>,
               ffi.Uint32,
@@ -24369,7 +24356,7 @@ class Libgit2 {
 
   late final _git_pathspec_match_list_entrycountPtr = _lookup<
           ffi.NativeFunction<
-              size_t Function(ffi.Pointer<git_pathspec_match_list>)>>(
+              ffi.Size Function(ffi.Pointer<git_pathspec_match_list>)>>(
       'git_pathspec_match_list_entrycount');
   late final _git_pathspec_match_list_entrycount =
       _git_pathspec_match_list_entrycountPtr
@@ -24383,7 +24370,7 @@ class Libgit2 {
   /// @param m The git_pathspec_match_list object
   /// @param pos The index into the list
   /// @return The filename of the match
-  ffi.Pointer<ffi.Int8> git_pathspec_match_list_entry(
+  ffi.Pointer<ffi.Char> git_pathspec_match_list_entry(
     ffi.Pointer<git_pathspec_match_list> m,
     int pos,
   ) {
@@ -24395,11 +24382,11 @@ class Libgit2 {
 
   late final _git_pathspec_match_list_entryPtr = _lookup<
       ffi.NativeFunction<
-          ffi.Pointer<ffi.Int8> Function(ffi.Pointer<git_pathspec_match_list>,
-              size_t)>>('git_pathspec_match_list_entry');
+          ffi.Pointer<ffi.Char> Function(ffi.Pointer<git_pathspec_match_list>,
+              ffi.Size)>>('git_pathspec_match_list_entry');
   late final _git_pathspec_match_list_entry =
       _git_pathspec_match_list_entryPtr.asFunction<
-          ffi.Pointer<ffi.Int8> Function(
+          ffi.Pointer<ffi.Char> Function(
               ffi.Pointer<git_pathspec_match_list>, int)>();
 
   /// Get a matching diff delta by position.
@@ -24424,7 +24411,7 @@ class Libgit2 {
       ffi.NativeFunction<
           ffi.Pointer<git_diff_delta> Function(
               ffi.Pointer<git_pathspec_match_list>,
-              size_t)>>('git_pathspec_match_list_diff_entry');
+              ffi.Size)>>('git_pathspec_match_list_diff_entry');
   late final _git_pathspec_match_list_diff_entry =
       _git_pathspec_match_list_diff_entryPtr.asFunction<
           ffi.Pointer<git_diff_delta> Function(
@@ -24447,7 +24434,7 @@ class Libgit2 {
 
   late final _git_pathspec_match_list_failed_entrycountPtr = _lookup<
           ffi.NativeFunction<
-              size_t Function(ffi.Pointer<git_pathspec_match_list>)>>(
+              ffi.Size Function(ffi.Pointer<git_pathspec_match_list>)>>(
       'git_pathspec_match_list_failed_entrycount');
   late final _git_pathspec_match_list_failed_entrycount =
       _git_pathspec_match_list_failed_entrycountPtr
@@ -24460,7 +24447,7 @@ class Libgit2 {
   /// @param m The git_pathspec_match_list object
   /// @param pos The index into the failed items
   /// @return The pathspec pattern that didn't match anything
-  ffi.Pointer<ffi.Int8> git_pathspec_match_list_failed_entry(
+  ffi.Pointer<ffi.Char> git_pathspec_match_list_failed_entry(
     ffi.Pointer<git_pathspec_match_list> m,
     int pos,
   ) {
@@ -24472,11 +24459,11 @@ class Libgit2 {
 
   late final _git_pathspec_match_list_failed_entryPtr = _lookup<
       ffi.NativeFunction<
-          ffi.Pointer<ffi.Int8> Function(ffi.Pointer<git_pathspec_match_list>,
-              size_t)>>('git_pathspec_match_list_failed_entry');
+          ffi.Pointer<ffi.Char> Function(ffi.Pointer<git_pathspec_match_list>,
+              ffi.Size)>>('git_pathspec_match_list_failed_entry');
   late final _git_pathspec_match_list_failed_entry =
       _git_pathspec_match_list_failed_entryPtr.asFunction<
-          ffi.Pointer<ffi.Int8> Function(
+          ffi.Pointer<ffi.Char> Function(
               ffi.Pointer<git_pathspec_match_list>, int)>();
 
   /// Create a new reference database with no backends.
@@ -24500,7 +24487,7 @@ class Libgit2 {
 
   late final _git_refdb_newPtr = _lookup<
       ffi.NativeFunction<
-          ffi.Int32 Function(ffi.Pointer<ffi.Pointer<git_refdb>>,
+          ffi.Int Function(ffi.Pointer<ffi.Pointer<git_refdb>>,
               ffi.Pointer<git_repository>)>>('git_refdb_new');
   late final _git_refdb_new = _git_refdb_newPtr.asFunction<
       int Function(
@@ -24528,7 +24515,7 @@ class Libgit2 {
 
   late final _git_refdb_openPtr = _lookup<
       ffi.NativeFunction<
-          ffi.Int32 Function(ffi.Pointer<ffi.Pointer<git_refdb>>,
+          ffi.Int Function(ffi.Pointer<ffi.Pointer<git_refdb>>,
               ffi.Pointer<git_repository>)>>('git_refdb_open');
   late final _git_refdb_open = _git_refdb_openPtr.asFunction<
       int Function(
@@ -24549,7 +24536,7 @@ class Libgit2 {
   }
 
   late final _git_refdb_compressPtr =
-      _lookup<ffi.NativeFunction<ffi.Int32 Function(ffi.Pointer<git_refdb>)>>(
+      _lookup<ffi.NativeFunction<ffi.Int Function(ffi.Pointer<git_refdb>)>>(
           'git_refdb_compress');
   late final _git_refdb_compress =
       _git_refdb_compressPtr.asFunction<int Function(ffi.Pointer<git_refdb>)>();
@@ -24587,7 +24574,7 @@ class Libgit2 {
   int git_reflog_read(
     ffi.Pointer<ffi.Pointer<git_reflog>> out,
     ffi.Pointer<git_repository> repo,
-    ffi.Pointer<ffi.Int8> name,
+    ffi.Pointer<ffi.Char> name,
   ) {
     return _git_reflog_read(
       out,
@@ -24598,13 +24585,13 @@ class Libgit2 {
 
   late final _git_reflog_readPtr = _lookup<
       ffi.NativeFunction<
-          ffi.Int32 Function(
+          ffi.Int Function(
               ffi.Pointer<ffi.Pointer<git_reflog>>,
               ffi.Pointer<git_repository>,
-              ffi.Pointer<ffi.Int8>)>>('git_reflog_read');
+              ffi.Pointer<ffi.Char>)>>('git_reflog_read');
   late final _git_reflog_read = _git_reflog_readPtr.asFunction<
       int Function(ffi.Pointer<ffi.Pointer<git_reflog>>,
-          ffi.Pointer<git_repository>, ffi.Pointer<ffi.Int8>)>();
+          ffi.Pointer<git_repository>, ffi.Pointer<ffi.Char>)>();
 
   /// Write an existing in-memory reflog object back to disk
   /// using an atomic file lock.
@@ -24620,7 +24607,7 @@ class Libgit2 {
   }
 
   late final _git_reflog_writePtr =
-      _lookup<ffi.NativeFunction<ffi.Int32 Function(ffi.Pointer<git_reflog>)>>(
+      _lookup<ffi.NativeFunction<ffi.Int Function(ffi.Pointer<git_reflog>)>>(
           'git_reflog_write');
   late final _git_reflog_write =
       _git_reflog_writePtr.asFunction<int Function(ffi.Pointer<git_reflog>)>();
@@ -24638,7 +24625,7 @@ class Libgit2 {
     ffi.Pointer<git_reflog> reflog,
     ffi.Pointer<git_oid> id,
     ffi.Pointer<git_signature> committer,
-    ffi.Pointer<ffi.Int8> msg,
+    ffi.Pointer<ffi.Char> msg,
   ) {
     return _git_reflog_append(
       reflog,
@@ -24650,14 +24637,14 @@ class Libgit2 {
 
   late final _git_reflog_appendPtr = _lookup<
       ffi.NativeFunction<
-          ffi.Int32 Function(
+          ffi.Int Function(
               ffi.Pointer<git_reflog>,
               ffi.Pointer<git_oid>,
               ffi.Pointer<git_signature>,
-              ffi.Pointer<ffi.Int8>)>>('git_reflog_append');
+              ffi.Pointer<ffi.Char>)>>('git_reflog_append');
   late final _git_reflog_append = _git_reflog_appendPtr.asFunction<
       int Function(ffi.Pointer<git_reflog>, ffi.Pointer<git_oid>,
-          ffi.Pointer<git_signature>, ffi.Pointer<ffi.Int8>)>();
+          ffi.Pointer<git_signature>, ffi.Pointer<ffi.Char>)>();
 
   /// Rename a reflog
   ///
@@ -24672,8 +24659,8 @@ class Libgit2 {
   /// @return 0 on success, GIT_EINVALIDSPEC or an error code
   int git_reflog_rename(
     ffi.Pointer<git_repository> repo,
-    ffi.Pointer<ffi.Int8> old_name,
-    ffi.Pointer<ffi.Int8> name,
+    ffi.Pointer<ffi.Char> old_name,
+    ffi.Pointer<ffi.Char> name,
   ) {
     return _git_reflog_rename(
       repo,
@@ -24684,11 +24671,11 @@ class Libgit2 {
 
   late final _git_reflog_renamePtr = _lookup<
       ffi.NativeFunction<
-          ffi.Int32 Function(ffi.Pointer<git_repository>, ffi.Pointer<ffi.Int8>,
-              ffi.Pointer<ffi.Int8>)>>('git_reflog_rename');
+          ffi.Int Function(ffi.Pointer<git_repository>, ffi.Pointer<ffi.Char>,
+              ffi.Pointer<ffi.Char>)>>('git_reflog_rename');
   late final _git_reflog_rename = _git_reflog_renamePtr.asFunction<
-      int Function(ffi.Pointer<git_repository>, ffi.Pointer<ffi.Int8>,
-          ffi.Pointer<ffi.Int8>)>();
+      int Function(ffi.Pointer<git_repository>, ffi.Pointer<ffi.Char>,
+          ffi.Pointer<ffi.Char>)>();
 
   /// Delete the reflog for the given reference
   ///
@@ -24697,7 +24684,7 @@ class Libgit2 {
   /// @return 0 or an error code
   int git_reflog_delete(
     ffi.Pointer<git_repository> repo,
-    ffi.Pointer<ffi.Int8> name,
+    ffi.Pointer<ffi.Char> name,
   ) {
     return _git_reflog_delete(
       repo,
@@ -24707,10 +24694,10 @@ class Libgit2 {
 
   late final _git_reflog_deletePtr = _lookup<
       ffi.NativeFunction<
-          ffi.Int32 Function(ffi.Pointer<git_repository>,
-              ffi.Pointer<ffi.Int8>)>>('git_reflog_delete');
+          ffi.Int Function(ffi.Pointer<git_repository>,
+              ffi.Pointer<ffi.Char>)>>('git_reflog_delete');
   late final _git_reflog_delete = _git_reflog_deletePtr.asFunction<
-      int Function(ffi.Pointer<git_repository>, ffi.Pointer<ffi.Int8>)>();
+      int Function(ffi.Pointer<git_repository>, ffi.Pointer<ffi.Char>)>();
 
   /// Get the number of log entries in a reflog
   ///
@@ -24725,7 +24712,7 @@ class Libgit2 {
   }
 
   late final _git_reflog_entrycountPtr =
-      _lookup<ffi.NativeFunction<size_t Function(ffi.Pointer<git_reflog>)>>(
+      _lookup<ffi.NativeFunction<ffi.Size Function(ffi.Pointer<git_reflog>)>>(
           'git_reflog_entrycount');
   late final _git_reflog_entrycount = _git_reflog_entrycountPtr
       .asFunction<int Function(ffi.Pointer<git_reflog>)>();
@@ -24752,7 +24739,7 @@ class Libgit2 {
   late final _git_reflog_entry_byindexPtr = _lookup<
       ffi.NativeFunction<
           ffi.Pointer<git_reflog_entry> Function(
-              ffi.Pointer<git_reflog>, size_t)>>('git_reflog_entry_byindex');
+              ffi.Pointer<git_reflog>, ffi.Size)>>('git_reflog_entry_byindex');
   late final _git_reflog_entry_byindex =
       _git_reflog_entry_byindexPtr.asFunction<
           ffi.Pointer<git_reflog_entry> Function(
@@ -24787,8 +24774,8 @@ class Libgit2 {
 
   late final _git_reflog_dropPtr = _lookup<
       ffi.NativeFunction<
-          ffi.Int32 Function(
-              ffi.Pointer<git_reflog>, size_t, ffi.Int32)>>('git_reflog_drop');
+          ffi.Int Function(
+              ffi.Pointer<git_reflog>, ffi.Size, ffi.Int)>>('git_reflog_drop');
   late final _git_reflog_drop = _git_reflog_dropPtr
       .asFunction<int Function(ffi.Pointer<git_reflog>, int, int)>();
 
@@ -24854,7 +24841,7 @@ class Libgit2 {
   ///
   /// @param entry a reflog entry
   /// @return the log msg
-  ffi.Pointer<ffi.Int8> git_reflog_entry_message(
+  ffi.Pointer<ffi.Char> git_reflog_entry_message(
     ffi.Pointer<git_reflog_entry> entry,
   ) {
     return _git_reflog_entry_message(
@@ -24864,11 +24851,11 @@ class Libgit2 {
 
   late final _git_reflog_entry_messagePtr = _lookup<
       ffi.NativeFunction<
-          ffi.Pointer<ffi.Int8> Function(
+          ffi.Pointer<ffi.Char> Function(
               ffi.Pointer<git_reflog_entry>)>>('git_reflog_entry_message');
   late final _git_reflog_entry_message =
       _git_reflog_entry_messagePtr.asFunction<
-          ffi.Pointer<ffi.Int8> Function(ffi.Pointer<git_reflog_entry>)>();
+          ffi.Pointer<ffi.Char> Function(ffi.Pointer<git_reflog_entry>)>();
 
   /// Free the reflog
   ///
@@ -24931,11 +24918,8 @@ class Libgit2 {
 
   late final _git_resetPtr = _lookup<
       ffi.NativeFunction<
-          ffi.Int32 Function(
-              ffi.Pointer<git_repository>,
-              ffi.Pointer<git_object>,
-              ffi.Int32,
-              ffi.Pointer<git_checkout_options>)>>('git_reset');
+          ffi.Int Function(ffi.Pointer<git_repository>, ffi.Pointer<git_object>,
+              ffi.Int32, ffi.Pointer<git_checkout_options>)>>('git_reset');
   late final _git_reset = _git_resetPtr.asFunction<
       int Function(ffi.Pointer<git_repository>, ffi.Pointer<git_object>, int,
           ffi.Pointer<git_checkout_options>)>();
@@ -24966,7 +24950,7 @@ class Libgit2 {
 
   late final _git_reset_from_annotatedPtr = _lookup<
       ffi.NativeFunction<
-          ffi.Int32 Function(
+          ffi.Int Function(
               ffi.Pointer<git_repository>,
               ffi.Pointer<git_annotated_commit>,
               ffi.Int32,
@@ -25009,9 +24993,7 @@ class Libgit2 {
 
   late final _git_reset_defaultPtr = _lookup<
       ffi.NativeFunction<
-          ffi.Int32 Function(
-              ffi.Pointer<git_repository>,
-              ffi.Pointer<git_object>,
+          ffi.Int Function(ffi.Pointer<git_repository>, ffi.Pointer<git_object>,
               ffi.Pointer<git_strarray>)>>('git_reset_default');
   late final _git_reset_default = _git_reset_defaultPtr.asFunction<
       int Function(ffi.Pointer<git_repository>, ffi.Pointer<git_object>,
@@ -25045,7 +25027,7 @@ class Libgit2 {
 
   late final _git_revwalk_newPtr = _lookup<
       ffi.NativeFunction<
-          ffi.Int32 Function(ffi.Pointer<ffi.Pointer<git_revwalk>>,
+          ffi.Int Function(ffi.Pointer<ffi.Pointer<git_revwalk>>,
               ffi.Pointer<git_repository>)>>('git_revwalk_new');
   late final _git_revwalk_new = _git_revwalk_newPtr.asFunction<
       int Function(ffi.Pointer<ffi.Pointer<git_revwalk>>,
@@ -25072,7 +25054,7 @@ class Libgit2 {
   }
 
   late final _git_revwalk_resetPtr =
-      _lookup<ffi.NativeFunction<ffi.Int32 Function(ffi.Pointer<git_revwalk>)>>(
+      _lookup<ffi.NativeFunction<ffi.Int Function(ffi.Pointer<git_revwalk>)>>(
           'git_revwalk_reset');
   late final _git_revwalk_reset = _git_revwalk_resetPtr
       .asFunction<int Function(ffi.Pointer<git_revwalk>)>();
@@ -25104,7 +25086,7 @@ class Libgit2 {
 
   late final _git_revwalk_pushPtr = _lookup<
       ffi.NativeFunction<
-          ffi.Int32 Function(ffi.Pointer<git_revwalk>,
+          ffi.Int Function(ffi.Pointer<git_revwalk>,
               ffi.Pointer<git_oid>)>>('git_revwalk_push');
   late final _git_revwalk_push = _git_revwalk_pushPtr.asFunction<
       int Function(ffi.Pointer<git_revwalk>, ffi.Pointer<git_oid>)>();
@@ -25125,7 +25107,7 @@ class Libgit2 {
   /// @return 0 or an error code
   int git_revwalk_push_glob(
     ffi.Pointer<git_revwalk> walk,
-    ffi.Pointer<ffi.Int8> glob,
+    ffi.Pointer<ffi.Char> glob,
   ) {
     return _git_revwalk_push_glob(
       walk,
@@ -25135,10 +25117,10 @@ class Libgit2 {
 
   late final _git_revwalk_push_globPtr = _lookup<
       ffi.NativeFunction<
-          ffi.Int32 Function(ffi.Pointer<git_revwalk>,
-              ffi.Pointer<ffi.Int8>)>>('git_revwalk_push_glob');
+          ffi.Int Function(ffi.Pointer<git_revwalk>,
+              ffi.Pointer<ffi.Char>)>>('git_revwalk_push_glob');
   late final _git_revwalk_push_glob = _git_revwalk_push_globPtr.asFunction<
-      int Function(ffi.Pointer<git_revwalk>, ffi.Pointer<ffi.Int8>)>();
+      int Function(ffi.Pointer<git_revwalk>, ffi.Pointer<ffi.Char>)>();
 
   /// Push the repository's HEAD
   ///
@@ -25153,7 +25135,7 @@ class Libgit2 {
   }
 
   late final _git_revwalk_push_headPtr =
-      _lookup<ffi.NativeFunction<ffi.Int32 Function(ffi.Pointer<git_revwalk>)>>(
+      _lookup<ffi.NativeFunction<ffi.Int Function(ffi.Pointer<git_revwalk>)>>(
           'git_revwalk_push_head');
   late final _git_revwalk_push_head = _git_revwalk_push_headPtr
       .asFunction<int Function(ffi.Pointer<git_revwalk>)>();
@@ -25181,7 +25163,7 @@ class Libgit2 {
 
   late final _git_revwalk_hidePtr = _lookup<
       ffi.NativeFunction<
-          ffi.Int32 Function(ffi.Pointer<git_revwalk>,
+          ffi.Int Function(ffi.Pointer<git_revwalk>,
               ffi.Pointer<git_oid>)>>('git_revwalk_hide');
   late final _git_revwalk_hide = _git_revwalk_hidePtr.asFunction<
       int Function(ffi.Pointer<git_revwalk>, ffi.Pointer<git_oid>)>();
@@ -25203,7 +25185,7 @@ class Libgit2 {
   /// @return 0 or an error code
   int git_revwalk_hide_glob(
     ffi.Pointer<git_revwalk> walk,
-    ffi.Pointer<ffi.Int8> glob,
+    ffi.Pointer<ffi.Char> glob,
   ) {
     return _git_revwalk_hide_glob(
       walk,
@@ -25213,10 +25195,10 @@ class Libgit2 {
 
   late final _git_revwalk_hide_globPtr = _lookup<
       ffi.NativeFunction<
-          ffi.Int32 Function(ffi.Pointer<git_revwalk>,
-              ffi.Pointer<ffi.Int8>)>>('git_revwalk_hide_glob');
+          ffi.Int Function(ffi.Pointer<git_revwalk>,
+              ffi.Pointer<ffi.Char>)>>('git_revwalk_hide_glob');
   late final _git_revwalk_hide_glob = _git_revwalk_hide_globPtr.asFunction<
-      int Function(ffi.Pointer<git_revwalk>, ffi.Pointer<ffi.Int8>)>();
+      int Function(ffi.Pointer<git_revwalk>, ffi.Pointer<ffi.Char>)>();
 
   /// Hide the repository's HEAD
   ///
@@ -25231,7 +25213,7 @@ class Libgit2 {
   }
 
   late final _git_revwalk_hide_headPtr =
-      _lookup<ffi.NativeFunction<ffi.Int32 Function(ffi.Pointer<git_revwalk>)>>(
+      _lookup<ffi.NativeFunction<ffi.Int Function(ffi.Pointer<git_revwalk>)>>(
           'git_revwalk_hide_head');
   late final _git_revwalk_hide_head = _git_revwalk_hide_headPtr
       .asFunction<int Function(ffi.Pointer<git_revwalk>)>();
@@ -25245,7 +25227,7 @@ class Libgit2 {
   /// @return 0 or an error code
   int git_revwalk_push_ref(
     ffi.Pointer<git_revwalk> walk,
-    ffi.Pointer<ffi.Int8> refname,
+    ffi.Pointer<ffi.Char> refname,
   ) {
     return _git_revwalk_push_ref(
       walk,
@@ -25255,10 +25237,10 @@ class Libgit2 {
 
   late final _git_revwalk_push_refPtr = _lookup<
       ffi.NativeFunction<
-          ffi.Int32 Function(ffi.Pointer<git_revwalk>,
-              ffi.Pointer<ffi.Int8>)>>('git_revwalk_push_ref');
+          ffi.Int Function(ffi.Pointer<git_revwalk>,
+              ffi.Pointer<ffi.Char>)>>('git_revwalk_push_ref');
   late final _git_revwalk_push_ref = _git_revwalk_push_refPtr.asFunction<
-      int Function(ffi.Pointer<git_revwalk>, ffi.Pointer<ffi.Int8>)>();
+      int Function(ffi.Pointer<git_revwalk>, ffi.Pointer<ffi.Char>)>();
 
   /// Hide the OID pointed to by a reference
   ///
@@ -25269,7 +25251,7 @@ class Libgit2 {
   /// @return 0 or an error code
   int git_revwalk_hide_ref(
     ffi.Pointer<git_revwalk> walk,
-    ffi.Pointer<ffi.Int8> refname,
+    ffi.Pointer<ffi.Char> refname,
   ) {
     return _git_revwalk_hide_ref(
       walk,
@@ -25279,10 +25261,10 @@ class Libgit2 {
 
   late final _git_revwalk_hide_refPtr = _lookup<
       ffi.NativeFunction<
-          ffi.Int32 Function(ffi.Pointer<git_revwalk>,
-              ffi.Pointer<ffi.Int8>)>>('git_revwalk_hide_ref');
+          ffi.Int Function(ffi.Pointer<git_revwalk>,
+              ffi.Pointer<ffi.Char>)>>('git_revwalk_hide_ref');
   late final _git_revwalk_hide_ref = _git_revwalk_hide_refPtr.asFunction<
-      int Function(ffi.Pointer<git_revwalk>, ffi.Pointer<ffi.Int8>)>();
+      int Function(ffi.Pointer<git_revwalk>, ffi.Pointer<ffi.Char>)>();
 
   /// Get the next commit from the revision walk.
   ///
@@ -25312,7 +25294,7 @@ class Libgit2 {
 
   late final _git_revwalk_nextPtr = _lookup<
       ffi.NativeFunction<
-          ffi.Int32 Function(ffi.Pointer<git_oid>,
+          ffi.Int Function(ffi.Pointer<git_oid>,
               ffi.Pointer<git_revwalk>)>>('git_revwalk_next');
   late final _git_revwalk_next = _git_revwalk_nextPtr.asFunction<
       int Function(ffi.Pointer<git_oid>, ffi.Pointer<git_revwalk>)>();
@@ -25337,8 +25319,8 @@ class Libgit2 {
 
   late final _git_revwalk_sortingPtr = _lookup<
       ffi.NativeFunction<
-          ffi.Int32 Function(
-              ffi.Pointer<git_revwalk>, ffi.Uint32)>>('git_revwalk_sorting');
+          ffi.Int Function(ffi.Pointer<git_revwalk>,
+              ffi.UnsignedInt)>>('git_revwalk_sorting');
   late final _git_revwalk_sorting = _git_revwalk_sortingPtr
       .asFunction<int Function(ffi.Pointer<git_revwalk>, int)>();
 
@@ -25354,7 +25336,7 @@ class Libgit2 {
   /// @return 0 or an error code
   int git_revwalk_push_range(
     ffi.Pointer<git_revwalk> walk,
-    ffi.Pointer<ffi.Int8> range,
+    ffi.Pointer<ffi.Char> range,
   ) {
     return _git_revwalk_push_range(
       walk,
@@ -25364,10 +25346,10 @@ class Libgit2 {
 
   late final _git_revwalk_push_rangePtr = _lookup<
       ffi.NativeFunction<
-          ffi.Int32 Function(ffi.Pointer<git_revwalk>,
-              ffi.Pointer<ffi.Int8>)>>('git_revwalk_push_range');
+          ffi.Int Function(ffi.Pointer<git_revwalk>,
+              ffi.Pointer<ffi.Char>)>>('git_revwalk_push_range');
   late final _git_revwalk_push_range = _git_revwalk_push_rangePtr.asFunction<
-      int Function(ffi.Pointer<git_revwalk>, ffi.Pointer<ffi.Int8>)>();
+      int Function(ffi.Pointer<git_revwalk>, ffi.Pointer<ffi.Char>)>();
 
   /// Simplify the history by first-parent
   ///
@@ -25384,7 +25366,7 @@ class Libgit2 {
   }
 
   late final _git_revwalk_simplify_first_parentPtr =
-      _lookup<ffi.NativeFunction<ffi.Int32 Function(ffi.Pointer<git_revwalk>)>>(
+      _lookup<ffi.NativeFunction<ffi.Int Function(ffi.Pointer<git_revwalk>)>>(
           'git_revwalk_simplify_first_parent');
   late final _git_revwalk_simplify_first_parent =
       _git_revwalk_simplify_first_parentPtr
@@ -25447,7 +25429,7 @@ class Libgit2 {
 
   late final _git_revwalk_add_hide_cbPtr = _lookup<
       ffi.NativeFunction<
-          ffi.Int32 Function(ffi.Pointer<git_revwalk>, git_revwalk_hide_cb,
+          ffi.Int Function(ffi.Pointer<git_revwalk>, git_revwalk_hide_cb,
               ffi.Pointer<ffi.Void>)>>('git_revwalk_add_hide_cb');
   late final _git_revwalk_add_hide_cb = _git_revwalk_add_hide_cbPtr.asFunction<
       int Function(ffi.Pointer<git_revwalk>, git_revwalk_hide_cb,
@@ -25468,8 +25450,8 @@ class Libgit2 {
   /// @return 0 or an error code
   int git_signature_new(
     ffi.Pointer<ffi.Pointer<git_signature>> out,
-    ffi.Pointer<ffi.Int8> name,
-    ffi.Pointer<ffi.Int8> email,
+    ffi.Pointer<ffi.Char> name,
+    ffi.Pointer<ffi.Char> email,
     int time,
     int offset,
   ) {
@@ -25484,15 +25466,15 @@ class Libgit2 {
 
   late final _git_signature_newPtr = _lookup<
       ffi.NativeFunction<
-          ffi.Int32 Function(
+          ffi.Int Function(
               ffi.Pointer<ffi.Pointer<git_signature>>,
-              ffi.Pointer<ffi.Int8>,
-              ffi.Pointer<ffi.Int8>,
+              ffi.Pointer<ffi.Char>,
+              ffi.Pointer<ffi.Char>,
               git_time_t,
-              ffi.Int32)>>('git_signature_new');
+              ffi.Int)>>('git_signature_new');
   late final _git_signature_new = _git_signature_newPtr.asFunction<
       int Function(ffi.Pointer<ffi.Pointer<git_signature>>,
-          ffi.Pointer<ffi.Int8>, ffi.Pointer<ffi.Int8>, int, int)>();
+          ffi.Pointer<ffi.Char>, ffi.Pointer<ffi.Char>, int, int)>();
 
   /// Create a new action signature with a timestamp of 'now'.
   ///
@@ -25504,8 +25486,8 @@ class Libgit2 {
   /// @return 0 or an error code
   int git_signature_now(
     ffi.Pointer<ffi.Pointer<git_signature>> out,
-    ffi.Pointer<ffi.Int8> name,
-    ffi.Pointer<ffi.Int8> email,
+    ffi.Pointer<ffi.Char> name,
+    ffi.Pointer<ffi.Char> email,
   ) {
     return _git_signature_now(
       out,
@@ -25516,13 +25498,13 @@ class Libgit2 {
 
   late final _git_signature_nowPtr = _lookup<
       ffi.NativeFunction<
-          ffi.Int32 Function(
+          ffi.Int Function(
               ffi.Pointer<ffi.Pointer<git_signature>>,
-              ffi.Pointer<ffi.Int8>,
-              ffi.Pointer<ffi.Int8>)>>('git_signature_now');
+              ffi.Pointer<ffi.Char>,
+              ffi.Pointer<ffi.Char>)>>('git_signature_now');
   late final _git_signature_now = _git_signature_nowPtr.asFunction<
       int Function(ffi.Pointer<ffi.Pointer<git_signature>>,
-          ffi.Pointer<ffi.Int8>, ffi.Pointer<ffi.Int8>)>();
+          ffi.Pointer<ffi.Char>, ffi.Pointer<ffi.Char>)>();
 
   /// Create a new action signature with default user and now timestamp.
   ///
@@ -25546,7 +25528,7 @@ class Libgit2 {
 
   late final _git_signature_defaultPtr = _lookup<
       ffi.NativeFunction<
-          ffi.Int32 Function(ffi.Pointer<ffi.Pointer<git_signature>>,
+          ffi.Int Function(ffi.Pointer<ffi.Pointer<git_signature>>,
               ffi.Pointer<git_repository>)>>('git_signature_default');
   late final _git_signature_default = _git_signature_defaultPtr.asFunction<
       int Function(ffi.Pointer<ffi.Pointer<git_signature>>,
@@ -25563,7 +25545,7 @@ class Libgit2 {
   /// @return 0 on success, GIT_EINVALID if the signature is not parseable, or an error code
   int git_signature_from_buffer(
     ffi.Pointer<ffi.Pointer<git_signature>> out,
-    ffi.Pointer<ffi.Int8> buf,
+    ffi.Pointer<ffi.Char> buf,
   ) {
     return _git_signature_from_buffer(
       out,
@@ -25573,12 +25555,12 @@ class Libgit2 {
 
   late final _git_signature_from_bufferPtr = _lookup<
       ffi.NativeFunction<
-          ffi.Int32 Function(ffi.Pointer<ffi.Pointer<git_signature>>,
-              ffi.Pointer<ffi.Int8>)>>('git_signature_from_buffer');
+          ffi.Int Function(ffi.Pointer<ffi.Pointer<git_signature>>,
+              ffi.Pointer<ffi.Char>)>>('git_signature_from_buffer');
   late final _git_signature_from_buffer =
       _git_signature_from_bufferPtr.asFunction<
           int Function(ffi.Pointer<ffi.Pointer<git_signature>>,
-              ffi.Pointer<ffi.Int8>)>();
+              ffi.Pointer<ffi.Char>)>();
 
   /// Create a copy of an existing signature.  All internal strings are also
   /// duplicated.
@@ -25600,7 +25582,7 @@ class Libgit2 {
 
   late final _git_signature_dupPtr = _lookup<
       ffi.NativeFunction<
-          ffi.Int32 Function(ffi.Pointer<ffi.Pointer<git_signature>>,
+          ffi.Int Function(ffi.Pointer<ffi.Pointer<git_signature>>,
               ffi.Pointer<git_signature>)>>('git_signature_dup');
   late final _git_signature_dup = _git_signature_dupPtr.asFunction<
       int Function(ffi.Pointer<ffi.Pointer<git_signature>>,
@@ -25647,7 +25629,7 @@ class Libgit2 {
 
   late final _git_tag_lookupPtr = _lookup<
       ffi.NativeFunction<
-          ffi.Int32 Function(
+          ffi.Int Function(
               ffi.Pointer<ffi.Pointer<git_tag>>,
               ffi.Pointer<git_repository>,
               ffi.Pointer<git_oid>)>>('git_tag_lookup');
@@ -25681,11 +25663,11 @@ class Libgit2 {
 
   late final _git_tag_lookup_prefixPtr = _lookup<
       ffi.NativeFunction<
-          ffi.Int32 Function(
+          ffi.Int Function(
               ffi.Pointer<ffi.Pointer<git_tag>>,
               ffi.Pointer<git_repository>,
               ffi.Pointer<git_oid>,
-              size_t)>>('git_tag_lookup_prefix');
+              ffi.Size)>>('git_tag_lookup_prefix');
   late final _git_tag_lookup_prefix = _git_tag_lookup_prefixPtr.asFunction<
       int Function(ffi.Pointer<ffi.Pointer<git_tag>>,
           ffi.Pointer<git_repository>, ffi.Pointer<git_oid>, int)>();
@@ -25769,7 +25751,7 @@ class Libgit2 {
 
   late final _git_tag_targetPtr = _lookup<
       ffi.NativeFunction<
-          ffi.Int32 Function(ffi.Pointer<ffi.Pointer<git_object>>,
+          ffi.Int Function(ffi.Pointer<ffi.Pointer<git_object>>,
               ffi.Pointer<git_tag>)>>('git_tag_target');
   late final _git_tag_target = _git_tag_targetPtr.asFunction<
       int Function(
@@ -25816,7 +25798,7 @@ class Libgit2 {
   ///
   /// @param tag a previously loaded tag.
   /// @return name of the tag
-  ffi.Pointer<ffi.Int8> git_tag_name(
+  ffi.Pointer<ffi.Char> git_tag_name(
     ffi.Pointer<git_tag> tag,
   ) {
     return _git_tag_name(
@@ -25826,10 +25808,10 @@ class Libgit2 {
 
   late final _git_tag_namePtr = _lookup<
       ffi.NativeFunction<
-          ffi.Pointer<ffi.Int8> Function(
+          ffi.Pointer<ffi.Char> Function(
               ffi.Pointer<git_tag>)>>('git_tag_name');
   late final _git_tag_name = _git_tag_namePtr
-      .asFunction<ffi.Pointer<ffi.Int8> Function(ffi.Pointer<git_tag>)>();
+      .asFunction<ffi.Pointer<ffi.Char> Function(ffi.Pointer<git_tag>)>();
 
   /// Get the tagger (author) of a tag
   ///
@@ -25854,7 +25836,7 @@ class Libgit2 {
   ///
   /// @param tag a previously loaded tag.
   /// @return message of the tag or NULL when unspecified
-  ffi.Pointer<ffi.Int8> git_tag_message(
+  ffi.Pointer<ffi.Char> git_tag_message(
     ffi.Pointer<git_tag> tag,
   ) {
     return _git_tag_message(
@@ -25864,10 +25846,10 @@ class Libgit2 {
 
   late final _git_tag_messagePtr = _lookup<
       ffi.NativeFunction<
-          ffi.Pointer<ffi.Int8> Function(
+          ffi.Pointer<ffi.Char> Function(
               ffi.Pointer<git_tag>)>>('git_tag_message');
   late final _git_tag_message = _git_tag_messagePtr
-      .asFunction<ffi.Pointer<ffi.Int8> Function(ffi.Pointer<git_tag>)>();
+      .asFunction<ffi.Pointer<ffi.Char> Function(ffi.Pointer<git_tag>)>();
 
   /// Create a new tag in the repository from an object
   ///
@@ -25909,10 +25891,10 @@ class Libgit2 {
   int git_tag_create(
     ffi.Pointer<git_oid> oid,
     ffi.Pointer<git_repository> repo,
-    ffi.Pointer<ffi.Int8> tag_name,
+    ffi.Pointer<ffi.Char> tag_name,
     ffi.Pointer<git_object> target,
     ffi.Pointer<git_signature> tagger,
-    ffi.Pointer<ffi.Int8> message,
+    ffi.Pointer<ffi.Char> message,
     int force,
   ) {
     return _git_tag_create(
@@ -25928,22 +25910,22 @@ class Libgit2 {
 
   late final _git_tag_createPtr = _lookup<
       ffi.NativeFunction<
-          ffi.Int32 Function(
+          ffi.Int Function(
               ffi.Pointer<git_oid>,
               ffi.Pointer<git_repository>,
-              ffi.Pointer<ffi.Int8>,
+              ffi.Pointer<ffi.Char>,
               ffi.Pointer<git_object>,
               ffi.Pointer<git_signature>,
-              ffi.Pointer<ffi.Int8>,
-              ffi.Int32)>>('git_tag_create');
+              ffi.Pointer<ffi.Char>,
+              ffi.Int)>>('git_tag_create');
   late final _git_tag_create = _git_tag_createPtr.asFunction<
       int Function(
           ffi.Pointer<git_oid>,
           ffi.Pointer<git_repository>,
-          ffi.Pointer<ffi.Int8>,
+          ffi.Pointer<ffi.Char>,
           ffi.Pointer<git_object>,
           ffi.Pointer<git_signature>,
-          ffi.Pointer<ffi.Int8>,
+          ffi.Pointer<ffi.Char>,
           int)>();
 
   /// Create a new tag in the object database pointing to a git_object
@@ -25970,10 +25952,10 @@ class Libgit2 {
   int git_tag_annotation_create(
     ffi.Pointer<git_oid> oid,
     ffi.Pointer<git_repository> repo,
-    ffi.Pointer<ffi.Int8> tag_name,
+    ffi.Pointer<ffi.Char> tag_name,
     ffi.Pointer<git_object> target,
     ffi.Pointer<git_signature> tagger,
-    ffi.Pointer<ffi.Int8> message,
+    ffi.Pointer<ffi.Char> message,
   ) {
     return _git_tag_annotation_create(
       oid,
@@ -25987,22 +25969,22 @@ class Libgit2 {
 
   late final _git_tag_annotation_createPtr = _lookup<
       ffi.NativeFunction<
-          ffi.Int32 Function(
+          ffi.Int Function(
               ffi.Pointer<git_oid>,
               ffi.Pointer<git_repository>,
-              ffi.Pointer<ffi.Int8>,
+              ffi.Pointer<ffi.Char>,
               ffi.Pointer<git_object>,
               ffi.Pointer<git_signature>,
-              ffi.Pointer<ffi.Int8>)>>('git_tag_annotation_create');
+              ffi.Pointer<ffi.Char>)>>('git_tag_annotation_create');
   late final _git_tag_annotation_create =
       _git_tag_annotation_createPtr.asFunction<
           int Function(
               ffi.Pointer<git_oid>,
               ffi.Pointer<git_repository>,
-              ffi.Pointer<ffi.Int8>,
+              ffi.Pointer<ffi.Char>,
               ffi.Pointer<git_object>,
               ffi.Pointer<git_signature>,
-              ffi.Pointer<ffi.Int8>)>();
+              ffi.Pointer<ffi.Char>)>();
 
   /// Create a new tag in the repository from a buffer
   ///
@@ -26014,7 +25996,7 @@ class Libgit2 {
   int git_tag_create_from_buffer(
     ffi.Pointer<git_oid> oid,
     ffi.Pointer<git_repository> repo,
-    ffi.Pointer<ffi.Int8> buffer,
+    ffi.Pointer<ffi.Char> buffer,
     int force,
   ) {
     return _git_tag_create_from_buffer(
@@ -26027,12 +26009,12 @@ class Libgit2 {
 
   late final _git_tag_create_from_bufferPtr = _lookup<
       ffi.NativeFunction<
-          ffi.Int32 Function(ffi.Pointer<git_oid>, ffi.Pointer<git_repository>,
-              ffi.Pointer<ffi.Int8>, ffi.Int32)>>('git_tag_create_from_buffer');
+          ffi.Int Function(ffi.Pointer<git_oid>, ffi.Pointer<git_repository>,
+              ffi.Pointer<ffi.Char>, ffi.Int)>>('git_tag_create_from_buffer');
   late final _git_tag_create_from_buffer =
       _git_tag_create_from_bufferPtr.asFunction<
           int Function(ffi.Pointer<git_oid>, ffi.Pointer<git_repository>,
-              ffi.Pointer<ffi.Int8>, int)>();
+              ffi.Pointer<ffi.Char>, int)>();
 
   /// Create a new lightweight tag pointing at a target object
   ///
@@ -26065,7 +26047,7 @@ class Libgit2 {
   int git_tag_create_lightweight(
     ffi.Pointer<git_oid> oid,
     ffi.Pointer<git_repository> repo,
-    ffi.Pointer<ffi.Int8> tag_name,
+    ffi.Pointer<ffi.Char> tag_name,
     ffi.Pointer<git_object> target,
     int force,
   ) {
@@ -26080,16 +26062,16 @@ class Libgit2 {
 
   late final _git_tag_create_lightweightPtr = _lookup<
       ffi.NativeFunction<
-          ffi.Int32 Function(
+          ffi.Int Function(
               ffi.Pointer<git_oid>,
               ffi.Pointer<git_repository>,
-              ffi.Pointer<ffi.Int8>,
+              ffi.Pointer<ffi.Char>,
               ffi.Pointer<git_object>,
-              ffi.Int32)>>('git_tag_create_lightweight');
+              ffi.Int)>>('git_tag_create_lightweight');
   late final _git_tag_create_lightweight =
       _git_tag_create_lightweightPtr.asFunction<
           int Function(ffi.Pointer<git_oid>, ffi.Pointer<git_repository>,
-              ffi.Pointer<ffi.Int8>, ffi.Pointer<git_object>, int)>();
+              ffi.Pointer<ffi.Char>, ffi.Pointer<git_object>, int)>();
 
   /// Delete an existing tag reference.
   ///
@@ -26104,7 +26086,7 @@ class Libgit2 {
   /// @return 0 on success, GIT_EINVALIDSPEC or an error code
   int git_tag_delete(
     ffi.Pointer<git_repository> repo,
-    ffi.Pointer<ffi.Int8> tag_name,
+    ffi.Pointer<ffi.Char> tag_name,
   ) {
     return _git_tag_delete(
       repo,
@@ -26114,10 +26096,10 @@ class Libgit2 {
 
   late final _git_tag_deletePtr = _lookup<
       ffi.NativeFunction<
-          ffi.Int32 Function(ffi.Pointer<git_repository>,
-              ffi.Pointer<ffi.Int8>)>>('git_tag_delete');
+          ffi.Int Function(ffi.Pointer<git_repository>,
+              ffi.Pointer<ffi.Char>)>>('git_tag_delete');
   late final _git_tag_delete = _git_tag_deletePtr.asFunction<
-      int Function(ffi.Pointer<git_repository>, ffi.Pointer<ffi.Int8>)>();
+      int Function(ffi.Pointer<git_repository>, ffi.Pointer<ffi.Char>)>();
 
   /// Fill a list with all the tags in the Repository
   ///
@@ -26142,7 +26124,7 @@ class Libgit2 {
 
   late final _git_tag_listPtr = _lookup<
       ffi.NativeFunction<
-          ffi.Int32 Function(ffi.Pointer<git_strarray>,
+          ffi.Int Function(ffi.Pointer<git_strarray>,
               ffi.Pointer<git_repository>)>>('git_tag_list');
   late final _git_tag_list = _git_tag_listPtr.asFunction<
       int Function(ffi.Pointer<git_strarray>, ffi.Pointer<git_repository>)>();
@@ -26165,7 +26147,7 @@ class Libgit2 {
   /// @return 0 or an error code
   int git_tag_list_match(
     ffi.Pointer<git_strarray> tag_names,
-    ffi.Pointer<ffi.Int8> pattern,
+    ffi.Pointer<ffi.Char> pattern,
     ffi.Pointer<git_repository> repo,
   ) {
     return _git_tag_list_match(
@@ -26177,10 +26159,10 @@ class Libgit2 {
 
   late final _git_tag_list_matchPtr = _lookup<
       ffi.NativeFunction<
-          ffi.Int32 Function(ffi.Pointer<git_strarray>, ffi.Pointer<ffi.Int8>,
+          ffi.Int Function(ffi.Pointer<git_strarray>, ffi.Pointer<ffi.Char>,
               ffi.Pointer<git_repository>)>>('git_tag_list_match');
   late final _git_tag_list_match = _git_tag_list_matchPtr.asFunction<
-      int Function(ffi.Pointer<git_strarray>, ffi.Pointer<ffi.Int8>,
+      int Function(ffi.Pointer<git_strarray>, ffi.Pointer<ffi.Char>,
           ffi.Pointer<git_repository>)>();
 
   /// Call callback `cb' for each tag in the repository
@@ -26202,7 +26184,7 @@ class Libgit2 {
 
   late final _git_tag_foreachPtr = _lookup<
       ffi.NativeFunction<
-          ffi.Int32 Function(ffi.Pointer<git_repository>, git_tag_foreach_cb,
+          ffi.Int Function(ffi.Pointer<git_repository>, git_tag_foreach_cb,
               ffi.Pointer<ffi.Void>)>>('git_tag_foreach');
   late final _git_tag_foreach = _git_tag_foreachPtr.asFunction<
       int Function(ffi.Pointer<git_repository>, git_tag_foreach_cb,
@@ -26228,7 +26210,7 @@ class Libgit2 {
 
   late final _git_tag_peelPtr = _lookup<
       ffi.NativeFunction<
-          ffi.Int32 Function(ffi.Pointer<ffi.Pointer<git_object>>,
+          ffi.Int Function(ffi.Pointer<ffi.Pointer<git_object>>,
               ffi.Pointer<git_tag>)>>('git_tag_peel');
   late final _git_tag_peel = _git_tag_peelPtr.asFunction<
       int Function(
@@ -26252,7 +26234,7 @@ class Libgit2 {
 
   late final _git_tag_dupPtr = _lookup<
       ffi.NativeFunction<
-          ffi.Int32 Function(ffi.Pointer<ffi.Pointer<git_tag>>,
+          ffi.Int Function(ffi.Pointer<ffi.Pointer<git_tag>>,
               ffi.Pointer<git_tag>)>>('git_tag_dup');
   late final _git_tag_dup = _git_tag_dupPtr.asFunction<
       int Function(ffi.Pointer<ffi.Pointer<git_tag>>, ffi.Pointer<git_tag>)>();
@@ -26266,8 +26248,8 @@ class Libgit2 {
   /// @param name a tag name to test
   /// @return 0 on success or an error code
   int git_tag_name_is_valid(
-    ffi.Pointer<ffi.Int32> valid,
-    ffi.Pointer<ffi.Int8> name,
+    ffi.Pointer<ffi.Int> valid,
+    ffi.Pointer<ffi.Char> name,
   ) {
     return _git_tag_name_is_valid(
       valid,
@@ -26277,10 +26259,10 @@ class Libgit2 {
 
   late final _git_tag_name_is_validPtr = _lookup<
       ffi.NativeFunction<
-          ffi.Int32 Function(ffi.Pointer<ffi.Int32>,
-              ffi.Pointer<ffi.Int8>)>>('git_tag_name_is_valid');
-  late final _git_tag_name_is_valid = _git_tag_name_is_validPtr.asFunction<
-      int Function(ffi.Pointer<ffi.Int32>, ffi.Pointer<ffi.Int8>)>();
+          ffi.Int Function(ffi.Pointer<ffi.Int>,
+              ffi.Pointer<ffi.Char>)>>('git_tag_name_is_valid');
+  late final _git_tag_name_is_valid = _git_tag_name_is_validPtr
+      .asFunction<int Function(ffi.Pointer<ffi.Int>, ffi.Pointer<ffi.Char>)>();
 
   /// Create a new transaction object
   ///
@@ -26302,7 +26284,7 @@ class Libgit2 {
 
   late final _git_transaction_newPtr = _lookup<
       ffi.NativeFunction<
-          ffi.Int32 Function(ffi.Pointer<ffi.Pointer<git_transaction>>,
+          ffi.Int Function(ffi.Pointer<ffi.Pointer<git_transaction>>,
               ffi.Pointer<git_repository>)>>('git_transaction_new');
   late final _git_transaction_new = _git_transaction_newPtr.asFunction<
       int Function(ffi.Pointer<ffi.Pointer<git_transaction>>,
@@ -26318,7 +26300,7 @@ class Libgit2 {
   /// @return 0 or an error message
   int git_transaction_lock_ref(
     ffi.Pointer<git_transaction> tx,
-    ffi.Pointer<ffi.Int8> refname,
+    ffi.Pointer<ffi.Char> refname,
   ) {
     return _git_transaction_lock_ref(
       tx,
@@ -26328,11 +26310,11 @@ class Libgit2 {
 
   late final _git_transaction_lock_refPtr = _lookup<
       ffi.NativeFunction<
-          ffi.Int32 Function(ffi.Pointer<git_transaction>,
-              ffi.Pointer<ffi.Int8>)>>('git_transaction_lock_ref');
+          ffi.Int Function(ffi.Pointer<git_transaction>,
+              ffi.Pointer<ffi.Char>)>>('git_transaction_lock_ref');
   late final _git_transaction_lock_ref =
       _git_transaction_lock_refPtr.asFunction<
-          int Function(ffi.Pointer<git_transaction>, ffi.Pointer<ffi.Int8>)>();
+          int Function(ffi.Pointer<git_transaction>, ffi.Pointer<ffi.Char>)>();
 
   /// Set the target of a reference
   ///
@@ -26347,10 +26329,10 @@ class Libgit2 {
   /// @return 0, GIT_ENOTFOUND if the reference is not among the locked ones, or an error code
   int git_transaction_set_target(
     ffi.Pointer<git_transaction> tx,
-    ffi.Pointer<ffi.Int8> refname,
+    ffi.Pointer<ffi.Char> refname,
     ffi.Pointer<git_oid> target,
     ffi.Pointer<git_signature> sig,
-    ffi.Pointer<ffi.Int8> msg,
+    ffi.Pointer<ffi.Char> msg,
   ) {
     return _git_transaction_set_target(
       tx,
@@ -26363,20 +26345,20 @@ class Libgit2 {
 
   late final _git_transaction_set_targetPtr = _lookup<
       ffi.NativeFunction<
-          ffi.Int32 Function(
+          ffi.Int Function(
               ffi.Pointer<git_transaction>,
-              ffi.Pointer<ffi.Int8>,
+              ffi.Pointer<ffi.Char>,
               ffi.Pointer<git_oid>,
               ffi.Pointer<git_signature>,
-              ffi.Pointer<ffi.Int8>)>>('git_transaction_set_target');
+              ffi.Pointer<ffi.Char>)>>('git_transaction_set_target');
   late final _git_transaction_set_target =
       _git_transaction_set_targetPtr.asFunction<
           int Function(
               ffi.Pointer<git_transaction>,
-              ffi.Pointer<ffi.Int8>,
+              ffi.Pointer<ffi.Char>,
               ffi.Pointer<git_oid>,
               ffi.Pointer<git_signature>,
-              ffi.Pointer<ffi.Int8>)>();
+              ffi.Pointer<ffi.Char>)>();
 
   /// Set the target of a reference
   ///
@@ -26391,10 +26373,10 @@ class Libgit2 {
   /// @return 0, GIT_ENOTFOUND if the reference is not among the locked ones, or an error code
   int git_transaction_set_symbolic_target(
     ffi.Pointer<git_transaction> tx,
-    ffi.Pointer<ffi.Int8> refname,
-    ffi.Pointer<ffi.Int8> target,
+    ffi.Pointer<ffi.Char> refname,
+    ffi.Pointer<ffi.Char> target,
     ffi.Pointer<git_signature> sig,
-    ffi.Pointer<ffi.Int8> msg,
+    ffi.Pointer<ffi.Char> msg,
   ) {
     return _git_transaction_set_symbolic_target(
       tx,
@@ -26407,20 +26389,20 @@ class Libgit2 {
 
   late final _git_transaction_set_symbolic_targetPtr = _lookup<
       ffi.NativeFunction<
-          ffi.Int32 Function(
+          ffi.Int Function(
               ffi.Pointer<git_transaction>,
-              ffi.Pointer<ffi.Int8>,
-              ffi.Pointer<ffi.Int8>,
+              ffi.Pointer<ffi.Char>,
+              ffi.Pointer<ffi.Char>,
               ffi.Pointer<git_signature>,
-              ffi.Pointer<ffi.Int8>)>>('git_transaction_set_symbolic_target');
+              ffi.Pointer<ffi.Char>)>>('git_transaction_set_symbolic_target');
   late final _git_transaction_set_symbolic_target =
       _git_transaction_set_symbolic_targetPtr.asFunction<
           int Function(
               ffi.Pointer<git_transaction>,
-              ffi.Pointer<ffi.Int8>,
-              ffi.Pointer<ffi.Int8>,
+              ffi.Pointer<ffi.Char>,
+              ffi.Pointer<ffi.Char>,
               ffi.Pointer<git_signature>,
-              ffi.Pointer<ffi.Int8>)>();
+              ffi.Pointer<ffi.Char>)>();
 
   /// Set the reflog of a reference
   ///
@@ -26433,7 +26415,7 @@ class Libgit2 {
   /// @return 0, GIT_ENOTFOUND if the reference is not among the locked ones, or an error code
   int git_transaction_set_reflog(
     ffi.Pointer<git_transaction> tx,
-    ffi.Pointer<ffi.Int8> refname,
+    ffi.Pointer<ffi.Char> refname,
     ffi.Pointer<git_reflog> reflog,
   ) {
     return _git_transaction_set_reflog(
@@ -26445,13 +26427,11 @@ class Libgit2 {
 
   late final _git_transaction_set_reflogPtr = _lookup<
       ffi.NativeFunction<
-          ffi.Int32 Function(
-              ffi.Pointer<git_transaction>,
-              ffi.Pointer<ffi.Int8>,
+          ffi.Int Function(ffi.Pointer<git_transaction>, ffi.Pointer<ffi.Char>,
               ffi.Pointer<git_reflog>)>>('git_transaction_set_reflog');
   late final _git_transaction_set_reflog =
       _git_transaction_set_reflogPtr.asFunction<
-          int Function(ffi.Pointer<git_transaction>, ffi.Pointer<ffi.Int8>,
+          int Function(ffi.Pointer<git_transaction>, ffi.Pointer<ffi.Char>,
               ffi.Pointer<git_reflog>)>();
 
   /// Remove a reference
@@ -26461,7 +26441,7 @@ class Libgit2 {
   /// @return 0, GIT_ENOTFOUND if the reference is not among the locked ones, or an error code
   int git_transaction_remove(
     ffi.Pointer<git_transaction> tx,
-    ffi.Pointer<ffi.Int8> refname,
+    ffi.Pointer<ffi.Char> refname,
   ) {
     return _git_transaction_remove(
       tx,
@@ -26471,10 +26451,10 @@ class Libgit2 {
 
   late final _git_transaction_removePtr = _lookup<
       ffi.NativeFunction<
-          ffi.Int32 Function(ffi.Pointer<git_transaction>,
-              ffi.Pointer<ffi.Int8>)>>('git_transaction_remove');
+          ffi.Int Function(ffi.Pointer<git_transaction>,
+              ffi.Pointer<ffi.Char>)>>('git_transaction_remove');
   late final _git_transaction_remove = _git_transaction_removePtr.asFunction<
-      int Function(ffi.Pointer<git_transaction>, ffi.Pointer<ffi.Int8>)>();
+      int Function(ffi.Pointer<git_transaction>, ffi.Pointer<ffi.Char>)>();
 
   /// Commit the changes from the transaction
   ///
@@ -26492,7 +26472,7 @@ class Libgit2 {
   }
 
   late final _git_transaction_commitPtr = _lookup<
-          ffi.NativeFunction<ffi.Int32 Function(ffi.Pointer<git_transaction>)>>(
+          ffi.NativeFunction<ffi.Int Function(ffi.Pointer<git_transaction>)>>(
       'git_transaction_commit');
   late final _git_transaction_commit = _git_transaction_commitPtr
       .asFunction<int Function(ffi.Pointer<git_transaction>)>();
@@ -26520,41 +26500,41 @@ class Libgit2 {
 
 class __fsid_t extends ffi.Struct {
   @ffi.Array.multi([2])
-  external ffi.Array<ffi.Int32> __val;
+  external ffi.Array<ffi.Int> __val;
 }
 
 class tm extends ffi.Struct {
-  @ffi.Int32()
+  @ffi.Int()
   external int tm_sec;
 
-  @ffi.Int32()
+  @ffi.Int()
   external int tm_min;
 
-  @ffi.Int32()
+  @ffi.Int()
   external int tm_hour;
 
-  @ffi.Int32()
+  @ffi.Int()
   external int tm_mday;
 
-  @ffi.Int32()
+  @ffi.Int()
   external int tm_mon;
 
-  @ffi.Int32()
+  @ffi.Int()
   external int tm_year;
 
-  @ffi.Int32()
+  @ffi.Int()
   external int tm_wday;
 
-  @ffi.Int32()
+  @ffi.Int()
   external int tm_yday;
 
-  @ffi.Int32()
+  @ffi.Int()
   external int tm_isdst;
 
-  @ffi.Int64()
+  @ffi.Long()
   external int tm_gmtoff;
 
-  external ffi.Pointer<ffi.Int8> tm_zone;
+  external ffi.Pointer<ffi.Char> tm_zone;
 }
 
 class timespec extends ffi.Struct {
@@ -26565,8 +26545,8 @@ class timespec extends ffi.Struct {
   external int tv_nsec;
 }
 
-typedef __time_t = ffi.Int64;
-typedef __syscall_slong_t = ffi.Int64;
+typedef __time_t = ffi.Long;
+typedef __syscall_slong_t = ffi.Long;
 
 class itimerspec extends ffi.Struct {
   external timespec it_interval;
@@ -26580,58 +26560,57 @@ class __locale_struct extends ffi.Struct {
   @ffi.Array.multi([13])
   external ffi.Array<ffi.Pointer<__locale_data>> __locales;
 
-  external ffi.Pointer<ffi.Uint16> __ctype_b;
+  external ffi.Pointer<ffi.UnsignedShort> __ctype_b;
 
-  external ffi.Pointer<ffi.Int32> __ctype_tolower;
+  external ffi.Pointer<ffi.Int> __ctype_tolower;
 
-  external ffi.Pointer<ffi.Int32> __ctype_toupper;
+  external ffi.Pointer<ffi.Int> __ctype_toupper;
 
   @ffi.Array.multi([13])
-  external ffi.Array<ffi.Pointer<ffi.Int8>> __names;
+  external ffi.Array<ffi.Pointer<ffi.Char>> __names;
 }
 
 class __locale_data extends ffi.Opaque {}
 
 typedef clock_t = __clock_t;
-typedef __clock_t = ffi.Int64;
+typedef __clock_t = ffi.Long;
 typedef time_t = __time_t;
-typedef size_t = ffi.Uint64;
 typedef locale_t = __locale_t;
 typedef __locale_t = ffi.Pointer<__locale_struct>;
 typedef clockid_t = __clockid_t;
-typedef __clockid_t = ffi.Int32;
+typedef __clockid_t = ffi.Int;
 typedef pid_t = __pid_t;
-typedef __pid_t = ffi.Int32;
+typedef __pid_t = ffi.Int;
 typedef timer_t = __timer_t;
 typedef __timer_t = ffi.Pointer<ffi.Void>;
 
 class div_t extends ffi.Struct {
-  @ffi.Int32()
+  @ffi.Int()
   external int quot;
 
-  @ffi.Int32()
+  @ffi.Int()
   external int rem;
 }
 
 class ldiv_t extends ffi.Struct {
-  @ffi.Int64()
+  @ffi.Long()
   external int quot;
 
-  @ffi.Int64()
+  @ffi.Long()
   external int rem;
 }
 
 class lldiv_t extends ffi.Struct {
-  @ffi.Int64()
+  @ffi.LongLong()
   external int quot;
 
-  @ffi.Int64()
+  @ffi.LongLong()
   external int rem;
 }
 
 class __sigset_t extends ffi.Struct {
   @ffi.Array.multi([16])
-  external ffi.Array<ffi.Uint64> __val;
+  external ffi.Array<ffi.UnsignedLong> __val;
 }
 
 class timeval extends ffi.Struct {
@@ -26642,14 +26621,29 @@ class timeval extends ffi.Struct {
   external int tv_usec;
 }
 
-typedef __suseconds_t = ffi.Int64;
+typedef __suseconds_t = ffi.Long;
 
 class fd_set extends ffi.Struct {
   @ffi.Array.multi([16])
   external ffi.Array<__fd_mask> __fds_bits;
 }
 
-typedef __fd_mask = ffi.Int64;
+typedef __fd_mask = ffi.Long;
+
+class __atomic_wide_counter extends ffi.Union {
+  @ffi.UnsignedLongLong()
+  external int __value64;
+
+  external UnnamedStruct1 __value32;
+}
+
+class UnnamedStruct1 extends ffi.Struct {
+  @ffi.UnsignedInt()
+  external int __low;
+
+  @ffi.UnsignedInt()
+  external int __high;
+}
 
 class __pthread_internal_list extends ffi.Struct {
   external ffi.Pointer<__pthread_internal_list> __prev;
@@ -26662,25 +26656,25 @@ class __pthread_internal_slist extends ffi.Struct {
 }
 
 class __pthread_mutex_s extends ffi.Struct {
-  @ffi.Int32()
+  @ffi.Int()
   external int __lock;
 
-  @ffi.Uint32()
+  @ffi.UnsignedInt()
   external int __count;
 
-  @ffi.Int32()
+  @ffi.Int()
   external int __owner;
 
-  @ffi.Uint32()
+  @ffi.UnsignedInt()
   external int __nusers;
 
-  @ffi.Int32()
+  @ffi.Int()
   external int __kind;
 
-  @ffi.Int16()
+  @ffi.Short()
   external int __spins;
 
-  @ffi.Int16()
+  @ffi.Short()
   external int __elision;
 
   external __pthread_list_t __list;
@@ -26689,86 +26683,90 @@ class __pthread_mutex_s extends ffi.Struct {
 typedef __pthread_list_t = __pthread_internal_list;
 
 class __pthread_rwlock_arch_t extends ffi.Struct {
-  @ffi.Uint32()
+  @ffi.UnsignedInt()
   external int __readers;
 
-  @ffi.Uint32()
+  @ffi.UnsignedInt()
   external int __writers;
 
-  @ffi.Uint32()
+  @ffi.UnsignedInt()
   external int __wrphase_futex;
 
-  @ffi.Uint32()
+  @ffi.UnsignedInt()
   external int __writers_futex;
 
-  @ffi.Uint32()
+  @ffi.UnsignedInt()
   external int __pad3;
 
-  @ffi.Uint32()
+  @ffi.UnsignedInt()
   external int __pad4;
 
-  @ffi.Int32()
+  @ffi.Int()
   external int __cur_writer;
 
-  @ffi.Int32()
+  @ffi.Int()
   external int __shared;
 
-  @ffi.Int8()
+  @ffi.SignedChar()
   external int __rwelision;
 
   @ffi.Array.multi([7])
-  external ffi.Array<ffi.Uint8> __pad1;
+  external ffi.Array<ffi.UnsignedChar> __pad1;
 
-  @ffi.Uint64()
+  @ffi.UnsignedLong()
   external int __pad2;
 
-  @ffi.Uint32()
+  @ffi.UnsignedInt()
   external int __flags;
 }
 
 class __pthread_cond_s extends ffi.Struct {
-  @ffi.Array.multi([2])
-  external ffi.Array<ffi.Uint32> __g_refs;
+  external __atomic_wide_counter __wseq;
+
+  external __atomic_wide_counter __g1_start;
 
   @ffi.Array.multi([2])
-  external ffi.Array<ffi.Uint32> __g_size;
+  external ffi.Array<ffi.UnsignedInt> __g_refs;
 
-  @ffi.Uint32()
+  @ffi.Array.multi([2])
+  external ffi.Array<ffi.UnsignedInt> __g_size;
+
+  @ffi.UnsignedInt()
   external int __g1_orig_size;
 
-  @ffi.Uint32()
+  @ffi.UnsignedInt()
   external int __wrefs;
 
   @ffi.Array.multi([2])
-  external ffi.Array<ffi.Uint32> __g_signals;
+  external ffi.Array<ffi.UnsignedInt> __g_signals;
 }
 
 class __once_flag extends ffi.Struct {
-  @ffi.Int32()
+  @ffi.Int()
   external int __data;
 }
 
 class pthread_mutexattr_t extends ffi.Union {
   @ffi.Array.multi([4])
-  external ffi.Array<ffi.Int8> __size;
+  external ffi.Array<ffi.Char> __size;
 
-  @ffi.Int32()
+  @ffi.Int()
   external int __align;
 }
 
 class pthread_condattr_t extends ffi.Union {
   @ffi.Array.multi([4])
-  external ffi.Array<ffi.Int8> __size;
+  external ffi.Array<ffi.Char> __size;
 
-  @ffi.Int32()
+  @ffi.Int()
   external int __align;
 }
 
 class pthread_attr_t extends ffi.Union {
   @ffi.Array.multi([56])
-  external ffi.Array<ffi.Int8> __size;
+  external ffi.Array<ffi.Char> __size;
 
-  @ffi.Int64()
+  @ffi.Long()
   external int __align;
 }
 
@@ -26776,9 +26774,9 @@ class pthread_mutex_t extends ffi.Union {
   external __pthread_mutex_s __data;
 
   @ffi.Array.multi([40])
-  external ffi.Array<ffi.Int8> __size;
+  external ffi.Array<ffi.Char> __size;
 
-  @ffi.Int64()
+  @ffi.Long()
   external int __align;
 }
 
@@ -26786,9 +26784,9 @@ class pthread_cond_t extends ffi.Union {
   external __pthread_cond_s __data;
 
   @ffi.Array.multi([48])
-  external ffi.Array<ffi.Int8> __size;
+  external ffi.Array<ffi.Char> __size;
 
-  @ffi.Int64()
+  @ffi.LongLong()
   external int __align;
 }
 
@@ -26796,33 +26794,33 @@ class pthread_rwlock_t extends ffi.Union {
   external __pthread_rwlock_arch_t __data;
 
   @ffi.Array.multi([56])
-  external ffi.Array<ffi.Int8> __size;
+  external ffi.Array<ffi.Char> __size;
 
-  @ffi.Int64()
+  @ffi.Long()
   external int __align;
 }
 
 class pthread_rwlockattr_t extends ffi.Union {
   @ffi.Array.multi([8])
-  external ffi.Array<ffi.Int8> __size;
+  external ffi.Array<ffi.Char> __size;
 
-  @ffi.Int64()
+  @ffi.Long()
   external int __align;
 }
 
 class pthread_barrier_t extends ffi.Union {
   @ffi.Array.multi([32])
-  external ffi.Array<ffi.Int8> __size;
+  external ffi.Array<ffi.Char> __size;
 
-  @ffi.Int64()
+  @ffi.Long()
   external int __align;
 }
 
 class pthread_barrierattr_t extends ffi.Union {
   @ffi.Array.multi([4])
-  external ffi.Array<ffi.Int8> __size;
+  external ffi.Array<ffi.Char> __size;
 
-  @ffi.Int32()
+  @ffi.Int()
   external int __align;
 }
 
@@ -26833,13 +26831,13 @@ class random_data extends ffi.Struct {
 
   external ffi.Pointer<ffi.Int32> state;
 
-  @ffi.Int32()
+  @ffi.Int()
   external int rand_type;
 
-  @ffi.Int32()
+  @ffi.Int()
   external int rand_deg;
 
-  @ffi.Int32()
+  @ffi.Int()
   external int rand_sep;
 
   external ffi.Pointer<ffi.Int32> end_ptr;
@@ -26847,39 +26845,38 @@ class random_data extends ffi.Struct {
 
 class drand48_data extends ffi.Struct {
   @ffi.Array.multi([3])
-  external ffi.Array<ffi.Uint16> __x;
+  external ffi.Array<ffi.UnsignedShort> __x;
 
   @ffi.Array.multi([3])
-  external ffi.Array<ffi.Uint16> __old_x;
+  external ffi.Array<ffi.UnsignedShort> __old_x;
 
-  @ffi.Uint16()
+  @ffi.UnsignedShort()
   external int __c;
 
-  @ffi.Uint16()
+  @ffi.UnsignedShort()
   external int __init;
 
-  @ffi.Uint64()
+  @ffi.UnsignedLongLong()
   external int __a;
 }
 
 typedef __compar_fn_t = ffi.Pointer<
     ffi.NativeFunction<
-        ffi.Int32 Function(ffi.Pointer<ffi.Void>, ffi.Pointer<ffi.Void>)>>;
-typedef wchar_t = ffi.Int32;
+        ffi.Int Function(ffi.Pointer<ffi.Void>, ffi.Pointer<ffi.Void>)>>;
 
 class imaxdiv_t extends ffi.Struct {
-  @ffi.Int64()
+  @ffi.Long()
   external int quot;
 
-  @ffi.Int64()
+  @ffi.Long()
   external int rem;
 }
 
 typedef intmax_t = __intmax_t;
-typedef __intmax_t = ffi.Int64;
+typedef __intmax_t = ffi.Long;
 typedef uintmax_t = __uintmax_t;
-typedef __uintmax_t = ffi.Uint64;
-typedef __gwchar_t = ffi.Int32;
+typedef __uintmax_t = ffi.UnsignedLong;
+typedef __gwchar_t = ffi.Int;
 
 /// Combinations of these values describe the features with which libgit2
 /// was compiled
@@ -26962,22 +26959,22 @@ class git_buf extends ffi.Struct {
   /// being returned.  The buffer's length (in bytes) is specified
   /// by the `size` member of the structure, and contains a NUL
   /// terminator at position `(size + 1)`.
-  external ffi.Pointer<ffi.Int8> ptr;
+  external ffi.Pointer<ffi.Char> ptr;
 
   /// This field is reserved and unused.
-  @size_t()
+  @ffi.Size()
   external int reserved;
 
   /// The length (in bytes) of the buffer pointed to by `ptr`,
   /// not including a NUL terminator.
-  @size_t()
+  @ffi.Size()
   external int size;
 }
 
 /// Unique identity of any object (commit, tree, blob, tag).
 class git_oid extends ffi.Struct {
   @ffi.Array.multi([20])
-  external ffi.Array<ffi.Uint8> id;
+  external ffi.Array<ffi.UnsignedChar> id;
 }
 
 class git_oid_shorten extends ffi.Opaque {}
@@ -27024,7 +27021,7 @@ class git_odb_object extends ffi.Opaque {}
 class git_odb_stream extends ffi.Struct {
   external ffi.Pointer<git_odb_backend> backend;
 
-  @ffi.Uint32()
+  @ffi.UnsignedInt()
   external int mode;
 
   external ffi.Pointer<ffi.Void> hash_ctx;
@@ -27036,20 +27033,18 @@ class git_odb_stream extends ffi.Struct {
   external int received_bytes;
 
   external ffi.Pointer<
-          ffi.NativeFunction<
-              ffi.Int32 Function(
-                  ffi.Pointer<git_odb_stream>, ffi.Pointer<ffi.Int8>, size_t)>>
-      read;
+      ffi.NativeFunction<
+          ffi.Int Function(ffi.Pointer<git_odb_stream>, ffi.Pointer<ffi.Char>,
+              ffi.Size)>> read;
+
+  external ffi.Pointer<
+      ffi.NativeFunction<
+          ffi.Int Function(ffi.Pointer<git_odb_stream>, ffi.Pointer<ffi.Char>,
+              ffi.Size)>> write;
 
   external ffi.Pointer<
           ffi.NativeFunction<
-              ffi.Int32 Function(
-                  ffi.Pointer<git_odb_stream>, ffi.Pointer<ffi.Int8>, size_t)>>
-      write;
-
-  external ffi.Pointer<
-          ffi.NativeFunction<
-              ffi.Int32 Function(
+              ffi.Int Function(
                   ffi.Pointer<git_odb_stream>, ffi.Pointer<git_oid>)>>
       finalize_write;
 
@@ -27066,15 +27061,15 @@ class git_odb_writepack extends ffi.Struct {
 
   external ffi.Pointer<
       ffi.NativeFunction<
-          ffi.Int32 Function(
+          ffi.Int Function(
               ffi.Pointer<git_odb_writepack>,
               ffi.Pointer<ffi.Void>,
-              size_t,
+              ffi.Size,
               ffi.Pointer<git_indexer_progress>)>> append;
 
   external ffi.Pointer<
       ffi.NativeFunction<
-          ffi.Int32 Function(ffi.Pointer<git_odb_writepack>,
+          ffi.Int Function(ffi.Pointer<git_odb_writepack>,
               ffi.Pointer<git_indexer_progress>)>> commit;
 
   external ffi.Pointer<
@@ -27087,32 +27082,32 @@ class git_odb_writepack extends ffi.Struct {
 /// fetch or clone that downloads a packfile.
 class git_indexer_progress extends ffi.Struct {
   /// number of objects in the packfile being indexed
-  @ffi.Uint32()
+  @ffi.UnsignedInt()
   external int total_objects;
 
   /// received objects that have been hashed
-  @ffi.Uint32()
+  @ffi.UnsignedInt()
   external int indexed_objects;
 
   /// received_objects: objects which have been downloaded
-  @ffi.Uint32()
+  @ffi.UnsignedInt()
   external int received_objects;
 
   /// locally-available objects that have been injected in order
   /// to fix a thin pack
-  @ffi.Uint32()
+  @ffi.UnsignedInt()
   external int local_objects;
 
   /// number of deltas in the packfile being indexed
-  @ffi.Uint32()
+  @ffi.UnsignedInt()
   external int total_deltas;
 
   /// received deltas that have been indexed
-  @ffi.Uint32()
+  @ffi.UnsignedInt()
   external int indexed_deltas;
 
   /// size of the packfile received up to now
-  @size_t()
+  @ffi.Size()
   external int received_bytes;
 }
 
@@ -27171,11 +27166,11 @@ class git_time extends ffi.Struct {
   external int time;
 
   /// < timezone offset, in minutes
-  @ffi.Int32()
+  @ffi.Int()
   external int offset;
 
   /// < indicator for questionable '-0000' offsets in signature
-  @ffi.Int8()
+  @ffi.Char()
   external int sign;
 }
 
@@ -27184,10 +27179,10 @@ typedef git_time_t = ffi.Int64;
 /// An action signature (e.g. for committers, taggers, etc)
 class git_signature extends ffi.Struct {
   /// < full name of the author
-  external ffi.Pointer<ffi.Int8> name;
+  external ffi.Pointer<ffi.Char> name;
 
   /// < email of the author
-  external ffi.Pointer<ffi.Int8> email;
+  external ffi.Pointer<ffi.Char> email;
 
   /// < time when the action happened
   external git_time when;
@@ -27247,18 +27242,18 @@ class git_push extends ffi.Opaque {}
 /// on `ls` calls.
 class git_remote_head extends ffi.Struct {
   /// available locally
-  @ffi.Int32()
+  @ffi.Int()
   external int local;
 
   external git_oid oid;
 
   external git_oid loid;
 
-  external ffi.Pointer<ffi.Int8> name;
+  external ffi.Pointer<ffi.Char> name;
 
   /// If the server send a symref mapping for this ref, this will
   /// point to the target.
-  external ffi.Pointer<ffi.Int8> symref_target;
+  external ffi.Pointer<ffi.Char> symref_target;
 }
 
 /// The callback settings structure
@@ -27267,7 +27262,7 @@ class git_remote_head extends ffi.Struct {
 /// about the progress of the network operations.
 class git_remote_callbacks extends ffi.Struct {
   /// < The version
-  @ffi.Uint32()
+  @ffi.UnsignedInt()
   external int version;
 
   /// Textual progress from the remote. Text send over the
@@ -27277,7 +27272,7 @@ class git_remote_callbacks extends ffi.Struct {
 
   external ffi.Pointer<
       ffi.NativeFunction<
-          ffi.Int32 Function(ffi.Int32, ffi.Pointer<ffi.Void>)>> completion;
+          ffi.Int Function(ffi.Int32, ffi.Pointer<ffi.Void>)>> completion;
 
   /// This will be called if the remote host requires
   /// authentication in order to connect to it.
@@ -27299,7 +27294,7 @@ class git_remote_callbacks extends ffi.Struct {
 
   external ffi.Pointer<
       ffi.NativeFunction<
-          ffi.Int32 Function(ffi.Pointer<ffi.Int8>, ffi.Pointer<git_oid>,
+          ffi.Int Function(ffi.Pointer<ffi.Char>, ffi.Pointer<git_oid>,
               ffi.Pointer<git_oid>, ffi.Pointer<ffi.Void>)>> update_tips;
 
   /// Function to call with progress information during pack
@@ -27348,8 +27343,8 @@ class git_remote_callbacks extends ffi.Struct {
 /// @param payload Payload provided by the caller
 typedef git_transport_message_cb = ffi.Pointer<
     ffi.NativeFunction<
-        ffi.Int32 Function(
-            ffi.Pointer<ffi.Int8>, ffi.Int32, ffi.Pointer<ffi.Void>)>>;
+        ffi.Int Function(
+            ffi.Pointer<ffi.Char>, ffi.Int, ffi.Pointer<ffi.Void>)>>;
 
 /// Argument to the completion callback which tells it which operation
 /// finished.
@@ -27381,11 +27376,11 @@ abstract class git_remote_completion_t {
 /// no credential was acquired
 typedef git_credential_acquire_cb = ffi.Pointer<
     ffi.NativeFunction<
-        ffi.Int32 Function(
+        ffi.Int Function(
             ffi.Pointer<ffi.Pointer<git_credential>>,
-            ffi.Pointer<ffi.Int8>,
-            ffi.Pointer<ffi.Int8>,
-            ffi.Uint32,
+            ffi.Pointer<ffi.Char>,
+            ffi.Pointer<ffi.Char>,
+            ffi.UnsignedInt,
             ffi.Pointer<ffi.Void>)>>;
 
 /// The base structure for all credential types
@@ -27454,8 +27449,8 @@ abstract class git_credential_t {
 /// the existing validity determination should be honored
 typedef git_transport_certificate_check_cb = ffi.Pointer<
     ffi.NativeFunction<
-        ffi.Int32 Function(ffi.Pointer<git_cert>, ffi.Int32,
-            ffi.Pointer<ffi.Int8>, ffi.Pointer<ffi.Void>)>>;
+        ffi.Int Function(ffi.Pointer<git_cert>, ffi.Int, ffi.Pointer<ffi.Char>,
+            ffi.Pointer<ffi.Void>)>>;
 
 /// Parent type for `git_cert_hostkey` and `git_cert_x509`.
 class git_cert extends ffi.Struct {
@@ -27492,20 +27487,20 @@ abstract class git_cert_t {
 /// @param payload Payload provided by caller
 typedef git_indexer_progress_cb = ffi.Pointer<
     ffi.NativeFunction<
-        ffi.Int32 Function(
+        ffi.Int Function(
             ffi.Pointer<git_indexer_progress>, ffi.Pointer<ffi.Void>)>>;
 
 /// Packbuilder progress notification function
 typedef git_packbuilder_progress = ffi.Pointer<
     ffi.NativeFunction<
-        ffi.Int32 Function(
-            ffi.Int32, ffi.Uint32, ffi.Uint32, ffi.Pointer<ffi.Void>)>>;
+        ffi.Int Function(
+            ffi.Int, ffi.Uint32, ffi.Uint32, ffi.Pointer<ffi.Void>)>>;
 
 /// Push network progress notification function
 typedef git_push_transfer_progress_cb = ffi.Pointer<
     ffi.NativeFunction<
-        ffi.Int32 Function(
-            ffi.Uint32, ffi.Uint32, size_t, ffi.Pointer<ffi.Void>)>>;
+        ffi.Int Function(ffi.UnsignedInt, ffi.UnsignedInt, ffi.Size,
+            ffi.Pointer<ffi.Void>)>>;
 
 /// Callback used to inform of the update status from the remote.
 ///
@@ -27519,7 +27514,7 @@ typedef git_push_transfer_progress_cb = ffi.Pointer<
 /// @return 0 on success, otherwise an error
 typedef git_push_update_reference_cb = ffi.Pointer<
     ffi.NativeFunction<
-        ffi.Int32 Function(ffi.Pointer<ffi.Int8>, ffi.Pointer<ffi.Int8>,
+        ffi.Int Function(ffi.Pointer<ffi.Char>, ffi.Pointer<ffi.Char>,
             ffi.Pointer<ffi.Void>)>>;
 
 /// Callback used to inform of upcoming updates.
@@ -27530,16 +27525,16 @@ typedef git_push_update_reference_cb = ffi.Pointer<
 /// @param payload Payload provided by the caller
 typedef git_push_negotiation = ffi.Pointer<
     ffi.NativeFunction<
-        ffi.Int32 Function(ffi.Pointer<ffi.Pointer<git_push_update>>, size_t,
+        ffi.Int Function(ffi.Pointer<ffi.Pointer<git_push_update>>, ffi.Size,
             ffi.Pointer<ffi.Void>)>>;
 
 /// Represents an update which will be performed on the remote during push
 class git_push_update extends ffi.Struct {
   /// The source name of the reference
-  external ffi.Pointer<ffi.Int8> src_refname;
+  external ffi.Pointer<ffi.Char> src_refname;
 
   /// The name of the reference to update on the server
-  external ffi.Pointer<ffi.Int8> dst_refname;
+  external ffi.Pointer<ffi.Char> dst_refname;
 
   /// The current target of the reference
   external git_oid src;
@@ -27551,7 +27546,7 @@ class git_push_update extends ffi.Struct {
 /// Signature of a function which creates a transport
 typedef git_transport_cb = ffi.Pointer<
     ffi.NativeFunction<
-        ffi.Int32 Function(ffi.Pointer<ffi.Pointer<git_transport>>,
+        ffi.Int Function(ffi.Pointer<ffi.Pointer<git_transport>>,
             ffi.Pointer<git_remote>, ffi.Pointer<ffi.Void>)>>;
 
 /// Callback invoked immediately before we attempt to connect to the
@@ -27564,8 +27559,8 @@ typedef git_transport_cb = ffi.Pointer<
 /// @return 0 on success, or an error
 typedef git_remote_ready_cb = ffi.Pointer<
     ffi.NativeFunction<
-        ffi.Int32 Function(
-            ffi.Pointer<git_remote>, ffi.Int32, ffi.Pointer<ffi.Void>)>>;
+        ffi.Int Function(
+            ffi.Pointer<git_remote>, ffi.Int, ffi.Pointer<ffi.Void>)>>;
 
 /// Callback to resolve URLs before connecting to remote
 ///
@@ -27580,8 +27575,8 @@ typedef git_remote_ready_cb = ffi.Pointer<
 /// @deprecated Use `git_remote_set_instance_url`
 typedef git_url_resolve_cb = ffi.Pointer<
     ffi.NativeFunction<
-        ffi.Int32 Function(ffi.Pointer<git_buf>, ffi.Pointer<ffi.Int8>,
-            ffi.Int32, ffi.Pointer<ffi.Void>)>>;
+        ffi.Int Function(ffi.Pointer<git_buf>, ffi.Pointer<ffi.Char>, ffi.Int,
+            ffi.Pointer<ffi.Void>)>>;
 
 class git_submodule extends ffi.Opaque {}
 
@@ -27676,14 +27671,12 @@ abstract class git_submodule_recurse_t {
 /// A type to write in a streaming fashion, for example, for filters.
 class git_writestream extends ffi.Struct {
   external ffi.Pointer<
-          ffi.NativeFunction<
-              ffi.Int32 Function(
-                  ffi.Pointer<git_writestream>, ffi.Pointer<ffi.Int8>, size_t)>>
-      write;
+      ffi.NativeFunction<
+          ffi.Int Function(ffi.Pointer<git_writestream>, ffi.Pointer<ffi.Char>,
+              ffi.Size)>> write;
 
   external ffi.Pointer<
-          ffi.NativeFunction<ffi.Int32 Function(ffi.Pointer<git_writestream>)>>
-      close;
+      ffi.NativeFunction<ffi.Int Function(ffi.Pointer<git_writestream>)>> close;
 
   external ffi.Pointer<
       ffi.NativeFunction<ffi.Void Function(ffi.Pointer<git_writestream>)>> free;
@@ -27793,7 +27786,7 @@ abstract class git_repository_init_mode_t {
 /// This contains extra options for `git_repository_init_ext` that enable
 /// additional initialization features.
 class git_repository_init_options extends ffi.Struct {
-  @ffi.Uint32()
+  @ffi.UnsignedInt()
   external int version;
 
   /// Combination of GIT_REPOSITORY_INIT flags above.
@@ -27810,27 +27803,27 @@ class git_repository_init_options extends ffi.Struct {
   /// RELATIVE TO THE REPO_PATH. If this is not the "natural" working
   /// directory, a .git gitlink file will be created here linking to the
   /// repo_path.
-  external ffi.Pointer<ffi.Int8> workdir_path;
+  external ffi.Pointer<ffi.Char> workdir_path;
 
   /// If set, this will be used to initialize the "description" file in the
   /// repository, instead of using the template content.
-  external ffi.Pointer<ffi.Int8> description;
+  external ffi.Pointer<ffi.Char> description;
 
   /// When GIT_REPOSITORY_INIT_EXTERNAL_TEMPLATE is set, this contains
   /// the path to use for the template directory. If this is NULL, the config
   /// or default directory options will be used instead.
-  external ffi.Pointer<ffi.Int8> template_path;
+  external ffi.Pointer<ffi.Char> template_path;
 
   /// The name of the head to point HEAD at. If NULL, then this will be
   /// treated as "master" and the HEAD ref will be set to "refs/heads/master".
   /// If this begins with "refs/" it will be used verbatim;
   /// otherwise "refs/heads/" will be prefixed.
-  external ffi.Pointer<ffi.Int8> initial_head;
+  external ffi.Pointer<ffi.Char> initial_head;
 
   /// If this is non-NULL, then after the rest of the repository
   /// initialization is completed, an "origin" remote will be added
   /// pointing to this URL.
-  external ffi.Pointer<ffi.Int8> origin_url;
+  external ffi.Pointer<ffi.Char> origin_url;
 }
 
 /// List of items which belong to the git repository layout
@@ -27864,8 +27857,8 @@ abstract class git_repository_item_t {
 /// @return non-zero to terminate the iteration
 typedef git_repository_fetchhead_foreach_cb = ffi.Pointer<
     ffi.NativeFunction<
-        ffi.Int32 Function(ffi.Pointer<ffi.Int8>, ffi.Pointer<ffi.Int8>,
-            ffi.Pointer<git_oid>, ffi.Uint32, ffi.Pointer<ffi.Void>)>>;
+        ffi.Int Function(ffi.Pointer<ffi.Char>, ffi.Pointer<ffi.Char>,
+            ffi.Pointer<git_oid>, ffi.UnsignedInt, ffi.Pointer<ffi.Void>)>>;
 
 /// Callback used to iterate over each MERGE_HEAD entry
 ///
@@ -27876,7 +27869,7 @@ typedef git_repository_fetchhead_foreach_cb = ffi.Pointer<
 /// @return non-zero to terminate the iteration
 typedef git_repository_mergehead_foreach_cb = ffi.Pointer<
     ffi.NativeFunction<
-        ffi.Int32 Function(ffi.Pointer<git_oid>, ffi.Pointer<ffi.Void>)>>;
+        ffi.Int Function(ffi.Pointer<git_oid>, ffi.Pointer<ffi.Void>)>>;
 
 /// Repository state
 ///
@@ -27904,8 +27897,7 @@ abstract class git_repository_state_t {
 /// entry should be removed from the treebuilder list (i.e. filtered out).
 typedef git_treebuilder_filter_cb = ffi.Pointer<
     ffi.NativeFunction<
-        ffi.Int32 Function(
-            ffi.Pointer<git_tree_entry>, ffi.Pointer<ffi.Void>)>>;
+        ffi.Int Function(ffi.Pointer<git_tree_entry>, ffi.Pointer<ffi.Void>)>>;
 
 /// Tree traversal modes
 abstract class git_treewalk_mode {
@@ -27919,7 +27911,7 @@ abstract class git_treewalk_mode {
 /// Callback for the tree traversal method
 typedef git_treewalk_cb = ffi.Pointer<
     ffi.NativeFunction<
-        ffi.Int32 Function(ffi.Pointer<ffi.Int8>, ffi.Pointer<git_tree_entry>,
+        ffi.Int Function(ffi.Pointer<ffi.Char>, ffi.Pointer<git_tree_entry>,
             ffi.Pointer<ffi.Void>)>>;
 
 /// The kind of update to perform
@@ -27945,14 +27937,14 @@ class git_tree_update extends ffi.Struct {
   external int filemode;
 
   /// The full path from the root tree
-  external ffi.Pointer<ffi.Int8> path;
+  external ffi.Pointer<ffi.Char> path;
 }
 
 /// Array of strings
 class git_strarray extends ffi.Struct {
-  external ffi.Pointer<ffi.Pointer<ffi.Int8>> strings;
+  external ffi.Pointer<ffi.Pointer<ffi.Char>> strings;
 
-  @size_t()
+  @ffi.Size()
   external int count;
 }
 
@@ -27965,7 +27957,7 @@ class git_strarray extends ffi.Struct {
 /// @return non-zero to terminate the iteration
 typedef git_reference_foreach_cb = ffi.Pointer<
     ffi.NativeFunction<
-        ffi.Int32 Function(ffi.Pointer<git_reference>, ffi.Pointer<ffi.Void>)>>;
+        ffi.Int Function(ffi.Pointer<git_reference>, ffi.Pointer<ffi.Void>)>>;
 
 /// Callback used to iterate over reference names
 ///
@@ -27976,7 +27968,7 @@ typedef git_reference_foreach_cb = ffi.Pointer<
 /// @return non-zero to terminate the iteration
 typedef git_reference_foreach_name_cb = ffi.Pointer<
     ffi.NativeFunction<
-        ffi.Int32 Function(ffi.Pointer<ffi.Int8>, ffi.Pointer<ffi.Void>)>>;
+        ffi.Int Function(ffi.Pointer<ffi.Char>, ffi.Pointer<ffi.Void>)>>;
 
 /// Normalization options for reference lookup
 abstract class git_reference_format_t {
@@ -28216,7 +28208,7 @@ class git_diff_file extends ffi.Struct {
 
   /// The NUL-terminated path to the entry relative to the working
   /// directory of the repository.
-  external ffi.Pointer<ffi.Int8> path;
+  external ffi.Pointer<ffi.Char> path;
 
   /// The size of the entry in bytes.
   @git_object_size_t()
@@ -28305,7 +28297,7 @@ class git_diff_delta extends ffi.Struct {
 /// give the defaults.  The default values are marked below.
 class git_diff_options extends ffi.Struct {
   /// < version for the struct
-  @ffi.Uint32()
+  @ffi.UnsignedInt()
   external int version;
 
   /// A combination of `git_diff_option_t` values above.
@@ -28355,11 +28347,11 @@ class git_diff_options extends ffi.Struct {
 
   /// The virtual "directory" prefix for old file names in hunk headers.
   /// Default is "a".
-  external ffi.Pointer<ffi.Int8> old_prefix;
+  external ffi.Pointer<ffi.Char> old_prefix;
 
   /// The virtual "directory" prefix for new file names in hunk headers.
   /// Defaults to "b".
-  external ffi.Pointer<ffi.Int8> new_prefix;
+  external ffi.Pointer<ffi.Char> new_prefix;
 }
 
 /// Diff notification callback function.
@@ -28375,8 +28367,8 @@ class git_diff_options extends ffi.Struct {
 /// continues.
 typedef git_diff_notify_cb = ffi.Pointer<
     ffi.NativeFunction<
-        ffi.Int32 Function(ffi.Pointer<git_diff>, ffi.Pointer<git_diff_delta>,
-            ffi.Pointer<ffi.Int8>, ffi.Pointer<ffi.Void>)>>;
+        ffi.Int Function(ffi.Pointer<git_diff>, ffi.Pointer<git_diff_delta>,
+            ffi.Pointer<ffi.Char>, ffi.Pointer<ffi.Void>)>>;
 
 /// Diff progress callback.
 ///
@@ -28388,8 +28380,8 @@ typedef git_diff_notify_cb = ffi.Pointer<
 /// @return Non-zero to abort the diff.
 typedef git_diff_progress_cb = ffi.Pointer<
     ffi.NativeFunction<
-        ffi.Int32 Function(ffi.Pointer<git_diff>, ffi.Pointer<ffi.Int8>,
-            ffi.Pointer<ffi.Int8>, ffi.Pointer<ffi.Void>)>>;
+        ffi.Int Function(ffi.Pointer<git_diff>, ffi.Pointer<ffi.Char>,
+            ffi.Pointer<ffi.Char>, ffi.Pointer<ffi.Void>)>>;
 
 /// Note: Can't use off_t since if a client program includes <sys/types.h>
 /// before us (directly or indirectly), they'll get 32 bit off_t in their client
@@ -28418,14 +28410,14 @@ class git_diff_binary_file extends ffi.Struct {
   external int type;
 
   /// The binary data, deflated.
-  external ffi.Pointer<ffi.Int8> data;
+  external ffi.Pointer<ffi.Char> data;
 
   /// The length of the binary data.
-  @size_t()
+  @ffi.Size()
   external int datalen;
 
   /// The length of the binary data after inflation.
-  @size_t()
+  @ffi.Size()
   external int inflatedlen;
 }
 
@@ -28443,7 +28435,7 @@ class git_diff_binary extends ffi.Struct {
   /// If this is `0` then this was generated knowing only that a binary
   /// file changed but without providing the data, probably from a patch
   /// that said `Binary files a/file.txt and b/file.txt differ`.
-  @ffi.Uint32()
+  @ffi.UnsignedInt()
   external int contains_data;
 
   /// < The contents of the old file.
@@ -28462,27 +28454,27 @@ class git_diff_binary extends ffi.Struct {
 /// versions in the delta.
 class git_diff_hunk extends ffi.Struct {
   /// < Starting line number in old_file
-  @ffi.Int32()
+  @ffi.Int()
   external int old_start;
 
   /// < Number of lines in old_file
-  @ffi.Int32()
+  @ffi.Int()
   external int old_lines;
 
   /// < Starting line number in new_file
-  @ffi.Int32()
+  @ffi.Int()
   external int new_start;
 
   /// < Number of lines in new_file
-  @ffi.Int32()
+  @ffi.Int()
   external int new_lines;
 
   /// < Number of bytes in header text
-  @size_t()
+  @ffi.Size()
   external int header_len;
 
   @ffi.Array.multi([128])
-  external ffi.Array<ffi.Int8> header;
+  external ffi.Array<ffi.Char> header;
 }
 
 /// Line origin constants.
@@ -28527,23 +28519,23 @@ abstract class git_diff_line_t {
 /// just a span of bytes inside the larger file.
 class git_diff_line extends ffi.Struct {
   /// < A git_diff_line_t value
-  @ffi.Int8()
+  @ffi.Char()
   external int origin;
 
   /// < Line number in old file or -1 for added line
-  @ffi.Int32()
+  @ffi.Int()
   external int old_lineno;
 
   /// < Line number in new file or -1 for deleted line
-  @ffi.Int32()
+  @ffi.Int()
   external int new_lineno;
 
   /// < Number of newline characters in content
-  @ffi.Int32()
+  @ffi.Int()
   external int num_lines;
 
   /// < Number of bytes of data
-  @size_t()
+  @ffi.Size()
   external int content_len;
 
   /// < Offset in the original file to the content
@@ -28551,7 +28543,7 @@ class git_diff_line extends ffi.Struct {
   external int content_offset;
 
   /// < Pointer to diff text, not NUL-byte terminated
-  external ffi.Pointer<ffi.Int8> content;
+  external ffi.Pointer<ffi.Char> content;
 }
 
 /// Flags to control the behavior of diff rename/copy detection.
@@ -28630,19 +28622,19 @@ abstract class git_diff_find_t {
 class git_diff_similarity_metric extends ffi.Struct {
   external ffi.Pointer<
       ffi.NativeFunction<
-          ffi.Int32 Function(
+          ffi.Int Function(
               ffi.Pointer<ffi.Pointer<ffi.Void>>,
               ffi.Pointer<git_diff_file>,
-              ffi.Pointer<ffi.Int8>,
+              ffi.Pointer<ffi.Char>,
               ffi.Pointer<ffi.Void>)>> file_signature;
 
   external ffi.Pointer<
       ffi.NativeFunction<
-          ffi.Int32 Function(
+          ffi.Int Function(
               ffi.Pointer<ffi.Pointer<ffi.Void>>,
               ffi.Pointer<git_diff_file>,
-              ffi.Pointer<ffi.Int8>,
-              size_t,
+              ffi.Pointer<ffi.Char>,
+              ffi.Size,
               ffi.Pointer<ffi.Void>)>> buffer_signature;
 
   external ffi.Pointer<
@@ -28652,7 +28644,7 @@ class git_diff_similarity_metric extends ffi.Struct {
 
   external ffi.Pointer<
       ffi.NativeFunction<
-          ffi.Int32 Function(ffi.Pointer<ffi.Int32>, ffi.Pointer<ffi.Void>,
+          ffi.Int Function(ffi.Pointer<ffi.Int>, ffi.Pointer<ffi.Void>,
               ffi.Pointer<ffi.Void>, ffi.Pointer<ffi.Void>)>> similarity;
 
   external ffi.Pointer<ffi.Void> payload;
@@ -28662,7 +28654,7 @@ class git_diff_similarity_metric extends ffi.Struct {
 ///
 /// These options mostly mimic parameters that can be passed to git-diff.
 class git_diff_find_options extends ffi.Struct {
-  @ffi.Uint32()
+  @ffi.UnsignedInt()
   external int version;
 
   /// Combination of git_diff_find_t values (default GIT_DIFF_FIND_BY_CONFIG).
@@ -28696,7 +28688,7 @@ class git_diff_find_options extends ffi.Struct {
   /// This is a little different from the `-l` option from Git because we
   /// will still process up to this many matches before abandoning the search.
   /// Defaults to 1000.
-  @size_t()
+  @ffi.Size()
   external int rename_limit;
 
   /// The `metric` option allows you to plug in a custom similarity metric.
@@ -28717,20 +28709,20 @@ class git_diff_find_options extends ffi.Struct {
 /// @param payload User-specified pointer from foreach function
 typedef git_diff_file_cb = ffi.Pointer<
     ffi.NativeFunction<
-        ffi.Int32 Function(
+        ffi.Int Function(
             ffi.Pointer<git_diff_delta>, ffi.Float, ffi.Pointer<ffi.Void>)>>;
 
 /// When iterating over a diff, callback that will be made for
 /// binary content within the diff.
 typedef git_diff_binary_cb = ffi.Pointer<
     ffi.NativeFunction<
-        ffi.Int32 Function(ffi.Pointer<git_diff_delta>,
+        ffi.Int Function(ffi.Pointer<git_diff_delta>,
             ffi.Pointer<git_diff_binary>, ffi.Pointer<ffi.Void>)>>;
 
 /// When iterating over a diff, callback that will be made per hunk.
 typedef git_diff_hunk_cb = ffi.Pointer<
     ffi.NativeFunction<
-        ffi.Int32 Function(ffi.Pointer<git_diff_delta>,
+        ffi.Int Function(ffi.Pointer<git_diff_delta>,
             ffi.Pointer<git_diff_hunk>, ffi.Pointer<ffi.Void>)>>;
 
 /// When iterating over a diff, callback that will be made per text diff
@@ -28741,7 +28733,7 @@ typedef git_diff_hunk_cb = ffi.Pointer<
 /// of lines of file and hunk headers.
 typedef git_diff_line_cb = ffi.Pointer<
     ffi.NativeFunction<
-        ffi.Int32 Function(
+        ffi.Int Function(
             ffi.Pointer<git_diff_delta>,
             ffi.Pointer<git_diff_hunk>,
             ffi.Pointer<git_diff_line>,
@@ -28793,7 +28785,7 @@ abstract class git_diff_stats_format_t {
 /// Initialize with `GIT_PATCHID_OPTIONS_INIT`. Alternatively, you can
 /// use `git_diff_patchid_options_init`.
 class git_diff_patchid_options extends ffi.Struct {
-  @ffi.Uint32()
+  @ffi.UnsignedInt()
   external int version;
 }
 
@@ -28812,7 +28804,7 @@ abstract class git_apply_flags_t {
 /// @see git_apply_to_tree, git_apply
 class git_apply_options extends ffi.Struct {
   /// < The version
-  @ffi.Uint32()
+  @ffi.UnsignedInt()
   external int version;
 
   /// When applying a patch, callback that will be made per delta (file).
@@ -28825,7 +28817,7 @@ class git_apply_options extends ffi.Struct {
   external ffi.Pointer<ffi.Void> payload;
 
   /// Bitmask of git_apply_flags_t
-  @ffi.Uint32()
+  @ffi.UnsignedInt()
   external int flags;
 }
 
@@ -28843,8 +28835,7 @@ class git_apply_options extends ffi.Struct {
 /// or > 0 if the delta will not be applied.
 typedef git_apply_delta_cb = ffi.Pointer<
     ffi.NativeFunction<
-        ffi.Int32 Function(
-            ffi.Pointer<git_diff_delta>, ffi.Pointer<ffi.Void>)>>;
+        ffi.Int Function(ffi.Pointer<git_diff_delta>, ffi.Pointer<ffi.Void>)>>;
 
 /// When applying a patch, callback that will be made per hunk.
 ///
@@ -28860,7 +28851,7 @@ typedef git_apply_delta_cb = ffi.Pointer<
 /// or > 0 if the hunk will not be applied.
 typedef git_apply_hunk_cb = ffi.Pointer<
     ffi.NativeFunction<
-        ffi.Int32 Function(ffi.Pointer<git_diff_hunk>, ffi.Pointer<ffi.Void>)>>;
+        ffi.Int Function(ffi.Pointer<git_diff_hunk>, ffi.Pointer<ffi.Void>)>>;
 
 /// Possible application locations for git_apply
 abstract class git_apply_location_t {
@@ -28894,11 +28885,11 @@ abstract class git_attr_value_t {
 
 /// An options structure for querying attributes.
 class git_attr_options extends ffi.Struct {
-  @ffi.Uint32()
+  @ffi.UnsignedInt()
   external int version;
 
   /// A combination of GIT_ATTR_CHECK flags
-  @ffi.Uint32()
+  @ffi.UnsignedInt()
   external int flags;
 
   external ffi.Pointer<git_oid> commit_id;
@@ -28924,7 +28915,7 @@ class git_attr_options extends ffi.Struct {
 /// from git_attr_foreach.
 typedef git_attr_foreach_cb = ffi.Pointer<
     ffi.NativeFunction<
-        ffi.Int32 Function(ffi.Pointer<ffi.Int8>, ffi.Pointer<ffi.Int8>,
+        ffi.Int Function(ffi.Pointer<ffi.Char>, ffi.Pointer<ffi.Char>,
             ffi.Pointer<ffi.Void>)>>;
 
 /// Flags to control the functionality of `git_blob_filter`.
@@ -28950,7 +28941,7 @@ abstract class git_blob_filter_flag_t {
 /// Initialize with `GIT_BLOB_FILTER_OPTIONS_INIT`. Alternatively, you can
 /// use `git_blob_filter_options_init`.
 class git_blob_filter_options extends ffi.Struct {
-  @ffi.Int32()
+  @ffi.Int()
   external int version;
 
   /// Flags to control the filtering process, see `git_blob_filter_flag_t` above
@@ -29011,7 +29002,7 @@ abstract class git_blame_flag_t {
 /// Initialize with `GIT_BLAME_OPTIONS_INIT`. Alternatively, you can
 /// use `git_blame_options_init`.
 class git_blame_options extends ffi.Struct {
-  @ffi.Uint32()
+  @ffi.UnsignedInt()
   external int version;
 
   /// A combination of `git_blame_flag_t`
@@ -29037,19 +29028,19 @@ class git_blame_options extends ffi.Struct {
 
   /// The first line in the file to blame.
   /// The default is 1 (line numbers start with 1).
-  @size_t()
+  @ffi.Size()
   external int min_line;
 
   /// The last line in the file to blame.
   /// The default is the last line of the file.
-  @size_t()
+  @ffi.Size()
   external int max_line;
 }
 
 /// Structure that represents a blame hunk.
 class git_blame_hunk extends ffi.Struct {
   /// The number of lines in this hunk.
-  @size_t()
+  @ffi.Size()
   external int lines_in_hunk;
 
   /// The OID of the commit where this line was last changed.
@@ -29057,7 +29048,7 @@ class git_blame_hunk extends ffi.Struct {
 
   /// The 1-based line number where this hunk begins, in the final version
   /// of the file.
-  @size_t()
+  @ffi.Size()
   external int final_start_line_number;
 
   /// The author of `final_commit_id`. If `GIT_BLAME_USE_MAILMAP` has been
@@ -29071,11 +29062,11 @@ class git_blame_hunk extends ffi.Struct {
 
   /// The path to the file where this hunk originated, as of the commit
   /// specified by `orig_commit_id`.
-  external ffi.Pointer<ffi.Int8> orig_path;
+  external ffi.Pointer<ffi.Char> orig_path;
 
   /// The 1-based line number where this hunk begins in the file named by
   /// `orig_path` in the commit specified by `orig_commit_id`.
-  @size_t()
+  @ffi.Size()
   external int orig_start_line_number;
 
   /// The author of `orig_commit_id`. If `GIT_BLAME_USE_MAILMAP` has been
@@ -29084,7 +29075,7 @@ class git_blame_hunk extends ffi.Struct {
 
   /// The 1 iff the hunk has been tracked to a boundary commit (the root,
   /// or the commit specified in git_blame_options.oldest_commit)
-  @ffi.Int8()
+  @ffi.Char()
   external int boundary;
 }
 
@@ -29140,13 +29131,13 @@ class git_cert_hostkey extends ffi.Struct {
   external int type;
 
   @ffi.Array.multi([16])
-  external ffi.Array<ffi.Uint8> hash_md5;
+  external ffi.Array<ffi.UnsignedChar> hash_md5;
 
   @ffi.Array.multi([20])
-  external ffi.Array<ffi.Uint8> hash_sha1;
+  external ffi.Array<ffi.UnsignedChar> hash_sha1;
 
   @ffi.Array.multi([32])
-  external ffi.Array<ffi.Uint8> hash_sha256;
+  external ffi.Array<ffi.UnsignedChar> hash_sha256;
 
   /// Raw hostkey type. If `type` has `GIT_CERT_SSH_RAW` set, this will
   /// have the type of the raw hostkey.
@@ -29155,11 +29146,11 @@ class git_cert_hostkey extends ffi.Struct {
 
   /// Pointer to the raw hostkey. If `type` has `GIT_CERT_SSH_RAW` set,
   /// this will have the raw contents of the hostkey.
-  external ffi.Pointer<ffi.Int8> hostkey;
+  external ffi.Pointer<ffi.Char> hostkey;
 
   /// Raw hostkey length. If `type` has `GIT_CERT_SSH_RAW` set, this will
   /// have the length of the raw contents of the hostkey.
-  @size_t()
+  @ffi.Size()
   external int hostkey_len;
 }
 
@@ -29172,7 +29163,7 @@ class git_cert_x509 extends ffi.Struct {
   external ffi.Pointer<ffi.Void> data;
 
   /// Length of the memory block pointed to by `data`.
-  @size_t()
+  @ffi.Size()
   external int len;
 }
 
@@ -29377,13 +29368,13 @@ abstract class git_checkout_notify_t {
 
 /// Checkout performance-reporting structure
 class git_checkout_perfdata extends ffi.Struct {
-  @size_t()
+  @ffi.Size()
   external int mkdir_calls;
 
-  @size_t()
+  @ffi.Size()
   external int stat_calls;
 
-  @size_t()
+  @ffi.Size()
   external int chmod_calls;
 }
 
@@ -29393,31 +29384,31 @@ class git_checkout_perfdata extends ffi.Struct {
 /// use `git_checkout_options_init`.
 class git_checkout_options extends ffi.Struct {
   /// < The version
-  @ffi.Uint32()
+  @ffi.UnsignedInt()
   external int version;
 
   /// < default will be a safe checkout
-  @ffi.Uint32()
+  @ffi.UnsignedInt()
   external int checkout_strategy;
 
   /// < don't apply filters like CRLF conversion
-  @ffi.Int32()
+  @ffi.Int()
   external int disable_filters;
 
   /// < default is 0755
-  @ffi.Uint32()
+  @ffi.UnsignedInt()
   external int dir_mode;
 
   /// < default is 0644 or 0755 as dictated by blob
-  @ffi.Uint32()
+  @ffi.UnsignedInt()
   external int file_mode;
 
   /// < default is O_CREAT | O_TRUNC | O_WRONLY
-  @ffi.Int32()
+  @ffi.Int()
   external int file_open_flags;
 
   /// < see `git_checkout_notify_t` above
-  @ffi.Uint32()
+  @ffi.UnsignedInt()
   external int notify_flags;
 
   /// Optional callback to get notifications on specific file states.
@@ -29453,16 +29444,16 @@ class git_checkout_options extends ffi.Struct {
   external ffi.Pointer<git_index> baseline_index;
 
   /// < alternative checkout path to workdir
-  external ffi.Pointer<ffi.Int8> target_directory;
+  external ffi.Pointer<ffi.Char> target_directory;
 
   /// < the name of the common ancestor side of conflicts
-  external ffi.Pointer<ffi.Int8> ancestor_label;
+  external ffi.Pointer<ffi.Char> ancestor_label;
 
   /// < the name of the "our" side of conflicts
-  external ffi.Pointer<ffi.Int8> our_label;
+  external ffi.Pointer<ffi.Char> our_label;
 
   /// < the name of the "their" side of conflicts
-  external ffi.Pointer<ffi.Int8> their_label;
+  external ffi.Pointer<ffi.Char> their_label;
 
   /// Optional callback to notify the consumer of performance data.
   external git_checkout_perfdata_cb perfdata_cb;
@@ -29474,9 +29465,9 @@ class git_checkout_options extends ffi.Struct {
 /// Checkout notification callback function
 typedef git_checkout_notify_cb = ffi.Pointer<
     ffi.NativeFunction<
-        ffi.Int32 Function(
+        ffi.Int Function(
             ffi.Int32,
-            ffi.Pointer<ffi.Int8>,
+            ffi.Pointer<ffi.Char>,
             ffi.Pointer<git_diff_file>,
             ffi.Pointer<git_diff_file>,
             ffi.Pointer<git_diff_file>,
@@ -29486,7 +29477,7 @@ typedef git_checkout_notify_cb = ffi.Pointer<
 typedef git_checkout_progress_cb = ffi.Pointer<
     ffi.NativeFunction<
         ffi.Void Function(
-            ffi.Pointer<ffi.Int8>, size_t, size_t, ffi.Pointer<ffi.Void>)>>;
+            ffi.Pointer<ffi.Char>, ffi.Size, ffi.Size, ffi.Pointer<ffi.Void>)>>;
 
 /// Checkout perfdata notification function
 typedef git_checkout_perfdata_cb = ffi.Pointer<
@@ -29498,7 +29489,7 @@ typedef git_checkout_perfdata_cb = ffi.Pointer<
 class git_oidarray extends ffi.Struct {
   external ffi.Pointer<git_oid> ids;
 
-  @size_t()
+  @ffi.Size()
   external int count;
 }
 
@@ -29506,7 +29497,7 @@ class git_indexer extends ffi.Opaque {}
 
 /// Options for indexer configuration
 class git_indexer_options extends ffi.Struct {
-  @ffi.Uint32()
+  @ffi.UnsignedInt()
   external int version;
 
   /// progress_cb function to call with progress information
@@ -29516,7 +29507,7 @@ class git_indexer_options extends ffi.Struct {
   external ffi.Pointer<ffi.Void> progress_cb_payload;
 
   /// Do connectivity checks for the received pack
-  @ffi.Uint8()
+  @ffi.UnsignedChar()
   external int verify;
 }
 
@@ -29580,7 +29571,7 @@ class git_index_entry extends ffi.Struct {
   @ffi.Uint16()
   external int flags_extended;
 
-  external ffi.Pointer<ffi.Int8> path;
+  external ffi.Pointer<ffi.Char> path;
 }
 
 /// Flags for index entries
@@ -29650,28 +29641,28 @@ abstract class git_index_stage_t {
 /// Callback for APIs that add/remove/update files matching pathspec
 typedef git_index_matched_path_cb = ffi.Pointer<
     ffi.NativeFunction<
-        ffi.Int32 Function(ffi.Pointer<ffi.Int8>, ffi.Pointer<ffi.Int8>,
+        ffi.Int Function(ffi.Pointer<ffi.Char>, ffi.Pointer<ffi.Char>,
             ffi.Pointer<ffi.Void>)>>;
 
 /// The file inputs to `git_merge_file`.  Callers should populate the
 /// `git_merge_file_input` structure with descriptions of the files in
 /// each side of the conflict for use in producing the merge file.
 class git_merge_file_input extends ffi.Struct {
-  @ffi.Uint32()
+  @ffi.UnsignedInt()
   external int version;
 
   /// Pointer to the contents of the file.
-  external ffi.Pointer<ffi.Int8> ptr;
+  external ffi.Pointer<ffi.Char> ptr;
 
   /// Size of the contents pointed to in `ptr`.
-  @size_t()
+  @ffi.Size()
   external int size;
 
   /// File name of the conflicted file, or `NULL` to not merge the path.
-  external ffi.Pointer<ffi.Int8> path;
+  external ffi.Pointer<ffi.Char> path;
 
   /// File mode of the conflicted file, or `0` to not merge the mode.
-  @ffi.Uint32()
+  @ffi.UnsignedInt()
   external int mode;
 }
 
@@ -29770,20 +29761,20 @@ abstract class git_merge_file_flag_t {
 
 /// Options for merging a file
 class git_merge_file_options extends ffi.Struct {
-  @ffi.Uint32()
+  @ffi.UnsignedInt()
   external int version;
 
   /// Label for the ancestor file side of the conflict which will be prepended
   /// to labels in diff3-format merge files.
-  external ffi.Pointer<ffi.Int8> ancestor_label;
+  external ffi.Pointer<ffi.Char> ancestor_label;
 
   /// Label for our file side of the conflict which will be prepended
   /// to labels in merge files.
-  external ffi.Pointer<ffi.Int8> our_label;
+  external ffi.Pointer<ffi.Char> our_label;
 
   /// Label for their file side of the conflict which will be prepended
   /// to labels in merge files.
-  external ffi.Pointer<ffi.Int8> their_label;
+  external ffi.Pointer<ffi.Char> their_label;
 
   /// The file to favor in region conflicts.
   @ffi.Int32()
@@ -29795,7 +29786,7 @@ class git_merge_file_options extends ffi.Struct {
 
   /// The size of conflict markers (eg, "<<<<<<<").  Default is
   /// GIT_MERGE_CONFLICT_MARKER_SIZE.
-  @ffi.Uint16()
+  @ffi.UnsignedShort()
   external int marker_size;
 }
 
@@ -29803,28 +29794,28 @@ class git_merge_file_options extends ffi.Struct {
 class git_merge_file_result extends ffi.Struct {
   /// True if the output was automerged, false if the output contains
   /// conflict markers.
-  @ffi.Uint32()
+  @ffi.UnsignedInt()
   external int automergeable;
 
   /// The path that the resultant merge file should use, or NULL if a
   /// filename conflict would occur.
-  external ffi.Pointer<ffi.Int8> path;
+  external ffi.Pointer<ffi.Char> path;
 
   /// The mode that the resultant merge file should use.
-  @ffi.Uint32()
+  @ffi.UnsignedInt()
   external int mode;
 
   /// The contents of the merge.
-  external ffi.Pointer<ffi.Int8> ptr;
+  external ffi.Pointer<ffi.Char> ptr;
 
   /// The length of the merge contents.
-  @size_t()
+  @ffi.Size()
   external int len;
 }
 
 /// Merging options
 class git_merge_options extends ffi.Struct {
-  @ffi.Uint32()
+  @ffi.UnsignedInt()
   external int version;
 
   /// See `git_merge_flag_t` above
@@ -29836,7 +29827,7 @@ class git_merge_options extends ffi.Struct {
   /// with deleted files to determine their similarity.  Files that are
   /// more similar than the rename threshold (percentage-wise) will be
   /// treated as a rename.
-  @ffi.Uint32()
+  @ffi.UnsignedInt()
   external int rename_threshold;
 
   /// Maximum similarity sources to examine for renames (default 200).
@@ -29844,7 +29835,7 @@ class git_merge_options extends ffi.Struct {
   /// than this value, inexact rename detection is aborted.
   ///
   /// This setting overrides the `merge.renameLimit` configuration value.
-  @ffi.Uint32()
+  @ffi.UnsignedInt()
   external int target_limit;
 
   /// Pluggable similarity metric; pass NULL to use internal metric
@@ -29854,12 +29845,12 @@ class git_merge_options extends ffi.Struct {
   /// virtual merge base when faced with criss-cross merges.  When this
   /// limit is reached, the next ancestor will simply be used instead of
   /// attempting to merge it.  The default is unlimited.
-  @ffi.Uint32()
+  @ffi.UnsignedInt()
   external int recursion_limit;
 
   /// Default merge driver to be used when both sides of a merge have
   /// changed.  The default is the `text` driver.
-  external ffi.Pointer<ffi.Int8> default_driver;
+  external ffi.Pointer<ffi.Char> default_driver;
 
   /// Flags for handling conflicting content, to be used with the standard
   /// (`text`) merge driver.
@@ -29912,11 +29903,11 @@ abstract class git_merge_preference_t {
 
 /// Cherry-pick options
 class git_cherrypick_options extends ffi.Struct {
-  @ffi.Uint32()
+  @ffi.UnsignedInt()
   external int version;
 
   /// For merge commits, the "mainline" is treated as the parent.
-  @ffi.Uint32()
+  @ffi.UnsignedInt()
   external int mainline;
 
   /// < Options for the merging
@@ -29942,10 +29933,10 @@ class git_credential_userpass_plaintext extends ffi.Struct {
   external git_credential parent;
 
   /// < The username to authenticate as
-  external ffi.Pointer<ffi.Int8> username;
+  external ffi.Pointer<ffi.Char> username;
 
   /// < The password to use
-  external ffi.Pointer<ffi.Int8> password;
+  external ffi.Pointer<ffi.Char> password;
 }
 
 /// Username-only credential information
@@ -29954,7 +29945,7 @@ class git_credential_username extends ffi.Struct {
   external git_credential parent;
 
   @ffi.Array.multi([1])
-  external ffi.Array<ffi.Int8> username;
+  external ffi.Array<ffi.Char> username;
 }
 
 /// A ssh key from disk
@@ -29963,16 +29954,16 @@ class git_credential_ssh_key extends ffi.Struct {
   external git_credential parent;
 
   /// < The username to authenticate as
-  external ffi.Pointer<ffi.Int8> username;
+  external ffi.Pointer<ffi.Char> username;
 
   /// < The path to a public key
-  external ffi.Pointer<ffi.Int8> publickey;
+  external ffi.Pointer<ffi.Char> publickey;
 
   /// < The path to a private key
-  external ffi.Pointer<ffi.Int8> privatekey;
+  external ffi.Pointer<ffi.Char> privatekey;
 
   /// < Passphrase to decrypt the private key
-  external ffi.Pointer<ffi.Int8> passphrase;
+  external ffi.Pointer<ffi.Char> passphrase;
 }
 
 /// Keyboard-interactive based ssh authentication
@@ -29981,7 +29972,7 @@ class git_credential_ssh_interactive extends ffi.Struct {
   external git_credential parent;
 
   /// < The username to authenticate as
-  external ffi.Pointer<ffi.Int8> username;
+  external ffi.Pointer<ffi.Char> username;
 
   /// Callback used for authentication.
   external git_credential_ssh_interactive_cb prompt_callback;
@@ -29993,11 +29984,11 @@ class git_credential_ssh_interactive extends ffi.Struct {
 typedef git_credential_ssh_interactive_cb = ffi.Pointer<
     ffi.NativeFunction<
         ffi.Void Function(
-            ffi.Pointer<ffi.Int8>,
-            ffi.Int32,
-            ffi.Pointer<ffi.Int8>,
-            ffi.Int32,
-            ffi.Int32,
+            ffi.Pointer<ffi.Char>,
+            ffi.Int,
+            ffi.Pointer<ffi.Char>,
+            ffi.Int,
+            ffi.Int,
             ffi.Pointer<LIBSSH2_USERAUTH_KBDINT_PROMPT>,
             ffi.Pointer<LIBSSH2_USERAUTH_KBDINT_RESPONSE>,
             ffi.Pointer<ffi.Pointer<ffi.Void>>)>>;
@@ -30015,13 +30006,13 @@ class git_credential_ssh_custom extends ffi.Struct {
   external git_credential parent;
 
   /// < The username to authenticate as
-  external ffi.Pointer<ffi.Int8> username;
+  external ffi.Pointer<ffi.Char> username;
 
   /// < The public key data
-  external ffi.Pointer<ffi.Int8> publickey;
+  external ffi.Pointer<ffi.Char> publickey;
 
   /// < Length of the public key
-  @size_t()
+  @ffi.Size()
   external int publickey_len;
 
   /// Callback used to sign the data.
@@ -30033,12 +30024,12 @@ class git_credential_ssh_custom extends ffi.Struct {
 
 typedef git_credential_sign_cb = ffi.Pointer<
     ffi.NativeFunction<
-        ffi.Int32 Function(
+        ffi.Int Function(
             ffi.Pointer<LIBSSH2_SESSION>,
-            ffi.Pointer<ffi.Pointer<ffi.Uint8>>,
-            ffi.Pointer<size_t>,
-            ffi.Pointer<ffi.Uint8>,
-            size_t,
+            ffi.Pointer<ffi.Pointer<ffi.UnsignedChar>>,
+            ffi.Pointer<ffi.Size>,
+            ffi.Pointer<ffi.UnsignedChar>,
+            ffi.Size,
             ffi.Pointer<ffi.Pointer<ffi.Void>>)>>;
 typedef LIBSSH2_SESSION = _LIBSSH2_SESSION;
 
@@ -30060,8 +30051,8 @@ abstract class git_packbuilder_stage_t {
 /// @return non-zero to terminate the iteration
 typedef git_packbuilder_foreach_cb = ffi.Pointer<
     ffi.NativeFunction<
-        ffi.Int32 Function(
-            ffi.Pointer<ffi.Void>, size_t, ffi.Pointer<ffi.Void>)>>;
+        ffi.Int Function(
+            ffi.Pointer<ffi.Void>, ffi.Size, ffi.Pointer<ffi.Void>)>>;
 
 /// The type of proxy to use.
 abstract class git_proxy_t {
@@ -30083,7 +30074,7 @@ abstract class git_proxy_t {
 /// Note that not all types may be supported, depending on the platform
 /// and compilation options.
 class git_proxy_options extends ffi.Struct {
-  @ffi.Uint32()
+  @ffi.UnsignedInt()
   external int version;
 
   /// The type of proxy to use, by URL, auto-detect.
@@ -30091,7 +30082,7 @@ class git_proxy_options extends ffi.Struct {
   external int type;
 
   /// The URL of the proxy.
-  external ffi.Pointer<ffi.Int8> url;
+  external ffi.Pointer<ffi.Char> url;
 
   /// This will be called if the remote host requires
   /// authentication in order to connect to it.
@@ -30141,7 +30132,7 @@ abstract class git_remote_create_flags {
 /// Initialize with `GIT_REMOTE_CREATE_OPTIONS_INIT`. Alternatively, you can
 /// use `git_remote_create_options_init`.
 class git_remote_create_options extends ffi.Struct {
-  @ffi.Uint32()
+  @ffi.UnsignedInt()
   external int version;
 
   /// The repository that should own the remote.
@@ -30150,13 +30141,13 @@ class git_remote_create_options extends ffi.Struct {
 
   /// The remote's name.
   /// Setting this to NULL results in an in-memory/anonymous remote.
-  external ffi.Pointer<ffi.Int8> name;
+  external ffi.Pointer<ffi.Char> name;
 
   /// The fetchspec the remote should use.
-  external ffi.Pointer<ffi.Int8> fetchspec;
+  external ffi.Pointer<ffi.Char> fetchspec;
 
   /// Additional flags for the remote. See git_remote_create_flags.
-  @ffi.Uint32()
+  @ffi.UnsignedInt()
   external int flags;
 }
 
@@ -30197,7 +30188,7 @@ abstract class git_remote_autotag_option_t {
 ///
 /// git_fetch_options opts = GIT_FETCH_OPTIONS_INIT;
 class git_fetch_options extends ffi.Struct {
-  @ffi.Int32()
+  @ffi.Int()
   external int version;
 
   /// Callbacks to use for this fetch operation
@@ -30209,7 +30200,7 @@ class git_fetch_options extends ffi.Struct {
 
   /// Whether to write the results to FETCH_HEAD. Defaults to
   /// on. Leave this default in order to behave like git.
-  @ffi.Int32()
+  @ffi.Int()
   external int update_fetchhead;
 
   /// Determines how to behave regarding tags on the remote, such
@@ -30235,7 +30226,7 @@ class git_fetch_options extends ffi.Struct {
 
 /// Controls the behavior of a git_push object.
 class git_push_options extends ffi.Struct {
-  @ffi.Uint32()
+  @ffi.UnsignedInt()
   external int version;
 
   /// If the transport being used to push to the remote requires the creation
@@ -30244,7 +30235,7 @@ class git_push_options extends ffi.Struct {
   ///
   /// If set to 0, the packbuilder will auto-detect the number of threads
   /// to create. The default value is 1.
-  @ffi.Uint32()
+  @ffi.UnsignedInt()
   external int pb_parallelism;
 
   /// Callbacks to use for this push operation
@@ -30268,7 +30259,7 @@ class git_push_options extends ffi.Struct {
 /// Initialize with `GIT_REMOTE_CREATE_OPTIONS_INIT`. Alternatively, you can
 /// use `git_remote_create_options_init`.
 class git_remote_connect_options extends ffi.Struct {
-  @ffi.Uint32()
+  @ffi.UnsignedInt()
   external int version;
 
   /// Callbacks to use for this connection
@@ -30313,7 +30304,7 @@ abstract class git_clone_local_t {
 /// Initialize with `GIT_CLONE_OPTIONS_INIT`. Alternatively, you can
 /// use `git_clone_options_init`.
 class git_clone_options extends ffi.Struct {
-  @ffi.Uint32()
+  @ffi.UnsignedInt()
   external int version;
 
   /// These options are passed to the checkout step. To disable
@@ -30329,7 +30320,7 @@ class git_clone_options extends ffi.Struct {
 
   /// Set to zero (false) to create a standard repo, or non-zero
   /// for a bare repo
-  @ffi.Int32()
+  @ffi.Int()
   external int bare;
 
   /// Whether to use a fetch or copy the object database.
@@ -30338,7 +30329,7 @@ class git_clone_options extends ffi.Struct {
 
   /// The name of the branch to checkout. NULL means use the
   /// remote's default branch.
-  external ffi.Pointer<ffi.Int8> checkout_branch;
+  external ffi.Pointer<ffi.Char> checkout_branch;
 
   /// A callback used to create the new repository into which to
   /// clone. If NULL, the 'bare' field will be used to determine
@@ -30374,8 +30365,8 @@ class git_clone_options extends ffi.Struct {
 /// @return 0, or a negative value to indicate error
 typedef git_repository_create_cb = ffi.Pointer<
     ffi.NativeFunction<
-        ffi.Int32 Function(ffi.Pointer<ffi.Pointer<git_repository>>,
-            ffi.Pointer<ffi.Int8>, ffi.Int32, ffi.Pointer<ffi.Void>)>>;
+        ffi.Int Function(ffi.Pointer<ffi.Pointer<git_repository>>,
+            ffi.Pointer<ffi.Char>, ffi.Int, ffi.Pointer<ffi.Void>)>>;
 
 /// The signature of a function matching git_remote_create, with an additional
 /// void* as a callback payload.
@@ -30391,11 +30382,11 @@ typedef git_repository_create_cb = ffi.Pointer<
 /// @return 0, GIT_EINVALIDSPEC, GIT_EEXISTS or an error code
 typedef git_remote_create_cb = ffi.Pointer<
     ffi.NativeFunction<
-        ffi.Int32 Function(
+        ffi.Int Function(
             ffi.Pointer<ffi.Pointer<git_remote>>,
             ffi.Pointer<git_repository>,
-            ffi.Pointer<ffi.Int8>,
-            ffi.Pointer<ffi.Int8>,
+            ffi.Pointer<ffi.Char>,
+            ffi.Pointer<ffi.Char>,
             ffi.Pointer<ffi.Void>)>>;
 
 /// Priority level of a config file.
@@ -30433,13 +30424,13 @@ abstract class git_config_level_t {
 /// An entry in a configuration file
 class git_config_entry extends ffi.Struct {
   /// < Name of the entry (normalised)
-  external ffi.Pointer<ffi.Int8> name;
+  external ffi.Pointer<ffi.Char> name;
 
   /// < String value of the entry
-  external ffi.Pointer<ffi.Int8> value;
+  external ffi.Pointer<ffi.Char> value;
 
   /// < Depth of includes where this variable was found
-  @ffi.Uint32()
+  @ffi.UnsignedInt()
   external int include_depth;
 
   /// < Which config file this was found in
@@ -30469,9 +30460,9 @@ class git_configmap extends ffi.Struct {
   @ffi.Int32()
   external int type;
 
-  external ffi.Pointer<ffi.Int8> str_match;
+  external ffi.Pointer<ffi.Char> str_match;
 
-  @ffi.Int32()
+  @ffi.Int()
   external int map_value;
 }
 
@@ -30482,7 +30473,7 @@ class git_configmap extends ffi.Struct {
 /// @return non-zero to terminate the iteration.
 typedef git_config_foreach_cb = ffi.Pointer<
     ffi.NativeFunction<
-        ffi.Int32 Function(
+        ffi.Int Function(
             ffi.Pointer<git_config_entry>, ffi.Pointer<ffi.Void>)>>;
 
 /// Reference lookup strategy
@@ -30501,29 +30492,29 @@ abstract class git_describe_strategy_t {
 /// Initialize with `GIT_DESCRIBE_OPTIONS_INIT`. Alternatively, you can
 /// use `git_describe_options_init`.
 class git_describe_options extends ffi.Struct {
-  @ffi.Uint32()
+  @ffi.UnsignedInt()
   external int version;
 
   /// < default: 10
-  @ffi.Uint32()
+  @ffi.UnsignedInt()
   external int max_candidates_tags;
 
   /// < default: GIT_DESCRIBE_DEFAULT
-  @ffi.Uint32()
+  @ffi.UnsignedInt()
   external int describe_strategy;
 
-  external ffi.Pointer<ffi.Int8> pattern;
+  external ffi.Pointer<ffi.Char> pattern;
 
   /// When calculating the distance from the matching tag or
   /// reference, only walk down the first-parent ancestry.
-  @ffi.Int32()
+  @ffi.Int()
   external int only_follow_first_parent;
 
   /// If no matching tag or reference is found, the describe
   /// operation would normally fail. If this option is set, it
   /// will instead fall back to showing the full id of the
   /// commit.
-  @ffi.Int32()
+  @ffi.Int()
   external int show_commit_oid_as_fallback;
 }
 
@@ -30532,22 +30523,22 @@ class git_describe_options extends ffi.Struct {
 /// Initialize with `GIT_DESCRIBE_FORMAT_OPTIONS_INIT`. Alternatively, you can
 /// use `git_describe_format_options_init`.
 class git_describe_format_options extends ffi.Struct {
-  @ffi.Uint32()
+  @ffi.UnsignedInt()
   external int version;
 
   /// Size of the abbreviated commit id to use. This value is the
   /// lower bound for the length of the abbreviated string. The
   /// default is 7.
-  @ffi.Uint32()
+  @ffi.UnsignedInt()
   external int abbreviated_size;
 
   /// Set to use the long format even when a shorter name could be used.
-  @ffi.Int32()
+  @ffi.Int()
   external int always_use_long_format;
 
   /// If the workdir is dirty and this is set, this string will
   /// be appended to the description string.
-  external ffi.Pointer<ffi.Int8> dirty_suffix;
+  external ffi.Pointer<ffi.Char> dirty_suffix;
 }
 
 class git_describe_result extends ffi.Opaque {}
@@ -30655,9 +30646,9 @@ abstract class git_error_code {
 /// This is kept on a per-thread basis if GIT_THREADS was defined when the
 /// library was build, otherwise one is kept globally for the library
 class git_error extends ffi.Struct {
-  external ffi.Pointer<ffi.Int8> message;
+  external ffi.Pointer<ffi.Char> message;
 
-  @ffi.Int32()
+  @ffi.Int()
   external int klass;
 }
 
@@ -30733,7 +30724,7 @@ abstract class git_filter_flag_t {
 
 /// Filtering options
 class git_filter_options extends ffi.Struct {
-  @ffi.Uint32()
+  @ffi.UnsignedInt()
   external int version;
 
   /// See `git_filter_flag_t` above
@@ -30755,7 +30746,7 @@ class git_filter_list extends ffi.Opaque {}
 ///
 /// Use to tell the rebase machinery how to operate.
 class git_rebase_options extends ffi.Struct {
-  @ffi.Uint32()
+  @ffi.UnsignedInt()
   external int version;
 
   /// Used by `git_rebase_init`, this will instruct other clients working
@@ -30763,7 +30754,7 @@ class git_rebase_options extends ffi.Struct {
   /// may choose to provide in an application-specific manner.  This has no
   /// effect upon libgit2 directly, but is provided for interoperability
   /// between Git tools.
-  @ffi.Int32()
+  @ffi.Int()
   external int quiet;
 
   /// Used by `git_rebase_init`, this will begin an in-memory rebase,
@@ -30771,7 +30762,7 @@ class git_rebase_options extends ffi.Struct {
   /// commit the rebased changes, but will not rewind HEAD or update the
   /// repository to be in a rebasing state.  This will not interfere with
   /// the working directory (if there is one).
-  @ffi.Int32()
+  @ffi.Int()
   external int inmemory;
 
   /// Used by `git_rebase_finish`, this is the name of the notes reference
@@ -30780,7 +30771,7 @@ class git_rebase_options extends ffi.Struct {
   /// is examined, unless the configuration option `notes.rewrite.rebase`
   /// is set to false.  If `notes.rewriteRef` is also NULL, notes will
   /// not be rewritten.
-  external ffi.Pointer<ffi.Int8> rewrite_notes_ref;
+  external ffi.Pointer<ffi.Char> rewrite_notes_ref;
 
   /// Options to control how trees are merged during `git_rebase_next`.
   external git_merge_options merge_options;
@@ -30817,8 +30808,8 @@ class git_rebase_options extends ffi.Struct {
   /// commit buffer, signs it, and commits it.
   external ffi.Pointer<
       ffi.NativeFunction<
-          ffi.Int32 Function(ffi.Pointer<git_buf>, ffi.Pointer<git_buf>,
-              ffi.Pointer<ffi.Int8>, ffi.Pointer<ffi.Void>)>> signing_cb;
+          ffi.Int Function(ffi.Pointer<git_buf>, ffi.Pointer<git_buf>,
+              ffi.Pointer<ffi.Char>, ffi.Pointer<ffi.Void>)>> signing_cb;
 
   /// This will be passed to each of the callbacks in this struct
   /// as the last parameter.
@@ -30851,14 +30842,14 @@ class git_rebase_options extends ffi.Struct {
 /// and return a failure
 typedef git_commit_create_cb = ffi.Pointer<
     ffi.NativeFunction<
-        ffi.Int32 Function(
+        ffi.Int Function(
             ffi.Pointer<git_oid>,
             ffi.Pointer<git_signature>,
             ffi.Pointer<git_signature>,
-            ffi.Pointer<ffi.Int8>,
-            ffi.Pointer<ffi.Int8>,
+            ffi.Pointer<ffi.Char>,
+            ffi.Pointer<ffi.Char>,
             ffi.Pointer<git_tree>,
-            size_t,
+            ffi.Size,
             ffi.Pointer<ffi.Pointer<git_commit>>,
             ffi.Pointer<ffi.Void>)>>;
 
@@ -30904,7 +30895,7 @@ class git_rebase_operation extends ffi.Struct {
 
   /// The executable the user has requested be run.  This will only
   /// be populated for operations of type `GIT_REBASE_OPERATION_EXEC`.
-  external ffi.Pointer<ffi.Int8> exec;
+  external ffi.Pointer<ffi.Char> exec;
 }
 
 /// Available tracing levels.  When tracing is set to a particular level,
@@ -30934,15 +30925,15 @@ abstract class git_trace_level_t {
 
 /// An instance for a tracing function
 typedef git_trace_cb = ffi.Pointer<
-    ffi.NativeFunction<ffi.Void Function(ffi.Int32, ffi.Pointer<ffi.Int8>)>>;
+    ffi.NativeFunction<ffi.Void Function(ffi.Int32, ffi.Pointer<ffi.Char>)>>;
 
 /// Options for revert
 class git_revert_options extends ffi.Struct {
-  @ffi.Uint32()
+  @ffi.UnsignedInt()
   external int version;
 
   /// For merge commits, the "mainline" is treated as the parent.
-  @ffi.Uint32()
+  @ffi.UnsignedInt()
   external int mainline;
 
   /// < Options for the merging
@@ -30974,7 +30965,7 @@ class git_revspec extends ffi.Struct {
   external ffi.Pointer<git_object> to;
 
   /// The intent of the revspec (i.e. `git_revspec_mode_t` flags)
-  @ffi.Uint32()
+  @ffi.UnsignedInt()
   external int flags;
 }
 
@@ -31036,7 +31027,7 @@ abstract class git_stash_apply_progress_t {
 /// Initialize with `GIT_STASH_APPLY_OPTIONS_INIT`. Alternatively, you can
 /// use `git_stash_apply_options_init`.
 class git_stash_apply_options extends ffi.Struct {
-  @ffi.Uint32()
+  @ffi.UnsignedInt()
   external int version;
 
   /// See `git_stash_apply_flags`, above.
@@ -31056,7 +31047,7 @@ class git_stash_apply_options extends ffi.Struct {
 /// Return 0 to continue processing, or a negative value to
 /// abort the stash application.
 typedef git_stash_apply_progress_cb = ffi.Pointer<
-    ffi.NativeFunction<ffi.Int32 Function(ffi.Int32, ffi.Pointer<ffi.Void>)>>;
+    ffi.NativeFunction<ffi.Int Function(ffi.Int32, ffi.Pointer<ffi.Void>)>>;
 
 /// This is a callback function you can provide to iterate over all the
 /// stashed states that will be invoked per entry.
@@ -31069,7 +31060,7 @@ typedef git_stash_apply_progress_cb = ffi.Pointer<
 /// @return 0 to continue iterating or non-zero to stop.
 typedef git_stash_cb = ffi.Pointer<
     ffi.NativeFunction<
-        ffi.Int32 Function(size_t, ffi.Pointer<ffi.Int8>, ffi.Pointer<git_oid>,
+        ffi.Int Function(ffi.Size, ffi.Pointer<ffi.Char>, ffi.Pointer<git_oid>,
             ffi.Pointer<ffi.Void>)>>;
 
 /// Status flags for a single file.
@@ -31205,7 +31196,7 @@ abstract class git_status_opt_t {
 /// use `git_status_options_init`.
 class git_status_options extends ffi.Struct {
   /// The struct version; pass `GIT_STATUS_OPTIONS_VERSION`.
-  @ffi.Uint32()
+  @ffi.UnsignedInt()
   external int version;
 
   /// The `show` value is one of the `git_status_show_t` constants that
@@ -31215,7 +31206,7 @@ class git_status_options extends ffi.Struct {
 
   /// The `flags` value is an OR'ed combination of the
   /// `git_status_opt_t` values above.
-  @ffi.Uint32()
+  @ffi.UnsignedInt()
   external int flags;
 
   /// The `pathspec` is an array of path patterns to match (using
@@ -31264,8 +31255,8 @@ class git_status_entry extends ffi.Struct {
 /// `payload` is the value you passed to the foreach function as payload.
 typedef git_status_cb = ffi.Pointer<
     ffi.NativeFunction<
-        ffi.Int32 Function(
-            ffi.Pointer<ffi.Int8>, ffi.Uint32, ffi.Pointer<ffi.Void>)>>;
+        ffi.Int Function(
+            ffi.Pointer<ffi.Char>, ffi.UnsignedInt, ffi.Pointer<ffi.Void>)>>;
 
 /// Return codes for submodule status.
 ///
@@ -31329,7 +31320,7 @@ abstract class git_submodule_status_t {
 /// Initialize with `GIT_SUBMODULE_UPDATE_OPTIONS_INIT`. Alternatively, you can
 /// use `git_submodule_update_options_init`.
 class git_submodule_update_options extends ffi.Struct {
-  @ffi.Uint32()
+  @ffi.UnsignedInt()
   external int version;
 
   /// These options are passed to the checkout step. To disable
@@ -31347,7 +31338,7 @@ class git_submodule_update_options extends ffi.Struct {
 
   /// Allow fetching from the submodule's default remote if the target
   /// commit isn't found. Enabled by default.
-  @ffi.Int32()
+  @ffi.Int()
   external int allow_fetch;
 }
 
@@ -31359,7 +31350,7 @@ class git_submodule_update_options extends ffi.Struct {
 /// @return 0 on success or error code
 typedef git_submodule_cb = ffi.Pointer<
     ffi.NativeFunction<
-        ffi.Int32 Function(ffi.Pointer<git_submodule>, ffi.Pointer<ffi.Int8>,
+        ffi.Int Function(ffi.Pointer<git_submodule>, ffi.Pointer<ffi.Char>,
             ffi.Pointer<ffi.Void>)>>;
 
 /// Worktree add options structure
@@ -31367,11 +31358,11 @@ typedef git_submodule_cb = ffi.Pointer<
 /// Initialize with `GIT_WORKTREE_ADD_OPTIONS_INIT`. Alternatively, you can
 /// use `git_worktree_add_options_init`.
 class git_worktree_add_options extends ffi.Struct {
-  @ffi.Uint32()
+  @ffi.UnsignedInt()
   external int version;
 
   /// < lock newly created worktree
-  @ffi.Int32()
+  @ffi.Int()
   external int lock;
 
   /// < reference to use for the new worktree HEAD
@@ -31399,7 +31390,7 @@ abstract class git_worktree_prune_t {
 /// Initialize with `GIT_WORKTREE_PRUNE_OPTIONS_INIT`. Alternatively, you can
 /// use `git_worktree_prune_options_init`.
 class git_worktree_prune_options extends ffi.Struct {
-  @ffi.Uint32()
+  @ffi.UnsignedInt()
   external int version;
 
   /// A combination of `git_worktree_prune_t`
@@ -31409,9 +31400,9 @@ class git_worktree_prune_options extends ffi.Struct {
 
 /// Payload for git_credential_userpass_plaintext.
 class git_credential_userpass_payload extends ffi.Struct {
-  external ffi.Pointer<ffi.Int8> username;
+  external ffi.Pointer<ffi.Char> username;
 
-  external ffi.Pointer<ffi.Int8> password;
+  external ffi.Pointer<ffi.Char> password;
 }
 
 /// Formatting options for diff e-mail generation
@@ -31425,7 +31416,7 @@ abstract class git_diff_format_email_flags_t {
 
 /// Options for controlling the formatting of the generated e-mail.
 class git_diff_format_email_options extends ffi.Struct {
-  @ffi.Uint32()
+  @ffi.UnsignedInt()
   external int version;
 
   /// see `git_diff_format_email_flags_t` above
@@ -31433,21 +31424,21 @@ class git_diff_format_email_options extends ffi.Struct {
   external int flags;
 
   /// This patch number
-  @size_t()
+  @ffi.Size()
   external int patch_no;
 
   /// Total number of patches in this series
-  @size_t()
+  @ffi.Size()
   external int total_patches;
 
   /// id to use for the commit
   external ffi.Pointer<git_oid> id;
 
   /// Summary of the change
-  external ffi.Pointer<ffi.Int8> summary;
+  external ffi.Pointer<ffi.Char> summary;
 
   /// Commit message's body
-  external ffi.Pointer<ffi.Int8> body;
+  external ffi.Pointer<ffi.Char> body;
 
   /// Author of the change
   external ffi.Pointer<git_signature> author;
@@ -31471,7 +31462,7 @@ abstract class git_email_create_flags_t {
 
 /// Options for controlling the formatting of the generated e-mail.
 class git_email_create_options extends ffi.Struct {
-  @ffi.Uint32()
+  @ffi.UnsignedInt()
   external int version;
 
   /// see `git_email_create_flags_t` above
@@ -31488,23 +31479,23 @@ class git_email_create_options extends ffi.Struct {
   /// string ("") then only the patch numbers will be shown in the
   /// prefix.  If the subject_prefix is empty and patch numbers
   /// are not being shown, the prefix will be omitted entirely.
-  external ffi.Pointer<ffi.Int8> subject_prefix;
+  external ffi.Pointer<ffi.Char> subject_prefix;
 
   /// The starting patch number; this cannot be 0.  By default,
   /// this is 1.
-  @size_t()
+  @ffi.Size()
   external int start_number;
 
   /// The "re-roll" number.  By default, there is no re-roll.
-  @size_t()
+  @ffi.Size()
   external int reroll_number;
 }
 
 /// Represents a single git message trailer.
 class git_message_trailer extends ffi.Struct {
-  external ffi.Pointer<ffi.Int8> key;
+  external ffi.Pointer<ffi.Char> key;
 
-  external ffi.Pointer<ffi.Int8> value;
+  external ffi.Pointer<ffi.Char> value;
 }
 
 /// Represents an array of git message trailers.
@@ -31514,11 +31505,11 @@ class git_message_trailer extends ffi.Struct {
 class git_message_trailer_array extends ffi.Struct {
   external ffi.Pointer<git_message_trailer> trailers;
 
-  @size_t()
+  @ffi.Size()
   external int count;
 
   /// private
-  external ffi.Pointer<ffi.Int8> _trailer_block;
+  external ffi.Pointer<ffi.Char> _trailer_block;
 }
 
 class git_iterator extends ffi.Opaque {}
@@ -31534,7 +31525,7 @@ typedef git_note_iterator = git_iterator;
 /// - payload: Payload data passed to `git_note_foreach`
 typedef git_note_foreach_cb = ffi.Pointer<
     ffi.NativeFunction<
-        ffi.Int32 Function(ffi.Pointer<git_oid>, ffi.Pointer<git_oid>,
+        ffi.Int Function(ffi.Pointer<git_oid>, ffi.Pointer<git_oid>,
             ffi.Pointer<ffi.Void>)>>;
 
 /// Flags controlling the behavior of ODB lookup operations
@@ -31554,7 +31545,7 @@ class git_odb_expand_id extends ffi.Struct {
 
   /// The length of the object ID (in nibbles, or packets of 4 bits; the
   /// number of hex characters)
-  @ffi.Uint16()
+  @ffi.UnsignedShort()
   external int length;
 
   /// The (optional) type of the object to search for; leave as `0` or set
@@ -31566,7 +31557,7 @@ class git_odb_expand_id extends ffi.Struct {
 /// Function type for callbacks from git_odb_foreach.
 typedef git_odb_foreach_cb = ffi.Pointer<
     ffi.NativeFunction<
-        ffi.Int32 Function(ffi.Pointer<git_oid>, ffi.Pointer<ffi.Void>)>>;
+        ffi.Int Function(ffi.Pointer<git_oid>, ffi.Pointer<ffi.Void>)>>;
 
 /// Streaming mode
 abstract class git_odb_stream_t {
@@ -31658,7 +31649,7 @@ abstract class git_sort_t {
 /// @return non-zero to hide the commmit and it parent.
 typedef git_revwalk_hide_cb = ffi.Pointer<
     ffi.NativeFunction<
-        ffi.Int32 Function(ffi.Pointer<git_oid>, ffi.Pointer<ffi.Void>)>>;
+        ffi.Int Function(ffi.Pointer<git_oid>, ffi.Pointer<ffi.Void>)>>;
 
 /// Callback used to iterate over tag names
 ///
@@ -31670,7 +31661,7 @@ typedef git_revwalk_hide_cb = ffi.Pointer<
 /// @return non-zero to terminate the iteration
 typedef git_tag_foreach_cb = ffi.Pointer<
     ffi.NativeFunction<
-        ffi.Int32 Function(ffi.Pointer<ffi.Int8>, ffi.Pointer<git_oid>,
+        ffi.Int Function(ffi.Pointer<ffi.Char>, ffi.Pointer<git_oid>,
             ffi.Pointer<ffi.Void>)>>;
 
 const int _TIME_H = 1;
@@ -31727,7 +31718,11 @@ const int _STDC_PREDEF_H = 1;
 
 const int __STDC_IEC_559__ = 1;
 
+const int __STDC_IEC_60559_BFP__ = 201404;
+
 const int __STDC_IEC_559_COMPLEX__ = 1;
+
+const int __STDC_IEC_60559_COMPLEX__ = 201404;
 
 const int __STDC_ISO_10646__ = 201706;
 
@@ -31735,7 +31730,7 @@ const int __GNU_LIBRARY__ = 6;
 
 const int __GLIBC__ = 2;
 
-const int __GLIBC_MINOR__ = 34;
+const int __GLIBC_MINOR__ = 35;
 
 const int _SYS_CDEFS_H = 1;
 

@@ -183,11 +183,11 @@ String mergeFile({
   libgit2.git_merge_file_input_init(ancestorC, GIT_MERGE_FILE_INPUT_VERSION);
   libgit2.git_merge_file_input_init(oursC, GIT_MERGE_FILE_INPUT_VERSION);
   libgit2.git_merge_file_input_init(theirsC, GIT_MERGE_FILE_INPUT_VERSION);
-  ancestorC.ref.ptr = ancestor.toNativeUtf8().cast<Int8>();
+  ancestorC.ref.ptr = ancestor.toNativeUtf8().cast<Char>();
   ancestorC.ref.size = ancestor.length;
-  oursC.ref.ptr = ours.toNativeUtf8().cast<Int8>();
+  oursC.ref.ptr = ours.toNativeUtf8().cast<Char>();
   oursC.ref.size = ours.length;
-  theirsC.ref.ptr = theirs.toNativeUtf8().cast<Int8>();
+  theirsC.ref.ptr = theirs.toNativeUtf8().cast<Char>();
   theirsC.ref.size = theirs.length;
 
   final opts = calloc<git_merge_file_options>();
@@ -195,13 +195,13 @@ String mergeFile({
   opts.ref.favor = favor;
   opts.ref.flags = flags;
   if (ancestorLabel.isNotEmpty) {
-    opts.ref.ancestor_label = ancestorLabel.toNativeUtf8().cast<Int8>();
+    opts.ref.ancestor_label = ancestorLabel.toNativeUtf8().cast<Char>();
   }
   if (oursLabel.isNotEmpty) {
-    opts.ref.our_label = oursLabel.toNativeUtf8().cast<Int8>();
+    opts.ref.our_label = oursLabel.toNativeUtf8().cast<Char>();
   }
   if (theirsLabel.isNotEmpty) {
-    opts.ref.their_label = theirsLabel.toNativeUtf8().cast<Int8>();
+    opts.ref.their_label = theirsLabel.toNativeUtf8().cast<Char>();
   }
 
   libgit2.git_merge_file(out, ancestorC, oursC, theirsC, opts);

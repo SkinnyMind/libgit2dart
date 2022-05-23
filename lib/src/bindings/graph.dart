@@ -33,8 +33,8 @@ List<int> aheadBehind({
   required Pointer<git_oid> localPointer,
   required Pointer<git_oid> upstreamPointer,
 }) {
-  final ahead = calloc<Uint64>();
-  final behind = calloc<Uint64>();
+  final ahead = calloc<Size>();
+  final behind = calloc<Size>();
 
   libgit2.git_graph_ahead_behind(
     ahead,

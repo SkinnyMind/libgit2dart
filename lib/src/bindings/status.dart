@@ -62,8 +62,8 @@ Pointer<git_status_entry> getByIndex({
 ///
 /// Throws a [LibGit2Error] if error occured.
 int file({required Pointer<git_repository> repoPointer, required String path}) {
-  final out = calloc<Uint32>();
-  final pathC = path.toNativeUtf8().cast<Int8>();
+  final out = calloc<UnsignedInt>();
+  final pathC = path.toNativeUtf8().cast<Char>();
   final error = libgit2.git_status_file(out, repoPointer, pathC);
 
   final result = out.value;

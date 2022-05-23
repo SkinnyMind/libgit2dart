@@ -127,13 +127,13 @@ List<Object> initOptions({
   optsC.ref.checkout_strategy = strategy;
 
   if (directory != null) {
-    optsC.ref.target_directory = directory.toNativeUtf8().cast<Int8>();
+    optsC.ref.target_directory = directory.toNativeUtf8().cast<Char>();
   }
 
-  var pathPointers = <Pointer<Int8>>[];
-  Pointer<Pointer<Int8>> strArray = nullptr;
+  var pathPointers = <Pointer<Char>>[];
+  Pointer<Pointer<Char>> strArray = nullptr;
   if (paths != null) {
-    pathPointers = paths.map((e) => e.toNativeUtf8().cast<Int8>()).toList();
+    pathPointers = paths.map((e) => e.toNativeUtf8().cast<Char>()).toList();
     strArray = calloc(paths.length);
     for (var i = 0; i < paths.length; i++) {
       strArray[i] = pathPointers[i];

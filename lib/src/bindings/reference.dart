@@ -55,7 +55,7 @@ Pointer<git_reference> lookup({
   required String name,
 }) {
   final out = calloc<Pointer<git_reference>>();
-  final nameC = name.toNativeUtf8().cast<Int8>();
+  final nameC = name.toNativeUtf8().cast<Char>();
   final error = libgit2.git_reference_lookup(out, repoPointer, nameC);
 
   final result = out.value;
@@ -104,9 +104,9 @@ Pointer<git_reference> rename({
   String? logMessage,
 }) {
   final out = calloc<Pointer<git_reference>>();
-  final newNameC = newName.toNativeUtf8().cast<Int8>();
+  final newNameC = newName.toNativeUtf8().cast<Char>();
   final forceC = force == true ? 1 : 0;
-  final logMessageC = logMessage?.toNativeUtf8().cast<Int8>() ?? nullptr;
+  final logMessageC = logMessage?.toNativeUtf8().cast<Char>() ?? nullptr;
   final error = libgit2.git_reference_rename(
     out,
     refPointer,
@@ -156,7 +156,7 @@ bool hasLog({
   required Pointer<git_repository> repoPointer,
   required String name,
 }) {
-  final nameC = name.toNativeUtf8().cast<Int8>();
+  final nameC = name.toNativeUtf8().cast<Char>();
   final result = libgit2.git_reference_has_log(repoPointer, nameC);
 
   calloc.free(nameC);
@@ -173,7 +173,7 @@ void ensureLog({
   required Pointer<git_repository> repoPointer,
   required String refName,
 }) {
-  final refNameC = refName.toNativeUtf8().cast<Int8>();
+  final refNameC = refName.toNativeUtf8().cast<Char>();
   final error = libgit2.git_reference_ensure_log(repoPointer, refNameC);
 
   calloc.free(refNameC);
@@ -237,9 +237,9 @@ Pointer<git_reference> createDirect({
   String? logMessage,
 }) {
   final out = calloc<Pointer<git_reference>>();
-  final nameC = name.toNativeUtf8().cast<Int8>();
+  final nameC = name.toNativeUtf8().cast<Char>();
   final forceC = force == true ? 1 : 0;
-  final logMessageC = logMessage?.toNativeUtf8().cast<Int8>() ?? nullptr;
+  final logMessageC = logMessage?.toNativeUtf8().cast<Char>() ?? nullptr;
   final error = libgit2.git_reference_create(
     out,
     repoPointer,
@@ -295,10 +295,10 @@ Pointer<git_reference> createSymbolic({
   String? logMessage,
 }) {
   final out = calloc<Pointer<git_reference>>();
-  final nameC = name.toNativeUtf8().cast<Int8>();
-  final targetC = target.toNativeUtf8().cast<Int8>();
+  final nameC = name.toNativeUtf8().cast<Char>();
+  final targetC = target.toNativeUtf8().cast<Char>();
   final forceC = force == true ? 1 : 0;
-  final logMessageC = logMessage?.toNativeUtf8().cast<Int8>() ?? nullptr;
+  final logMessageC = logMessage?.toNativeUtf8().cast<Char>() ?? nullptr;
   final error = libgit2.git_reference_symbolic_create(
     out,
     repoPointer,
@@ -348,7 +348,7 @@ Pointer<git_reference> setTarget({
   String? logMessage,
 }) {
   final out = calloc<Pointer<git_reference>>();
-  final logMessageC = logMessage?.toNativeUtf8().cast<Int8>() ?? nullptr;
+  final logMessageC = logMessage?.toNativeUtf8().cast<Char>() ?? nullptr;
   final error = libgit2.git_reference_set_target(
     out,
     refPointer,
@@ -388,8 +388,8 @@ Pointer<git_reference> setTargetSymbolic({
   String? logMessage,
 }) {
   final out = calloc<Pointer<git_reference>>();
-  final targetC = target.toNativeUtf8().cast<Int8>();
-  final logMessageC = logMessage?.toNativeUtf8().cast<Int8>() ?? nullptr;
+  final targetC = target.toNativeUtf8().cast<Char>();
+  final logMessageC = logMessage?.toNativeUtf8().cast<Char>() ?? nullptr;
   final error = libgit2.git_reference_symbolic_set_target(
     out,
     refPointer,

@@ -34,7 +34,7 @@ bool matchesSource({
   required Pointer<git_refspec> refspecPointer,
   required String refname,
 }) {
-  final refnameC = refname.toNativeUtf8().cast<Int8>();
+  final refnameC = refname.toNativeUtf8().cast<Char>();
   final result = libgit2.git_refspec_src_matches(refspecPointer, refnameC);
 
   calloc.free(refnameC);
@@ -47,7 +47,7 @@ bool matchesDestination({
   required Pointer<git_refspec> refspecPointer,
   required String refname,
 }) {
-  final refnameC = refname.toNativeUtf8().cast<Int8>();
+  final refnameC = refname.toNativeUtf8().cast<Char>();
   final result = libgit2.git_refspec_dst_matches(refspecPointer, refnameC);
 
   calloc.free(refnameC);
@@ -63,7 +63,7 @@ String transform({
   required String name,
 }) {
   final out = calloc<git_buf>();
-  final nameC = name.toNativeUtf8().cast<Int8>();
+  final nameC = name.toNativeUtf8().cast<Char>();
   final error = libgit2.git_refspec_transform(out, refspecPointer, nameC);
 
   final result = out.ref.ptr.cast<Utf8>().toDartString(length: out.ref.size);
@@ -88,7 +88,7 @@ String rTransform({
   required String name,
 }) {
   final out = calloc<git_buf>();
-  final nameC = name.toNativeUtf8().cast<Int8>();
+  final nameC = name.toNativeUtf8().cast<Char>();
   final error = libgit2.git_refspec_rtransform(out, refspecPointer, nameC);
 
   final result = out.ref.ptr.cast<Utf8>().toDartString(length: out.ref.size);

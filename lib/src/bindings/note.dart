@@ -10,7 +10,7 @@ import 'package:libgit2dart/src/util.dart';
 ///
 /// Throws a [LibGit2Error] if error occured.
 List<Map<String, Pointer>> list(Pointer<git_repository> repo) {
-  final notesRef = 'refs/notes/commits'.toNativeUtf8().cast<Int8>();
+  final notesRef = 'refs/notes/commits'.toNativeUtf8().cast<Char>();
   final iterator = calloc<Pointer<git_iterator>>();
   final iteratorError = libgit2.git_note_iterator_new(iterator, repo, notesRef);
 
@@ -57,7 +57,7 @@ Pointer<git_note> lookup({
   String notesRef = 'refs/notes/commits',
 }) {
   final out = calloc<Pointer<git_note>>();
-  final notesRefC = notesRef.toNativeUtf8().cast<Int8>();
+  final notesRefC = notesRef.toNativeUtf8().cast<Char>();
   final error = libgit2.git_note_read(out, repoPointer, notesRefC, oidPointer);
 
   final result = out.value;
@@ -85,8 +85,8 @@ Pointer<git_oid> create({
   bool force = false,
 }) {
   final out = calloc<git_oid>();
-  final notesRefC = notesRef.toNativeUtf8().cast<Int8>();
-  final noteC = note.toNativeUtf8().cast<Int8>();
+  final notesRefC = notesRef.toNativeUtf8().cast<Char>();
+  final noteC = note.toNativeUtf8().cast<Char>();
   final forceC = force ? 1 : 0;
   final error = libgit2.git_note_create(
     out,
@@ -120,7 +120,7 @@ void delete({
   required Pointer<git_signature> committerPointer,
   required Pointer<git_oid> oidPointer,
 }) {
-  final notesRefC = notesRef.toNativeUtf8().cast<Int8>();
+  final notesRefC = notesRef.toNativeUtf8().cast<Char>();
 
   final error = libgit2.git_note_remove(
     repoPointer,

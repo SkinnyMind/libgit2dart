@@ -7,7 +7,7 @@ import 'package:libgit2dart/src/util.dart';
 /// Parse N characters of a hex formatted object id into a git_oid.
 Pointer<git_oid> fromStrN(String hex) {
   final out = calloc<git_oid>();
-  final hexC = hex.toNativeUtf8().cast<Int8>();
+  final hexC = hex.toNativeUtf8().cast<Char>();
   libgit2.git_oid_fromstrn(out, hexC, hex.length);
 
   calloc.free(hexC);
@@ -18,7 +18,7 @@ Pointer<git_oid> fromStrN(String hex) {
 /// Parse a hex formatted object id into a git_oid.
 Pointer<git_oid> fromSHA(String hex) {
   final out = calloc<git_oid>();
-  final hexC = hex.toNativeUtf8().cast<Int8>();
+  final hexC = hex.toNativeUtf8().cast<Char>();
   libgit2.git_oid_fromstr(out, hexC);
 
   calloc.free(hexC);
@@ -27,9 +27,9 @@ Pointer<git_oid> fromSHA(String hex) {
 }
 
 /// Copy an already raw oid into a git_oid structure.
-Pointer<git_oid> fromRaw(Array<Uint8> raw) {
+Pointer<git_oid> fromRaw(Array<UnsignedChar> raw) {
   final out = calloc<git_oid>();
-  final rawC = calloc<Uint8>(20);
+  final rawC = calloc<UnsignedChar>(20);
 
   for (var i = 0; i < 20; i++) {
     rawC[i] = raw[i];
@@ -44,7 +44,7 @@ Pointer<git_oid> fromRaw(Array<Uint8> raw) {
 
 /// Format a git_oid into a hex string.
 String toSHA(Pointer<git_oid> id) {
-  final out = calloc<Int8>(40);
+  final out = calloc<Char>(40);
   libgit2.git_oid_fmt(out, id);
 
   final result = out.cast<Utf8>().toDartString(length: 40);
