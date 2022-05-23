@@ -18,7 +18,7 @@ Pointer<git_oid> save({
   required int flags,
 }) {
   final out = calloc<git_oid>();
-  final messageC = message?.toNativeUtf8().cast<Int8>() ?? nullptr;
+  final messageC = message?.toNativeUtf8().cast<Char>() ?? nullptr;
   final error = libgit2.git_stash_save(
     out,
     repoPointer,
@@ -143,7 +143,7 @@ var _stashList = <Stash>[];
 /// A callback function to iterate over all the stashed states.
 int _stashCb(
   int index,
-  Pointer<Int8> message,
+  Pointer<Char> message,
   Pointer<git_oid> oid,
   Pointer<Void> payload,
 ) {

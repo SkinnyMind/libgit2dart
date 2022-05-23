@@ -45,10 +45,10 @@ Pointer<git_oid> create({
   required List<Pointer<git_commit>> parents,
 }) {
   final out = calloc<git_oid>();
-  final updateRefC = updateRef.toNativeUtf8().cast<Int8>();
+  final updateRefC = updateRef.toNativeUtf8().cast<Char>();
   final messageEncodingC =
-      messageEncoding?.toNativeUtf8().cast<Int8>() ?? nullptr;
-  final messageC = message.toNativeUtf8().cast<Int8>();
+      messageEncoding?.toNativeUtf8().cast<Char>() ?? nullptr;
+  final messageC = message.toNativeUtf8().cast<Char>();
   final parentsC = calloc<Pointer<git_commit>>(parentCount);
 
   if (parents.isNotEmpty) {
@@ -103,10 +103,10 @@ String createBuffer({
   required List<Pointer<git_commit>> parents,
 }) {
   final out = calloc<git_buf>();
-  final updateRefC = updateRef.toNativeUtf8().cast<Int8>();
+  final updateRefC = updateRef.toNativeUtf8().cast<Char>();
   final messageEncodingC =
-      messageEncoding?.toNativeUtf8().cast<Int8>() ?? nullptr;
-  final messageC = message.toNativeUtf8().cast<Int8>();
+      messageEncoding?.toNativeUtf8().cast<Char>() ?? nullptr;
+  final messageC = message.toNativeUtf8().cast<Char>();
   final parentsC = calloc<Pointer<git_commit>>(parentCount);
 
   if (parents.isNotEmpty) {
@@ -169,10 +169,10 @@ Pointer<git_oid> amend({
   required Pointer<git_tree>? treePointer,
 }) {
   final out = calloc<git_oid>();
-  final updateRefC = updateRef?.toNativeUtf8().cast<Int8>() ?? nullptr;
+  final updateRefC = updateRef?.toNativeUtf8().cast<Char>() ?? nullptr;
   final messageEncodingC =
-      messageEncoding?.toNativeUtf8().cast<Int8>() ?? nullptr;
-  final messageC = message?.toNativeUtf8().cast<Int8>() ?? nullptr;
+      messageEncoding?.toNativeUtf8().cast<Char>() ?? nullptr;
+  final messageC = message?.toNativeUtf8().cast<Char>() ?? nullptr;
 
   final error = libgit2.git_commit_amend(
     out,
@@ -261,7 +261,7 @@ String headerField({
   required String field,
 }) {
   final out = calloc<git_buf>();
-  final fieldC = field.toNativeUtf8().cast<Int8>();
+  final fieldC = field.toNativeUtf8().cast<Char>();
   final error = libgit2.git_commit_header_field(out, commitPointer, fieldC);
 
   final result = out.ref.ptr.cast<Utf8>().toDartString(length: out.ref.size);

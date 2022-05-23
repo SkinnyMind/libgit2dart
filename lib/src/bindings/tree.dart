@@ -59,7 +59,7 @@ Pointer<git_tree_entry> getByName({
   required Pointer<git_tree> treePointer,
   required String filename,
 }) {
-  final filenameC = filename.toNativeUtf8().cast<Int8>();
+  final filenameC = filename.toNativeUtf8().cast<Char>();
   final result = libgit2.git_tree_entry_byname(treePointer, filenameC);
 
   calloc.free(filenameC);
@@ -83,7 +83,7 @@ Pointer<git_tree_entry> getByPath({
   required String path,
 }) {
   final out = calloc<Pointer<git_tree_entry>>();
-  final pathC = path.toNativeUtf8().cast<Int8>();
+  final pathC = path.toNativeUtf8().cast<Char>();
   final error = libgit2.git_tree_entry_bypath(out, rootPointer, pathC);
 
   final result = out.value;

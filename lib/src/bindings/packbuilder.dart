@@ -121,7 +121,7 @@ void write({
   required Pointer<git_packbuilder> packbuilderPointer,
   String? path,
 }) {
-  final pathC = path?.toNativeUtf8().cast<Int8>() ?? nullptr;
+  final pathC = path?.toNativeUtf8().cast<Char>() ?? nullptr;
   final error = libgit2.git_packbuilder_write(
     packbuilderPointer,
     pathC,

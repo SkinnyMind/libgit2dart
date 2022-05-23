@@ -19,8 +19,8 @@ Pointer<git_signature> create({
   required int offset,
 }) {
   final out = calloc<Pointer<git_signature>>();
-  final nameC = name.toNativeUtf8().cast<Int8>();
-  final emailC = email.toNativeUtf8().cast<Int8>();
+  final nameC = name.toNativeUtf8().cast<Char>();
+  final emailC = email.toNativeUtf8().cast<Char>();
   final error = libgit2.git_signature_new(out, nameC, emailC, time, offset);
 
   final result = out.value;
@@ -42,8 +42,8 @@ Pointer<git_signature> create({
 /// Throws a [LibGit2Error] if error occured.
 Pointer<git_signature> now({required String name, required String email}) {
   final out = calloc<Pointer<git_signature>>();
-  final nameC = name.toNativeUtf8().cast<Int8>();
-  final emailC = email.toNativeUtf8().cast<Int8>();
+  final nameC = name.toNativeUtf8().cast<Char>();
+  final emailC = email.toNativeUtf8().cast<Char>();
   final error = libgit2.git_signature_now(out, nameC, emailC);
 
   final result = out.value;

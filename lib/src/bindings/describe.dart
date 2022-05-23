@@ -100,7 +100,7 @@ String format({
     opts.ref.always_use_long_format = alwaysUseLongFormat ? 1 : 0;
   }
   if (dirtySuffix != null) {
-    opts.ref.dirty_suffix = dirtySuffix.toNativeUtf8().cast<Int8>();
+    opts.ref.dirty_suffix = dirtySuffix.toNativeUtf8().cast<Char>();
   }
 
   libgit2.git_describe_format(out, describeResultPointer, opts);
@@ -140,7 +140,7 @@ Pointer<git_describe_options> _initOpts({
     opts.ref.describe_strategy = describeStrategy;
   }
   if (pattern != null) {
-    opts.ref.pattern = pattern.toNativeUtf8().cast<Int8>();
+    opts.ref.pattern = pattern.toNativeUtf8().cast<Char>();
   }
   if (onlyFollowFirstParent != null) {
     opts.ref.only_follow_first_parent = onlyFollowFirstParent ? 1 : 0;

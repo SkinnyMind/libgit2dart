@@ -20,7 +20,7 @@ Pointer<git_blame> file({
   int? maxLine,
 }) {
   final out = calloc<Pointer<git_blame>>();
-  final pathC = path.toNativeUtf8().cast<Int8>();
+  final pathC = path.toNativeUtf8().cast<Char>();
   final options = calloc<git_blame_options>();
   libgit2.git_blame_options_init(options, GIT_BLAME_OPTIONS_VERSION);
 
@@ -77,7 +77,7 @@ Pointer<git_blame> buffer({
   required String buffer,
 }) {
   final out = calloc<Pointer<git_blame>>();
-  final bufferC = buffer.toNativeUtf8().cast<Int8>();
+  final bufferC = buffer.toNativeUtf8().cast<Char>();
   final error = libgit2.git_blame_buffer(
     out,
     reference,

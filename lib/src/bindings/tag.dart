@@ -115,8 +115,8 @@ Pointer<git_oid> createAnnotated({
   required bool force,
 }) {
   final out = calloc<git_oid>();
-  final tagNameC = tagName.toNativeUtf8().cast<Int8>();
-  final messageC = message.toNativeUtf8().cast<Int8>();
+  final tagNameC = tagName.toNativeUtf8().cast<Char>();
+  final messageC = message.toNativeUtf8().cast<Char>();
   final error = libgit2.git_tag_create(
     out,
     repoPointer,
@@ -155,7 +155,7 @@ Pointer<git_oid> createLightweight({
   required bool force,
 }) {
   final out = calloc<git_oid>();
-  final tagNameC = tagName.toNativeUtf8().cast<Int8>();
+  final tagNameC = tagName.toNativeUtf8().cast<Char>();
   final error = libgit2.git_tag_create_lightweight(
     out,
     repoPointer,
@@ -183,7 +183,7 @@ void delete({
   required Pointer<git_repository> repoPointer,
   required String tagName,
 }) {
-  final tagNameC = tagName.toNativeUtf8().cast<Int8>();
+  final tagNameC = tagName.toNativeUtf8().cast<Char>();
   final error = libgit2.git_tag_delete(repoPointer, tagNameC);
 
   calloc.free(tagNameC);

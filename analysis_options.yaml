@@ -7,6 +7,7 @@ analyzer:
 
   exclude:
     - lib/src/bindings/libgit2_bindings.dart
+    - lib/src/bindings/libgit2_opts_bindings.dart
 
 linter:
   rules:

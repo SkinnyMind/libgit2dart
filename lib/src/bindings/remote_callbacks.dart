@@ -29,7 +29,7 @@ class RemoteCallbacks {
 
   /// Callback for messages received by the transport.
   static int sidebandProgressCb(
-    Pointer<Int8> progressOutput,
+    Pointer<Char> progressOutput,
     int length,
     Pointer<Void> payload,
   ) {
@@ -42,7 +42,7 @@ class RemoteCallbacks {
 
   /// A callback that will be called for every reference.
   static int updateTipsCb(
-    Pointer<Int8> refname,
+    Pointer<Char> refname,
     Pointer<git_oid> oldOid,
     Pointer<git_oid> newOid,
     Pointer<Void> payload,
@@ -58,8 +58,8 @@ class RemoteCallbacks {
   /// not empty, the update was rejected by the remote server
   /// and [message] contains the reason given.
   static int pushUpdateReferenceCb(
-    Pointer<Int8> refname,
-    Pointer<Int8> message,
+    Pointer<Char> refname,
+    Pointer<Char> message,
     Pointer<Void> payload,
   ) {
     final messageResult =
@@ -77,8 +77,8 @@ class RemoteCallbacks {
   static int remoteCb(
     Pointer<Pointer<git_remote>> remote,
     Pointer<git_repository> repo,
-    Pointer<Int8> name,
-    Pointer<Int8> url,
+    Pointer<Char> name,
+    Pointer<Char> url,
     Pointer<Void> payload,
   ) {
     late final Pointer<git_remote> remotePointer;
@@ -110,7 +110,7 @@ class RemoteCallbacks {
   /// A callback used to create the new repository into which to clone.
   static int repositoryCb(
     Pointer<Pointer<git_repository>> repo,
-    Pointer<Int8> path,
+    Pointer<Char> path,
     int bare,
     Pointer<Void> payload,
   ) {
@@ -147,15 +147,15 @@ class RemoteCallbacks {
   /// requires authentication in order to connect to it.
   static int credentialsCb(
     Pointer<Pointer<git_credential>> credPointer,
-    Pointer<Int8> url,
-    Pointer<Int8> username,
+    Pointer<Char> url,
+    Pointer<Char> username,
     int allowedTypes,
     Pointer<Void> payload,
   ) {
-    if (payload.cast<Int8>().value == 2) {
+    if (payload.cast<Char>().value == 2) {
       libgit2.git_error_set_str(
         git_error_t.GIT_ERROR_INVALID,
-        'Incorrect credentials.'.toNativeUtf8().cast<Int8>(),
+        'Incorrect credentials.'.toNativeUtf8().cast<Char>(),
       );
       throw LibGit2Error(libgit2.git_error_last());
     }
@@ -165,7 +165,7 @@ class RemoteCallbacks {
     if (allowedTypes & credentialType.value != credentialType.value) {
       libgit2.git_error_set_str(
         git_error_t.GIT_ERROR_INVALID,
-        'Invalid credential type $credentialType'.toNativeUtf8().cast<Int8>(),
+        'Invalid credential type $credentialType'.toNativeUtf8().cast<Char>(),
       );
       throw LibGit2Error(libgit2.git_error_last());
     }

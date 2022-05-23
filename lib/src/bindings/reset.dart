@@ -41,8 +41,8 @@ void resetDefault({
 }) {
   final pathspecC = calloc<git_strarray>();
   final pathPointers =
-      pathspec.map((e) => e.toNativeUtf8().cast<Int8>()).toList();
-  final strArray = calloc<Pointer<Int8>>(pathspec.length);
+      pathspec.map((e) => e.toNativeUtf8().cast<Char>()).toList();
+  final strArray = calloc<Pointer<Char>>(pathspec.length);
 
   for (var i = 0; i < pathspec.length; i++) {
     strArray[i] = pathPointers[i];

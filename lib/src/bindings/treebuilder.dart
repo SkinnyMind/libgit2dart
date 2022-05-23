@@ -53,7 +53,7 @@ Pointer<git_tree_entry> getByFilename({
   required Pointer<git_treebuilder> builderPointer,
   required String filename,
 }) {
-  final filenameC = filename.toNativeUtf8().cast<Int8>();
+  final filenameC = filename.toNativeUtf8().cast<Char>();
   final result = libgit2.git_treebuilder_get(builderPointer, filenameC);
 
   calloc.free(filenameC);
@@ -82,7 +82,7 @@ void add({
   required Pointer<git_oid> oidPointer,
   required int filemode,
 }) {
-  final filenameC = filename.toNativeUtf8().cast<Int8>();
+  final filenameC = filename.toNativeUtf8().cast<Char>();
   final error = libgit2.git_treebuilder_insert(
     nullptr,
     builderPointer,
@@ -105,7 +105,7 @@ void remove({
   required Pointer<git_treebuilder> builderPointer,
   required String filename,
 }) {
-  final filenameC = filename.toNativeUtf8().cast<Int8>();
+  final filenameC = filename.toNativeUtf8().cast<Char>();
   final error = libgit2.git_treebuilder_remove(builderPointer, filenameC);
 
   calloc.free(filenameC);

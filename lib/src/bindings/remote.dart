@@ -34,7 +34,7 @@ Pointer<git_remote> lookup({
   required String name,
 }) {
   final out = calloc<Pointer<git_remote>>();
-  final nameC = name.toNativeUtf8().cast<Int8>();
+  final nameC = name.toNativeUtf8().cast<Char>();
   final error = libgit2.git_remote_lookup(out, repoPointer, nameC);
 
   final result = out.value;
@@ -59,8 +59,8 @@ Pointer<git_remote> create({
   required String url,
 }) {
   final out = calloc<Pointer<git_remote>>();
-  final nameC = name.toNativeUtf8().cast<Int8>();
-  final urlC = url.toNativeUtf8().cast<Int8>();
+  final nameC = name.toNativeUtf8().cast<Char>();
+  final urlC = url.toNativeUtf8().cast<Char>();
   final error = libgit2.git_remote_create(out, repoPointer, nameC, urlC);
 
   final result = out.value;
@@ -87,9 +87,9 @@ Pointer<git_remote> createWithFetchSpec({
   required String fetch,
 }) {
   final out = calloc<Pointer<git_remote>>();
-  final nameC = name.toNativeUtf8().cast<Int8>();
-  final urlC = url.toNativeUtf8().cast<Int8>();
-  final fetchC = fetch.toNativeUtf8().cast<Int8>();
+  final nameC = name.toNativeUtf8().cast<Char>();
+  final urlC = url.toNativeUtf8().cast<Char>();
+  final fetchC = fetch.toNativeUtf8().cast<Char>();
   final error = libgit2.git_remote_create_with_fetchspec(
     out,
     repoPointer,
@@ -122,7 +122,7 @@ void delete({
   required Pointer<git_repository> repoPointer,
   required String name,
 }) {
-  final nameC = name.toNativeUtf8().cast<Int8>();
+  final nameC = name.toNativeUtf8().cast<Char>();
   final error = libgit2.git_remote_delete(repoPointer, nameC);
 
   calloc.free(nameC);
@@ -151,8 +151,8 @@ List<String> rename({
   required String newName,
 }) {
   final out = calloc<git_strarray>();
-  final nameC = name.toNativeUtf8().cast<Int8>();
-  final newNameC = newName.toNativeUtf8().cast<Int8>();
+  final nameC = name.toNativeUtf8().cast<Char>();
+  final newNameC = newName.toNativeUtf8().cast<Char>();
   final error = libgit2.git_remote_rename(out, repoPointer, nameC, newNameC);
 
   calloc.free(nameC);
@@ -182,8 +182,8 @@ void setUrl({
   required String remote,
   required String url,
 }) {
-  final remoteC = remote.toNativeUtf8().cast<Int8>();
-  final urlC = url.toNativeUtf8().cast<Int8>();
+  final remoteC = remote.toNativeUtf8().cast<Char>();
+  final urlC = url.toNativeUtf8().cast<Char>();
   final error = libgit2.git_remote_set_url(repoPointer, remoteC, urlC);
 
   calloc.free(remoteC);
@@ -205,8 +205,8 @@ void setPushUrl({
   required String remote,
   required String url,
 }) {
-  final remoteC = remote.toNativeUtf8().cast<Int8>();
-  final urlC = url.toNativeUtf8().cast<Int8>();
+  final remoteC = remote.toNativeUtf8().cast<Char>();
+  final urlC = url.toNativeUtf8().cast<Char>();
   final error = libgit2.git_remote_set_pushurl(repoPointer, remoteC, urlC);
 
   calloc.free(remoteC);
@@ -285,8 +285,8 @@ void addFetch({
   required String remote,
   required String refspec,
 }) {
-  final remoteC = remote.toNativeUtf8().cast<Int8>();
-  final refspecC = refspec.toNativeUtf8().cast<Int8>();
+  final remoteC = remote.toNativeUtf8().cast<Char>();
+  final refspecC = refspec.toNativeUtf8().cast<Char>();
   final error = libgit2.git_remote_add_fetch(repoPointer, remoteC, refspecC);
 
   calloc.free(remoteC);
@@ -308,8 +308,8 @@ void addPush({
   required String remote,
   required String refspec,
 }) {
-  final remoteC = remote.toNativeUtf8().cast<Int8>();
-  final refspecC = refspec.toNativeUtf8().cast<Int8>();
+  final remoteC = remote.toNativeUtf8().cast<Char>();
+  final refspecC = refspec.toNativeUtf8().cast<Char>();
   final error = libgit2.git_remote_add_push(repoPointer, remoteC, refspecC);
 
   calloc.free(remoteC);
@@ -375,7 +375,7 @@ void connect({
 /// Throws a [LibGit2Error] if error occured.
 List<Map<String, Object?>> lsRemotes(Pointer<git_remote> remote) {
   final out = calloc<Pointer<Pointer<git_remote_head>>>();
-  final size = calloc<Uint64>();
+  final size = calloc<Size>();
   libgit2.git_remote_ls(out, size, remote);
 
   final result = <Map<String, Object?>>[];
@@ -420,8 +420,8 @@ void fetch({
 }) {
   final refspecsC = calloc<git_strarray>();
   final refspecsPointers =
-      refspecs.map((e) => e.toNativeUtf8().cast<Int8>()).toList();
-  final strArray = calloc<Pointer<Int8>>(refspecs.length);
+      refspecs.map((e) => e.toNativeUtf8().cast<Char>()).toList();
+  final strArray = calloc<Pointer<Char>>(refspecs.length);
 
   for (var i = 0; i < refspecs.length; i++) {
     strArray[i] = refspecsPointers[i];
@@ -429,7 +429,7 @@ void fetch({
 
   refspecsC.ref.count = refspecs.length;
   refspecsC.ref.strings = strArray;
-  final reflogMessageC = reflogMessage?.toNativeUtf8().cast<Int8>() ?? nullptr;
+  final reflogMessageC = reflogMessage?.toNativeUtf8().cast<Char>() ?? nullptr;
 
   final proxyOptions = _proxyOptionsInit(proxyOption);
 
@@ -476,8 +476,8 @@ void push({
 }) {
   final refspecsC = calloc<git_strarray>();
   final refspecsPointers =
-      refspecs.map((e) => e.toNativeUtf8().cast<Int8>()).toList();
-  final strArray = calloc<Pointer<Int8>>(refspecs.length);
+      refspecs.map((e) => e.toNativeUtf8().cast<Char>()).toList();
+  final strArray = calloc<Pointer<Char>>(refspecs.length);
 
   for (var i = 0; i < refspecs.length; i++) {
     strArray[i] = refspecsPointers[i];
@@ -566,7 +566,7 @@ Pointer<git_proxy_options> _proxyOptionsInit(String? proxyOption) {
     proxyOptions.ref.type = git_proxy_t.GIT_PROXY_AUTO;
   } else {
     proxyOptions.ref.type = git_proxy_t.GIT_PROXY_SPECIFIED;
-    proxyOptions.ref.url = proxyOption.toNativeUtf8().cast<Int8>();
+    proxyOptions.ref.url = proxyOption.toNativeUtf8().cast<Char>();
   }
 
   return proxyOptions;

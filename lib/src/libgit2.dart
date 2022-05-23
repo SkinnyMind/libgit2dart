@@ -12,9 +12,9 @@ class Libgit2 {
   static String get version {
     libgit2.git_libgit2_init();
 
-    final major = calloc<Int32>();
-    final minor = calloc<Int32>();
-    final rev = calloc<Int32>();
+    final major = calloc<Int>();
+    final minor = calloc<Int>();
+    final rev = calloc<Int>();
     libgit2.git_libgit2_version(major, minor, rev);
 
     final version = '${major.value}.${minor.value}.${rev.value}';
@@ -39,8 +39,8 @@ class Libgit2 {
   static bool get ownerValidation {
     libgit2.git_libgit2_init();
 
-    final out = calloc<Int8>();
-    libgit2.git_libgit2_opts(
+    final out = calloc<Char>();
+    libgit2Opts.git_libgit2_opts(
       git_libgit2_opt_t.GIT_OPT_GET_OWNER_VALIDATION,
       out,
     );
@@ -53,8 +53,9 @@ class Libgit2 {
   /// Sets owner validation setting for repository directories.
   static set ownerValidation(bool value) {
     libgit2.git_libgit2_init();
+
     final valueC = value ? 1 : 0;
-    libgit2.git_libgit2_opts_set(
+    libgit2Opts.git_libgit2_opts_set(
       git_libgit2_opt_t.GIT_OPT_SET_OWNER_VALIDATION,
       valueC,
     );

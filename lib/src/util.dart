@@ -3,8 +3,8 @@
 import 'dart:ffi';
 import 'dart:io';
 
-import 'package:cli_util/cli_logging.dart' show Ansi, Logger;
 import 'package:libgit2dart/src/bindings/libgit2_bindings.dart';
+import 'package:libgit2dart/src/bindings/libgit2_opts_bindings.dart';
 import 'package:path/path.dart' as path;
 import 'package:pub_cache/pub_cache.dart';
 
@@ -78,19 +78,16 @@ DynamicLibrary loadLibrary(String name) {
       _resolveLibPath(name) ?? name,
     );
   } catch (e) {
-    final logger = Logger.standard();
-    final ansi = Ansi(Ansi.terminalSupportsAnsi);
-
-    logger.stderr(
-      '${ansi.red}Failed to open the library. Make sure that libgit2 '
-      'library is bundled with the application.${ansi.none}',
+    stderr.writeln(
+      'Failed to open the library. Make sure that libgit2 library is bundled '
+      'with the application.',
     );
-    logger.stdout(ansi.none);
     rethrow;
   }
 }
 
 final libgit2 = Libgit2(loadLibrary(getLibName()));
+final libgit2Opts = Libgit2Opts(loadLibrary(getLibName()));
 
 bool isValidShaHex(String str) {
   final hexRegExp = RegExp(r'^[0-9a-fA-F]+$');

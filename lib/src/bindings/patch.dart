@@ -17,11 +17,11 @@ Pointer<git_patch> fromBuffers({
   required int interhunkLines,
 }) {
   final out = calloc<Pointer<git_patch>>();
-  final oldBufferC = oldBuffer?.toNativeUtf8().cast<Int8>() ?? nullptr;
-  final oldAsPathC = oldAsPath?.toNativeUtf8().cast<Int8>() ?? nullptr;
+  final oldBufferC = oldBuffer?.toNativeUtf8().cast<Char>() ?? nullptr;
+  final oldAsPathC = oldAsPath?.toNativeUtf8().cast<Char>() ?? nullptr;
   final oldLen = oldBuffer?.length ?? 0;
-  final newBufferC = newBuffer?.toNativeUtf8().cast<Int8>() ?? nullptr;
-  final newAsPathC = oldAsPath?.toNativeUtf8().cast<Int8>() ?? nullptr;
+  final newBufferC = newBuffer?.toNativeUtf8().cast<Char>() ?? nullptr;
+  final newAsPathC = oldAsPath?.toNativeUtf8().cast<Char>() ?? nullptr;
   final newLen = newBuffer?.length ?? 0;
   final opts = _diffOptionsInit(
     flags: flags,
@@ -65,8 +65,8 @@ Pointer<git_patch> fromBlobs({
   required int interhunkLines,
 }) {
   final out = calloc<Pointer<git_patch>>();
-  final oldAsPathC = oldAsPath?.toNativeUtf8().cast<Int8>() ?? nullptr;
-  final newAsPathC = oldAsPath?.toNativeUtf8().cast<Int8>() ?? nullptr;
+  final oldAsPathC = oldAsPath?.toNativeUtf8().cast<Char>() ?? nullptr;
+  final newAsPathC = oldAsPath?.toNativeUtf8().cast<Char>() ?? nullptr;
   final opts = _diffOptionsInit(
     flags: flags,
     contextLines: contextLines,
@@ -104,9 +104,9 @@ Pointer<git_patch> fromBlobAndBuffer({
   required int interhunkLines,
 }) {
   final out = calloc<Pointer<git_patch>>();
-  final oldAsPathC = oldAsPath?.toNativeUtf8().cast<Int8>() ?? nullptr;
-  final bufferC = buffer?.toNativeUtf8().cast<Int8>() ?? nullptr;
-  final bufferAsPathC = oldAsPath?.toNativeUtf8().cast<Int8>() ?? nullptr;
+  final oldAsPathC = oldAsPath?.toNativeUtf8().cast<Char>() ?? nullptr;
+  final bufferC = buffer?.toNativeUtf8().cast<Char>() ?? nullptr;
+  final bufferAsPathC = oldAsPath?.toNativeUtf8().cast<Char>() ?? nullptr;
   final bufferLen = buffer?.length ?? 0;
   final opts = _diffOptionsInit(
     flags: flags,
@@ -189,9 +189,9 @@ Map<String, Object> hunk({
 
 /// Get line counts of each type in a patch.
 Map<String, int> lineStats(Pointer<git_patch> patch) {
-  final context = calloc<Uint64>();
-  final insertions = calloc<Uint64>();
-  final deletions = calloc<Uint64>();
+  final context = calloc<Size>();
+  final insertions = calloc<Size>();
+  final deletions = calloc<Size>();
   libgit2.git_patch_line_stats(
     context,
     insertions,

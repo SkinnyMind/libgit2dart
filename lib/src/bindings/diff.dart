@@ -253,7 +253,7 @@ void merge({
 /// other types of patch files.
 Pointer<git_diff> parse(String content) {
   final out = calloc<Pointer<git_diff>>();
-  final contentC = content.toNativeUtf8().cast<Int8>();
+  final contentC = content.toNativeUtf8().cast<Char>();
   libgit2.git_diff_from_buffer(out, contentC, content.length);
 
   final result = out.value;

@@ -15,7 +15,7 @@ List<String> _pathsList = [];
 /// Function to be called with the name of each submodule.
 int _listCb(
   Pointer<git_submodule> submodule,
-  Pointer<Int8> name,
+  Pointer<Char> name,
   Pointer<Void> payload,
 ) {
   _pathsList.add(path(submodule));
@@ -26,7 +26,7 @@ int _listCb(
 List<String> list(Pointer<git_repository> repo) {
   const except = -1;
   final callback = Pointer.fromFunction<
-      Int32 Function(Pointer<git_submodule>, Pointer<Int8>, Pointer<Void>)>(
+      Int Function(Pointer<git_submodule>, Pointer<Char>, Pointer<Void>)>(
     _listCb,
     except,
   );
@@ -50,7 +50,7 @@ Pointer<git_submodule> lookup({
   required String name,
 }) {
   final out = calloc<Pointer<git_submodule>>();
-  final nameC = name.toNativeUtf8().cast<Int8>();
+  final nameC = name.toNativeUtf8().cast<Char>();
 
   final error = libgit2.git_submodule_lookup(out, repoPointer, nameC);
 
@@ -159,8 +159,8 @@ Pointer<git_submodule> addSetup({
   bool useGitlink = true,
 }) {
   final out = calloc<Pointer<git_submodule>>();
-  final urlC = url.toNativeUtf8().cast<Int8>();
-  final pathC = path.toNativeUtf8().cast<Int8>();
+  final urlC = url.toNativeUtf8().cast<Char>();
+  final pathC = path.toNativeUtf8().cast<Char>();
   final useGitlinkC = useGitlink ? 1 : 0;
   final error = libgit2.git_submodule_add_setup(
     out,
@@ -232,8 +232,8 @@ int status({
   required String name,
   required int ignore,
 }) {
-  final out = calloc<Uint32>();
-  final nameC = name.toNativeUtf8().cast<Int8>();
+  final out = calloc<UnsignedInt>();
+  final nameC = name.toNativeUtf8().cast<Char>();
   libgit2.git_submodule_status(out, repoPointer, nameC, ignore);
 
   final result = out.value;
@@ -294,8 +294,8 @@ void setUrl({
   required String name,
   required String url,
 }) {
-  final nameC = name.toNativeUtf8().cast<Int8>();
-  final urlC = url.toNativeUtf8().cast<Int8>();
+  final nameC = name.toNativeUtf8().cast<Char>();
+  final urlC = url.toNativeUtf8().cast<Char>();
 
   libgit2.git_submodule_set_url(repoPointer, nameC, urlC);
 
@@ -318,8 +318,8 @@ void setBranch({
   required String name,
   required String branch,
 }) {
-  final nameC = name.toNativeUtf8().cast<Int8>();
-  final branchC = branch.toNativeUtf8().cast<Int8>();
+  final nameC = name.toNativeUtf8().cast<Char>();
+  final branchC = branch.toNativeUtf8().cast<Char>();
 
   libgit2.git_submodule_set_branch(repoPointer, nameC, branchC);
 
@@ -369,7 +369,7 @@ void setIgnore({
   required String name,
   required int ignore,
 }) {
-  final nameC = name.toNativeUtf8().cast<Int8>();
+  final nameC = name.toNativeUtf8().cast<Char>();
   libgit2.git_submodule_set_ignore(repoPointer, nameC, ignore);
   calloc.free(nameC);
 }
@@ -389,7 +389,7 @@ void setUpdateRule({
   required String name,
   required int update,
 }) {
-  final nameC = name.toNativeUtf8().cast<Int8>();
+  final nameC = name.toNativeUtf8().cast<Char>();
   libgit2.git_submodule_set_update(repoPointer, nameC, update);
   calloc.free(nameC);
 }

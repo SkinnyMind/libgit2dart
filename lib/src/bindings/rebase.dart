@@ -128,7 +128,7 @@ void commit({
   required String? message,
 }) {
   final out = calloc<git_oid>();
-  final messageC = message?.toNativeUtf8().cast<Int8>() ?? nullptr;
+  final messageC = message?.toNativeUtf8().cast<Char>() ?? nullptr;
 
   final error = libgit2.git_rebase_commit(
     out,

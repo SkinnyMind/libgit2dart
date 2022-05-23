@@ -17,7 +17,7 @@ import 'package:libgit2dart/src/util.dart';
 /// Throws a [LibGit2Error] if error occured.
 Pointer<git_repository> open(String path) {
   final out = calloc<Pointer<git_repository>>();
-  final pathC = path.toNativeUtf8().cast<Int8>();
+  final pathC = path.toNativeUtf8().cast<Char>();
   final error = libgit2.git_repository_open(out, pathC);
 
   final result = out.value;
@@ -44,8 +44,8 @@ String discover({
   String? ceilingDirs,
 }) {
   final out = calloc<git_buf>();
-  final startPathC = startPath.toNativeUtf8().cast<Int8>();
-  final ceilingDirsC = ceilingDirs?.toNativeUtf8().cast<Int8>() ?? nullptr;
+  final startPathC = startPath.toNativeUtf8().cast<Char>();
+  final ceilingDirsC = ceilingDirs?.toNativeUtf8().cast<Char>() ?? nullptr;
 
   libgit2.git_repository_discover(out, startPathC, 0, ceilingDirsC);
 
@@ -75,12 +75,12 @@ Pointer<git_repository> init({
   String? originUrl,
 }) {
   final out = calloc<Pointer<git_repository>>();
-  final pathC = path.toNativeUtf8().cast<Int8>();
-  final workdirPathC = workdirPath?.toNativeUtf8().cast<Int8>() ?? nullptr;
-  final descriptionC = description?.toNativeUtf8().cast<Int8>() ?? nullptr;
-  final templatePathC = templatePath?.toNativeUtf8().cast<Int8>() ?? nullptr;
-  final initialHeadC = initialHead?.toNativeUtf8().cast<Int8>() ?? nullptr;
-  final originUrlC = originUrl?.toNativeUtf8().cast<Int8>() ?? nullptr;
+  final pathC = path.toNativeUtf8().cast<Char>();
+  final workdirPathC = workdirPath?.toNativeUtf8().cast<Char>() ?? nullptr;
+  final descriptionC = description?.toNativeUtf8().cast<Char>() ?? nullptr;
+  final templatePathC = templatePath?.toNativeUtf8().cast<Char>() ?? nullptr;
+  final initialHeadC = initialHead?.toNativeUtf8().cast<Char>() ?? nullptr;
+  final originUrlC = originUrl?.toNativeUtf8().cast<Char>() ?? nullptr;
   final opts = calloc<git_repository_init_options>();
   libgit2.git_repository_init_options_init(
     opts,
@@ -130,10 +130,10 @@ Pointer<git_repository> clone({
   required Callbacks callbacks,
 }) {
   final out = calloc<Pointer<git_repository>>();
-  final urlC = url.toNativeUtf8().cast<Int8>();
-  final localPathC = localPath.toNativeUtf8().cast<Int8>();
+  final urlC = url.toNativeUtf8().cast<Char>();
+  final localPathC = localPath.toNativeUtf8().cast<Char>();
   final checkoutBranchC =
-      checkoutBranch?.toNativeUtf8().cast<Int8>() ?? nullptr;
+      checkoutBranch?.toNativeUtf8().cast<Char>() ?? nullptr;
 
   final cloneOptions = calloc<git_clone_options>();
   libgit2.git_clone_options_init(cloneOptions, GIT_CLONE_OPTIONS_VERSION);
@@ -224,7 +224,7 @@ void setNamespace({
   required Pointer<git_repository> repoPointer,
   String? namespace,
 }) {
-  final namespaceC = namespace?.toNativeUtf8().cast<Int8>() ?? nullptr;
+  final namespaceC = namespace?.toNativeUtf8().cast<Char>() ?? nullptr;
   libgit2.git_repository_set_namespace(repoPointer, namespaceC);
   calloc.free(namespaceC);
 }
@@ -311,8 +311,8 @@ void setIdentity({
   String? name,
   String? email,
 }) {
-  final nameC = name?.toNativeUtf8().cast<Int8>() ?? nullptr;
-  final emailC = email?.toNativeUtf8().cast<Int8>() ?? nullptr;
+  final nameC = name?.toNativeUtf8().cast<Char>() ?? nullptr;
+  final emailC = email?.toNativeUtf8().cast<Char>() ?? nullptr;
 
   libgit2.git_repository_set_ident(repoPointer, nameC, emailC);
 
@@ -324,8 +324,8 @@ void setIdentity({
 ///
 /// Returns list with name and email respectively.
 List<String> identity(Pointer<git_repository> repo) {
-  final name = calloc<Pointer<Int8>>();
-  final email = calloc<Pointer<Int8>>();
+  final name = calloc<Pointer<Char>>();
+  final email = calloc<Pointer<Char>>();
   libgit2.git_repository_ident(name, email, repo);
   final identity = <String>[];
 
@@ -495,7 +495,7 @@ void setHead({
   required Pointer<git_repository> repoPointer,
   required String refname,
 }) {
-  final refnameC = refname.toNativeUtf8().cast<Int8>();
+  final refnameC = refname.toNativeUtf8().cast<Char>();
   final error = libgit2.git_repository_set_head(repoPointer, refnameC);
 
   calloc.free(refnameC);
@@ -546,7 +546,7 @@ void setWorkdir({
   required String path,
   required bool updateGitlink,
 }) {
-  final workdirC = path.toNativeUtf8().cast<Int8>();
+  final workdirC = path.toNativeUtf8().cast<Char>();
   final updateGitlinkC = updateGitlink ? 1 : 0;
   final error = libgit2.git_repository_set_workdir(
     repoPointer,

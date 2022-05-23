@@ -81,7 +81,7 @@ void pushGlob({
   required Pointer<git_revwalk> walkerPointer,
   required String glob,
 }) {
-  final globC = glob.toNativeUtf8().cast<Int8>();
+  final globC = glob.toNativeUtf8().cast<Char>();
   libgit2.git_revwalk_push_glob(walkerPointer, globC);
   calloc.free(globC);
 }
@@ -99,7 +99,7 @@ void pushRef({
   required Pointer<git_revwalk> walkerPointer,
   required String refName,
 }) {
-  final refNameC = refName.toNativeUtf8().cast<Int8>();
+  final refNameC = refName.toNativeUtf8().cast<Char>();
   final error = libgit2.git_revwalk_push_ref(walkerPointer, refNameC);
 
   calloc.free(refNameC);
@@ -119,7 +119,7 @@ void pushRange({
   required Pointer<git_revwalk> walkerPointer,
   required String range,
 }) {
-  final rangeC = range.toNativeUtf8().cast<Int8>();
+  final rangeC = range.toNativeUtf8().cast<Char>();
   final error = libgit2.git_revwalk_push_range(walkerPointer, rangeC);
 
   calloc.free(rangeC);
@@ -199,7 +199,7 @@ void hideGlob({
   required Pointer<git_revwalk> walkerPointer,
   required String glob,
 }) {
-  final globC = glob.toNativeUtf8().cast<Int8>();
+  final globC = glob.toNativeUtf8().cast<Char>();
   libgit2.git_revwalk_hide_glob(walkerPointer, globC);
   calloc.free(globC);
 }
@@ -217,7 +217,7 @@ void hideRef({
   required Pointer<git_revwalk> walkerPointer,
   required String refName,
 }) {
-  final refNameC = refName.toNativeUtf8().cast<Int8>();
+  final refNameC = refName.toNativeUtf8().cast<Char>();
   final error = libgit2.git_revwalk_hide_ref(walkerPointer, refNameC);
 
   calloc.free(refNameC);

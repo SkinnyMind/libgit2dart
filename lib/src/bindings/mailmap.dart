@@ -25,7 +25,7 @@ Pointer<git_mailmap> init() {
 /// returned mailmap must be freed with [free].
 Pointer<git_mailmap> fromBuffer(String buffer) {
   final out = calloc<Pointer<git_mailmap>>();
-  final bufferC = buffer.toNativeUtf8().cast<Int8>();
+  final bufferC = buffer.toNativeUtf8().cast<Char>();
 
   libgit2.git_mailmap_from_buffer(out, bufferC, buffer.length);
 
@@ -70,10 +70,10 @@ List<String> resolve({
   required String name,
   required String email,
 }) {
-  final outRealName = calloc<Pointer<Int8>>();
-  final outRealEmail = calloc<Pointer<Int8>>();
-  final nameC = name.toNativeUtf8().cast<Int8>();
-  final emailC = email.toNativeUtf8().cast<Int8>();
+  final outRealName = calloc<Pointer<Char>>();
+  final outRealEmail = calloc<Pointer<Char>>();
+  final nameC = name.toNativeUtf8().cast<Char>();
+  final emailC = email.toNativeUtf8().cast<Char>();
   libgit2.git_mailmap_resolve(
     outRealName,
     outRealEmail,
@@ -119,10 +119,10 @@ void addEntry({
   String? replaceName,
   required String replaceEmail,
 }) {
-  final realNameC = realName?.toNativeUtf8().cast<Int8>() ?? nullptr;
-  final realEmailC = realEmail?.toNativeUtf8().cast<Int8>() ?? nullptr;
-  final replaceNameC = replaceName?.toNativeUtf8().cast<Int8>() ?? nullptr;
-  final replaceEmailC = replaceEmail.toNativeUtf8().cast<Int8>();
+  final realNameC = realName?.toNativeUtf8().cast<Char>() ?? nullptr;
+  final realEmailC = realEmail?.toNativeUtf8().cast<Char>() ?? nullptr;
+  final replaceNameC = replaceName?.toNativeUtf8().cast<Char>() ?? nullptr;
+  final replaceEmailC = replaceEmail.toNativeUtf8().cast<Char>();
 
   libgit2.git_mailmap_add_entry(
     mailmapPointer,

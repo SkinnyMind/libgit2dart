@@ -84,7 +84,7 @@ Pointer<git_oid> createFromWorkdir({
   required String relativePath,
 }) {
   final out = calloc<git_oid>();
-  final relativePathC = relativePath.toNativeUtf8().cast<Int8>();
+  final relativePathC = relativePath.toNativeUtf8().cast<Char>();
   final error = libgit2.git_blob_create_from_workdir(
     out,
     repoPointer,
@@ -110,7 +110,7 @@ Pointer<git_oid> createFromDisk({
   required String path,
 }) {
   final out = calloc<git_oid>();
-  final pathC = path.toNativeUtf8().cast<Int8>();
+  final pathC = path.toNativeUtf8().cast<Char>();
   final error = libgit2.git_blob_create_from_disk(out, repoPointer, pathC);
 
   calloc.free(pathC);
@@ -150,7 +150,7 @@ String filterContent({
   git_oid? attributesCommit,
 }) {
   final out = calloc<git_buf>();
-  final asPathC = asPath.toNativeUtf8().cast<Int8>();
+  final asPathC = asPath.toNativeUtf8().cast<Char>();
   final opts = calloc<git_blob_filter_options>();
   libgit2.git_blob_filter_options_init(opts, GIT_BLOB_FILTER_OPTIONS_VERSION);
   opts.ref.flags = flags;

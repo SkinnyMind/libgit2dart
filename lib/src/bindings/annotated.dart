@@ -76,7 +76,7 @@ Pointer<git_annotated_commit> fromRevSpec({
   required String revspec,
 }) {
   final out = calloc<Pointer<git_annotated_commit>>();
-  final revspecC = revspec.toNativeUtf8().cast<Int8>();
+  final revspecC = revspec.toNativeUtf8().cast<Char>();
   final error = libgit2.git_annotated_commit_from_revspec(
     out,
     repoPointer,
@@ -106,8 +106,8 @@ Pointer<git_annotated_commit> fromFetchHead({
   required Pointer<git_oid> oid,
 }) {
   final out = calloc<Pointer<git_annotated_commit>>();
-  final branchNameC = branchName.toNativeUtf8().cast<Int8>();
-  final remoteUrlC = remoteUrl.toNativeUtf8().cast<Int8>();
+  final branchNameC = branchName.toNativeUtf8().cast<Char>();
+  final remoteUrlC = remoteUrl.toNativeUtf8().cast<Char>();
   final error = libgit2.git_annotated_commit_from_fetchhead(
     out,
     repoPointer,

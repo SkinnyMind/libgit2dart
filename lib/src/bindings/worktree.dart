@@ -20,8 +20,8 @@ Pointer<git_worktree> create({
   Pointer<git_reference>? refPointer,
 }) {
   final out = calloc<Pointer<git_worktree>>();
-  final nameC = name.toNativeUtf8().cast<Int8>();
-  final pathC = path.toNativeUtf8().cast<Int8>();
+  final nameC = name.toNativeUtf8().cast<Char>();
+  final pathC = path.toNativeUtf8().cast<Char>();
 
   final opts = calloc<git_worktree_add_options>();
   libgit2.git_worktree_add_options_init(opts, GIT_WORKTREE_ADD_OPTIONS_VERSION);
@@ -56,7 +56,7 @@ Pointer<git_worktree> lookup({
   required String name,
 }) {
   final out = calloc<Pointer<git_worktree>>();
-  final nameC = name.toNativeUtf8().cast<Int8>();
+  final nameC = name.toNativeUtf8().cast<Char>();
   final error = libgit2.git_worktree_lookup(out, repoPointer, nameC);
 
   final result = out.value;

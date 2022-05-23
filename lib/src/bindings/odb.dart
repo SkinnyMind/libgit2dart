@@ -36,7 +36,7 @@ void addDiskAlternate({
   required Pointer<git_odb> odbPointer,
   required String path,
 }) {
-  final pathC = path.toNativeUtf8().cast<Int8>();
+  final pathC = path.toNativeUtf8().cast<Char>();
   libgit2.git_odb_add_disk_alternate(odbPointer, pathC);
   calloc.free(pathC);
 }
@@ -94,7 +94,7 @@ int _forEachCb(
 List<Oid> objects(Pointer<git_odb> odb) {
   const except = -1;
   final cb =
-      Pointer.fromFunction<Int32 Function(Pointer<git_oid>, Pointer<Void>)>(
+      Pointer.fromFunction<Int Function(Pointer<git_oid>, Pointer<Void>)>(
     _forEachCb,
     except,
   );
@@ -184,7 +184,7 @@ Pointer<git_oid> write({
     throw LibGit2Error(libgit2.git_error_last());
   }
 
-  final bufferC = data.toNativeUtf8().cast<Int8>();
+  final bufferC = data.toNativeUtf8().cast<Char>();
   libgit2.git_odb_stream_write(stream.value, bufferC, data.length);
 
   final out = calloc<git_oid>();
