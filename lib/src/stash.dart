@@ -43,14 +43,12 @@ class Stash extends Equatable {
     String? message,
     Set<GitStash> flags = const {GitStash.defaults},
   }) {
-    final flagsInt = flags.fold(0, (int acc, e) => acc | e.value);
-
     return Oid(
       bindings.save(
         repoPointer: repo.pointer,
         stasherPointer: stasher.pointer,
         message: message,
-        flags: flagsInt,
+        flags: flags.fold(0, (int acc, e) => acc | e.value),
       ),
     );
   }

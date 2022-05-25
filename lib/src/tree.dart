@@ -35,19 +35,10 @@ class Tree extends Equatable {
   /// List with tree entries of a tree.
   List<TreeEntry> get entries {
     final entryCount = bindings.entryCount(_treePointer);
-    final result = <TreeEntry>[];
-    for (var i = 0; i < entryCount; i++) {
-      result.add(
-        TreeEntry(
-          bindings.getByIndex(
-            treePointer: _treePointer,
-            index: i,
-          ),
-        ),
-      );
-    }
-
-    return result;
+    return <TreeEntry>[
+      for (var i = 0; i < entryCount; i++)
+        TreeEntry(bindings.getByIndex(treePointer: _treePointer, index: i))
+    ];
   }
 
   /// Lookups a tree entry in the tree.

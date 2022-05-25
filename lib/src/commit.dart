@@ -264,18 +264,11 @@ class Commit extends Equatable {
 
   /// List of parent commits [Oid]s.
   List<Oid> get parents {
-    final parents = <Oid>[];
     final parentCount = bindings.parentCount(_commitPointer);
-
-    for (var i = 0; i < parentCount; i++) {
-      final parentOid = bindings.parentId(
-        commitPointer: _commitPointer,
-        position: i,
-      );
-      parents.add(Oid(parentOid));
-    }
-
-    return parents;
+    return <Oid>[
+      for (var i = 0; i < parentCount; i++)
+        Oid(bindings.parentId(commitPointer: _commitPointer, position: i))
+    ];
   }
 
   /// Returns the specified parent of the commit at provided 0-based [position].

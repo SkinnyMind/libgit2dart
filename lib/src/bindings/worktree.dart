@@ -110,11 +110,13 @@ List<String> list(Pointer<git_repository> repo) {
     calloc.free(out);
     throw LibGit2Error(libgit2.git_error_last());
   } else {
-    final result = <String>[];
-    for (var i = 0; i < out.ref.count; i++) {
-      result.add(out.ref.strings[i].cast<Utf8>().toDartString());
-    }
+    final result = <String>[
+      for (var i = 0; i < out.ref.count; i++)
+        out.ref.strings[i].cast<Utf8>().toDartString()
+    ];
+
     calloc.free(out);
+
     return result;
   }
 }

@@ -22,11 +22,9 @@ class RevParse {
       spec: spec,
     );
     object = Commit(pointers[0].cast<git_commit>());
-    if (pointers.length == 2) {
-      reference = Reference(pointers[1].cast<git_reference>());
-    } else {
-      reference = null;
-    }
+    reference = pointers.length == 2
+        ? Reference(pointers[1].cast<git_reference>())
+        : null;
   }
 
   /// Object found by a revision string.

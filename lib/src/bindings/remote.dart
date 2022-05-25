@@ -13,10 +13,10 @@ List<String> list(Pointer<git_repository> repo) {
   final out = calloc<git_strarray>();
   libgit2.git_remote_list(out, repo);
 
-  final result = <String>[];
-  for (var i = 0; i < out.ref.count; i++) {
-    result.add(out.ref.strings[i].cast<Utf8>().toDartString());
-  }
+  final result = <String>[
+    for (var i = 0; i < out.ref.count; i++)
+      out.ref.strings[i].cast<Utf8>().toDartString()
+  ];
 
   calloc.free(out);
 
@@ -162,11 +162,13 @@ List<String> rename({
     calloc.free(out);
     throw LibGit2Error(libgit2.git_error_last());
   } else {
-    final result = <String>[];
-    for (var i = 0; i < out.ref.count; i++) {
-      result.add(out.ref.strings[i].cast<Utf8>().toDartString());
-    }
+    final result = <String>[
+      for (var i = 0; i < out.ref.count; i++)
+        out.ref.strings[i].cast<Utf8>().toDartString()
+    ];
+
     calloc.free(out);
+
     return result;
   }
 }
@@ -253,11 +255,13 @@ List<String> fetchRefspecs(Pointer<git_remote> remote) {
   final out = calloc<git_strarray>();
   libgit2.git_remote_get_fetch_refspecs(out, remote);
 
-  final result = <String>[];
-  for (var i = 0; i < out.ref.count; i++) {
-    result.add(out.ref.strings[i].cast<Utf8>().toDartString());
-  }
+  final result = <String>[
+    for (var i = 0; i < out.ref.count; i++)
+      out.ref.strings[i].cast<Utf8>().toDartString()
+  ];
+
   calloc.free(out);
+
   return result;
 }
 
@@ -266,11 +270,13 @@ List<String> pushRefspecs(Pointer<git_remote> remote) {
   final out = calloc<git_strarray>();
   libgit2.git_remote_get_push_refspecs(out, remote);
 
-  final result = <String>[];
-  for (var i = 0; i < out.ref.count; i++) {
-    result.add(out.ref.strings[i].cast<Utf8>().toDartString());
-  }
+  final result = <String>[
+    for (var i = 0; i < out.ref.count; i++)
+      out.ref.strings[i].cast<Utf8>().toDartString()
+  ];
+
   calloc.free(out);
+
   return result;
 }
 

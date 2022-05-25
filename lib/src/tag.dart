@@ -208,11 +208,7 @@ class Tag extends Equatable {
   /// Tagger (author) of a tag if there is one.
   Signature? get tagger {
     final sigPointer = bindings.tagger(_tagPointer);
-    if (sigPointer != nullptr) {
-      return Signature(sigPointer);
-    } else {
-      return null;
-    }
+    return sigPointer != nullptr ? Signature(sigPointer) : null;
   }
 
   /// Releases memory allocated for tag object.
