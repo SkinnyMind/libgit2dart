@@ -124,7 +124,6 @@ Pointer<git_repository> clone({
   required String localPath,
   required bool bare,
   RemoteCallback? remoteCallback,
-  // Repository Function(String, bool)? repository,
   RepositoryCallback? repositoryCallback,
   String? checkoutBranch,
   required Callbacks callbacks,

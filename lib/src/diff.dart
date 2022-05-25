@@ -285,28 +285,18 @@ class Diff extends Equatable {
   /// revisions.
   List<DiffDelta> get deltas {
     final length = bindings.length(_diffPointer);
-    final deltas = <DiffDelta>[];
-    for (var i = 0; i < length; i++) {
-      deltas.add(
-        DiffDelta(
-          bindings.getDeltaByIndex(
-            diffPointer: _diffPointer,
-            index: i,
-          ),
-        ),
-      );
-    }
-    return deltas;
+    return <DiffDelta>[
+      for (var i = 0; i < length; i++)
+        DiffDelta(bindings.getDeltaByIndex(diffPointer: _diffPointer, index: i))
+    ];
   }
 
   /// A List of [Patch]es.
   List<Patch> get patches {
     final length = bindings.length(_diffPointer);
-    final patches = <Patch>[];
-    for (var i = 0; i < length; i++) {
-      patches.add(Patch.fromDiff(diff: this, index: i));
-    }
-    return patches;
+    return <Patch>[
+      for (var i = 0; i < length; i++) Patch.fromDiff(diff: this, index: i)
+    ];
   }
 
   /// The patch diff text.

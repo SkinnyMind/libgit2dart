@@ -47,18 +47,13 @@ class Rebase {
 
   /// List of operations that are to be applied.
   List<RebaseOperation> get operations {
-    final result = <RebaseOperation>[];
     final operationsCount = bindings.operationsCount(_rebasePointer);
-
-    for (var i = 0; i < operationsCount; i++) {
-      final operation = bindings.getOperationByIndex(
-        rebase: _rebasePointer,
-        index: i,
-      );
-      result.add(RebaseOperation._(operation));
-    }
-
-    return result;
+    return <RebaseOperation>[
+      for (var i = 0; i < operationsCount; i++)
+        RebaseOperation._(
+          bindings.getOperationByIndex(rebase: _rebasePointer, index: i),
+        )
+    ];
   }
 
   /// Index of the rebase operation that is currently being applied. If the

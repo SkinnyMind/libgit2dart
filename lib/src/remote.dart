@@ -211,20 +211,16 @@ class Remote extends Equatable {
     final refs = bindings.lsRemotes(_remotePointer);
     bindings.disconnect(_remotePointer);
 
-    final result = <RemoteReference>[];
-    for (final ref in refs) {
-      result.add(
+    return <RemoteReference>[
+      for (final ref in refs)
         RemoteReference._(
           isLocal: ref['local']! as bool,
           localId: ref['loid'] as Oid?,
           name: ref['name']! as String,
           oid: ref['oid']! as Oid,
           symRef: ref['symref']! as String,
-        ),
-      );
-    }
-
-    return result;
+        )
+    ];
   }
 
   /// Downloads new data and updates tips.

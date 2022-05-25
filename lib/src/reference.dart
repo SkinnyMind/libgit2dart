@@ -203,14 +203,9 @@ class Reference extends Equatable {
   ///
   /// Throws an [Exception] if error occured.
   Oid get target {
-    late final Pointer<git_oid> oidPointer;
-
-    if (type == ReferenceType.direct) {
-      oidPointer = bindings.target(_refPointer);
-    } else {
-      oidPointer = bindings.target(bindings.resolve(_refPointer));
-    }
-    return Oid(oidPointer);
+    return type == ReferenceType.direct
+        ? Oid(bindings.target(_refPointer))
+        : Oid(bindings.target(bindings.resolve(_refPointer)));
   }
 
   /// Recursively peel reference until object of the specified [type] is found.

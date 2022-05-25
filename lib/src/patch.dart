@@ -237,10 +237,10 @@ class Patch extends Equatable {
         );
       }
 
-      final intHeader = <int>[];
-      for (var i = 0; i < hunkPointer.ref.header_len; i++) {
-        intHeader.add(hunkPointer.ref.header[i]);
-      }
+      final intHeader = <int>[
+        for (var i = 0; i < hunkPointer.ref.header_len; i++)
+          hunkPointer.ref.header[i]
+      ];
 
       hunks.add(
         DiffHunk._(
