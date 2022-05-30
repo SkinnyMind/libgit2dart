@@ -2,10 +2,10 @@ import 'dart:collection';
 import 'dart:ffi';
 
 import 'package:equatable/equatable.dart';
-import 'package:ffi/ffi.dart';
 import 'package:libgit2dart/libgit2dart.dart';
 import 'package:libgit2dart/src/bindings/index.dart' as bindings;
 import 'package:libgit2dart/src/bindings/libgit2_bindings.dart';
+import 'package:libgit2dart/src/extensions.dart';
 import 'package:meta/meta.dart';
 
 class Index with IterableMixin<IndexEntry> {
@@ -345,10 +345,9 @@ class IndexEntry extends Equatable {
   set oid(Oid oid) => _indexEntryPointer.ref.id = oid.pointer.ref;
 
   /// Path of the index entry.
-  String get path => _indexEntryPointer.ref.path.cast<Utf8>().toDartString();
+  String get path => _indexEntryPointer.ref.path.toDartString();
 
-  set path(String path) =>
-      _indexEntryPointer.ref.path = path.toNativeUtf8().cast<Char>();
+  set path(String path) => _indexEntryPointer.ref.path = path.toChar();
 
   /// UNIX file attributes of a index entry.
   GitFilemode get mode {

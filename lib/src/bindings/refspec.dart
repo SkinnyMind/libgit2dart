@@ -3,16 +3,17 @@ import 'dart:ffi';
 import 'package:ffi/ffi.dart';
 import 'package:libgit2dart/src/bindings/libgit2_bindings.dart';
 import 'package:libgit2dart/src/error.dart';
+import 'package:libgit2dart/src/extensions.dart';
 import 'package:libgit2dart/src/util.dart';
 
 /// Get the source specifier.
 String source(Pointer<git_refspec> refspec) {
-  return libgit2.git_refspec_src(refspec).cast<Utf8>().toDartString();
+  return libgit2.git_refspec_src(refspec).toDartString();
 }
 
 /// Get the destination specifier.
 String destination(Pointer<git_refspec> refspec) {
-  return libgit2.git_refspec_dst(refspec).cast<Utf8>().toDartString();
+  return libgit2.git_refspec_dst(refspec).toDartString();
 }
 
 /// Get the force update setting.
@@ -22,7 +23,7 @@ bool force(Pointer<git_refspec> refspec) {
 
 /// Get the refspec's string.
 String string(Pointer<git_refspec> refspec) {
-  return libgit2.git_refspec_string(refspec).cast<Utf8>().toDartString();
+  return libgit2.git_refspec_string(refspec).toDartString();
 }
 
 /// Get the refspec's direction.
@@ -34,7 +35,7 @@ bool matchesSource({
   required Pointer<git_refspec> refspecPointer,
   required String refname,
 }) {
-  final refnameC = refname.toNativeUtf8().cast<Char>();
+  final refnameC = refname.toChar();
   final result = libgit2.git_refspec_src_matches(refspecPointer, refnameC);
 
   calloc.free(refnameC);
@@ -47,7 +48,7 @@ bool matchesDestination({
   required Pointer<git_refspec> refspecPointer,
   required String refname,
 }) {
-  final refnameC = refname.toNativeUtf8().cast<Char>();
+  final refnameC = refname.toChar();
   final result = libgit2.git_refspec_dst_matches(refspecPointer, refnameC);
 
   calloc.free(refnameC);
@@ -63,10 +64,10 @@ String transform({
   required String name,
 }) {
   final out = calloc<git_buf>();
-  final nameC = name.toNativeUtf8().cast<Char>();
+  final nameC = name.toChar();
   final error = libgit2.git_refspec_transform(out, refspecPointer, nameC);
 
-  final result = out.ref.ptr.cast<Utf8>().toDartString(length: out.ref.size);
+  final result = out.ref.ptr.toDartString(length: out.ref.size);
 
   libgit2.git_buf_dispose(out);
   calloc.free(out);
@@ -88,10 +89,10 @@ String rTransform({
   required String name,
 }) {
   final out = calloc<git_buf>();
-  final nameC = name.toNativeUtf8().cast<Char>();
+  final nameC = name.toChar();
   final error = libgit2.git_refspec_rtransform(out, refspecPointer, nameC);
 
-  final result = out.ref.ptr.cast<Utf8>().toDartString(length: out.ref.size);
+  final result = out.ref.ptr.toDartString(length: out.ref.size);
 
   libgit2.git_buf_dispose(out);
   calloc.free(out);

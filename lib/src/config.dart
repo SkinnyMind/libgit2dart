@@ -7,6 +7,7 @@ import 'package:ffi/ffi.dart';
 import 'package:libgit2dart/libgit2dart.dart';
 import 'package:libgit2dart/src/bindings/config.dart' as bindings;
 import 'package:libgit2dart/src/bindings/libgit2_bindings.dart';
+import 'package:libgit2dart/src/extensions.dart';
 import 'package:libgit2dart/src/util.dart';
 import 'package:meta/meta.dart';
 
@@ -98,8 +99,8 @@ class Config with IterableMixin<ConfigEntry> {
       configPointer: _configPointer,
       variable: variable,
     );
-    final name = entryPointer.ref.name.cast<Utf8>().toDartString();
-    final value = entryPointer.ref.value.cast<Utf8>().toDartString();
+    final name = entryPointer.ref.name.toDartString();
+    final value = entryPointer.ref.value.toDartString();
     final includeDepth = entryPointer.ref.include_depth;
     final level = GitConfigLevel.values.firstWhere(
       (e) => entryPointer.ref.level == e.value,
@@ -264,8 +265,8 @@ class _ConfigIterator implements Iterator<ConfigEntry> {
     } else {
       error = libgit2.git_config_next(entry, _iteratorPointer);
       if (error != -31) {
-        final name = entry.value.ref.name.cast<Utf8>().toDartString();
-        final value = entry.value.ref.value.cast<Utf8>().toDartString();
+        final name = entry.value.ref.name.toDartString();
+        final value = entry.value.ref.value.toDartString();
         final includeDepth = entry.value.ref.include_depth;
         final level = GitConfigLevel.values.firstWhere(
           (e) => entry.value.ref.level == e.value,

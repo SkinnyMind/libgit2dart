@@ -5,6 +5,7 @@ import 'package:libgit2dart/src/bindings/libgit2_bindings.dart';
 import 'package:libgit2dart/src/bindings/remote_callbacks.dart';
 import 'package:libgit2dart/src/callbacks.dart';
 import 'package:libgit2dart/src/error.dart';
+import 'package:libgit2dart/src/extensions.dart';
 import 'package:libgit2dart/src/oid.dart';
 import 'package:libgit2dart/src/util.dart';
 
@@ -14,8 +15,7 @@ List<String> list(Pointer<git_repository> repo) {
   libgit2.git_remote_list(out, repo);
 
   final result = <String>[
-    for (var i = 0; i < out.ref.count; i++)
-      out.ref.strings[i].cast<Utf8>().toDartString()
+    for (var i = 0; i < out.ref.count; i++) out.ref.strings[i].toDartString()
   ];
 
   calloc.free(out);
@@ -34,7 +34,7 @@ Pointer<git_remote> lookup({
   required String name,
 }) {
   final out = calloc<Pointer<git_remote>>();
-  final nameC = name.toNativeUtf8().cast<Char>();
+  final nameC = name.toChar();
   final error = libgit2.git_remote_lookup(out, repoPointer, nameC);
 
   final result = out.value;
@@ -59,8 +59,8 @@ Pointer<git_remote> create({
   required String url,
 }) {
   final out = calloc<Pointer<git_remote>>();
-  final nameC = name.toNativeUtf8().cast<Char>();
-  final urlC = url.toNativeUtf8().cast<Char>();
+  final nameC = name.toChar();
+  final urlC = url.toChar();
   final error = libgit2.git_remote_create(out, repoPointer, nameC, urlC);
 
   final result = out.value;
@@ -87,9 +87,9 @@ Pointer<git_remote> createWithFetchSpec({
   required String fetch,
 }) {
   final out = calloc<Pointer<git_remote>>();
-  final nameC = name.toNativeUtf8().cast<Char>();
-  final urlC = url.toNativeUtf8().cast<Char>();
-  final fetchC = fetch.toNativeUtf8().cast<Char>();
+  final nameC = name.toChar();
+  final urlC = url.toChar();
+  final fetchC = fetch.toChar();
   final error = libgit2.git_remote_create_with_fetchspec(
     out,
     repoPointer,
@@ -122,7 +122,7 @@ void delete({
   required Pointer<git_repository> repoPointer,
   required String name,
 }) {
-  final nameC = name.toNativeUtf8().cast<Char>();
+  final nameC = name.toChar();
   final error = libgit2.git_remote_delete(repoPointer, nameC);
 
   calloc.free(nameC);
@@ -151,8 +151,8 @@ List<String> rename({
   required String newName,
 }) {
   final out = calloc<git_strarray>();
-  final nameC = name.toNativeUtf8().cast<Char>();
-  final newNameC = newName.toNativeUtf8().cast<Char>();
+  final nameC = name.toChar();
+  final newNameC = newName.toChar();
   final error = libgit2.git_remote_rename(out, repoPointer, nameC, newNameC);
 
   calloc.free(nameC);
@@ -163,8 +163,7 @@ List<String> rename({
     throw LibGit2Error(libgit2.git_error_last());
   } else {
     final result = <String>[
-      for (var i = 0; i < out.ref.count; i++)
-        out.ref.strings[i].cast<Utf8>().toDartString()
+      for (var i = 0; i < out.ref.count; i++) out.ref.strings[i].toDartString()
     ];
 
     calloc.free(out);
@@ -184,8 +183,8 @@ void setUrl({
   required String remote,
   required String url,
 }) {
-  final remoteC = remote.toNativeUtf8().cast<Char>();
-  final urlC = url.toNativeUtf8().cast<Char>();
+  final remoteC = remote.toChar();
+  final urlC = url.toChar();
   final error = libgit2.git_remote_set_url(repoPointer, remoteC, urlC);
 
   calloc.free(remoteC);
@@ -207,8 +206,8 @@ void setPushUrl({
   required String remote,
   required String url,
 }) {
-  final remoteC = remote.toNativeUtf8().cast<Char>();
-  final urlC = url.toNativeUtf8().cast<Char>();
+  final remoteC = remote.toChar();
+  final urlC = url.toChar();
   final error = libgit2.git_remote_set_pushurl(repoPointer, remoteC, urlC);
 
   calloc.free(remoteC);
@@ -222,12 +221,12 @@ void setPushUrl({
 /// Get the remote's name.
 String name(Pointer<git_remote> remote) {
   final result = libgit2.git_remote_name(remote);
-  return result == nullptr ? '' : result.cast<Utf8>().toDartString();
+  return result == nullptr ? '' : result.toDartString();
 }
 
 /// Get the remote's url.
 String url(Pointer<git_remote> remote) {
-  return libgit2.git_remote_url(remote).cast<Utf8>().toDartString();
+  return libgit2.git_remote_url(remote).toDartString();
 }
 
 /// Get the remote's url for pushing.
@@ -235,7 +234,7 @@ String url(Pointer<git_remote> remote) {
 /// Returns empty string if no special url for pushing is set.
 String pushUrl(Pointer<git_remote> remote) {
   final result = libgit2.git_remote_pushurl(remote);
-  return result == nullptr ? '' : result.cast<Utf8>().toDartString();
+  return result == nullptr ? '' : result.toDartString();
 }
 
 /// Get the number of refspecs for a remote.
@@ -256,8 +255,7 @@ List<String> fetchRefspecs(Pointer<git_remote> remote) {
   libgit2.git_remote_get_fetch_refspecs(out, remote);
 
   final result = <String>[
-    for (var i = 0; i < out.ref.count; i++)
-      out.ref.strings[i].cast<Utf8>().toDartString()
+    for (var i = 0; i < out.ref.count; i++) out.ref.strings[i].toDartString()
   ];
 
   calloc.free(out);
@@ -271,8 +269,7 @@ List<String> pushRefspecs(Pointer<git_remote> remote) {
   libgit2.git_remote_get_push_refspecs(out, remote);
 
   final result = <String>[
-    for (var i = 0; i < out.ref.count; i++)
-      out.ref.strings[i].cast<Utf8>().toDartString()
+    for (var i = 0; i < out.ref.count; i++) out.ref.strings[i].toDartString()
   ];
 
   calloc.free(out);
@@ -291,8 +288,8 @@ void addFetch({
   required String remote,
   required String refspec,
 }) {
-  final remoteC = remote.toNativeUtf8().cast<Char>();
-  final refspecC = refspec.toNativeUtf8().cast<Char>();
+  final remoteC = remote.toChar();
+  final refspecC = refspec.toChar();
   final error = libgit2.git_remote_add_fetch(repoPointer, remoteC, refspecC);
 
   calloc.free(remoteC);
@@ -314,8 +311,8 @@ void addPush({
   required String remote,
   required String refspec,
 }) {
-  final remoteC = remote.toNativeUtf8().cast<Char>();
-  final refspecC = refspec.toNativeUtf8().cast<Char>();
+  final remoteC = remote.toChar();
+  final refspecC = refspec.toChar();
   final error = libgit2.git_remote_add_push(repoPointer, remoteC, refspecC);
 
   calloc.free(remoteC);
@@ -393,12 +390,11 @@ List<Map<String, Object?>> lsRemotes(Pointer<git_remote> remote) {
 
     remote['local'] = local;
     remote['loid'] = local ? Oid.fromRaw(out[0][i].ref.loid) : null;
-    remote['name'] = out[0][i].ref.name == nullptr
-        ? ''
-        : out[0][i].ref.name.cast<Utf8>().toDartString();
+    remote['name'] =
+        out[0][i].ref.name == nullptr ? '' : out[0][i].ref.name.toDartString();
     remote['symref'] = out[0][i].ref.symref_target == nullptr
         ? ''
-        : out[0][i].ref.symref_target.cast<Utf8>().toDartString();
+        : out[0][i].ref.symref_target.toDartString();
     remote['oid'] = Oid.fromRaw(out[0][i].ref.oid);
 
     result.add(remote);
@@ -425,8 +421,7 @@ void fetch({
   String? proxyOption,
 }) {
   final refspecsC = calloc<git_strarray>();
-  final refspecsPointers =
-      refspecs.map((e) => e.toNativeUtf8().cast<Char>()).toList();
+  final refspecsPointers = refspecs.map((e) => e.toChar()).toList();
   final strArray = calloc<Pointer<Char>>(refspecs.length);
 
   for (var i = 0; i < refspecs.length; i++) {
@@ -435,7 +430,7 @@ void fetch({
 
   refspecsC.ref.count = refspecs.length;
   refspecsC.ref.strings = strArray;
-  final reflogMessageC = reflogMessage?.toNativeUtf8().cast<Char>() ?? nullptr;
+  final reflogMessageC = reflogMessage?.toChar() ?? nullptr;
 
   final proxyOptions = _proxyOptionsInit(proxyOption);
 
@@ -481,8 +476,7 @@ void push({
   String? proxyOption,
 }) {
   final refspecsC = calloc<git_strarray>();
-  final refspecsPointers =
-      refspecs.map((e) => e.toNativeUtf8().cast<Char>()).toList();
+  final refspecsPointers = refspecs.map((e) => e.toChar()).toList();
   final strArray = calloc<Pointer<Char>>(refspecs.length);
 
   for (var i = 0; i < refspecs.length; i++) {
@@ -572,7 +566,7 @@ Pointer<git_proxy_options> _proxyOptionsInit(String? proxyOption) {
     proxyOptions.ref.type = git_proxy_t.GIT_PROXY_AUTO;
   } else {
     proxyOptions.ref.type = git_proxy_t.GIT_PROXY_SPECIFIED;
-    proxyOptions.ref.url = proxyOption.toNativeUtf8().cast<Char>();
+    proxyOptions.ref.url = proxyOption.toChar();
   }
 
   return proxyOptions;

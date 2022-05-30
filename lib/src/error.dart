@@ -1,8 +1,8 @@
 // coverage:ignore-file
 
 import 'dart:ffi';
-import 'package:ffi/ffi.dart';
 import 'package:libgit2dart/src/bindings/libgit2_bindings.dart';
+import 'package:libgit2dart/src/extensions.dart';
 
 /// Details of the last error that occurred.
 class LibGit2Error {
@@ -11,7 +11,5 @@ class LibGit2Error {
   final Pointer<git_error> _errorPointer;
 
   @override
-  String toString() {
-    return _errorPointer.ref.message.cast<Utf8>().toDartString();
-  }
+  String toString() => _errorPointer.ref.message.toDartString();
 }

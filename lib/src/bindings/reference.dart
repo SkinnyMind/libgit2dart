@@ -3,6 +3,7 @@ import 'dart:ffi';
 import 'package:ffi/ffi.dart';
 import 'package:libgit2dart/src/bindings/libgit2_bindings.dart';
 import 'package:libgit2dart/src/error.dart';
+import 'package:libgit2dart/src/extensions.dart';
 import 'package:libgit2dart/src/util.dart';
 
 /// Get the type of a reference.
@@ -55,7 +56,7 @@ Pointer<git_reference> lookup({
   required String name,
 }) {
   final out = calloc<Pointer<git_reference>>();
-  final nameC = name.toNativeUtf8().cast<Char>();
+  final nameC = name.toChar();
   final error = libgit2.git_reference_lookup(out, repoPointer, nameC);
 
   final result = out.value;
@@ -72,7 +73,7 @@ Pointer<git_reference> lookup({
 
 /// Get the full name of a reference.
 String name(Pointer<git_reference> ref) {
-  return libgit2.git_reference_name(ref).cast<Utf8>().toDartString();
+  return libgit2.git_reference_name(ref).toDartString();
 }
 
 /// Get the reference's short name.
@@ -80,7 +81,7 @@ String name(Pointer<git_reference> ref) {
 /// This will transform the reference name into a name "human-readable" version.
 /// If no shortname is appropriate, it will return the full name.
 String shorthand(Pointer<git_reference> ref) {
-  return libgit2.git_reference_shorthand(ref).cast<Utf8>().toDartString();
+  return libgit2.git_reference_shorthand(ref).toDartString();
 }
 
 /// Rename an existing reference. The returned reference must be freed with
@@ -104,9 +105,9 @@ Pointer<git_reference> rename({
   String? logMessage,
 }) {
   final out = calloc<Pointer<git_reference>>();
-  final newNameC = newName.toNativeUtf8().cast<Char>();
+  final newNameC = newName.toChar();
   final forceC = force == true ? 1 : 0;
-  final logMessageC = logMessage?.toNativeUtf8().cast<Char>() ?? nullptr;
+  final logMessageC = logMessage?.toChar() ?? nullptr;
   final error = libgit2.git_reference_rename(
     out,
     refPointer,
@@ -140,9 +141,7 @@ List<String> list(Pointer<git_repository> repo) {
     throw LibGit2Error(libgit2.git_error_last());
   } else {
     for (var i = 0; i < array.ref.count; i++) {
-      result.add(
-        array.ref.strings.elementAt(i).value.cast<Utf8>().toDartString(),
-      );
+      result.add(array.ref.strings.elementAt(i).value.toDartString());
     }
   }
 
@@ -156,7 +155,7 @@ bool hasLog({
   required Pointer<git_repository> repoPointer,
   required String name,
 }) {
-  final nameC = name.toNativeUtf8().cast<Char>();
+  final nameC = name.toChar();
   final result = libgit2.git_reference_has_log(repoPointer, nameC);
 
   calloc.free(nameC);
@@ -173,7 +172,7 @@ void ensureLog({
   required Pointer<git_repository> repoPointer,
   required String refName,
 }) {
-  final refNameC = refName.toNativeUtf8().cast<Char>();
+  final refNameC = refName.toChar();
   final error = libgit2.git_reference_ensure_log(repoPointer, refNameC);
 
   calloc.free(refNameC);
@@ -237,9 +236,9 @@ Pointer<git_reference> createDirect({
   String? logMessage,
 }) {
   final out = calloc<Pointer<git_reference>>();
-  final nameC = name.toNativeUtf8().cast<Char>();
+  final nameC = name.toChar();
   final forceC = force == true ? 1 : 0;
-  final logMessageC = logMessage?.toNativeUtf8().cast<Char>() ?? nullptr;
+  final logMessageC = logMessage?.toChar() ?? nullptr;
   final error = libgit2.git_reference_create(
     out,
     repoPointer,
@@ -295,10 +294,10 @@ Pointer<git_reference> createSymbolic({
   String? logMessage,
 }) {
   final out = calloc<Pointer<git_reference>>();
-  final nameC = name.toNativeUtf8().cast<Char>();
-  final targetC = target.toNativeUtf8().cast<Char>();
+  final nameC = name.toChar();
+  final targetC = target.toChar();
   final forceC = force == true ? 1 : 0;
-  final logMessageC = logMessage?.toNativeUtf8().cast<Char>() ?? nullptr;
+  final logMessageC = logMessage?.toChar() ?? nullptr;
   final error = libgit2.git_reference_symbolic_create(
     out,
     repoPointer,
@@ -348,7 +347,7 @@ Pointer<git_reference> setTarget({
   String? logMessage,
 }) {
   final out = calloc<Pointer<git_reference>>();
-  final logMessageC = logMessage?.toNativeUtf8().cast<Char>() ?? nullptr;
+  final logMessageC = logMessage?.toChar() ?? nullptr;
   final error = libgit2.git_reference_set_target(
     out,
     refPointer,
@@ -388,8 +387,8 @@ Pointer<git_reference> setTargetSymbolic({
   String? logMessage,
 }) {
   final out = calloc<Pointer<git_reference>>();
-  final targetC = target.toNativeUtf8().cast<Char>();
-  final logMessageC = logMessage?.toNativeUtf8().cast<Char>() ?? nullptr;
+  final targetC = target.toChar();
+  final logMessageC = logMessage?.toChar() ?? nullptr;
   final error = libgit2.git_reference_symbolic_set_target(
     out,
     refPointer,

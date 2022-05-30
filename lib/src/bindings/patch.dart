@@ -3,6 +3,7 @@ import 'dart:ffi';
 import 'package:ffi/ffi.dart';
 import 'package:libgit2dart/src/bindings/libgit2_bindings.dart';
 import 'package:libgit2dart/src/error.dart';
+import 'package:libgit2dart/src/extensions.dart';
 import 'package:libgit2dart/src/util.dart';
 
 /// Directly generate a patch from the difference between two buffers. The
@@ -17,11 +18,11 @@ Pointer<git_patch> fromBuffers({
   required int interhunkLines,
 }) {
   final out = calloc<Pointer<git_patch>>();
-  final oldBufferC = oldBuffer?.toNativeUtf8().cast<Char>() ?? nullptr;
-  final oldAsPathC = oldAsPath?.toNativeUtf8().cast<Char>() ?? nullptr;
+  final oldBufferC = oldBuffer?.toChar() ?? nullptr;
+  final oldAsPathC = oldAsPath?.toChar() ?? nullptr;
   final oldLen = oldBuffer?.length ?? 0;
-  final newBufferC = newBuffer?.toNativeUtf8().cast<Char>() ?? nullptr;
-  final newAsPathC = oldAsPath?.toNativeUtf8().cast<Char>() ?? nullptr;
+  final newBufferC = newBuffer?.toChar() ?? nullptr;
+  final newAsPathC = oldAsPath?.toChar() ?? nullptr;
   final newLen = newBuffer?.length ?? 0;
   final opts = _diffOptionsInit(
     flags: flags,
@@ -65,8 +66,8 @@ Pointer<git_patch> fromBlobs({
   required int interhunkLines,
 }) {
   final out = calloc<Pointer<git_patch>>();
-  final oldAsPathC = oldAsPath?.toNativeUtf8().cast<Char>() ?? nullptr;
-  final newAsPathC = oldAsPath?.toNativeUtf8().cast<Char>() ?? nullptr;
+  final oldAsPathC = oldAsPath?.toChar() ?? nullptr;
+  final newAsPathC = oldAsPath?.toChar() ?? nullptr;
   final opts = _diffOptionsInit(
     flags: flags,
     contextLines: contextLines,
@@ -104,9 +105,9 @@ Pointer<git_patch> fromBlobAndBuffer({
   required int interhunkLines,
 }) {
   final out = calloc<Pointer<git_patch>>();
-  final oldAsPathC = oldAsPath?.toNativeUtf8().cast<Char>() ?? nullptr;
-  final bufferC = buffer?.toNativeUtf8().cast<Char>() ?? nullptr;
-  final bufferAsPathC = oldAsPath?.toNativeUtf8().cast<Char>() ?? nullptr;
+  final oldAsPathC = oldAsPath?.toChar() ?? nullptr;
+  final bufferC = buffer?.toChar() ?? nullptr;
+  final bufferAsPathC = oldAsPath?.toChar() ?? nullptr;
   final bufferLen = buffer?.length ?? 0;
   final opts = _diffOptionsInit(
     flags: flags,
@@ -175,8 +176,8 @@ Map<String, Object> hunk({
   required int hunkIndex,
 }) {
   final out = calloc<Pointer<git_diff_hunk>>();
-  final linesInHunk = calloc<Int64>();
-  libgit2.git_patch_get_hunk(out, linesInHunk.cast(), patchPointer, hunkIndex);
+  final linesInHunk = calloc<Size>();
+  libgit2.git_patch_get_hunk(out, linesInHunk, patchPointer, hunkIndex);
 
   final hunk = out.value;
   final linesN = linesInHunk.value;
@@ -235,7 +236,7 @@ String text(Pointer<git_patch> patch) {
   final out = calloc<git_buf>();
   final error = libgit2.git_patch_to_buf(out, patch);
 
-  final result = out.ref.ptr.cast<Utf8>().toDartString(length: out.ref.size);
+  final result = out.ref.ptr.toDartString(length: out.ref.size);
 
   libgit2.git_buf_dispose(out);
   calloc.free(out);

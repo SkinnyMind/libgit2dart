@@ -3,6 +3,7 @@ import 'dart:ffi';
 import 'package:ffi/ffi.dart';
 import 'package:libgit2dart/libgit2dart.dart';
 import 'package:libgit2dart/src/bindings/libgit2_bindings.dart';
+import 'package:libgit2dart/src/extensions.dart';
 import 'package:libgit2dart/src/util.dart';
 
 class Libgit2 {
@@ -102,7 +103,7 @@ class Libgit2 {
 
     final out = calloc<git_buf>();
     libgit2Opts.git_libgit2_opts_get_search_path(level.value, out);
-    final result = out.ref.ptr.cast<Utf8>().toDartString(length: out.ref.size);
+    final result = out.ref.ptr.toDartString(length: out.ref.size);
 
     libgit2.git_buf_dispose(out);
     calloc.free(out);
@@ -129,7 +130,7 @@ class Libgit2 {
   }) {
     libgit2.git_libgit2_init();
 
-    final pathC = path?.toNativeUtf8().cast<Char>() ?? nullptr;
+    final pathC = path?.toChar() ?? nullptr;
     libgit2Opts.git_libgit2_opts_set_search_path(level.value, pathC);
     calloc.free(pathC);
   }
@@ -201,7 +202,7 @@ class Libgit2 {
 
     final out = calloc<git_buf>();
     libgit2Opts.git_libgit2_opts_get_template_path(out);
-    final result = out.ref.ptr.cast<Utf8>().toDartString(length: out.ref.size);
+    final result = out.ref.ptr.toDartString(length: out.ref.size);
 
     libgit2.git_buf_dispose(out);
     calloc.free(out);
@@ -212,7 +213,7 @@ class Libgit2 {
   static set templatePath(String path) {
     libgit2.git_libgit2_init();
 
-    final pathC = path.toNativeUtf8().cast<Char>();
+    final pathC = path.toChar();
     libgit2Opts.git_libgit2_opts_set_template_path(pathC);
 
     calloc.free(pathC);
@@ -234,8 +235,8 @@ class Libgit2 {
     } else {
       libgit2.git_libgit2_init();
 
-      final fileC = file?.toNativeUtf8().cast<Char>() ?? nullptr;
-      final pathC = path?.toNativeUtf8().cast<Char>() ?? nullptr;
+      final fileC = file?.toChar() ?? nullptr;
+      final pathC = path?.toChar() ?? nullptr;
 
       libgit2Opts.git_libgit2_opts_set_ssl_cert_locations(fileC, pathC);
 
@@ -253,7 +254,7 @@ class Libgit2 {
 
     final out = calloc<git_buf>();
     libgit2Opts.git_libgit2_opts_get_user_agent(out);
-    final result = out.ref.ptr.cast<Utf8>().toDartString(length: out.ref.size);
+    final result = out.ref.ptr.toDartString(length: out.ref.size);
 
     libgit2.git_buf_dispose(out);
     calloc.free(out);
@@ -264,7 +265,7 @@ class Libgit2 {
   static set userAgent(String userAgent) {
     libgit2.git_libgit2_init();
 
-    final userAgentC = userAgent.toNativeUtf8().cast<Char>();
+    final userAgentC = userAgent.toChar();
     libgit2Opts.git_libgit2_opts_set_user_agent(userAgentC);
 
     calloc.free(userAgentC);
@@ -483,7 +484,7 @@ class Libgit2 {
 
     final result = <String>[
       for (var i = 0; i < array.ref.count; i++)
-        array.ref.strings.elementAt(i).value.cast<Utf8>().toDartString()
+        array.ref.strings.elementAt(i).value.toDartString()
     ];
 
     calloc.free(array);
@@ -496,7 +497,7 @@ class Libgit2 {
 
     final array = calloc<Pointer<Char>>(extensions.length);
     for (var i = 0; i < extensions.length; i++) {
-      array[i] = extensions[i].toNativeUtf8().cast<Char>();
+      array[i] = extensions[i].toChar();
     }
 
     libgit2Opts.git_libgit2_opts_set_extensions(array, extensions.length);

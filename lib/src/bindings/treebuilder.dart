@@ -3,6 +3,7 @@ import 'dart:ffi';
 import 'package:ffi/ffi.dart';
 import 'package:libgit2dart/src/bindings/libgit2_bindings.dart';
 import 'package:libgit2dart/src/error.dart';
+import 'package:libgit2dart/src/extensions.dart';
 import 'package:libgit2dart/src/util.dart';
 
 /// Create a new tree builder. The returned tree builder must be freed with
@@ -53,7 +54,7 @@ Pointer<git_tree_entry> getByFilename({
   required Pointer<git_treebuilder> builderPointer,
   required String filename,
 }) {
-  final filenameC = filename.toNativeUtf8().cast<Char>();
+  final filenameC = filename.toChar();
   final result = libgit2.git_treebuilder_get(builderPointer, filenameC);
 
   calloc.free(filenameC);
@@ -82,7 +83,7 @@ void add({
   required Pointer<git_oid> oidPointer,
   required int filemode,
 }) {
-  final filenameC = filename.toNativeUtf8().cast<Char>();
+  final filenameC = filename.toChar();
   final error = libgit2.git_treebuilder_insert(
     nullptr,
     builderPointer,
@@ -105,7 +106,7 @@ void remove({
   required Pointer<git_treebuilder> builderPointer,
   required String filename,
 }) {
-  final filenameC = filename.toNativeUtf8().cast<Char>();
+  final filenameC = filename.toChar();
   final error = libgit2.git_treebuilder_remove(builderPointer, filenameC);
 
   calloc.free(filenameC);

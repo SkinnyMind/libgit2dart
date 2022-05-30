@@ -3,6 +3,7 @@ import 'dart:ffi';
 import 'package:ffi/ffi.dart';
 import 'package:libgit2dart/src/bindings/libgit2_bindings.dart';
 import 'package:libgit2dart/src/error.dart';
+import 'package:libgit2dart/src/extensions.dart';
 import 'package:libgit2dart/src/util.dart';
 
 /// Initializes a rebase operation to rebase the changes in [branchPointer]
@@ -128,7 +129,7 @@ void commit({
   required String? message,
 }) {
   final out = calloc<git_oid>();
-  final messageC = message?.toNativeUtf8().cast<Char>() ?? nullptr;
+  final messageC = message?.toChar() ?? nullptr;
 
   final error = libgit2.git_rebase_commit(
     out,
@@ -163,7 +164,7 @@ Pointer<git_oid> origHeadOid(Pointer<git_rebase> rebase) =>
 /// Gets the original HEAD ref name for merge rebases.
 String origHeadName(Pointer<git_rebase> rebase) {
   final result = libgit2.git_rebase_orig_head_name(rebase);
-  return result == nullptr ? '' : result.cast<Utf8>().toDartString();
+  return result == nullptr ? '' : result.toDartString();
 }
 
 /// Gets the onto id for merge rebases.
@@ -172,7 +173,7 @@ Pointer<git_oid> ontoOid(Pointer<git_rebase> rebase) =>
 
 /// Gets the onto ref name for merge rebases.
 String ontoName(Pointer<git_rebase> rebase) {
-  return libgit2.git_rebase_onto_name(rebase).cast<Utf8>().toDartString();
+  return libgit2.git_rebase_onto_name(rebase).toDartString();
 }
 
 /// Free memory allocated for rebase object.

@@ -2,6 +2,7 @@ import 'dart:ffi';
 import 'package:ffi/ffi.dart';
 import 'package:libgit2dart/src/bindings/libgit2_bindings.dart';
 import 'package:libgit2dart/src/error.dart';
+import 'package:libgit2dart/src/extensions.dart';
 import 'package:libgit2dart/src/oid.dart';
 import 'package:libgit2dart/src/util.dart';
 
@@ -20,7 +21,7 @@ Pointer<git_blame> file({
   int? maxLine,
 }) {
   final out = calloc<Pointer<git_blame>>();
-  final pathC = path.toNativeUtf8().cast<Char>();
+  final pathC = path.toChar();
   final options = calloc<git_blame_options>();
   libgit2.git_blame_options_init(options, GIT_BLAME_OPTIONS_VERSION);
 
@@ -77,7 +78,7 @@ Pointer<git_blame> buffer({
   required String buffer,
 }) {
   final out = calloc<Pointer<git_blame>>();
-  final bufferC = buffer.toNativeUtf8().cast<Char>();
+  final bufferC = buffer.toChar();
   final error = libgit2.git_blame_buffer(
     out,
     reference,

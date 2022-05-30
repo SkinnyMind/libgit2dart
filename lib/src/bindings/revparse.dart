@@ -3,6 +3,7 @@ import 'dart:ffi';
 import 'package:ffi/ffi.dart';
 import 'package:libgit2dart/src/bindings/libgit2_bindings.dart';
 import 'package:libgit2dart/src/error.dart';
+import 'package:libgit2dart/src/extensions.dart';
 import 'package:libgit2dart/src/util.dart';
 
 /// Parse a revision string for from, to, and intent.
@@ -16,7 +17,7 @@ Pointer<git_revspec> revParse({
   required String spec,
 }) {
   final out = calloc<git_revspec>();
-  final specC = spec.toNativeUtf8().cast<Char>();
+  final specC = spec.toChar();
 
   final error = libgit2.git_revparse(out, repoPointer, specC);
 
@@ -42,7 +43,7 @@ Pointer<git_object> revParseSingle({
   required String spec,
 }) {
   final out = calloc<Pointer<git_object>>();
-  final specC = spec.toNativeUtf8().cast<Char>();
+  final specC = spec.toChar();
 
   final error = libgit2.git_revparse_single(out, repoPointer, specC);
 
@@ -76,7 +77,7 @@ List<Pointer> revParseExt({
 }) {
   final objectOut = calloc<Pointer<git_object>>();
   final referenceOut = calloc<Pointer<git_reference>>();
-  final specC = spec.toNativeUtf8().cast<Char>();
+  final specC = spec.toChar();
 
   final error = libgit2.git_revparse_ext(
     objectOut,
@@ -85,8 +86,7 @@ List<Pointer> revParseExt({
     specC,
   );
 
-  final result = <Pointer>[];
-  result.add(objectOut.value);
+  final result = <Pointer>[objectOut.value];
   if (referenceOut.value != nullptr) {
     result.add(referenceOut.value);
   }

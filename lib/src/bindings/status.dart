@@ -4,6 +4,7 @@ import 'package:ffi/ffi.dart';
 import 'package:libgit2dart/libgit2dart.dart';
 import 'package:libgit2dart/src/bindings/libgit2_bindings.dart';
 import 'package:libgit2dart/src/error.dart';
+import 'package:libgit2dart/src/extensions.dart';
 import 'package:libgit2dart/src/util.dart';
 
 /// Gather file status information and populate the git_status_list. The
@@ -63,7 +64,7 @@ Pointer<git_status_entry> getByIndex({
 /// Throws a [LibGit2Error] if error occured.
 int file({required Pointer<git_repository> repoPointer, required String path}) {
   final out = calloc<UnsignedInt>();
-  final pathC = path.toNativeUtf8().cast<Char>();
+  final pathC = path.toChar();
   final error = libgit2.git_status_file(out, repoPointer, pathC);
 
   final result = out.value;

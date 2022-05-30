@@ -3,6 +3,7 @@ import 'dart:ffi';
 import 'package:ffi/ffi.dart';
 import 'package:libgit2dart/src/bindings/libgit2_bindings.dart';
 import 'package:libgit2dart/src/error.dart';
+import 'package:libgit2dart/src/extensions.dart';
 import 'package:libgit2dart/src/util.dart';
 
 /// Describe a commit. The returned describe result must be freed with [free].
@@ -100,12 +101,12 @@ String format({
     opts.ref.always_use_long_format = alwaysUseLongFormat ? 1 : 0;
   }
   if (dirtySuffix != null) {
-    opts.ref.dirty_suffix = dirtySuffix.toNativeUtf8().cast<Char>();
+    opts.ref.dirty_suffix = dirtySuffix.toChar();
   }
 
   libgit2.git_describe_format(out, describeResultPointer, opts);
 
-  final result = out.ref.ptr.cast<Utf8>().toDartString(length: out.ref.size);
+  final result = out.ref.ptr.toDartString(length: out.ref.size);
 
   libgit2.git_buf_dispose(out);
   calloc.free(out);
@@ -140,7 +141,7 @@ Pointer<git_describe_options> _initOpts({
     opts.ref.describe_strategy = describeStrategy;
   }
   if (pattern != null) {
-    opts.ref.pattern = pattern.toNativeUtf8().cast<Char>();
+    opts.ref.pattern = pattern.toChar();
   }
   if (onlyFollowFirstParent != null) {
     opts.ref.only_follow_first_parent = onlyFollowFirstParent ? 1 : 0;

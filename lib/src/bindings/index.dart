@@ -3,6 +3,7 @@ import 'dart:ffi';
 import 'package:ffi/ffi.dart';
 import 'package:libgit2dart/src/bindings/libgit2_bindings.dart';
 import 'package:libgit2dart/src/error.dart';
+import 'package:libgit2dart/src/extensions.dart';
 import 'package:libgit2dart/src/util.dart';
 
 /// Create an in-memory index object.
@@ -45,7 +46,7 @@ void setCapabilities({
 
 /// Get the full path to the index file on disk.
 String path(Pointer<git_index> index) {
-  return libgit2.git_index_path(index).cast<Utf8>().toDartString();
+  return libgit2.git_index_path(index).toDartString();
 }
 
 /// Update the contents of an existing index object in memory by reading from
@@ -125,7 +126,7 @@ Pointer<git_oid> writeTreeTo({
 /// Find the first position of any entries which point to given path in the Git
 /// index.
 bool find({required Pointer<git_index> indexPointer, required String path}) {
-  final pathC = path.toNativeUtf8().cast<Char>();
+  final pathC = path.toChar();
   final result = libgit2.git_index_find(nullptr, indexPointer, pathC);
 
   calloc.free(pathC);
@@ -164,7 +165,7 @@ Pointer<git_index_entry> getByPath({
   required String path,
   required int stage,
 }) {
-  final pathC = path.toNativeUtf8().cast<Char>();
+  final pathC = path.toChar();
   final result = libgit2.git_index_get_bypath(indexPointer, pathC, stage);
 
   calloc.free(pathC);
@@ -231,7 +232,7 @@ void addByPath({
   required Pointer<git_index> indexPointer,
   required String path,
 }) {
-  final pathC = path.toNativeUtf8().cast<Char>();
+  final pathC = path.toChar();
   final error = libgit2.git_index_add_bypath(indexPointer, pathC);
 
   calloc.free(pathC);
@@ -263,7 +264,7 @@ void addFromBuffer({
   required Pointer<git_index_entry> entryPointer,
   required String buffer,
 }) {
-  final bufferC = buffer.toNativeUtf8().cast<Int8>();
+  final bufferC = buffer.toChar();
   final error = libgit2.git_index_add_from_buffer(
     indexPointer,
     entryPointer,
@@ -293,8 +294,7 @@ void addAll({
   required List<String> pathspec,
 }) {
   final pathspecC = calloc<git_strarray>();
-  final pathPointers =
-      pathspec.map((e) => e.toNativeUtf8().cast<Char>()).toList();
+  final pathPointers = pathspec.map((e) => e.toChar()).toList();
   final strArray = calloc<Pointer<Char>>(pathspec.length);
 
   for (var i = 0; i < pathspec.length; i++) {
@@ -338,8 +338,7 @@ void updateAll({
   required List<String> pathspec,
 }) {
   final pathspecC = calloc<git_strarray>();
-  final pathPointers =
-      pathspec.map((e) => e.toNativeUtf8().cast<Char>()).toList();
+  final pathPointers = pathspec.map((e) => e.toChar()).toList();
   final strArray = calloc<Pointer<Char>>(pathspec.length);
 
   for (var i = 0; i < pathspec.length; i++) {
@@ -379,7 +378,7 @@ void remove({
   required String path,
   required int stage,
 }) {
-  final pathC = path.toNativeUtf8().cast<Char>();
+  final pathC = path.toChar();
   final error = libgit2.git_index_remove(indexPointer, pathC, stage);
 
   calloc.free(pathC);
@@ -395,7 +394,7 @@ void removeDirectory({
   required String dir,
   required int stage,
 }) {
-  final dirC = dir.toNativeUtf8().cast<Char>();
+  final dirC = dir.toChar();
   libgit2.git_index_remove_directory(indexPointer, dirC, stage);
   calloc.free(dirC);
 }
@@ -406,8 +405,7 @@ void removeAll({
   required List<String> pathspec,
 }) {
   final pathspecC = calloc<git_strarray>();
-  final pathPointers =
-      pathspec.map((e) => e.toNativeUtf8().cast<Char>()).toList();
+  final pathPointers = pathspec.map((e) => e.toChar()).toList();
   final strArray = calloc<Pointer<Char>>(pathspec.length);
 
   for (var i = 0; i < pathspec.length; i++) {
@@ -511,7 +509,7 @@ void conflictRemove({
   required Pointer<git_index> indexPointer,
   required String path,
 }) {
-  final pathC = path.toNativeUtf8().cast<Char>();
+  final pathC = path.toChar();
   final error = libgit2.git_index_conflict_remove(indexPointer, pathC);
 
   calloc.free(pathC);

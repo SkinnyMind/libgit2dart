@@ -3,6 +3,7 @@ import 'dart:ffi';
 import 'package:ffi/ffi.dart';
 import 'package:libgit2dart/src/bindings/libgit2_bindings.dart';
 import 'package:libgit2dart/src/error.dart';
+import 'package:libgit2dart/src/extensions.dart';
 import 'package:libgit2dart/src/util.dart';
 
 /// Returns list of notes for repository. The returned notes must be freed with
@@ -10,7 +11,7 @@ import 'package:libgit2dart/src/util.dart';
 ///
 /// Throws a [LibGit2Error] if error occured.
 List<Map<String, Pointer>> list(Pointer<git_repository> repo) {
-  final notesRef = 'refs/notes/commits'.toNativeUtf8().cast<Char>();
+  final notesRef = 'refs/notes/commits'.toChar();
   final iterator = calloc<Pointer<git_iterator>>();
   final iteratorError = libgit2.git_note_iterator_new(iterator, repo, notesRef);
 
@@ -57,7 +58,7 @@ Pointer<git_note> lookup({
   String notesRef = 'refs/notes/commits',
 }) {
   final out = calloc<Pointer<git_note>>();
-  final notesRefC = notesRef.toNativeUtf8().cast<Char>();
+  final notesRefC = notesRef.toChar();
   final error = libgit2.git_note_read(out, repoPointer, notesRefC, oidPointer);
 
   final result = out.value;
@@ -85,8 +86,8 @@ Pointer<git_oid> create({
   bool force = false,
 }) {
   final out = calloc<git_oid>();
-  final notesRefC = notesRef.toNativeUtf8().cast<Char>();
-  final noteC = note.toNativeUtf8().cast<Char>();
+  final notesRefC = notesRef.toChar();
+  final noteC = note.toChar();
   final forceC = force ? 1 : 0;
   final error = libgit2.git_note_create(
     out,
@@ -120,7 +121,7 @@ void delete({
   required Pointer<git_signature> committerPointer,
   required Pointer<git_oid> oidPointer,
 }) {
-  final notesRefC = notesRef.toNativeUtf8().cast<Char>();
+  final notesRefC = notesRef.toChar();
 
   final error = libgit2.git_note_remove(
     repoPointer,
@@ -142,7 +143,7 @@ Pointer<git_oid> id(Pointer<git_note> note) => libgit2.git_note_id(note);
 
 /// Get the note message.
 String message(Pointer<git_note> note) {
-  return libgit2.git_note_message(note).cast<Utf8>().toDartString();
+  return libgit2.git_note_message(note).toDartString();
 }
 
 /// Free memory allocated for note object.

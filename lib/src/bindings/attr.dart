@@ -1,6 +1,7 @@
 import 'dart:ffi';
 import 'package:ffi/ffi.dart';
 import 'package:libgit2dart/src/bindings/libgit2_bindings.dart';
+import 'package:libgit2dart/src/extensions.dart';
 import 'package:libgit2dart/src/util.dart';
 
 /// Look up the value of one git attribute for path.
@@ -15,8 +16,8 @@ Object? getAttribute({
   required String name,
 }) {
   final out = calloc<Pointer<Char>>();
-  final pathC = path.toNativeUtf8().cast<Char>();
-  final nameC = name.toNativeUtf8().cast<Char>();
+  final pathC = path.toChar();
+  final nameC = name.toChar();
   libgit2.git_attr_get(out, repoPointer, flags, pathC, nameC);
 
   final result = out.value;
@@ -37,7 +38,7 @@ Object? getAttribute({
     return false;
   }
   if (attributeValue == git_attr_value_t.GIT_ATTR_VALUE_STRING) {
-    return result.cast<Utf8>().toDartString();
+    return result.toDartString();
   }
   return null;
 }

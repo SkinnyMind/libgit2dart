@@ -3,6 +3,7 @@ import 'dart:ffi';
 import 'package:ffi/ffi.dart';
 import 'package:libgit2dart/src/bindings/libgit2_bindings.dart';
 import 'package:libgit2dart/src/error.dart';
+import 'package:libgit2dart/src/extensions.dart';
 import 'package:libgit2dart/src/util.dart';
 
 /// Create a diff with the difference between two index objects. The returned
@@ -253,7 +254,7 @@ void merge({
 /// other types of patch files.
 Pointer<git_diff> parse(String content) {
   final out = calloc<Pointer<git_diff>>();
-  final contentC = content.toNativeUtf8().cast<Char>();
+  final contentC = content.toChar();
   libgit2.git_diff_from_buffer(out, contentC, content.length);
 
   final result = out.value;
@@ -383,7 +384,7 @@ String statsPrint({
   final out = calloc<git_buf>();
   final error = libgit2.git_diff_stats_to_buf(out, statsPointer, format, width);
 
-  final result = out.ref.ptr.cast<Utf8>().toDartString(length: out.ref.size);
+  final result = out.ref.ptr.toDartString(length: out.ref.size);
 
   libgit2.git_buf_dispose(out);
   calloc.free(out);
@@ -402,7 +403,7 @@ String addToBuf(Pointer<git_diff> diff) {
 
   final result = out.ref.ptr == nullptr
       ? ''
-      : out.ref.ptr.cast<Utf8>().toDartString(length: out.ref.size);
+      : out.ref.ptr.toDartString(length: out.ref.size);
 
   libgit2.git_buf_dispose(out);
   calloc.free(out);

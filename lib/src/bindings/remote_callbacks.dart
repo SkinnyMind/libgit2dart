@@ -8,6 +8,7 @@ import 'package:libgit2dart/src/bindings/libgit2_bindings.dart';
 import 'package:libgit2dart/src/bindings/remote.dart' as remote_bindings;
 import 'package:libgit2dart/src/bindings/repository.dart'
     as repository_bindings;
+import 'package:libgit2dart/src/extensions.dart';
 import 'package:libgit2dart/src/util.dart';
 
 class RemoteCallbacks {
@@ -33,7 +34,7 @@ class RemoteCallbacks {
     int length,
     Pointer<Void> payload,
   ) {
-    sidebandProgress!(progressOutput.cast<Utf8>().toDartString(length: length));
+    sidebandProgress!(progressOutput.toDartString(length: length));
     return 0;
   }
 
@@ -47,7 +48,7 @@ class RemoteCallbacks {
     Pointer<git_oid> newOid,
     Pointer<Void> payload,
   ) {
-    updateTips!(refname.cast<Utf8>().toDartString(), Oid(oldOid), Oid(newOid));
+    updateTips!(refname.toDartString(), Oid(oldOid), Oid(newOid));
     return 0;
   }
 
@@ -62,9 +63,8 @@ class RemoteCallbacks {
     Pointer<Char> message,
     Pointer<Void> payload,
   ) {
-    final messageResult =
-        message == nullptr ? '' : message.cast<Utf8>().toDartString();
-    pushUpdateReference!(refname.cast<Utf8>().toDartString(), messageResult);
+    final messageResult = message == nullptr ? '' : message.toDartString();
+    pushUpdateReference!(refname.toDartString(), messageResult);
     return 0;
   }
 
@@ -155,7 +155,7 @@ class RemoteCallbacks {
     if (payload.cast<Char>().value == 2) {
       libgit2.git_error_set_str(
         git_error_t.GIT_ERROR_INVALID,
-        'Incorrect credentials.'.toNativeUtf8().cast<Char>(),
+        'Incorrect credentials.'.toChar(),
       );
       throw LibGit2Error(libgit2.git_error_last());
     }
@@ -165,7 +165,7 @@ class RemoteCallbacks {
     if (allowedTypes & credentialType.value != credentialType.value) {
       libgit2.git_error_set_str(
         git_error_t.GIT_ERROR_INVALID,
-        'Invalid credential type $credentialType'.toNativeUtf8().cast<Char>(),
+        'Invalid credential type $credentialType'.toChar(),
       );
       throw LibGit2Error(libgit2.git_error_last());
     }

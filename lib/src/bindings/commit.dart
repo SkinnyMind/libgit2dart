@@ -3,6 +3,7 @@ import 'dart:ffi';
 import 'package:ffi/ffi.dart';
 import 'package:libgit2dart/src/bindings/libgit2_bindings.dart';
 import 'package:libgit2dart/src/error.dart';
+import 'package:libgit2dart/src/extensions.dart';
 import 'package:libgit2dart/src/util.dart';
 
 /// Lookup a commit object from a repository. The returned commit must be
@@ -45,10 +46,9 @@ Pointer<git_oid> create({
   required List<Pointer<git_commit>> parents,
 }) {
   final out = calloc<git_oid>();
-  final updateRefC = updateRef.toNativeUtf8().cast<Char>();
-  final messageEncodingC =
-      messageEncoding?.toNativeUtf8().cast<Char>() ?? nullptr;
-  final messageC = message.toNativeUtf8().cast<Char>();
+  final updateRefC = updateRef.toChar();
+  final messageEncodingC = messageEncoding?.toChar() ?? nullptr;
+  final messageC = message.toChar();
   final parentsC = calloc<Pointer<git_commit>>(parentCount);
 
   if (parents.isNotEmpty) {
@@ -103,10 +103,9 @@ String createBuffer({
   required List<Pointer<git_commit>> parents,
 }) {
   final out = calloc<git_buf>();
-  final updateRefC = updateRef.toNativeUtf8().cast<Char>();
-  final messageEncodingC =
-      messageEncoding?.toNativeUtf8().cast<Char>() ?? nullptr;
-  final messageC = message.toNativeUtf8().cast<Char>();
+  final updateRefC = updateRef.toChar();
+  final messageEncodingC = messageEncoding?.toChar() ?? nullptr;
+  final messageC = message.toChar();
   final parentsC = calloc<Pointer<git_commit>>(parentCount);
 
   if (parents.isNotEmpty) {
@@ -129,7 +128,7 @@ String createBuffer({
     parentsC,
   );
 
-  final result = out.ref.ptr.cast<Utf8>().toDartString(length: out.ref.size);
+  final result = out.ref.ptr.toDartString(length: out.ref.size);
 
   libgit2.git_buf_dispose(out);
   calloc.free(out);
@@ -169,10 +168,9 @@ Pointer<git_oid> amend({
   required Pointer<git_tree>? treePointer,
 }) {
   final out = calloc<git_oid>();
-  final updateRefC = updateRef?.toNativeUtf8().cast<Char>() ?? nullptr;
-  final messageEncodingC =
-      messageEncoding?.toNativeUtf8().cast<Char>() ?? nullptr;
-  final messageC = message?.toNativeUtf8().cast<Char>() ?? nullptr;
+  final updateRefC = updateRef?.toChar() ?? nullptr;
+  final messageEncodingC = messageEncoding?.toChar() ?? nullptr;
+  final messageC = message?.toChar() ?? nullptr;
 
   final error = libgit2.git_commit_amend(
     out,
@@ -216,7 +214,7 @@ Pointer<git_commit> duplicate(Pointer<git_commit> source) {
 /// If the encoding header in the commit is missing UTF-8 is assumed.
 String messageEncoding(Pointer<git_commit> commit) {
   final result = libgit2.git_commit_message_encoding(commit);
-  return result == nullptr ? 'utf-8' : result.cast<Utf8>().toDartString();
+  return result == nullptr ? 'utf-8' : result.toDartString();
 }
 
 /// Get the full message of a commit.
@@ -224,7 +222,7 @@ String messageEncoding(Pointer<git_commit> commit) {
 /// The returned message will be slightly prettified by removing any potential
 /// leading newlines.
 String message(Pointer<git_commit> commit) {
-  return libgit2.git_commit_message(commit).cast<Utf8>().toDartString();
+  return libgit2.git_commit_message(commit).toDartString();
 }
 
 /// Get the short "summary" of the git commit message.
@@ -239,7 +237,7 @@ String summary(Pointer<git_commit> commit) {
   if (result == nullptr) {
     throw LibGit2Error(libgit2.git_error_last());
   } else {
-    return result.cast<Utf8>().toDartString();
+    return result.toDartString();
   }
 }
 
@@ -250,7 +248,7 @@ String summary(Pointer<git_commit> commit) {
 /// trimmed.
 String body(Pointer<git_commit> commit) {
   final result = libgit2.git_commit_body(commit);
-  return result == nullptr ? '' : result.cast<Utf8>().toDartString();
+  return result == nullptr ? '' : result.toDartString();
 }
 
 /// Get an arbitrary header field.
@@ -261,10 +259,10 @@ String headerField({
   required String field,
 }) {
   final out = calloc<git_buf>();
-  final fieldC = field.toNativeUtf8().cast<Char>();
+  final fieldC = field.toChar();
   final error = libgit2.git_commit_header_field(out, commitPointer, fieldC);
 
-  final result = out.ref.ptr.cast<Utf8>().toDartString(length: out.ref.size);
+  final result = out.ref.ptr.toDartString(length: out.ref.size);
 
   libgit2.git_buf_dispose(out);
   calloc.free(out);

@@ -3,6 +3,7 @@ import 'dart:ffi';
 import 'package:ffi/ffi.dart';
 import 'package:libgit2dart/src/bindings/libgit2_bindings.dart';
 import 'package:libgit2dart/src/error.dart';
+import 'package:libgit2dart/src/extensions.dart';
 import 'package:libgit2dart/src/util.dart';
 
 /// Creates an annotated commit from the given commit id. The returned
@@ -76,7 +77,7 @@ Pointer<git_annotated_commit> fromRevSpec({
   required String revspec,
 }) {
   final out = calloc<Pointer<git_annotated_commit>>();
-  final revspecC = revspec.toNativeUtf8().cast<Char>();
+  final revspecC = revspec.toChar();
   final error = libgit2.git_annotated_commit_from_revspec(
     out,
     repoPointer,
@@ -106,8 +107,8 @@ Pointer<git_annotated_commit> fromFetchHead({
   required Pointer<git_oid> oid,
 }) {
   final out = calloc<Pointer<git_annotated_commit>>();
-  final branchNameC = branchName.toNativeUtf8().cast<Char>();
-  final remoteUrlC = remoteUrl.toNativeUtf8().cast<Char>();
+  final branchNameC = branchName.toChar();
+  final remoteUrlC = remoteUrl.toChar();
   final error = libgit2.git_annotated_commit_from_fetchhead(
     out,
     repoPointer,
@@ -136,7 +137,7 @@ Pointer<git_oid> oid(Pointer<git_annotated_commit> commit) =>
 /// Get the refname that the given annotated commit refers to.
 String refName(Pointer<git_annotated_commit> commit) {
   final result = libgit2.git_annotated_commit_ref(commit);
-  return result == nullptr ? '' : result.cast<Utf8>().toDartString();
+  return result == nullptr ? '' : result.toDartString();
 }
 
 /// Frees an annotated commit.

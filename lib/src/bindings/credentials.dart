@@ -2,6 +2,7 @@ import 'dart:ffi';
 
 import 'package:ffi/ffi.dart';
 import 'package:libgit2dart/src/bindings/libgit2_bindings.dart';
+import 'package:libgit2dart/src/extensions.dart';
 import 'package:libgit2dart/src/util.dart';
 
 /// Create a new plain-text username and password credential object.
@@ -10,8 +11,8 @@ Pointer<git_credential> userPass({
   required String password,
 }) {
   final out = calloc<Pointer<git_credential>>();
-  final usernameC = username.toNativeUtf8().cast<Char>();
-  final passwordC = password.toNativeUtf8().cast<Char>();
+  final usernameC = username.toChar();
+  final passwordC = password.toChar();
 
   libgit2.git_credential_userpass_plaintext_new(out, usernameC, passwordC);
 
@@ -32,10 +33,10 @@ Pointer<git_credential> sshKey({
   required String passPhrase,
 }) {
   final out = calloc<Pointer<git_credential>>();
-  final usernameC = username.toNativeUtf8().cast<Char>();
-  final publicKeyC = publicKey.toNativeUtf8().cast<Char>();
-  final privateKeyC = privateKey.toNativeUtf8().cast<Char>();
-  final passPhraseC = passPhrase.toNativeUtf8().cast<Char>();
+  final usernameC = username.toChar();
+  final publicKeyC = publicKey.toChar();
+  final privateKeyC = privateKey.toChar();
+  final passPhraseC = passPhrase.toChar();
 
   libgit2.git_credential_ssh_key_new(
     out,
@@ -59,7 +60,7 @@ Pointer<git_credential> sshKey({
 /// Create a new ssh key credential object used for querying an ssh-agent.
 Pointer<git_credential> sshKeyFromAgent(String username) {
   final out = calloc<Pointer<git_credential>>();
-  final usernameC = username.toNativeUtf8().cast<Char>();
+  final usernameC = username.toChar();
 
   libgit2.git_credential_ssh_key_from_agent(out, usernameC);
 
@@ -79,10 +80,10 @@ Pointer<git_credential> sshKeyFromMemory({
   required String passPhrase,
 }) {
   final out = calloc<Pointer<git_credential>>();
-  final usernameC = username.toNativeUtf8().cast<Char>();
-  final publicKeyC = publicKey.toNativeUtf8().cast<Char>();
-  final privateKeyC = privateKey.toNativeUtf8().cast<Char>();
-  final passPhraseC = passPhrase.toNativeUtf8().cast<Char>();
+  final usernameC = username.toChar();
+  final publicKeyC = publicKey.toChar();
+  final privateKeyC = privateKey.toChar();
+  final passPhraseC = passPhrase.toChar();
 
   libgit2.git_credential_ssh_key_memory_new(
     out,

@@ -1,10 +1,10 @@
 import 'dart:ffi';
 
 import 'package:equatable/equatable.dart';
-import 'package:ffi/ffi.dart';
 import 'package:libgit2dart/libgit2dart.dart';
 import 'package:libgit2dart/src/bindings/diff.dart' as bindings;
 import 'package:libgit2dart/src/bindings/libgit2_bindings.dart';
+import 'package:libgit2dart/src/extensions.dart';
 import 'package:libgit2dart/src/util.dart';
 import 'package:meta/meta.dart';
 
@@ -546,7 +546,7 @@ class DiffFile extends Equatable {
   Oid get oid => Oid.fromRaw(_diffFile.id);
 
   /// Path to the entry relative to the working directory of the repository.
-  String get path => _diffFile.path.cast<Utf8>().toDartString();
+  String get path => _diffFile.path.toDartString();
 
   /// Size of the entry in bytes.
   int get size => _diffFile.size;

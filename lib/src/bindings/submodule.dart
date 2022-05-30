@@ -5,6 +5,7 @@ import 'package:libgit2dart/src/bindings/libgit2_bindings.dart';
 import 'package:libgit2dart/src/bindings/remote_callbacks.dart';
 import 'package:libgit2dart/src/callbacks.dart';
 import 'package:libgit2dart/src/error.dart';
+import 'package:libgit2dart/src/extensions.dart';
 import 'package:libgit2dart/src/util.dart';
 
 /// List of submodule paths.
@@ -50,7 +51,7 @@ Pointer<git_submodule> lookup({
   required String name,
 }) {
   final out = calloc<Pointer<git_submodule>>();
-  final nameC = name.toNativeUtf8().cast<Char>();
+  final nameC = name.toChar();
 
   final error = libgit2.git_submodule_lookup(out, repoPointer, nameC);
 
@@ -159,8 +160,8 @@ Pointer<git_submodule> addSetup({
   bool useGitlink = true,
 }) {
   final out = calloc<Pointer<git_submodule>>();
-  final urlC = url.toNativeUtf8().cast<Char>();
-  final pathC = path.toNativeUtf8().cast<Char>();
+  final urlC = url.toChar();
+  final pathC = path.toChar();
   final useGitlinkC = useGitlink ? 1 : 0;
   final error = libgit2.git_submodule_add_setup(
     out,
@@ -233,7 +234,7 @@ int status({
   required int ignore,
 }) {
   final out = calloc<UnsignedInt>();
-  final nameC = name.toNativeUtf8().cast<Char>();
+  final nameC = name.toChar();
   libgit2.git_submodule_status(out, repoPointer, nameC, ignore);
 
   final result = out.value;
@@ -269,7 +270,7 @@ void reload({
 
 /// Get the name of submodule.
 String name(Pointer<git_submodule> submodule) {
-  return libgit2.git_submodule_name(submodule).cast<Utf8>().toDartString();
+  return libgit2.git_submodule_name(submodule).toDartString();
 }
 
 /// Get the path to the submodule.
@@ -277,12 +278,12 @@ String name(Pointer<git_submodule> submodule) {
 /// The path is almost always the same as the submodule name, but the two
 /// are actually not required to match.
 String path(Pointer<git_submodule> submodule) {
-  return libgit2.git_submodule_path(submodule).cast<Utf8>().toDartString();
+  return libgit2.git_submodule_path(submodule).toDartString();
 }
 
 /// Get the URL for the submodule.
 String url(Pointer<git_submodule> submodule) {
-  return libgit2.git_submodule_url(submodule).cast<Utf8>().toDartString();
+  return libgit2.git_submodule_url(submodule).toDartString();
 }
 
 /// Set the URL for the submodule in the configuration.
@@ -294,8 +295,8 @@ void setUrl({
   required String name,
   required String url,
 }) {
-  final nameC = name.toNativeUtf8().cast<Char>();
-  final urlC = url.toNativeUtf8().cast<Char>();
+  final nameC = name.toChar();
+  final urlC = url.toChar();
 
   libgit2.git_submodule_set_url(repoPointer, nameC, urlC);
 
@@ -306,7 +307,7 @@ void setUrl({
 /// Get the branch for the submodule.
 String branch(Pointer<git_submodule> submodule) {
   final result = libgit2.git_submodule_branch(submodule);
-  return result == nullptr ? '' : result.cast<Utf8>().toDartString();
+  return result == nullptr ? '' : result.toDartString();
 }
 
 /// Set the branch for the submodule in the configuration.
@@ -318,8 +319,8 @@ void setBranch({
   required String name,
   required String branch,
 }) {
-  final nameC = name.toNativeUtf8().cast<Char>();
-  final branchC = branch.toNativeUtf8().cast<Char>();
+  final nameC = name.toChar();
+  final branchC = branch.toChar();
 
   libgit2.git_submodule_set_branch(repoPointer, nameC, branchC);
 
@@ -369,7 +370,7 @@ void setIgnore({
   required String name,
   required int ignore,
 }) {
-  final nameC = name.toNativeUtf8().cast<Char>();
+  final nameC = name.toChar();
   libgit2.git_submodule_set_ignore(repoPointer, nameC, ignore);
   calloc.free(nameC);
 }
@@ -389,7 +390,7 @@ void setUpdateRule({
   required String name,
   required int update,
 }) {
-  final nameC = name.toNativeUtf8().cast<Char>();
+  final nameC = name.toChar();
   libgit2.git_submodule_set_update(repoPointer, nameC, update);
   calloc.free(nameC);
 }
