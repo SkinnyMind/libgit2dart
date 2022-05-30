@@ -10,10 +10,17 @@ import 'package:libgit2dart/src/util.dart';
 /// [free].
 ///
 /// Throws a [LibGit2Error] if error occured.
-List<Map<String, Pointer>> list(Pointer<git_repository> repo) {
-  final notesRef = 'refs/notes/commits'.toChar();
+List<Map<String, Pointer>> list({
+  required Pointer<git_repository> repoPointer,
+  required String notesRef,
+}) {
+  final notesRefC = notesRef.toChar();
   final iterator = calloc<Pointer<git_iterator>>();
-  final iteratorError = libgit2.git_note_iterator_new(iterator, repo, notesRef);
+  final iteratorError = libgit2.git_note_iterator_new(
+    iterator,
+    repoPointer,
+    notesRefC,
+  );
 
   if (iteratorError < 0) {
     calloc.free(iterator);
@@ -29,7 +36,7 @@ List<Map<String, Pointer>> list(Pointer<git_repository> repo) {
     nextError = libgit2.git_note_next(noteOid, annotatedOid, iterator.value);
     if (nextError >= 0) {
       final out = calloc<Pointer<git_note>>();
-      libgit2.git_note_read(out, repo, notesRef, annotatedOid);
+      libgit2.git_note_read(out, repoPointer, notesRefC, annotatedOid);
 
       final note = out.value;
 
@@ -42,7 +49,7 @@ List<Map<String, Pointer>> list(Pointer<git_repository> repo) {
     calloc.free(noteOid);
   }
 
-  calloc.free(notesRef);
+  calloc.free(notesRefC);
   libgit2.git_note_iterator_free(iterator.value);
   calloc.free(iterator);
 
@@ -55,7 +62,7 @@ List<Map<String, Pointer>> list(Pointer<git_repository> repo) {
 Pointer<git_note> lookup({
   required Pointer<git_repository> repoPointer,
   required Pointer<git_oid> oidPointer,
-  String notesRef = 'refs/notes/commits',
+  required String notesRef,
 }) {
   final out = calloc<Pointer<git_note>>();
   final notesRefC = notesRef.toChar();
