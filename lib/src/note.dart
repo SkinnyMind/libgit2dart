@@ -114,9 +114,17 @@ class Note extends Equatable {
 
   /// Returns list of notes for [repo]sitory.
   ///
+  /// [notesRef] is the canonical name of the reference to use. Defaults to "refs/notes/commits".
+  ///
   /// Throws a [LibGit2Error] if error occured.
-  static List<Note> list(Repository repo) {
-    final notesPointers = bindings.list(repo.pointer);
+  static List<Note> list(
+    Repository repo, {
+    String notesRef = 'refs/notes/commits',
+  }) {
+    final notesPointers = bindings.list(
+      repoPointer: repo.pointer,
+      notesRef: notesRef,
+    );
     return notesPointers
         .map(
           (e) => Note(
