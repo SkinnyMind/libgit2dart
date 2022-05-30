@@ -5,6 +5,7 @@ import 'package:libgit2dart/libgit2dart.dart';
 import 'package:libgit2dart/src/bindings/libgit2_bindings.dart';
 import 'package:libgit2dart/src/bindings/reference.dart' as reference_bindings;
 import 'package:libgit2dart/src/error.dart';
+import 'package:libgit2dart/src/extensions.dart';
 import 'package:libgit2dart/src/util.dart';
 
 /// Return a list of branches. The returned references must be freed with
@@ -60,7 +61,7 @@ Pointer<git_reference> lookup({
   required int branchType,
 }) {
   final out = calloc<Pointer<git_reference>>();
-  final branchNameC = branchName.toNativeUtf8().cast<Char>();
+  final branchNameC = branchName.toChar();
   final error = libgit2.git_branch_lookup(
     out,
     repoPointer,
@@ -97,7 +98,7 @@ Pointer<git_reference> create({
   required bool force,
 }) {
   final out = calloc<Pointer<git_reference>>();
-  final branchNameC = branchName.toNativeUtf8().cast<Char>();
+  final branchNameC = branchName.toChar();
   final forceC = force ? 1 : 0;
   final error = libgit2.git_branch_create(
     out,
@@ -147,7 +148,7 @@ void rename({
   required bool force,
 }) {
   final out = calloc<Pointer<git_reference>>();
-  final newBranchNameC = newBranchName.toNativeUtf8().cast<Char>();
+  final newBranchNameC = newBranchName.toChar();
   final forceC = force ? 1 : 0;
   final error = libgit2.git_branch_move(
     out,
@@ -212,7 +213,7 @@ String name(Pointer<git_reference> ref) {
   if (error < 0) {
     throw LibGit2Error(libgit2.git_error_last());
   } else {
-    return result.cast<Utf8>().toDartString();
+    return result.toDartString();
   }
 }
 
@@ -229,10 +230,10 @@ String remoteName({
   required String branchName,
 }) {
   final out = calloc<git_buf>();
-  final branchNameC = branchName.toNativeUtf8().cast<Char>();
+  final branchNameC = branchName.toChar();
   final error = libgit2.git_branch_remote_name(out, repoPointer, branchNameC);
 
-  final result = out.ref.ptr.cast<Utf8>().toDartString(length: out.ref.size);
+  final result = out.ref.ptr.toDartString(length: out.ref.size);
 
   libgit2.git_buf_dispose(out);
   calloc.free(out);
@@ -281,7 +282,7 @@ void setUpstream({
   required Pointer<git_reference> branchPointer,
   required String? branchName,
 }) {
-  final branchNameC = branchName?.toNativeUtf8().cast<Char>() ?? nullptr;
+  final branchNameC = branchName?.toChar() ?? nullptr;
   final error = libgit2.git_branch_set_upstream(branchPointer, branchNameC);
 
   calloc.free(branchNameC);
@@ -303,10 +304,10 @@ String upstreamName({
   required String branchName,
 }) {
   final out = calloc<git_buf>();
-  final branchNameC = branchName.toNativeUtf8().cast<Char>();
+  final branchNameC = branchName.toChar();
   final error = libgit2.git_branch_upstream_name(out, repoPointer, branchNameC);
 
-  final result = out.ref.ptr.cast<Utf8>().toDartString(length: out.ref.size);
+  final result = out.ref.ptr.toDartString(length: out.ref.size);
 
   libgit2.git_buf_dispose(out);
   calloc.free(out);
@@ -330,14 +331,14 @@ String upstreamRemote({
   required String branchName,
 }) {
   final out = calloc<git_buf>();
-  final branchNameC = branchName.toNativeUtf8().cast<Char>();
+  final branchNameC = branchName.toChar();
   final error = libgit2.git_branch_upstream_remote(
     out,
     repoPointer,
     branchNameC,
   );
 
-  final result = out.ref.ptr.cast<Utf8>().toDartString(length: out.ref.size);
+  final result = out.ref.ptr.toDartString(length: out.ref.size);
 
   libgit2.git_buf_dispose(out);
   calloc.free(out);
@@ -361,14 +362,14 @@ String upstreamMerge({
   required String branchName,
 }) {
   final out = calloc<git_buf>();
-  final branchNameC = branchName.toNativeUtf8().cast<Char>();
+  final branchNameC = branchName.toChar();
   final error = libgit2.git_branch_upstream_merge(
     out,
     repoPointer,
     branchNameC,
   );
 
-  final result = out.ref.ptr.cast<Utf8>().toDartString(length: out.ref.size);
+  final result = out.ref.ptr.toDartString(length: out.ref.size);
 
   libgit2.git_buf_dispose(out);
   calloc.free(out);

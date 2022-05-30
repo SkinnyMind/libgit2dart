@@ -3,6 +3,7 @@ import 'dart:ffi';
 import 'package:ffi/ffi.dart';
 import 'package:libgit2dart/src/bindings/libgit2_bindings.dart';
 import 'package:libgit2dart/src/error.dart';
+import 'package:libgit2dart/src/extensions.dart';
 import 'package:libgit2dart/src/util.dart';
 
 /// Allocate a new mailmap object. The returned mailmap must be freed with
@@ -25,7 +26,7 @@ Pointer<git_mailmap> init() {
 /// returned mailmap must be freed with [free].
 Pointer<git_mailmap> fromBuffer(String buffer) {
   final out = calloc<Pointer<git_mailmap>>();
-  final bufferC = buffer.toNativeUtf8().cast<Char>();
+  final bufferC = buffer.toChar();
 
   libgit2.git_mailmap_from_buffer(out, bufferC, buffer.length);
 
@@ -72,8 +73,8 @@ List<String> resolve({
 }) {
   final outRealName = calloc<Pointer<Char>>();
   final outRealEmail = calloc<Pointer<Char>>();
-  final nameC = name.toNativeUtf8().cast<Char>();
-  final emailC = email.toNativeUtf8().cast<Char>();
+  final nameC = name.toChar();
+  final emailC = email.toChar();
   libgit2.git_mailmap_resolve(
     outRealName,
     outRealEmail,
@@ -82,8 +83,8 @@ List<String> resolve({
     emailC,
   );
 
-  final realName = outRealName.value.cast<Utf8>().toDartString();
-  final realEmail = outRealEmail.value.cast<Utf8>().toDartString();
+  final realName = outRealName.value.toDartString();
+  final realEmail = outRealEmail.value.toDartString();
   calloc.free(outRealName);
   calloc.free(outRealEmail);
   calloc.free(nameC);
@@ -119,10 +120,10 @@ void addEntry({
   String? replaceName,
   required String replaceEmail,
 }) {
-  final realNameC = realName?.toNativeUtf8().cast<Char>() ?? nullptr;
-  final realEmailC = realEmail?.toNativeUtf8().cast<Char>() ?? nullptr;
-  final replaceNameC = replaceName?.toNativeUtf8().cast<Char>() ?? nullptr;
-  final replaceEmailC = replaceEmail.toNativeUtf8().cast<Char>();
+  final realNameC = realName?.toChar() ?? nullptr;
+  final realEmailC = realEmail?.toChar() ?? nullptr;
+  final replaceNameC = replaceName?.toChar() ?? nullptr;
+  final replaceEmailC = replaceEmail.toChar();
 
   libgit2.git_mailmap_add_entry(
     mailmapPointer,

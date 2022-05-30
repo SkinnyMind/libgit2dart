@@ -3,6 +3,7 @@ import 'dart:ffi';
 import 'package:ffi/ffi.dart';
 import 'package:libgit2dart/src/bindings/libgit2_bindings.dart';
 import 'package:libgit2dart/src/error.dart';
+import 'package:libgit2dart/src/extensions.dart';
 import 'package:libgit2dart/src/util.dart';
 
 /// Sets the current head to the specified commit oid and optionally resets the
@@ -40,8 +41,7 @@ void resetDefault({
   required List<String> pathspec,
 }) {
   final pathspecC = calloc<git_strarray>();
-  final pathPointers =
-      pathspec.map((e) => e.toNativeUtf8().cast<Char>()).toList();
+  final pathPointers = pathspec.map((e) => e.toChar()).toList();
   final strArray = calloc<Pointer<Char>>(pathspec.length);
 
   for (var i = 0; i < pathspec.length; i++) {

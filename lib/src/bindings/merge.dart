@@ -3,6 +3,7 @@ import 'dart:ffi';
 import 'package:ffi/ffi.dart';
 import 'package:libgit2dart/src/bindings/libgit2_bindings.dart';
 import 'package:libgit2dart/src/error.dart';
+import 'package:libgit2dart/src/extensions.dart';
 import 'package:libgit2dart/src/util.dart';
 
 /// Find a merge base between two commits.
@@ -183,11 +184,11 @@ String mergeFile({
   libgit2.git_merge_file_input_init(ancestorC, GIT_MERGE_FILE_INPUT_VERSION);
   libgit2.git_merge_file_input_init(oursC, GIT_MERGE_FILE_INPUT_VERSION);
   libgit2.git_merge_file_input_init(theirsC, GIT_MERGE_FILE_INPUT_VERSION);
-  ancestorC.ref.ptr = ancestor.toNativeUtf8().cast<Char>();
+  ancestorC.ref.ptr = ancestor.toChar();
   ancestorC.ref.size = ancestor.length;
-  oursC.ref.ptr = ours.toNativeUtf8().cast<Char>();
+  oursC.ref.ptr = ours.toChar();
   oursC.ref.size = ours.length;
-  theirsC.ref.ptr = theirs.toNativeUtf8().cast<Char>();
+  theirsC.ref.ptr = theirs.toChar();
   theirsC.ref.size = theirs.length;
 
   final opts = calloc<git_merge_file_options>();
@@ -195,13 +196,13 @@ String mergeFile({
   opts.ref.favor = favor;
   opts.ref.flags = flags;
   if (ancestorLabel.isNotEmpty) {
-    opts.ref.ancestor_label = ancestorLabel.toNativeUtf8().cast<Char>();
+    opts.ref.ancestor_label = ancestorLabel.toChar();
   }
   if (oursLabel.isNotEmpty) {
-    opts.ref.our_label = oursLabel.toNativeUtf8().cast<Char>();
+    opts.ref.our_label = oursLabel.toChar();
   }
   if (theirsLabel.isNotEmpty) {
-    opts.ref.their_label = theirsLabel.toNativeUtf8().cast<Char>();
+    opts.ref.their_label = theirsLabel.toChar();
   }
 
   libgit2.git_merge_file(out, ancestorC, oursC, theirsC, opts);
@@ -211,7 +212,7 @@ String mergeFile({
   calloc.free(theirsC);
   calloc.free(opts);
 
-  final result = out.ref.ptr.cast<Utf8>().toDartString(length: out.ref.len);
+  final result = out.ref.ptr.toDartString(length: out.ref.len);
   calloc.free(out);
 
   return result;
@@ -240,7 +241,7 @@ String mergeFileFromIndex({
 
   late final String result;
   if (out.ref.ptr != nullptr) {
-    result = out.ref.ptr.cast<Utf8>().toDartString(length: out.ref.len);
+    result = out.ref.ptr.toDartString(length: out.ref.len);
   }
 
   calloc.free(out);

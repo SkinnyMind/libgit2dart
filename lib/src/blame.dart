@@ -2,10 +2,10 @@ import 'dart:collection';
 import 'dart:ffi';
 
 import 'package:equatable/equatable.dart';
-import 'package:ffi/ffi.dart';
 import 'package:libgit2dart/libgit2dart.dart';
 import 'package:libgit2dart/src/bindings/blame.dart' as bindings;
 import 'package:libgit2dart/src/bindings/libgit2_bindings.dart';
+import 'package:libgit2dart/src/extensions.dart';
 import 'package:meta/meta.dart';
 
 class Blame with IterableMixin<BlameHunk> {
@@ -174,8 +174,7 @@ class BlameHunk extends Equatable {
 
   /// Path to the file where this hunk originated, as of the commit specified by
   /// [originCommitOid].
-  String get originPath =>
-      _blameHunkPointer.ref.orig_path.cast<Utf8>().toDartString();
+  String get originPath => _blameHunkPointer.ref.orig_path.toDartString();
 
   @override
   String toString() {

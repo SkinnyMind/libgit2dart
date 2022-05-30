@@ -1,9 +1,10 @@
 import 'dart:ffi';
+
 import 'package:equatable/equatable.dart';
-import 'package:ffi/ffi.dart';
 import 'package:libgit2dart/libgit2dart.dart';
 import 'package:libgit2dart/src/bindings/libgit2_bindings.dart';
 import 'package:libgit2dart/src/bindings/signature.dart' as bindings;
+import 'package:libgit2dart/src/extensions.dart';
 import 'package:libgit2dart/src/util.dart';
 import 'package:meta/meta.dart';
 
@@ -64,10 +65,10 @@ class Signature extends Equatable {
   Pointer<git_signature> get pointer => _signaturePointer;
 
   /// Full name of the author.
-  String get name => _signaturePointer.ref.name.cast<Utf8>().toDartString();
+  String get name => _signaturePointer.ref.name.toDartString();
 
   /// Email of the author.
-  String get email => _signaturePointer.ref.email.cast<Utf8>().toDartString();
+  String get email => _signaturePointer.ref.email.toDartString();
 
   /// Time in seconds from epoch.
   int get time => _signaturePointer.ref.when.time;

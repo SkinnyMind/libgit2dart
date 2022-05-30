@@ -4,6 +4,7 @@ import 'package:ffi/ffi.dart';
 import 'package:libgit2dart/src/bindings/checkout.dart' as checkout_bindings;
 import 'package:libgit2dart/src/bindings/libgit2_bindings.dart';
 import 'package:libgit2dart/src/error.dart';
+import 'package:libgit2dart/src/extensions.dart';
 import 'package:libgit2dart/src/oid.dart';
 import 'package:libgit2dart/src/stash.dart';
 import 'package:libgit2dart/src/util.dart';
@@ -18,7 +19,7 @@ Pointer<git_oid> save({
   required int flags,
 }) {
   final out = calloc<git_oid>();
-  final messageC = message?.toNativeUtf8().cast<Char>() ?? nullptr;
+  final messageC = message?.toChar() ?? nullptr;
   final error = libgit2.git_stash_save(
     out,
     repoPointer,
@@ -148,11 +149,7 @@ int _stashCb(
   Pointer<Void> payload,
 ) {
   _stashList.add(
-    Stash(
-      index: index,
-      message: message.cast<Utf8>().toDartString(),
-      oid: Oid(oid),
-    ),
+    Stash(index: index, message: message.toDartString(), oid: Oid(oid)),
   );
   return 0;
 }

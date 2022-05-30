@@ -4,6 +4,7 @@ import 'package:ffi/ffi.dart';
 import 'package:libgit2dart/src/bindings/libgit2_bindings.dart';
 import 'package:libgit2dart/src/bindings/oid.dart' as oid_bindings;
 import 'package:libgit2dart/src/error.dart';
+import 'package:libgit2dart/src/extensions.dart';
 import 'package:libgit2dart/src/oid.dart';
 import 'package:libgit2dart/src/util.dart';
 
@@ -36,7 +37,7 @@ void addDiskAlternate({
   required Pointer<git_odb> odbPointer,
   required String path,
 }) {
-  final pathC = path.toNativeUtf8().cast<Char>();
+  final pathC = path.toChar();
   libgit2.git_odb_add_disk_alternate(odbPointer, pathC);
   calloc.free(pathC);
 }
@@ -184,7 +185,7 @@ Pointer<git_oid> write({
     throw LibGit2Error(libgit2.git_error_last());
   }
 
-  final bufferC = data.toNativeUtf8().cast<Char>();
+  final bufferC = data.toChar();
   libgit2.git_odb_stream_write(stream.value, bufferC, data.length);
 
   final out = calloc<git_oid>();

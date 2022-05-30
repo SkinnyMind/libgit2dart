@@ -5,6 +5,7 @@ import 'package:libgit2dart/src/bindings/libgit2_bindings.dart';
 import 'package:libgit2dart/src/bindings/remote_callbacks.dart';
 import 'package:libgit2dart/src/callbacks.dart';
 import 'package:libgit2dart/src/error.dart';
+import 'package:libgit2dart/src/extensions.dart';
 import 'package:libgit2dart/src/remote.dart';
 import 'package:libgit2dart/src/repository.dart';
 import 'package:libgit2dart/src/util.dart';
@@ -17,7 +18,7 @@ import 'package:libgit2dart/src/util.dart';
 /// Throws a [LibGit2Error] if error occured.
 Pointer<git_repository> open(String path) {
   final out = calloc<Pointer<git_repository>>();
-  final pathC = path.toNativeUtf8().cast<Char>();
+  final pathC = path.toChar();
   final error = libgit2.git_repository_open(out, pathC);
 
   final result = out.value;
@@ -44,15 +45,15 @@ String discover({
   String? ceilingDirs,
 }) {
   final out = calloc<git_buf>();
-  final startPathC = startPath.toNativeUtf8().cast<Char>();
-  final ceilingDirsC = ceilingDirs?.toNativeUtf8().cast<Char>() ?? nullptr;
+  final startPathC = startPath.toChar();
+  final ceilingDirsC = ceilingDirs?.toChar() ?? nullptr;
 
   libgit2.git_repository_discover(out, startPathC, 0, ceilingDirsC);
 
   calloc.free(startPathC);
   calloc.free(ceilingDirsC);
 
-  final result = out.ref.ptr.cast<Utf8>().toDartString(length: out.ref.size);
+  final result = out.ref.ptr.toDartString(length: out.ref.size);
 
   libgit2.git_buf_dispose(out);
   calloc.free(out);
@@ -75,12 +76,12 @@ Pointer<git_repository> init({
   String? originUrl,
 }) {
   final out = calloc<Pointer<git_repository>>();
-  final pathC = path.toNativeUtf8().cast<Char>();
-  final workdirPathC = workdirPath?.toNativeUtf8().cast<Char>() ?? nullptr;
-  final descriptionC = description?.toNativeUtf8().cast<Char>() ?? nullptr;
-  final templatePathC = templatePath?.toNativeUtf8().cast<Char>() ?? nullptr;
-  final initialHeadC = initialHead?.toNativeUtf8().cast<Char>() ?? nullptr;
-  final originUrlC = originUrl?.toNativeUtf8().cast<Char>() ?? nullptr;
+  final pathC = path.toChar();
+  final workdirPathC = workdirPath?.toChar() ?? nullptr;
+  final descriptionC = description?.toChar() ?? nullptr;
+  final templatePathC = templatePath?.toChar() ?? nullptr;
+  final initialHeadC = initialHead?.toChar() ?? nullptr;
+  final originUrlC = originUrl?.toChar() ?? nullptr;
   final opts = calloc<git_repository_init_options>();
   libgit2.git_repository_init_options_init(
     opts,
@@ -129,10 +130,9 @@ Pointer<git_repository> clone({
   required Callbacks callbacks,
 }) {
   final out = calloc<Pointer<git_repository>>();
-  final urlC = url.toNativeUtf8().cast<Char>();
-  final localPathC = localPath.toNativeUtf8().cast<Char>();
-  final checkoutBranchC =
-      checkoutBranch?.toNativeUtf8().cast<Char>() ?? nullptr;
+  final urlC = url.toChar();
+  final localPathC = localPath.toChar();
+  final checkoutBranchC = checkoutBranch?.toChar() ?? nullptr;
 
   final cloneOptions = calloc<git_clone_options>();
   libgit2.git_clone_options_init(cloneOptions, GIT_CLONE_OPTIONS_VERSION);
@@ -187,7 +187,7 @@ Pointer<git_repository> clone({
 /// Returns the path to the `.git` folder for normal repositories or the
 /// repository itself for bare repositories.
 String path(Pointer<git_repository> repo) {
-  return libgit2.git_repository_path(repo).cast<Utf8>().toDartString();
+  return libgit2.git_repository_path(repo).toDartString();
 }
 
 /// Get the path of the shared common directory for this repository.
@@ -196,7 +196,7 @@ String path(Pointer<git_repository> repo) {
 /// If the repository is a worktree, it is the parent repo's `.git` folder.
 /// Otherwise, it is the `.git` folder.
 String commonDir(Pointer<git_repository> repo) {
-  return libgit2.git_repository_commondir(repo).cast<Utf8>().toDartString();
+  return libgit2.git_repository_commondir(repo).toDartString();
 }
 
 /// Get the currently active namespace for this repository.
@@ -205,11 +205,7 @@ String commonDir(Pointer<git_repository> repo) {
 /// empty string is returned.
 String getNamespace(Pointer<git_repository> repo) {
   final result = libgit2.git_repository_get_namespace(repo);
-  if (result == nullptr) {
-    return '';
-  } else {
-    return result.cast<Utf8>().toDartString();
-  }
+  return result == nullptr ? '' : result.toDartString();
 }
 
 /// Sets the active namespace for this repository.
@@ -223,7 +219,7 @@ void setNamespace({
   required Pointer<git_repository> repoPointer,
   String? namespace,
 }) {
-  final namespaceC = namespace?.toNativeUtf8().cast<Char>() ?? nullptr;
+  final namespaceC = namespace?.toChar() ?? nullptr;
   libgit2.git_repository_set_namespace(repoPointer, namespaceC);
   calloc.free(namespaceC);
 }
@@ -310,8 +306,8 @@ void setIdentity({
   String? name,
   String? email,
 }) {
-  final nameC = name?.toNativeUtf8().cast<Char>() ?? nullptr;
-  final emailC = email?.toNativeUtf8().cast<Char>() ?? nullptr;
+  final nameC = name?.toChar() ?? nullptr;
+  final emailC = email?.toChar() ?? nullptr;
 
   libgit2.git_repository_set_ident(repoPointer, nameC, emailC);
 
@@ -331,8 +327,8 @@ List<String> identity(Pointer<git_repository> repo) {
   if (name.value == nullptr && email.value == nullptr) {
     return identity;
   } else {
-    identity.add(name.value.cast<Utf8>().toDartString());
-    identity.add(email.value.cast<Utf8>().toDartString());
+    identity.add(name.value.toDartString());
+    identity.add(email.value.toDartString());
   }
 
   calloc.free(name);
@@ -416,7 +412,7 @@ String message(Pointer<git_repository> repo) {
   final out = calloc<git_buf>();
   final error = libgit2.git_repository_message(out, repo);
 
-  final result = out.ref.ptr.cast<Utf8>().toDartString(length: out.ref.size);
+  final result = out.ref.ptr.toDartString(length: out.ref.size);
 
   libgit2.git_buf_dispose(out);
   calloc.free(out);
@@ -494,7 +490,7 @@ void setHead({
   required Pointer<git_repository> repoPointer,
   required String refname,
 }) {
-  final refnameC = refname.toNativeUtf8().cast<Char>();
+  final refnameC = refname.toChar();
   final error = libgit2.git_repository_set_head(repoPointer, refnameC);
 
   calloc.free(refnameC);
@@ -545,7 +541,7 @@ void setWorkdir({
   required String path,
   required bool updateGitlink,
 }) {
-  final workdirC = path.toNativeUtf8().cast<Char>();
+  final workdirC = path.toChar();
   final updateGitlinkC = updateGitlink ? 1 : 0;
   final error = libgit2.git_repository_set_workdir(
     repoPointer,
@@ -581,12 +577,7 @@ void stateCleanup(Pointer<git_repository> repo) {
 /// If the repository is bare, this function will always return empty string.
 String workdir(Pointer<git_repository> repo) {
   final result = libgit2.git_repository_workdir(repo);
-
-  if (result == nullptr) {
-    return '';
-  } else {
-    return result.cast<Utf8>().toDartString();
-  }
+  return result == nullptr ? '' : result.toDartString();
 }
 
 /// Free a previously allocated repository.

@@ -3,6 +3,7 @@ import 'dart:ffi';
 import 'package:ffi/ffi.dart';
 import 'package:libgit2dart/src/bindings/libgit2_bindings.dart';
 import 'package:libgit2dart/src/error.dart';
+import 'package:libgit2dart/src/extensions.dart';
 import 'package:libgit2dart/src/util.dart';
 
 /// Get the id of a tree.
@@ -59,7 +60,7 @@ Pointer<git_tree_entry> getByName({
   required Pointer<git_tree> treePointer,
   required String filename,
 }) {
-  final filenameC = filename.toNativeUtf8().cast<Char>();
+  final filenameC = filename.toChar();
   final result = libgit2.git_tree_entry_byname(treePointer, filenameC);
 
   calloc.free(filenameC);
@@ -83,7 +84,7 @@ Pointer<git_tree_entry> getByPath({
   required String path,
 }) {
   final out = calloc<Pointer<git_tree_entry>>();
-  final pathC = path.toNativeUtf8().cast<Char>();
+  final pathC = path.toChar();
   final error = libgit2.git_tree_entry_bypath(out, rootPointer, pathC);
 
   final result = out.value;
@@ -107,7 +108,7 @@ Pointer<git_oid> entryId(Pointer<git_tree_entry> entry) =>
 
 /// Get the filename of a tree entry.
 String entryName(Pointer<git_tree_entry> entry) =>
-    libgit2.git_tree_entry_name(entry).cast<Utf8>().toDartString();
+    libgit2.git_tree_entry_name(entry).toDartString();
 
 /// Get the UNIX file attributes of a tree entry.
 int entryFilemode(Pointer<git_tree_entry> entry) =>

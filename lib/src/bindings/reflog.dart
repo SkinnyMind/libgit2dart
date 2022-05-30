@@ -3,6 +3,7 @@ import 'dart:ffi';
 import 'package:ffi/ffi.dart';
 import 'package:libgit2dart/src/bindings/libgit2_bindings.dart';
 import 'package:libgit2dart/src/error.dart';
+import 'package:libgit2dart/src/extensions.dart';
 import 'package:libgit2dart/src/util.dart';
 
 /// Read the reflog for the given reference. The returned reflog must be
@@ -15,7 +16,7 @@ Pointer<git_reflog> read({
   required String name,
 }) {
   final out = calloc<Pointer<git_reflog>>();
-  final nameC = name.toNativeUtf8().cast<Char>();
+  final nameC = name.toChar();
   libgit2.git_reflog_read(out, repoPointer, nameC);
 
   final result = out.value;
@@ -43,7 +44,7 @@ void delete({
   required Pointer<git_repository> repoPointer,
   required String name,
 }) {
-  final nameC = name.toNativeUtf8().cast<Char>();
+  final nameC = name.toChar();
   libgit2.git_reflog_delete(repoPointer, nameC);
   calloc.free(nameC);
 }
@@ -60,8 +61,8 @@ void rename({
   required String oldName,
   required String newName,
 }) {
-  final oldNameC = oldName.toNativeUtf8().cast<Char>();
-  final newNameC = newName.toNativeUtf8().cast<Char>();
+  final oldNameC = oldName.toChar();
+  final newNameC = newName.toChar();
   final error = libgit2.git_reflog_rename(repoPointer, oldNameC, newNameC);
 
   calloc.free(oldNameC);
@@ -81,8 +82,7 @@ void add({
   required Pointer<git_signature> committerPointer,
   required String message,
 }) {
-  final messageC =
-      message.isEmpty ? nullptr : message.toNativeUtf8().cast<Char>();
+  final messageC = message.isEmpty ? nullptr : message.toChar();
 
   final error = libgit2.git_reflog_append(
     reflogPointer,
@@ -130,7 +130,7 @@ Pointer<git_reflog_entry> getByIndex({
 /// Get the log message.
 String entryMessage(Pointer<git_reflog_entry> entry) {
   final result = libgit2.git_reflog_entry_message(entry);
-  return result == nullptr ? '' : result.cast<Utf8>().toDartString();
+  return result == nullptr ? '' : result.toDartString();
 }
 
 /// Get the committer of this entry. The returned signature must be freed.

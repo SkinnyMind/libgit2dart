@@ -3,6 +3,7 @@ import 'dart:ffi';
 import 'package:ffi/ffi.dart';
 import 'package:libgit2dart/src/bindings/libgit2_bindings.dart';
 import 'package:libgit2dart/src/error.dart';
+import 'package:libgit2dart/src/extensions.dart';
 import 'package:libgit2dart/src/util.dart';
 
 /// Create a new action signature. The returned signature must be freed with
@@ -19,8 +20,8 @@ Pointer<git_signature> create({
   required int offset,
 }) {
   final out = calloc<Pointer<git_signature>>();
-  final nameC = name.toNativeUtf8().cast<Char>();
-  final emailC = email.toNativeUtf8().cast<Char>();
+  final nameC = name.toChar();
+  final emailC = email.toChar();
   final error = libgit2.git_signature_new(out, nameC, emailC, time, offset);
 
   final result = out.value;
@@ -42,8 +43,8 @@ Pointer<git_signature> create({
 /// Throws a [LibGit2Error] if error occured.
 Pointer<git_signature> now({required String name, required String email}) {
   final out = calloc<Pointer<git_signature>>();
-  final nameC = name.toNativeUtf8().cast<Char>();
-  final emailC = email.toNativeUtf8().cast<Char>();
+  final nameC = name.toChar();
+  final emailC = email.toChar();
   final error = libgit2.git_signature_now(out, nameC, emailC);
 
   final result = out.value;

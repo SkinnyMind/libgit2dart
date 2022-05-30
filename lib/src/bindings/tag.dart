@@ -3,6 +3,7 @@ import 'dart:ffi';
 import 'package:ffi/ffi.dart';
 import 'package:libgit2dart/src/bindings/libgit2_bindings.dart';
 import 'package:libgit2dart/src/error.dart';
+import 'package:libgit2dart/src/extensions.dart';
 import 'package:libgit2dart/src/util.dart';
 
 /// Fill a list with all the tags in the repository.
@@ -12,16 +13,16 @@ List<String> list(Pointer<git_repository> repo) {
   final out = calloc<git_strarray>();
   final error = libgit2.git_tag_list(out, repo);
 
-  final result = <String>[];
-
   if (error < 0) {
     calloc.free(out);
     throw LibGit2Error(libgit2.git_error_last());
   } else {
-    for (var i = 0; i < out.ref.count; i++) {
-      result.add(out.ref.strings[i].cast<Utf8>().toDartString());
-    }
+    final result = <String>[
+      for (var i = 0; i < out.ref.count; i++) out.ref.strings[i].toDartString()
+    ];
+
     calloc.free(out);
+
     return result;
   }
 }
@@ -80,13 +81,12 @@ Pointer<git_oid> targetOid(Pointer<git_tag> tag) =>
 Pointer<git_oid> id(Pointer<git_tag> tag) => libgit2.git_tag_id(tag);
 
 /// Get the name of a tag.
-String name(Pointer<git_tag> tag) =>
-    libgit2.git_tag_name(tag).cast<Utf8>().toDartString();
+String name(Pointer<git_tag> tag) => libgit2.git_tag_name(tag).toDartString();
 
 /// Get the message of a tag.
 String message(Pointer<git_tag> tag) {
   final result = libgit2.git_tag_message(tag);
-  return result == nullptr ? '' : result.cast<Utf8>().toDartString();
+  return result == nullptr ? '' : result.toDartString();
 }
 
 /// Get the tagger (author) of a tag. The returned signature must be freed.
@@ -115,8 +115,8 @@ Pointer<git_oid> createAnnotated({
   required bool force,
 }) {
   final out = calloc<git_oid>();
-  final tagNameC = tagName.toNativeUtf8().cast<Char>();
-  final messageC = message.toNativeUtf8().cast<Char>();
+  final tagNameC = tagName.toChar();
+  final messageC = message.toChar();
   final error = libgit2.git_tag_create(
     out,
     repoPointer,
@@ -155,7 +155,7 @@ Pointer<git_oid> createLightweight({
   required bool force,
 }) {
   final out = calloc<git_oid>();
-  final tagNameC = tagName.toNativeUtf8().cast<Char>();
+  final tagNameC = tagName.toChar();
   final error = libgit2.git_tag_create_lightweight(
     out,
     repoPointer,
@@ -183,7 +183,7 @@ void delete({
   required Pointer<git_repository> repoPointer,
   required String tagName,
 }) {
-  final tagNameC = tagName.toNativeUtf8().cast<Char>();
+  final tagNameC = tagName.toChar();
   final error = libgit2.git_tag_delete(repoPointer, tagNameC);
 
   calloc.free(tagNameC);

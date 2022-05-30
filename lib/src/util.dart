@@ -88,9 +88,3 @@ DynamicLibrary loadLibrary(String name) {
 
 final libgit2 = Libgit2(loadLibrary(getLibName()));
 final libgit2Opts = Libgit2Opts(loadLibrary(getLibName()));
-
-bool isValidShaHex(String str) {
-  final hexRegExp = RegExp(r'^[0-9a-fA-F]+$');
-  return hexRegExp.hasMatch(str) &&
-      (GIT_OID_MINPREFIXLEN <= str.length && GIT_OID_HEXSZ >= str.length);
-}

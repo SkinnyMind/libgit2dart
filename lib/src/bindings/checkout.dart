@@ -3,6 +3,7 @@ import 'dart:ffi';
 import 'package:ffi/ffi.dart';
 import 'package:libgit2dart/src/bindings/libgit2_bindings.dart';
 import 'package:libgit2dart/src/error.dart';
+import 'package:libgit2dart/src/extensions.dart';
 import 'package:libgit2dart/src/util.dart';
 
 /// Updates files in the index and the working tree to match the content of the
@@ -127,13 +128,13 @@ List<Object> initOptions({
   optsC.ref.checkout_strategy = strategy;
 
   if (directory != null) {
-    optsC.ref.target_directory = directory.toNativeUtf8().cast<Char>();
+    optsC.ref.target_directory = directory.toChar();
   }
 
   var pathPointers = <Pointer<Char>>[];
   Pointer<Pointer<Char>> strArray = nullptr;
   if (paths != null) {
-    pathPointers = paths.map((e) => e.toNativeUtf8().cast<Char>()).toList();
+    pathPointers = paths.map((e) => e.toChar()).toList();
     strArray = calloc(paths.length);
     for (var i = 0; i < paths.length; i++) {
       strArray[i] = pathPointers[i];

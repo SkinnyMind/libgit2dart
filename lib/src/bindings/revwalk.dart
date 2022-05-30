@@ -4,6 +4,7 @@ import 'package:ffi/ffi.dart';
 import 'package:libgit2dart/src/bindings/commit.dart' as commit_bindings;
 import 'package:libgit2dart/src/bindings/libgit2_bindings.dart';
 import 'package:libgit2dart/src/error.dart';
+import 'package:libgit2dart/src/extensions.dart';
 import 'package:libgit2dart/src/util.dart';
 
 /// Allocate a new revision walker to iterate through a repo. The returned
@@ -81,7 +82,7 @@ void pushGlob({
   required Pointer<git_revwalk> walkerPointer,
   required String glob,
 }) {
-  final globC = glob.toNativeUtf8().cast<Char>();
+  final globC = glob.toChar();
   libgit2.git_revwalk_push_glob(walkerPointer, globC);
   calloc.free(globC);
 }
@@ -99,7 +100,7 @@ void pushRef({
   required Pointer<git_revwalk> walkerPointer,
   required String refName,
 }) {
-  final refNameC = refName.toNativeUtf8().cast<Char>();
+  final refNameC = refName.toChar();
   final error = libgit2.git_revwalk_push_ref(walkerPointer, refNameC);
 
   calloc.free(refNameC);
@@ -119,7 +120,7 @@ void pushRange({
   required Pointer<git_revwalk> walkerPointer,
   required String range,
 }) {
-  final rangeC = range.toNativeUtf8().cast<Char>();
+  final rangeC = range.toChar();
   final error = libgit2.git_revwalk_push_range(walkerPointer, rangeC);
 
   calloc.free(rangeC);
@@ -199,7 +200,7 @@ void hideGlob({
   required Pointer<git_revwalk> walkerPointer,
   required String glob,
 }) {
-  final globC = glob.toNativeUtf8().cast<Char>();
+  final globC = glob.toChar();
   libgit2.git_revwalk_hide_glob(walkerPointer, globC);
   calloc.free(globC);
 }
@@ -217,7 +218,7 @@ void hideRef({
   required Pointer<git_revwalk> walkerPointer,
   required String refName,
 }) {
-  final refNameC = refName.toNativeUtf8().cast<Char>();
+  final refNameC = refName.toChar();
   final error = libgit2.git_revwalk_hide_ref(walkerPointer, refNameC);
 
   calloc.free(refNameC);

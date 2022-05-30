@@ -5,7 +5,7 @@ import 'package:libgit2dart/libgit2dart.dart';
 import 'package:libgit2dart/src/bindings/libgit2_bindings.dart';
 import 'package:libgit2dart/src/bindings/odb.dart' as odb_bindings;
 import 'package:libgit2dart/src/bindings/oid.dart' as bindings;
-import 'package:libgit2dart/src/util.dart';
+import 'package:libgit2dart/src/extensions.dart';
 import 'package:meta/meta.dart';
 
 @immutable
@@ -24,7 +24,7 @@ class Oid extends Equatable {
   ///
   /// Throws a [LibGit2Error] if error occured.
   Oid.fromSHA({required Repository repo, required String sha}) {
-    if (isValidShaHex(sha)) {
+    if (sha.isValidSHA()) {
       if (sha.length == 40) {
         _oidPointer = bindings.fromSHA(sha);
       } else {

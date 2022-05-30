@@ -3,6 +3,7 @@ import 'dart:ffi';
 import 'package:ffi/ffi.dart';
 import 'package:libgit2dart/src/bindings/libgit2_bindings.dart';
 import 'package:libgit2dart/src/error.dart';
+import 'package:libgit2dart/src/extensions.dart';
 import 'package:libgit2dart/src/util.dart';
 
 /// Initialize a new packbuilder. The returned packbuilder must be freed with
@@ -121,7 +122,7 @@ void write({
   required Pointer<git_packbuilder> packbuilderPointer,
   String? path,
 }) {
-  final pathC = path?.toNativeUtf8().cast<Char>() ?? nullptr;
+  final pathC = path?.toChar() ?? nullptr;
   final error = libgit2.git_packbuilder_write(
     packbuilderPointer,
     pathC,
@@ -153,7 +154,7 @@ int writtenCount(Pointer<git_packbuilder> pb) {
 /// correct after the packfile has been written.
 String name(Pointer<git_packbuilder> pb) {
   final result = libgit2.git_packbuilder_name(pb);
-  return result == nullptr ? '' : result.cast<Utf8>().toDartString();
+  return result == nullptr ? '' : result.toDartString();
 }
 
 /// Set number of threads to spawn.

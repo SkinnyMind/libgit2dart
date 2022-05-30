@@ -4,6 +4,7 @@ import 'package:ffi/ffi.dart';
 import 'package:libgit2dart/libgit2dart.dart';
 import 'package:libgit2dart/src/bindings/libgit2_bindings.dart';
 import 'package:libgit2dart/src/error.dart';
+import 'package:libgit2dart/src/extensions.dart';
 import 'package:libgit2dart/src/util.dart';
 
 /// Add a new working tree. The returned worktree must be freed with [free].
@@ -20,8 +21,8 @@ Pointer<git_worktree> create({
   Pointer<git_reference>? refPointer,
 }) {
   final out = calloc<Pointer<git_worktree>>();
-  final nameC = name.toNativeUtf8().cast<Char>();
-  final pathC = path.toNativeUtf8().cast<Char>();
+  final nameC = name.toChar();
+  final pathC = path.toChar();
 
   final opts = calloc<git_worktree_add_options>();
   libgit2.git_worktree_add_options_init(opts, GIT_WORKTREE_ADD_OPTIONS_VERSION);
@@ -56,7 +57,7 @@ Pointer<git_worktree> lookup({
   required String name,
 }) {
   final out = calloc<Pointer<git_worktree>>();
-  final nameC = name.toNativeUtf8().cast<Char>();
+  final nameC = name.toChar();
   final error = libgit2.git_worktree_lookup(out, repoPointer, nameC);
 
   final result = out.value;
@@ -111,8 +112,7 @@ List<String> list(Pointer<git_repository> repo) {
     throw LibGit2Error(libgit2.git_error_last());
   } else {
     final result = <String>[
-      for (var i = 0; i < out.ref.count; i++)
-        out.ref.strings[i].cast<Utf8>().toDartString()
+      for (var i = 0; i < out.ref.count; i++) out.ref.strings[i].toDartString()
     ];
 
     calloc.free(out);
@@ -123,12 +123,12 @@ List<String> list(Pointer<git_repository> repo) {
 
 /// Retrieve the name of the worktree.
 String name(Pointer<git_worktree> wt) {
-  return libgit2.git_worktree_name(wt).cast<Utf8>().toDartString();
+  return libgit2.git_worktree_name(wt).toDartString();
 }
 
 /// Retrieve the filesystem path for the worktree.
 String path(Pointer<git_worktree> wt) {
-  return libgit2.git_worktree_path(wt).cast<Utf8>().toDartString();
+  return libgit2.git_worktree_path(wt).toDartString();
 }
 
 /// Check if worktree is locked.
