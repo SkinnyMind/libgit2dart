@@ -23,15 +23,23 @@ Future<void> copyLibrary(String platform) async {
       );
     }
   } else {
-    final pubCache = PubCache();
-    final pubCacheDir =
-        pubCache.getLatestVersion('libgit2dart')!.resolve()!.location;
+    String? checkCache(PubCache pubCache) =>
+        pubCache.getLatestVersion('libgit2dart')?.resolve()?.location.path;
+
+    final libPath = checkCache(PubCache()) ??
+        checkCache(
+          PubCache(
+            Directory(
+              path.join(Platform.environment['FLUTTER_ROOT']!, '.pub-cache'),
+            ),
+          ),
+        );
     final libName = getLibName();
 
     stdout.writeln('Copying libgit2 for $platform');
     final destination = path.join(libDir, platform);
     Directory(destination).createSync(recursive: true);
-    File(path.join(pubCacheDir.path, platform, libName)).copySync(
+    File(path.join(libPath!, platform, libName)).copySync(
       path.join(destination, libName),
     );
 

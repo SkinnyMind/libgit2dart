@@ -49,13 +49,13 @@ print(Libgit2.version);
 
 **Note**: The following steps only required if you are using package in Dart application (Flutter application will have libgit2 library bundled automatically when you build for release).
 
-After compiling the application you should run:
+After adding the package as dependency you should run:
 
 ```shell
 dart run libgit2dart:setup
 ```
 
-That'll copy the prebuilt libgit2 library for your platform into `.dart_tool/libgit2/<platform>/` which you'll need to add to the same folder as your executable.
+That'll copy the prebuilt libgit2 library for your platform into `.dart_tool/libgit2/<platform>/` which you'll need to add to the same folder as your executable after compilation.
 
 If you upgrade the version of libgit2dart package in your dependencies you should run the following commands to have the latest libgit2 library for your platform to provide with your application:
 
