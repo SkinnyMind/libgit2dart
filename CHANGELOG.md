@@ -1,3 +1,9 @@
+## 1.1.1
+
+- fix: lookup library in correct locations
+
+- feat: add ability to pass optional notes location to `Note.list(...)` method
+
 ## 1.1.0
 
 - feat: add ability to get and set libgit2 global options
@@ -6,7 +12,7 @@
 
 - feat: add ability to remove entries in index with `resetDefault(...)` method
 
-- feat: add ability to compare objects (value based equality).
+- feat: add ability to compare objects (value based equality)
 
   Note: comparison of Repository objects have naive implementation. Comparison is based on repository path, and previously loaded into memory index, odb, etc. might be different. Use with caution.
 
