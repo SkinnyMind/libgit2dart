@@ -50,6 +50,16 @@ void main() {
       }
     });
 
+    test('walks only number of commits provided with limit', () {
+      final walker = RevWalk(repo);
+
+      walker.push(repo[log.first]);
+      final commits = walker.walk(limit: 1);
+
+      expect(commits.length, 1);
+      expect(commits[0].oid.sha, log[0]);
+    });
+
     test('returns list of commits with reverse sorting', () {
       final walker = RevWalk(repo);
 

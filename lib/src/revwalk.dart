@@ -19,11 +19,15 @@ class RevWalk {
 
   /// Returns the list of commits from the revision walk.
   ///
+  /// [limit] is optional number of commits to walk (by default walks through
+  /// all of the commits pushed onto the walker).
+  ///
   /// Default sorting is reverse chronological order (default in git).
-  List<Commit> walk() {
+  List<Commit> walk({int limit = 0}) {
     final pointers = bindings.walk(
       repoPointer: bindings.repository(_revWalkPointer),
       walkerPointer: _revWalkPointer,
+      limit: limit,
     );
 
     return pointers.map((e) => Commit(e)).toList();

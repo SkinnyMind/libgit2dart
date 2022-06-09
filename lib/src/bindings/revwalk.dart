@@ -145,11 +145,12 @@ void pushRange({
 List<Pointer<git_commit>> walk({
   required Pointer<git_repository> repoPointer,
   required Pointer<git_revwalk> walkerPointer,
+  required int limit,
 }) {
   final result = <Pointer<git_commit>>[];
   var error = 0;
 
-  while (error == 0) {
+  void next() {
     final oid = calloc<git_oid>();
     error = libgit2.git_revwalk_next(oid, walkerPointer);
     if (error == 0) {
@@ -158,10 +159,21 @@ List<Pointer<git_commit>> walk({
         oidPointer: oid,
       );
       result.add(commit);
+      calloc.free(oid);
     } else {
-      break;
+      calloc.free(oid);
+      return;
     }
-    calloc.free(oid);
+  }
+
+  if (limit == 0) {
+    while (error == 0) {
+      next();
+    }
+  } else {
+    for (var i = 0; i < limit; i++) {
+      next();
+    }
   }
 
   return result;
