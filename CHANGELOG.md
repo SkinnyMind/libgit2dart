@@ -1,3 +1,9 @@
+## 1.1.2
+
+- fix: lookup library in Flutter's .pub_cache folder
+
+- feat: add ability to limit number of commits to walk in revision walk
+
 ## 1.1.1
 
 - fix: lookup library in correct locations

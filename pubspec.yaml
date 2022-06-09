@@ -2,7 +2,7 @@ name: libgit2dart
 
 description: Dart bindings to libgit2, provides ability to use libgit2 library in Dart and Flutter.
 
-version: 1.1.1
+version: 1.1.2
 
 homepage: https://github.com/SkinnyMind/libgit2dart
 
