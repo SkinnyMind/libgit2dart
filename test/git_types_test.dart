@@ -551,4 +551,15 @@ void main() {
       expect(actual, expected);
     });
   });
+
+  test('GitIndexAddOption returns correct values', () {
+    const expected = {
+      GitIndexAddOption.defaults: 0,
+      GitIndexAddOption.force: 1,
+      GitIndexAddOption.disablePathspecMatch: 2,
+      GitIndexAddOption.checkPathspec: 4,
+    };
+    final actual = {for (final e in GitIndexAddOption.values) e: e.value};
+    expect(actual, expected);
+  });
 }
