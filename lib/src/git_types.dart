@@ -1173,3 +1173,22 @@ enum GitBlobFilter {
   const GitBlobFilter(this.value);
   final int value;
 }
+
+/// Flags for APIs that add files matching pathspec.
+enum GitIndexAddOption {
+  defaults(0),
+
+  /// Skip the checking of ignore rules.
+  force(1),
+
+  /// Disable glob expansion and force exact matching of files in working
+  /// directory.
+  disablePathspecMatch(2),
+
+  /// Check that each entry in the pathspec is an exact match to a filename on
+  /// disk is either not ignored or already in the index.
+  checkPathspec(4);
+
+  const GitIndexAddOption(this.value);
+  final int value;
+}

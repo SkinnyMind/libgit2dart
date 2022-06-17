@@ -175,7 +175,10 @@ void main() {
     group('addAll()', () {
       test('adds with provided pathspec', () {
         index.clear();
-        index.addAll(['file', 'feature_file']);
+        index.addAll(
+          ['file', 'feature_file'],
+          flags: {GitIndexAddOption.checkPathspec, GitIndexAddOption.force},
+        );
 
         expect(index.length, 2);
         expect(index['file'].oid.sha, fileSha);

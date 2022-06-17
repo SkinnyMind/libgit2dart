@@ -215,9 +215,18 @@ class Index with IterableMixin<IndexEntry> {
   /// that matches will be added to the index (either updating an existing
   /// entry or adding a new entry).
   ///
+  /// [flags] is optional combination of [GitIndexAddOption] flags.
+  ///
   /// Throws a [LibGit2Error] if error occured.
-  void addAll(List<String> pathspec) {
-    bindings.addAll(indexPointer: _indexPointer, pathspec: pathspec);
+  void addAll(
+    List<String> pathspec, {
+    Set<GitIndexAddOption> flags = const {GitIndexAddOption.defaults},
+  }) {
+    bindings.addAll(
+      indexPointer: _indexPointer,
+      pathspec: pathspec,
+      flags: flags.fold(0, (acc, e) => acc | e.value),
+    );
   }
 
   /// Updates all index entries to match the working directory.

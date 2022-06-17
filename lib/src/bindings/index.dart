@@ -292,6 +292,7 @@ void addFromBuffer({
 void addAll({
   required Pointer<git_index> indexPointer,
   required List<String> pathspec,
+  required int flags,
 }) {
   final pathspecC = calloc<git_strarray>();
   final pathPointers = pathspec.map((e) => e.toChar()).toList();
@@ -307,7 +308,7 @@ void addAll({
   final error = libgit2.git_index_add_all(
     indexPointer,
     pathspecC,
-    0,
+    flags,
     nullptr,
     nullptr,
   );
