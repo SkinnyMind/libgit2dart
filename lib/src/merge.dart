@@ -265,18 +265,43 @@ class Merge {
   /// given common [ancestor] as the baseline, producing a string that reflects
   /// the merge result containing possible conflicts.
   ///
+  /// [ancestorLabel] is optional label for the ancestor file side of the
+  /// conflict which will be prepended to labels in diff3-format merge files.
+  ///
+  /// [oursLabel] is optional label for our file side of the conflict which
+  /// will be prepended to labels in merge files.
+  ///
+  /// [theirsLabel] is optional label for their file side of the conflict which
+  /// will be prepended to labels in merge files.
+  ///
+  /// [favor] is one of the [GitMergeFileFavor] flags for handling conflicting
+  /// content. Defaults to [GitMergeFileFavor.normal].
+  ///
+  /// [flags] is a combination of [GitMergeFileFlag] flags. Defaults to
+  /// [GitMergeFileFlag.defaults].
+  ///
   /// Throws a [LibGit2Error] if error occured.
   static String fileFromIndex({
     required Repository repo,
     required IndexEntry? ancestor,
+    String ancestorLabel = '',
     required IndexEntry ours,
+    String oursLabel = '',
     required IndexEntry theirs,
+    String theirsLabel = '',
+    GitMergeFileFavor favor = GitMergeFileFavor.normal,
+    Set<GitMergeFileFlag> flags = const {GitMergeFileFlag.defaults},
   }) {
     return bindings.mergeFileFromIndex(
       repoPointer: repo.pointer,
       ancestorPointer: ancestor?.pointer,
+      ancestorLabel: ancestorLabel,
       oursPointer: ours.pointer,
+      oursLabel: oursLabel,
       theirsPointer: theirs.pointer,
+      theirsLabel: theirsLabel,
+      favor: favor.value,
+      flags: flags.fold(0, (acc, e) => acc | e.value),
     );
   }
 

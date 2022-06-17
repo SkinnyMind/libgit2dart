@@ -186,30 +186,39 @@ String mergeFile({
   libgit2.git_merge_file_input_init(theirsC, GIT_MERGE_FILE_INPUT_VERSION);
   ancestorC.ref.ptr = ancestor.toChar();
   ancestorC.ref.size = ancestor.length;
+  Pointer<Char> ancestorLabelC = nullptr;
   oursC.ref.ptr = ours.toChar();
   oursC.ref.size = ours.length;
+  Pointer<Char> oursLabelC = nullptr;
   theirsC.ref.ptr = theirs.toChar();
   theirsC.ref.size = theirs.length;
+  Pointer<Char> theirsLabelC = nullptr;
 
   final opts = calloc<git_merge_file_options>();
   libgit2.git_merge_file_options_init(opts, GIT_MERGE_FILE_OPTIONS_VERSION);
   opts.ref.favor = favor;
   opts.ref.flags = flags;
   if (ancestorLabel.isNotEmpty) {
-    opts.ref.ancestor_label = ancestorLabel.toChar();
+    ancestorLabelC = ancestorLabel.toChar();
+    opts.ref.ancestor_label = ancestorLabelC;
   }
   if (oursLabel.isNotEmpty) {
-    opts.ref.our_label = oursLabel.toChar();
+    oursLabelC = oursLabel.toChar();
+    opts.ref.our_label = oursLabelC;
   }
   if (theirsLabel.isNotEmpty) {
-    opts.ref.their_label = theirsLabel.toChar();
+    theirsLabelC = theirsLabel.toChar();
+    opts.ref.their_label = theirsLabelC;
   }
 
   libgit2.git_merge_file(out, ancestorC, oursC, theirsC, opts);
 
   calloc.free(ancestorC);
+  calloc.free(ancestorLabelC);
   calloc.free(oursC);
+  calloc.free(oursLabelC);
   calloc.free(theirsC);
+  calloc.free(theirsLabelC);
   calloc.free(opts);
 
   final result = out.ref.ptr.toDartString(length: out.ref.len);
@@ -226,17 +235,43 @@ String mergeFile({
 String mergeFileFromIndex({
   required Pointer<git_repository> repoPointer,
   required Pointer<git_index_entry>? ancestorPointer,
+  required String ancestorLabel,
   required Pointer<git_index_entry> oursPointer,
+  required String oursLabel,
   required Pointer<git_index_entry> theirsPointer,
+  required String theirsLabel,
+  required int favor,
+  required int flags,
 }) {
   final out = calloc<git_merge_file_result>();
+  final opts = calloc<git_merge_file_options>();
+  Pointer<Char> ancestorLabelC = nullptr;
+  Pointer<Char> oursLabelC = nullptr;
+  Pointer<Char> theirsLabelC = nullptr;
+
+  libgit2.git_merge_file_options_init(opts, GIT_MERGE_FILE_OPTIONS_VERSION);
+  opts.ref.favor = favor;
+  opts.ref.flags = flags;
+  if (ancestorLabel.isNotEmpty) {
+    ancestorLabelC = ancestorLabel.toChar();
+    opts.ref.ancestor_label = ancestorLabelC;
+  }
+  if (oursLabel.isNotEmpty) {
+    oursLabelC = oursLabel.toChar();
+    opts.ref.our_label = oursLabelC;
+  }
+  if (theirsLabel.isNotEmpty) {
+    theirsLabelC = theirsLabel.toChar();
+    opts.ref.their_label = theirsLabelC;
+  }
+
   final error = libgit2.git_merge_file_from_index(
     out,
     repoPointer,
     ancestorPointer ?? nullptr,
     oursPointer,
     theirsPointer,
-    nullptr,
+    opts,
   );
 
   late final String result;
@@ -244,6 +279,10 @@ String mergeFileFromIndex({
     result = out.ref.ptr.toDartString(length: out.ref.len);
   }
 
+  calloc.free(ancestorLabelC);
+  calloc.free(oursLabelC);
+  calloc.free(theirsLabelC);
+  calloc.free(opts);
   calloc.free(out);
 
   if (error < 0) {

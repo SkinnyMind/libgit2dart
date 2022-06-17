@@ -168,31 +168,38 @@ Another feature edit
         expect(diff, diffExpected);
       });
 
-      test('merges with provided merge flags and file flags', () {
+      test('merges with provided options', () {
         const diffExpected = """
-\<<<<<<< conflict_file
-master conflict edit
+\<<<<<<< ours
+Feature edit on feature branch
+||||||| ancestor
+Feature edit
 =======
-conflict branch edit
->>>>>>> conflict_file
+Another feature edit
+>>>>>>> theirs
 """;
+
+        Checkout.reference(repo: repo, name: 'refs/heads/feature');
+        repo.setHead('refs/heads/feature');
 
         Merge.commit(
           repo: repo,
           commit: AnnotatedCommit.lookup(
             repo: repo,
-            oid: Branch.lookup(repo: repo, name: 'conflict-branch').target,
+            oid: Branch.lookup(repo: repo, name: 'ancestor-conflict').target,
           ),
-          mergeFlags: {GitMergeFlag.noRecursive},
-          fileFlags: {GitMergeFileFlag.ignoreWhitespaceEOL},
         );
 
-        final conflictedFile = repo.index.conflicts['conflict_file']!;
+        final conflictedFile = repo.index.conflicts['feature_file']!;
         final diff = Merge.fileFromIndex(
           repo: repo,
-          ancestor: null,
+          ancestor: conflictedFile.ancestor,
+          ancestorLabel: 'ancestor',
           ours: conflictedFile.our!,
+          oursLabel: 'ours',
           theirs: conflictedFile.their!,
+          theirsLabel: 'theirs',
+          flags: {GitMergeFileFlag.styleDiff3},
         );
 
         expect(diff, diffExpected);
