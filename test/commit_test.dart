@@ -67,6 +67,109 @@ void main() {
       expect(file.existsSync(), false);
     });
 
+    test('reverts merge commit to provided parent', () {
+      const masterContents = 'master contents';
+      final file = File(p.join(repo.workdir, 'another_feature_file'))
+        ..createSync()
+        ..writeAsStringSync(masterContents);
+
+      repo.index.add('another_feature_file');
+      repo.index.write();
+
+      // Creating commit on 'master' branch with file contents conflicting to
+      // 'feature' branch.
+      final masterTip = Commit.create(
+        repo: repo,
+        updateRef: 'HEAD',
+        message: 'master commit\n',
+        author: author,
+        committer: committer,
+        tree: Tree.lookup(repo: repo, oid: repo.index.writeTree()),
+        parents: [Commit.lookup(repo: repo, oid: repo.head.target)],
+      );
+
+      // Switching to 'feature' branch.
+      Checkout.reference(repo: repo, name: 'refs/heads/feature');
+      repo.setHead('refs/heads/feature');
+
+      file.writeAsStringSync('feature contents');
+
+      repo.index.add('another_feature_file');
+      repo.index.write();
+
+      // Creating commit on 'feature' branch with file contents conflicting to
+      // 'master' branch.
+      final featureTip = Commit.create(
+        repo: repo,
+        updateRef: 'HEAD',
+        message: 'feature commit\n',
+        author: author,
+        committer: committer,
+        tree: Tree.lookup(repo: repo, oid: repo.index.writeTree()),
+        parents: [Commit.lookup(repo: repo, oid: repo.head.target)],
+      );
+
+      // Merging master branch.
+      Merge.commit(
+        repo: repo,
+        commit: AnnotatedCommit.lookup(
+          repo: repo,
+          oid: Oid.fromSHA(repo: repo, sha: masterTip.sha),
+        ),
+      );
+
+      expect(repo.index.hasConflicts, true);
+
+      // "Resolving" conflict.
+      repo.index.updateAll(['another_feature_file']);
+      repo.index.write();
+      repo.stateCleanup();
+
+      // Creating merge commit.
+      final mergeOid = Commit.create(
+        repo: repo,
+        updateRef: 'HEAD',
+        message: 'merge commit\n',
+        author: author,
+        committer: committer,
+        tree: Tree.lookup(repo: repo, oid: repo.index.writeTree()),
+        parents: [
+          Commit.lookup(repo: repo, oid: featureTip),
+          Commit.lookup(repo: repo, oid: masterTip),
+        ],
+      );
+
+      final mergeCommit = Commit.lookup(repo: repo, oid: mergeOid);
+      mergeCommit.revert(mainline: 2);
+
+      expect(file.readAsStringSync(), masterContents);
+    });
+
+    test('reverts commit with provided merge options and checkout options', () {
+      final commit = Commit.lookup(repo: repo, oid: repo['821ed6e']);
+      final file = File(p.join(repo.workdir, 'dir', 'dir_file.txt'));
+      expect(repo.index.find('dir/dir_file.txt'), true);
+      expect(file.existsSync(), true);
+
+      commit.revert(
+        mergeFavor: GitMergeFileFavor.ours,
+        mergeFlags: {GitMergeFlag.noRecursive, GitMergeFlag.skipREUC},
+        mergeFileFlags: {
+          GitMergeFileFlag.ignoreWhitespace,
+          GitMergeFileFlag.styleZdiff3
+        },
+        checkoutStrategy: {
+          GitCheckout.force,
+          GitCheckout.conflictStyleMerge,
+        },
+        checkoutDirectory: repo.workdir,
+        checkoutPaths: ['dir/dir_file.txt'],
+      );
+
+      expect(repo.index.find('dir/dir_file.txt'), false);
+      expect(file.existsSync(), false);
+    });
+
     test('throws when trying to revert and error occurs', () {
       expect(() => Commit(nullptr).revert(), throwsA(isA<LibGit2Error>()));
     });
@@ -79,6 +182,25 @@ void main() {
       final from = Commit.lookup(repo: repo, oid: repo['821ed6e']);
       final revertIndex = from.revertTo(
         commit: Commit.lookup(repo: repo, oid: repo['78b8bf1']),
+      );
+      expect(revertIndex.find('dir/dir_file.txt'), false);
+      expect(file.existsSync(), true);
+    });
+
+    test('reverts commit to provided commit with provided merge options', () {
+      final file = File(p.join(repo.workdir, 'dir', 'dir_file.txt'));
+      expect(repo.index.find('dir/dir_file.txt'), true);
+      expect(file.existsSync(), true);
+
+      final from = Commit.lookup(repo: repo, oid: repo['821ed6e']);
+      final revertIndex = from.revertTo(
+        commit: Commit.lookup(repo: repo, oid: repo['78b8bf1']),
+        mergeFavor: GitMergeFileFavor.ours,
+        mergeFlags: {GitMergeFlag.noRecursive, GitMergeFlag.skipREUC},
+        mergeFileFlags: {
+          GitMergeFileFlag.ignoreWhitespace,
+          GitMergeFileFlag.styleZdiff3
+        },
       );
       expect(revertIndex.find('dir/dir_file.txt'), false);
       expect(file.existsSync(), true);

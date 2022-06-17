@@ -384,8 +384,48 @@ Pointer<git_tree> tree(Pointer<git_commit> commit) {
 void revert({
   required Pointer<git_repository> repoPointer,
   required Pointer<git_commit> commitPointer,
+  required int mainline,
+  int? mergeFavor,
+  int? mergeFlags,
+  int? mergeFileFlags,
+  int? checkoutStrategy,
+  String? checkoutDirectory,
+  List<String>? checkoutPaths,
 }) {
-  final error = libgit2.git_revert(repoPointer, commitPointer, nullptr);
+  final opts = calloc<git_revert_options>();
+  libgit2.git_revert_options_init(opts, GIT_REVERT_OPTIONS_VERSION);
+
+  opts.ref.mainline = mainline;
+
+  if (mergeFavor != null) opts.ref.merge_opts.file_favor = mergeFavor;
+  if (mergeFlags != null) opts.ref.merge_opts.flags = mergeFlags;
+  if (mergeFileFlags != null) opts.ref.merge_opts.file_flags = mergeFileFlags;
+
+  if (checkoutStrategy != null) {
+    opts.ref.checkout_opts.checkout_strategy = checkoutStrategy;
+  }
+  if (checkoutDirectory != null) {
+    opts.ref.checkout_opts.target_directory = checkoutDirectory.toChar();
+  }
+  var pathPointers = <Pointer<Char>>[];
+  Pointer<Pointer<Char>> strArray = nullptr;
+  if (checkoutPaths != null) {
+    pathPointers = checkoutPaths.map((e) => e.toChar()).toList();
+    strArray = calloc(checkoutPaths.length);
+    for (var i = 0; i < checkoutPaths.length; i++) {
+      strArray[i] = pathPointers[i];
+    }
+    opts.ref.checkout_opts.paths.strings = strArray;
+    opts.ref.checkout_opts.paths.count = checkoutPaths.length;
+  }
+
+  final error = libgit2.git_revert(repoPointer, commitPointer, opts);
+
+  for (final p in pathPointers) {
+    calloc.free(p);
+  }
+  calloc.free(strArray);
+  calloc.free(opts);
 
   if (error < 0) {
     throw LibGit2Error(libgit2.git_error_last());
@@ -403,10 +443,17 @@ Pointer<git_index> revertCommit({
   required Pointer<git_commit> revertCommitPointer,
   required Pointer<git_commit> ourCommitPointer,
   required int mainline,
+  int? mergeFavor,
+  int? mergeFlags,
+  int? mergeFileFlags,
 }) {
   final out = calloc<Pointer<git_index>>();
   final opts = calloc<git_merge_options>();
   libgit2.git_merge_options_init(opts, GIT_MERGE_OPTIONS_VERSION);
+
+  if (mergeFavor != null) opts.ref.file_favor = mergeFavor;
+  if (mergeFlags != null) opts.ref.flags = mergeFlags;
+  if (mergeFileFlags != null) opts.ref.file_flags = mergeFileFlags;
 
   final error = libgit2.git_revert_commit(
     out,

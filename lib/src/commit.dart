@@ -189,23 +189,64 @@ class Commit extends Equatable {
 
   /// Reverts commit, producing changes in the index and working directory.
   ///
+  /// [mainline] is parent of the commit if it is a merge (i.e. 1, 2, etc.).
+  ///
+  /// [mergeFavor] is one of the optional [GitMergeFileFavor] flags for
+  /// handling conflicting content.
+  ///
+  /// [mergeFlags] is optional combination of [GitMergeFlag] flags.
+  ///
+  /// [mergeFileFlags] is optional combination of [GitMergeFileFlag] flags.
+  ///
+  /// [checkoutStrategy] is optional combination of [GitCheckout] flags.
+  ///
+  /// [checkoutDirectory] is optional alternative checkout path to workdir.
+  ///
+  /// [checkoutPaths] is optional list of files to checkout (by default all
+  /// paths are processed).
+  ///
   /// Throws a [LibGit2Error] if error occured.
-  void revert() {
+  void revert({
+    int mainline = 0,
+    GitMergeFileFavor? mergeFavor,
+    Set<GitMergeFlag>? mergeFlags,
+    Set<GitMergeFileFlag>? mergeFileFlags,
+    Set<GitCheckout>? checkoutStrategy,
+    String? checkoutDirectory,
+    List<String>? checkoutPaths,
+  }) {
     bindings.revert(
       repoPointer: bindings.owner(_commitPointer),
       commitPointer: _commitPointer,
+      mainline: mainline,
+      mergeFavor: mergeFavor?.value,
+      mergeFlags: mergeFlags?.fold(0, (acc, e) => acc! | e.value),
+      mergeFileFlags: mergeFileFlags?.fold(0, (acc, e) => acc! | e.value),
+      checkoutStrategy: checkoutStrategy?.fold(0, (acc, e) => acc! | e.value),
+      checkoutDirectory: checkoutDirectory,
+      checkoutPaths: checkoutPaths,
     );
   }
 
   /// Reverts commit against provided [commit], producing an index that
   /// reflects the result of the revert.
   ///
-  /// [mainline] is parent of the commit if it is a merge (i.e. 1, 2).
+  /// [mainline] is parent of the commit if it is a merge (i.e. 1, 2, etc.).
+  ///
+  /// [mergeFavor] is one of the optional [GitMergeFileFavor] flags for
+  /// handling conflicting content.
+  ///
+  /// [mergeFlags] is optional combination of [GitMergeFlag] flags.
+  ///
+  /// [mergeFileFlags] is optional combination of [GitMergeFileFlag] flags.
   ///
   /// Throws a [LibGit2Error] if error occured.
   Index revertTo({
     required Commit commit,
     int mainline = 0,
+    GitMergeFileFavor? mergeFavor,
+    Set<GitMergeFlag>? mergeFlags,
+    Set<GitMergeFileFlag>? mergeFileFlags,
   }) {
     return Index(
       bindings.revertCommit(
@@ -213,6 +254,9 @@ class Commit extends Equatable {
         revertCommitPointer: _commitPointer,
         ourCommitPointer: commit.pointer,
         mainline: mainline,
+        mergeFavor: mergeFavor?.value,
+        mergeFlags: mergeFlags?.fold(0, (acc, e) => acc! | e.value),
+        mergeFileFlags: mergeFileFlags?.fold(0, (acc, e) => acc! | e.value),
       ),
     );
   }
