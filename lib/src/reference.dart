@@ -17,6 +17,7 @@ class Reference extends Equatable {
   /// Note: For internal use. Instead, use one of:
   /// - [Reference.create]
   /// - [Reference.lookup]
+  @internal
   Reference(this._refPointer) {
     _finalizer.attach(this, _refPointer, detach: this);
   }
@@ -87,6 +88,7 @@ class Reference extends Equatable {
   /// Pointer to memory address for allocated reference object.
   ///
   /// Note: For internal use.
+  @internal
   Pointer<git_reference> get pointer => _refPointer;
 
   /// Deletes an existing reference with provided [name].

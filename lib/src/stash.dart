@@ -7,6 +7,9 @@ import 'package:meta/meta.dart';
 class Stash extends Equatable {
   /// Initializes a new instance of [Stash] class from provided stash [index],
   /// [message] and [oid].
+  ///
+  /// Note: For internal use. Use [Stash.create] instead to create stash.
+  @internal
   const Stash({
     required this.index,
     required this.message,

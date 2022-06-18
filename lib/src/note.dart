@@ -11,6 +11,7 @@ class Note extends Equatable {
   /// pointer to note and annotatedOid objects in memory.
   ///
   /// Note: For internal use. Use [Note.lookup] instead.
+  @internal
   Note(this._notePointer, this._annotatedOidPointer) {
     _finalizer.attach(this, _notePointer, detach: this);
   }

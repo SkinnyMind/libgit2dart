@@ -84,6 +84,7 @@ class AnnotatedCommit extends Equatable {
   /// Pointer to pointer to memory address for allocated commit object.
   ///
   /// Note: For internal use.
+  @internal
   Pointer<git_annotated_commit> get pointer => _annotatedCommitPointer;
 
   /// Commit oid that the given annotated commit refers to.

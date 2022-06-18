@@ -13,6 +13,7 @@ class Index with IterableMixin<IndexEntry> {
   /// pointer to index object in memory.
   ///
   /// Note: For internal use.
+  @internal
   Index(this._indexPointer) {
     _finalizer.attach(this, _indexPointer, detach: this);
   }
@@ -31,6 +32,7 @@ class Index with IterableMixin<IndexEntry> {
   /// Pointer to memory address for allocated index object.
   ///
   /// Note: For internal use.
+  @internal
   Pointer<git_index> get pointer => _indexPointer;
 
   /// Full path to the index file on disk.
@@ -339,6 +341,7 @@ class IndexEntry extends Equatable {
   /// Initializes a new instance of [IndexEntry] class.
   ///
   /// Note: For internal use.
+  @internal
   const IndexEntry(this._indexEntryPointer);
 
   final Pointer<git_index_entry> _indexEntryPointer;
@@ -346,6 +349,7 @@ class IndexEntry extends Equatable {
   /// Pointer to memory address for allocated index entry object.
   ///
   /// Note: For internal use.
+  @internal
   Pointer<git_index_entry> get pointer => _indexEntryPointer;
 
   /// [Oid] of the index entry.
@@ -387,6 +391,7 @@ class ConflictEntry {
   /// Initializes a new instance of [ConflictEntry] class.
   ///
   /// Note: For internal use.
+  @internal
   const ConflictEntry(
     this._indexPointer,
     this._path,

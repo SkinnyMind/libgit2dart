@@ -327,6 +327,7 @@ class TransferProgress {
   /// pointer to transfer progress object in memory.
   ///
   /// Note: For internal use.
+  @internal
   const TransferProgress(this._transferProgressPointer);
 
   /// Pointer to memory address for allocated transfer progress object.

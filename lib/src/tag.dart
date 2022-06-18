@@ -13,6 +13,7 @@ class Tag extends Equatable {
   /// tag object in memory.
   ///
   /// Note: For internal use. Use [Tag.lookup] instead.
+  @internal
   Tag(this._tagPointer) {
     _finalizer.attach(this, _tagPointer, detach: this);
   }

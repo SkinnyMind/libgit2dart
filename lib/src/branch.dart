@@ -15,6 +15,7 @@ class Branch extends Equatable {
   /// Note: For internal use. Instead, use one of:
   /// - [Branch.create]
   /// - [Branch.lookup]
+  @internal
   Branch(this._branchPointer) {
     _finalizer.attach(this, _branchPointer, detach: this);
   }
@@ -74,6 +75,7 @@ class Branch extends Equatable {
   /// Pointer to memory address for allocated branch object.
   ///
   /// Note: For internal use.
+  @internal
   Pointer<git_reference> get pointer => _branchPointer;
 
   /// Returns a list of branches that can be found in a [repo]sitory for

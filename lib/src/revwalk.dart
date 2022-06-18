@@ -2,6 +2,7 @@ import 'dart:ffi';
 import 'package:libgit2dart/libgit2dart.dart';
 import 'package:libgit2dart/src/bindings/libgit2_bindings.dart';
 import 'package:libgit2dart/src/bindings/revwalk.dart' as bindings;
+import 'package:meta/meta.dart';
 
 class RevWalk {
   /// Initializes a new instance of the [RevWalk] class.
@@ -15,6 +16,7 @@ class RevWalk {
   /// Pointer to memory address for allocated [RevWalk] object.
   ///
   /// Note: For internal use.
+  @internal
   Pointer<git_revwalk> get pointer => _revWalkPointer;
 
   /// Returns the list of commits from the revision walk.

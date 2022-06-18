@@ -23,6 +23,7 @@ class Repository extends Equatable {
   /// - [Repository.init]
   /// - [Repository.open]
   /// - [Repository.clone]
+  @internal
   Repository(Pointer<git_repository> pointer) {
     _repoPointer = pointer;
     _finalizer.attach(this, _repoPointer, detach: this);
@@ -161,6 +162,7 @@ class Repository extends Equatable {
   /// Pointer to memory address for allocated repository object.
   ///
   /// Note: For internal use.
+  @internal
   Pointer<git_repository> get pointer => _repoPointer;
 
   /// Looks for a git repository and return its path. The lookup start from

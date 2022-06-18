@@ -12,6 +12,7 @@ class Blob extends Equatable {
   /// blob object in memory.
   ///
   /// Note: For internal use. Use [Blob.lookup] instead.
+  @internal
   Blob(this._blobPointer) {
     _finalizer.attach(this, _blobPointer, detach: this);
   }
@@ -30,6 +31,7 @@ class Blob extends Equatable {
   /// Pointer to memory address for allocated blob object.
   ///
   /// Note: For internal use.
+  @internal
   Pointer<git_blob> get pointer => _blobPointer;
 
   /// Creates a new blob from a [content] string and writes it to ODB.

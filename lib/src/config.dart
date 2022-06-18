@@ -20,6 +20,7 @@ class Config with IterableMixin<ConfigEntry> {
   /// - [Config.system]
   /// - [Config.global]
   /// - [Config.xdg]
+  @internal
   Config(this._configPointer) {
     _finalizer.attach(this, _configPointer, detach: this);
   }

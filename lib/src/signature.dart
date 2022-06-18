@@ -16,6 +16,7 @@ class Signature extends Equatable {
   /// Note: For internal use. Instead, use one of:
   /// - [Signature.create]
   /// - [Signature.defaultSignature]
+  @internal
   Signature(Pointer<git_signature> pointer) {
     _signaturePointer = bindings.duplicate(pointer);
     _finalizer.attach(this, _signaturePointer, detach: this);
@@ -62,6 +63,7 @@ class Signature extends Equatable {
   /// Pointer to memory address for allocated signature object.
   ///
   /// Note: For internal use.
+  @internal
   Pointer<git_signature> get pointer => _signaturePointer;
 
   /// Full name of the author.
