@@ -77,10 +77,15 @@ class Worktree extends Equatable {
   /// Throws a [LibGit2Error] if error occured.
   bool get isPrunable => bindings.isPrunable(_worktreePointer);
 
-  /// Prunes working tree.
+  /// Prunes working tree, that is removes the git data structures on disk.
   ///
-  /// Prune the working tree, that is remove the git data structures on disk.
-  void prune() => bindings.prune(_worktreePointer);
+  /// [flags] is optional combination of [GitWorktree] flags.
+  void prune([Set<GitWorktree>? flags]) {
+    bindings.prune(
+      worktreePointer: _worktreePointer,
+      flags: flags?.fold(0, (acc, e) => acc! | e.value),
+    );
+  }
 
   /// Whether worktree is valid.
   ///
