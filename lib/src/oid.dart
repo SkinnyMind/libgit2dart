@@ -14,6 +14,7 @@ class Oid extends Equatable {
   /// pointer to Oid object in memory.
   ///
   /// Note: For internal use. Use [Oid.fromSHA] instead.
+  @internal
   Oid(this._oidPointer);
 
   /// Initializes a new instance of [Oid] class by determining if an object can
@@ -41,6 +42,9 @@ class Oid extends Equatable {
 
   /// Initializes a new instance of [Oid] class from provided raw git_oid
   /// structure.
+  ///
+  /// Note: For internal use.
+  @internal
   Oid.fromRaw(git_oid raw) {
     _oidPointer = bindings.fromRaw(raw.id);
   }
@@ -50,6 +54,7 @@ class Oid extends Equatable {
   /// Pointer to memory address for allocated oid object.
   ///
   /// Note: For internal use.
+  @internal
   Pointer<git_oid> get pointer => _oidPointer;
 
   /// Hexadecimal SHA string.

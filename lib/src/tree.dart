@@ -12,6 +12,7 @@ class Tree extends Equatable {
   /// tree object in memory.
   ///
   /// Note: For internal use. Use [Tree.lookup] instead.
+  @internal
   Tree(this._treePointer) {
     _finalizer.attach(this, _treePointer, detach: this);
   }
@@ -30,6 +31,7 @@ class Tree extends Equatable {
   /// Pointer to memory address for allocated tree object.
   ///
   /// Note: For internal use.
+  @internal
   Pointer<git_tree> get pointer => _treePointer;
 
   /// List with tree entries of a tree.
@@ -113,6 +115,7 @@ class TreeEntry extends Equatable {
   /// tree entry object in memory.
   ///
   /// Note: For internal use.
+  @internal
   const TreeEntry(this._treeEntryPointer);
 
   /// Initializes a new instance of [TreeEntry] class from provided pointer to

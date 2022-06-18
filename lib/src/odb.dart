@@ -12,6 +12,7 @@ class Odb extends Equatable {
   /// pointer to Odb object in memory.
   ///
   /// Note: For internal use.
+  @internal
   Odb(this._odbPointer) {
     _finalizer.attach(this, _odbPointer, detach: this);
   }
@@ -32,6 +33,7 @@ class Odb extends Equatable {
   /// Pointer to memory address for allocated oid object.
   ///
   /// Note: For internal use.
+  @internal
   Pointer<git_odb> get pointer => _odbPointer;
 
   /// Adds an on-disk alternate to an existing Object DB.

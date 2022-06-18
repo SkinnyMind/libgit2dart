@@ -11,6 +11,7 @@ class Refspec extends Equatable {
   /// from provided pointer to refspec object in memory.
   ///
   /// Note: For internal use.
+  @internal
   const Refspec(this._refspecPointer);
 
   /// Pointer to memory address for allocated refspec object.

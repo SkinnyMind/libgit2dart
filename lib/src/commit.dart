@@ -13,6 +13,7 @@ class Commit extends Equatable {
   /// commit object in memory.
   ///
   /// Note: For internal use. Use [Commit.lookup] instead.
+  @internal
   Commit(this._commitPointer) {
     _finalizer.attach(this, _commitPointer, detach: this);
   }
@@ -31,6 +32,7 @@ class Commit extends Equatable {
   /// Pointer to memory address for allocated commit object.
   ///
   /// Note: For internal use.
+  @internal
   Pointer<git_commit> get pointer => _commitPointer;
 
   /// Creates new commit in the [repo]sitory.

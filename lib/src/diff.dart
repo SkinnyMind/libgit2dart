@@ -21,6 +21,7 @@ class Diff extends Equatable {
   /// - [Diff.treeToWorkdirWithIndex]
   /// - [Diff.treeToTree]
   /// - [Diff.parse]
+  @internal
   Diff(this._diffPointer) {
     _finalizer.attach(this, _diffPointer, detach: this);
   }
@@ -276,6 +277,7 @@ class Diff extends Equatable {
   /// Pointer to memory address for allocated diff object.
   ///
   /// Note: For internal use.
+  @internal
   Pointer<git_diff> get pointer => _diffPointer;
 
   /// How many diff records are there in a diff.
@@ -471,6 +473,9 @@ final _finalizer = Finalizer<Pointer<git_diff>>(
 class DiffDelta extends Equatable {
   /// Initializes a new instance of [DiffDelta] class from provided
   /// pointer to diff delta object in memory.
+  ///
+  /// Note: For internal use.
+  @internal
   const DiffDelta(this._diffDeltaPointer);
 
   /// Pointer to memory address for allocated diff delta object.
@@ -578,6 +583,7 @@ class DiffStats {
   /// pointer to diff stats object in memory.
   ///
   /// Note: For internal use.
+  @internal
   DiffStats(this._diffStatsPointer) {
     _statsFinalizer.attach(this, _diffStatsPointer, detach: this);
   }

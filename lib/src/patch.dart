@@ -18,6 +18,7 @@ class Patch extends Equatable {
   /// - [Patch.fromBlobAndBuffer]
   /// - [Patch.fromBuffers]
   /// - [Patch.fromDiff]
+  @internal
   Patch(this._patchPointer) {
     _finalizer.attach(this, _patchPointer, detach: this);
   }

@@ -2,6 +2,7 @@ import 'dart:ffi';
 import 'package:libgit2dart/libgit2dart.dart';
 import 'package:libgit2dart/src/bindings/libgit2_bindings.dart';
 import 'package:libgit2dart/src/bindings/packbuilder.dart' as bindings;
+import 'package:meta/meta.dart';
 
 class PackBuilder {
   /// Initializes a new instance of [PackBuilder] class.
@@ -9,6 +10,7 @@ class PackBuilder {
   /// Throws a [LibGit2Error] if error occured.
   ///
   /// Note: For internal use.
+  @internal
   PackBuilder(Repository repo) {
     _packbuilderPointer = bindings.init(repo.pointer);
     _finalizer.attach(this, _packbuilderPointer, detach: this);
