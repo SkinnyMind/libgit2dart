@@ -151,6 +151,22 @@ void main() {
       expect(repo.worktrees, <String>[]);
     });
 
+    test('prunes worktree with provided flags', () {
+      expect(repo.worktrees, <String>[]);
+
+      final worktree = Worktree.create(
+        repo: repo,
+        name: worktreeName,
+        path: worktreeDir.path,
+      );
+      expect(repo.worktrees, [worktreeName]);
+      expect(worktree.isPrunable, false);
+      expect(worktree.isValid, true);
+
+      worktree.prune({GitWorktree.pruneValid});
+      expect(repo.worktrees, <String>[]);
+    });
+
     test('throws when trying get list of worktrees and error occurs', () {
       expect(
         () => Worktree.list(Repository(nullptr)),

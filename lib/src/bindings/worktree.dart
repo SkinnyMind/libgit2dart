@@ -96,8 +96,16 @@ bool isPrunable(Pointer<git_worktree> wt) {
 /// Prune working tree.
 ///
 /// Prune the working tree, that is remove the git data structures on disk.
-void prune(Pointer<git_worktree> wt) {
-  libgit2.git_worktree_prune(wt, nullptr);
+void prune({required Pointer<git_worktree> worktreePointer, int? flags}) {
+  final opts = calloc<git_worktree_prune_options>();
+  libgit2.git_worktree_prune_options_init(
+    opts,
+    GIT_WORKTREE_PRUNE_OPTIONS_VERSION,
+  );
+
+  if (flags != null) opts.ref.flags = flags;
+
+  libgit2.git_worktree_prune(worktreePointer, opts);
 }
 
 /// List names of linked working trees.

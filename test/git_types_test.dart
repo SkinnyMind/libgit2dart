@@ -562,4 +562,14 @@ void main() {
     final actual = {for (final e in GitIndexAddOption.values) e: e.value};
     expect(actual, expected);
   });
+
+  test('GitWorktree returns correct values', () {
+    const expected = {
+      GitWorktree.pruneValid: 1,
+      GitWorktree.pruneLocked: 2,
+      GitWorktree.pruneWorkingTree: 4,
+    };
+    final actual = {for (final e in GitWorktree.values) e: e.value};
+    expect(actual, expected);
+  });
 }

@@ -1192,3 +1192,18 @@ enum GitIndexAddOption {
   const GitIndexAddOption(this.value);
   final int value;
 }
+
+/// Flags to alter working tree pruning behavior.
+enum GitWorktree {
+  /// Prune working tree even if working tree is valid.
+  pruneValid(1),
+
+  /// Prune working tree even if it is locked.
+  pruneLocked(2),
+
+  /// Prune checked out working tree.
+  pruneWorkingTree(4);
+
+  const GitWorktree(this.value);
+  final int value;
+}
