@@ -63,16 +63,20 @@ void main() {
       expect(file.readAsStringSync(), isEmpty);
     });
 
-    test('throws when trying to reset and error occurs', () {
-      expect(
-        () => repo.reset(
-          oid: repo[sha],
-          resetType: GitReset.hard,
-          checkoutDirectory: '',
-        ),
-        throwsA(isA<LibGit2Error>()),
-      );
-    });
+    test(
+      'throws when trying to reset and error occurs',
+      testOn: '!windows',
+      () {
+        expect(
+          () => repo.reset(
+            oid: repo[sha],
+            resetType: GitReset.hard,
+            checkoutDirectory: '',
+          ),
+          throwsA(isA<LibGit2Error>()),
+        );
+      },
+    );
 
     group('resetDefault', () {
       test('updates entry in the index', () {

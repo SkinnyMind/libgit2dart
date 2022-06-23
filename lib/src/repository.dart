@@ -558,8 +558,7 @@ class Repository extends Equatable {
   /// [resetType] is one of the [GitReset] flags.
   ///
   /// [strategy], [checkoutDirectory] and [pathspec] are optional checkout
-  /// options to be used for a HARD reset. The [strategy] will be overridden
-  /// (based on [resetType]).
+  /// options to be used for a HARD reset.
   ///
   /// [strategy] is optional combination of [GitCheckout] flags.
   ///
