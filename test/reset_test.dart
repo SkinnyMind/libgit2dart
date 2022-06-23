@@ -50,6 +50,34 @@ void main() {
       expect(diff.deltas.length, 1);
     });
 
+    test('resets with provided checkout options', () {
+      expect(file.readAsStringSync(), 'Feature edit\n');
+
+      repo.reset(
+        oid: repo[sha],
+        resetType: GitReset.hard,
+        strategy: {GitCheckout.conflictStyleZdiff3},
+        pathspec: ['feature_file'],
+      );
+
+      expect(file.readAsStringSync(), isEmpty);
+    });
+
+    test(
+      'throws when trying to reset and error occurs',
+      testOn: '!windows',
+      () {
+        expect(
+          () => repo.reset(
+            oid: repo[sha],
+            resetType: GitReset.hard,
+            checkoutDirectory: '',
+          ),
+          throwsA(isA<LibGit2Error>()),
+        );
+      },
+    );
+
     group('resetDefault', () {
       test('updates entry in the index', () {
         file.writeAsStringSync('new edit');
