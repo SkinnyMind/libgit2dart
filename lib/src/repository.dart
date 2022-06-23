@@ -557,8 +557,24 @@ class Repository extends Equatable {
   ///
   /// [resetType] is one of the [GitReset] flags.
   ///
+  /// [strategy], [checkoutDirectory] and [pathspec] are optional checkout
+  /// options to be used for a HARD reset. The [strategy] will be overridden
+  /// (based on [resetType]).
+  ///
+  /// [strategy] is optional combination of [GitCheckout] flags.
+  ///
+  /// [checkoutDirectory] is optional alternative checkout path to workdir.
+  ///
+  /// [pathspec] is optional list of files to checkout.
+  ///
   /// Throws a [LibGit2Error] if error occured.
-  void reset({required Oid oid, required GitReset resetType}) {
+  void reset({
+    required Oid oid,
+    required GitReset resetType,
+    Set<GitCheckout>? strategy,
+    String? checkoutDirectory,
+    List<String>? pathspec,
+  }) {
     final object = object_bindings.lookup(
       repoPointer: _repoPointer,
       oidPointer: oid.pointer,
@@ -569,7 +585,9 @@ class Repository extends Equatable {
       repoPointer: _repoPointer,
       targetPointer: object,
       resetType: resetType.value,
-      checkoutOptsPointer: nullptr,
+      strategy: strategy?.fold(0, (acc, e) => acc! | e.value),
+      checkoutDirectory: checkoutDirectory,
+      pathspec: pathspec,
     );
 
     object_bindings.free(object);
