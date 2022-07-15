@@ -8,7 +8,7 @@ import 'package:libgit2dart/src/bindings/libgit2_opts_bindings.dart';
 import 'package:path/path.dart' as path;
 import 'package:pub_cache/pub_cache.dart';
 
-const libgit2Version = '1.4.3';
+const libgit2Version = '1.5.0';
 final libDir = path.join('.dart_tool', 'libgit2');
 
 String getLibName() {
