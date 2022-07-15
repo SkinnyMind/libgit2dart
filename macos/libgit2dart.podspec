@@ -4,7 +4,7 @@
 #
 Pod::Spec.new do |s|
   s.name             = 'libgit2dart'
-  s.version          = '1.1.2'
+  s.version          = '1.2.0'
   s.summary          = 'Dart bindings to libgit2.'
   s.description      = <<-DESC
 Dart bindings to libgit2.

@@ -1,3 +1,23 @@
+## 1.2.0
+
+- feat: upgrade libgit2 to 1.5.0
+
+- feat: add ability to pass checkout options to `reset(...)` API method
+
+- feat: add ability to pass options to `prune(...)` Worktree API method
+
+- feat: add ability to pass options to `Merge.fileFromIndex(...)` API method
+
+- feat: add ability to pass options to `addAll(...)` Index API method
+
+- feat: add ability to pass options to `revert(...)` and `revertTo(...)` Commit API methods:
+
+  - select parent to revert to for merge commits
+  - merge options
+  - checkout options
+
+- chore: upgrade dependencies
+
 ## 1.1.2
 
 - fix: lookup library in Flutter's .pub_cache folder
