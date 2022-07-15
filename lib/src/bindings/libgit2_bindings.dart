@@ -2217,6 +2217,23 @@ class Libgit2 {
       int Function(
           ffi.Pointer<ffi.Int>, ffi.Pointer<ffi.Int>, ffi.Pointer<ffi.Int>)>();
 
+  /// Return the prerelease state of the libgit2 library currently being
+  /// used.  For nightly builds during active development, this will be
+  /// "alpha".  Releases may have a "beta" or release candidate ("rc1",
+  /// "rc2", etc) prerelease.  For a final release, this function returns
+  /// NULL.
+  ///
+  /// @return the name of the prerelease state or NULL
+  ffi.Pointer<ffi.Char> git_libgit2_prerelease() {
+    return _git_libgit2_prerelease();
+  }
+
+  late final _git_libgit2_prereleasePtr =
+      _lookup<ffi.NativeFunction<ffi.Pointer<ffi.Char> Function()>>(
+          'git_libgit2_prerelease');
+  late final _git_libgit2_prerelease =
+      _git_libgit2_prereleasePtr.asFunction<ffi.Pointer<ffi.Char> Function()>();
+
   /// Query compile time options for libgit2.
   ///
   /// @return A combination of GIT_FEATURE_* values.
@@ -9459,8 +9476,8 @@ class Libgit2 {
   /// See `git_tag_create()` for rules about valid names.
   ///
   /// Note that if the move succeeds, the old reference object will not
-  /// + be valid anymore, and should be freed immediately by the user using
-  /// + `git_reference_free()`.
+  /// be valid anymore, and should be freed immediately by the user using
+  /// `git_reference_free()`.
   ///
   /// @param out New reference object for the updated name.
   ///
@@ -11868,7 +11885,7 @@ class Libgit2 {
   /// completes, resolve any conflicts and prepare a commit.
   ///
   /// For compatibility with git, the repository is put into a merging
-  /// state. Once the commit is done (or if the uses wishes to abort),
+  /// state. Once the commit is done (or if the user wishes to abort),
   /// you should clear this state by calling
   /// `git_repository_state_cleanup()`.
   ///
@@ -15441,7 +15458,7 @@ class Libgit2 {
   /// global configuration file.
   ///
   /// This method will not guess the path to the xdg compatible
-  /// config file (.config/git/config).
+  /// config file (`.config/git/config`).
   ///
   /// @param out Pointer to a user-allocated git_buf in which to store the path
   /// @return 0 if a global configuration file has been found. Its path will be stored in `out`.
@@ -15488,8 +15505,8 @@ class Libgit2 {
 
   /// Locate the path to the system configuration file
   ///
-  /// If /etc/gitconfig doesn't exist, it will look for
-  /// %PROGRAMFILES%\Git\etc\gitconfig.
+  /// If `/etc/gitconfig` doesn't exist, it will look for
+  /// `%PROGRAMFILES%\Git\etc\gitconfig`.
   ///
   /// @param out Pointer to a user-allocated git_buf in which to store the path
   /// @return 0 if a system configuration file has been
@@ -15510,7 +15527,7 @@ class Libgit2 {
 
   /// Locate the path to the configuration file in ProgramData
   ///
-  /// Look for the file in %PROGRAMDATA%\Git\config used by portable git.
+  /// Look for the file in `%PROGRAMDATA%\Git\config` used by portable git.
   ///
   /// @param out Pointer to a user-allocated git_buf in which to store the path
   /// @return 0 if a ProgramData configuration file has been
@@ -16083,8 +16100,8 @@ class Libgit2 {
 
   /// Return the current entry and advance the iterator
   ///
-  /// The pointers returned by this function are valid until the iterator
-  /// is freed.
+  /// The pointers returned by this function are valid until the next call
+  /// to `git_config_next` or until the iterator is freed.
   ///
   /// @param entry pointer to store the entry
   /// @param iter the iterator
@@ -16922,7 +16939,8 @@ class Libgit2 {
   late final _git_error_clear =
       _git_error_clearPtr.asFunction<void Function()>();
 
-  /// Set the error message string for this thread.
+  /// Set the error message string for this thread, using `printf`-style
+  /// formatting.
   ///
   /// This function is public so that custom ODB backends and the like can
   /// relay an error message through libgit2.  Most regular users of libgit2
@@ -16935,7 +16953,31 @@ class Libgit2 {
   ///
   /// @param error_class One of the `git_error_t` enum above describing the
   /// general subsystem that is responsible for the error.
-  /// @param string The formatted error message to keep
+  /// @param fmt The `printf`-style format string; subsequent arguments must
+  /// be the arguments for the format string.
+  void git_error_set(
+    int error_class,
+    ffi.Pointer<ffi.Char> fmt,
+  ) {
+    return _git_error_set(
+      error_class,
+      fmt,
+    );
+  }
+
+  late final _git_error_setPtr = _lookup<
+      ffi.NativeFunction<
+          ffi.Void Function(ffi.Int, ffi.Pointer<ffi.Char>)>>('git_error_set');
+  late final _git_error_set =
+      _git_error_setPtr.asFunction<void Function(int, ffi.Pointer<ffi.Char>)>();
+
+  /// Set the error message string for this thread.  This function is like
+  /// `git_error_set` but takes a static string instead of a `printf`-style
+  /// format.
+  ///
+  /// @param error_class One of the `git_error_t` enum above describing the
+  /// general subsystem that is responsible for the error.
+  /// @param string The error message to keep
   /// @return 0 on success or -1 on failure
   int git_error_set_str(
     int error_class,
@@ -30687,7 +30729,7 @@ abstract class git_error_t {
   static const int GIT_ERROR_FILESYSTEM = 30;
   static const int GIT_ERROR_PATCH = 31;
   static const int GIT_ERROR_WORKTREE = 32;
-  static const int GIT_ERROR_SHA1 = 33;
+  static const int GIT_ERROR_SHA = 33;
   static const int GIT_ERROR_HTTP = 34;
   static const int GIT_ERROR_INTERNAL = 35;
 }
@@ -31200,12 +31242,15 @@ class git_status_options extends ffi.Struct {
   external int version;
 
   /// The `show` value is one of the `git_status_show_t` constants that
-  /// control which files to scan and in what order.
+  /// control which files to scan and in what order. The default is
+  /// `GIT_STATUS_SHOW_INDEX_AND_WORKDIR`.
   @ffi.Int32()
   external int show1;
 
   /// The `flags` value is an OR'ed combination of the
-  /// `git_status_opt_t` values above.
+  /// `git_status_opt_t` values above. The default is
+  /// `GIT_STATUS_OPT_DEFAULTS`, which matches git's default
+  /// behavior.
   @ffi.UnsignedInt()
   external int flags;
 
@@ -32606,6 +32651,8 @@ const int GITERR_WORKTREE = 32;
 
 const int GITERR_SHA1 = 33;
 
+const int GIT_ERROR_SHA1 = 33;
+
 const int GIT_IDXENTRY_NAMEMASK = 4095;
 
 const int GIT_IDXENTRY_STAGEMASK = 12288;
@@ -32710,14 +32757,16 @@ const int GIT_CREDTYPE_SSH_MEMORY = 64;
 
 const int GIT_EMAIL_CREATE_OPTIONS_VERSION = 1;
 
-const String LIBGIT2_VERSION = '1.4.3';
+const String LIBGIT2_VERSION = '1.5.0';
 
 const int LIBGIT2_VER_MAJOR = 1;
 
-const int LIBGIT2_VER_MINOR = 4;
+const int LIBGIT2_VER_MINOR = 5;
 
-const int LIBGIT2_VER_REVISION = 3;
+const int LIBGIT2_VER_REVISION = 0;
 
 const int LIBGIT2_VER_PATCH = 0;
 
-const String LIBGIT2_SOVERSION = '1.4';
+const int LIBGIT2_VER_PRERELEASE = 0;
+
+const String LIBGIT2_SOVERSION = '1.5';
