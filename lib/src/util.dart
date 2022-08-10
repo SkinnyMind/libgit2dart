@@ -53,6 +53,18 @@ String? _resolveLibPath(String name) {
   libPath = path.join(path.dirname(Platform.resolvedExecutable), 'lib', name);
   if (_doesFileExist(libPath)) return libPath;
 
+  // If lib is installed in system dir.
+  if (Platform.isMacOS || Platform.isLinux) {
+    final paths = [
+      '/usr/local/lib/libgit2.$libgit2Version.dylib',
+      '/usr/local/lib/libgit2.so.$libgit2Version',
+      '/usr/lib64/libgit2.so.$libgit2Version'
+    ];
+    for (final path in paths) {
+      if (_doesFileExist(path)) return path;
+    }
+  }
+
   String checkCache(PubCache pubCache) {
     final pubCacheDir =
         pubCache.getLatestVersion('libgit2dart')!.resolve()!.location;
