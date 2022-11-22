@@ -665,6 +665,8 @@ Fork libgit2dart, improve libgit2dart, send a pull request.
 
 ### Troubleshooting
 
+#### Linux:
+
 If you are developing on Linux using non-Debian based distrib you might encounter these errors:
 
 - Failed to load dynamic library: libpcre.so.3: cannot open shared object file: No such file or directory
@@ -678,6 +680,16 @@ To fix these errors create symlinks:
 sudo ln -s /usr/lib64/libpcre.so /usr/lib64/libpcre.so.3
 sudo ln -s /usr/lib64/libpcreposix.so /usr/lib64/libpcreposix.so.3
 ```
+
+#### Windows:
+
+If you are developing on Windows you might encounter:
+
+- Failed to load dynamic library: error code 126
+
+That happens because libgit2 dynamic library bundled with libgit2dart package is precompiled with ssh support, and it fails to find the `libssh2.dll`.
+
+To fix that error you should [build](https://github.com/libssh2/libssh2/blob/master/docs/INSTALL_CMAKE.md) libssh2, and place resulting `libssh2.dll` somewhere in system path (e.g. "Windows\System32").
 
 ### Ffigen
 
