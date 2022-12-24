@@ -1,3 +1,13 @@
+## 1.2.1
+
+- fix: use default location of Flutter's '.pub_cache' folder
+
+- docs: update README with troubleshooting instructions for Windows
+
+- chore: bump minimum dart and flutter versions
+
+- chore: Lookup library in system path (thanks @dnys1)
+
 ## 1.2.0
 
 - feat: upgrade libgit2 to 1.5.0
