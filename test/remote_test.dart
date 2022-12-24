@@ -278,7 +278,7 @@ void main() {
       expect(refs.first.localId, null);
       expect(refs.first.name, 'HEAD');
       expect(refs.first.symRef, 'refs/heads/master');
-      expect((refs.first.oid).sha, '49322bb17d3acc9146f98c97d078513228bbf3c0');
+      expect(refs.first.oid.sha, '49322bb17d3acc9146f98c97d078513228bbf3c0');
       expect(refs.first.toString(), contains('RemoteReference{'));
       expect(refs.first, remote.ls().first);
     });

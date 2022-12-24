@@ -74,9 +74,7 @@ String? _resolveLibPath(String name) {
   // If lib is in Flutter's '.pub_cache' folder.
   final env = Platform.environment;
   if (env.containsKey('FLUTTER_ROOT')) {
-    final flutterPubCache =
-        PubCache(Directory(path.join(env['FLUTTER_ROOT']!, '.pub-cache')));
-    libPath = checkCache(flutterPubCache);
+    libPath = checkCache(PubCache());
     if (_doesFileExist(libPath)) return libPath;
   }
 
