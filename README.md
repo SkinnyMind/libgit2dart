@@ -1,7 +1,5 @@
 # libgit2dart
 
-![Coverage](coverage_badge.svg)
-
 **Dart bindings to libgit2**
 
 libgit2dart package provides ability to use [libgit2](https://github.com/libgit2/libgit2) in Dart/Flutter.
@@ -705,7 +703,6 @@ To run all tests and generate coverage report make sure to have activated packag
 
 ```sh
 $ dart pub global activate coverage
-$ dart pub global activate flutter_coverage_badge
 ```
 
 And run:
