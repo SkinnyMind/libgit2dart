@@ -5,7 +5,6 @@ import 'package:libgit2dart/libgit2dart.dart';
 import 'package:libgit2dart/src/libgit2.dart';
 import 'package:libgit2dart/src/util.dart';
 import 'package:path/path.dart' as path;
-import 'package:pub_cache/pub_cache.dart';
 
 /// Copies prebuilt libgit2 library from package in '.pub_cache' into correct
 /// directory for [platform].
@@ -23,27 +22,24 @@ Future<void> copyLibrary(String platform) async {
       );
     }
   } else {
-    String? checkCache(PubCache pubCache) =>
-        pubCache.getLatestVersion('libgit2dart')?.resolve()?.location.path;
-
-    final libPath = checkCache(PubCache()) ??
-        checkCache(
-          PubCache(
-            Directory(
-              path.join(Platform.environment['FLUTTER_ROOT']!, '.pub-cache'),
-            ),
-          ),
-        );
+    final libPath = checkCache();
     final libName = getLibName();
 
     stdout.writeln('Copying libgit2 for $platform');
-    final destination = path.join(libDir, platform);
-    Directory(destination).createSync(recursive: true);
-    File(path.join(libPath!, platform, libName)).copySync(
-      path.join(destination, libName),
-    );
+    if (libPath == null) {
+      stdout.writeln(
+        "Couldn't find libgit2dart package.\n"
+        "Make sure to run 'dart pub get' to resolve dependencies.",
+      );
+    } else {
+      final destination = path.join(libDir, platform);
+      Directory(destination).createSync(recursive: true);
+      File(path.join(libPath, platform, libName)).copySync(
+        path.join(destination, libName),
+      );
 
-    stdout.writeln('Done! libgit2 for $platform is now available!');
+      stdout.writeln('Done! libgit2 for $platform is now available!');
+    }
   }
 }
 
@@ -57,7 +53,9 @@ class CleanCommand extends Command<void> {
   @override
   void run() {
     stdout.writeln('Cleaning...');
-    Directory(libDir).deleteSync(recursive: true);
+    if (Directory(libDir).existsSync()) {
+      Directory(libDir).deleteSync(recursive: true);
+    }
   }
 }
 
