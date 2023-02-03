@@ -1,3 +1,7 @@
+## 1.2.2
+
+- fix: lookup package in correct location of Dart/Flutter cached packages
+
 ## 1.2.1
 
 - fix: use default location of Flutter's '.pub_cache' folder
