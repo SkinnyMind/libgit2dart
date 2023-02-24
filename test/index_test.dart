@@ -23,6 +23,14 @@ void main() {
     tmpDir.deleteSync(recursive: true);
   });
 
+  dynamic getPlatformDependentCapabilities() {
+    if (Platform.isWindows) {
+      return {GitIndexCapability.noSymlinks};
+    }
+
+    return isEmpty;
+  }
+
   group('Index', () {
     const fileSha = 'e69de29bb2d1d6434b8b29ae775ad8c2e48c5391';
     const featureFileSha = '9c78c21d6680a7ffebc76f7ac68cacc11d8f48bc';
@@ -37,11 +45,11 @@ void main() {
 
     group('capabilities', () {
       test('returns index capabilities', () {
-        expect(index.capabilities, isEmpty);
+        expect(index.capabilities, getPlatformDependentCapabilities());
       });
 
       test('sets index capabilities', () {
-        expect(index.capabilities, isEmpty);
+        expect(index.capabilities, getPlatformDependentCapabilities());
 
         index.capabilities = {
           GitIndexCapability.ignoreCase,

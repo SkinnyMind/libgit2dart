@@ -1,3 +1,4 @@
+import 'dart:convert';
 import 'dart:ffi';
 import 'dart:io';
 
@@ -10,9 +11,13 @@ import 'helpers/util.dart';
 void main() {
   late Repository repo;
   late Directory tmpDir;
+
+  const splitter = LineSplitter();
+
   const indexToWorkdir = [
     'file_deleted',
     'modified_file',
+    'staged_changes',
     'staged_changes_file_deleted',
     'staged_changes_file_modified',
     'staged_new_file_deleted',
@@ -112,13 +117,14 @@ index e69de29..c217c63 100644
   const statsPrint = """
  file_deleted                 | 0
  modified_file                | 1 +
+ staged_changes               | 0
  staged_changes_file_deleted  | 1 -
  staged_changes_file_modified | 2 +-
  staged_new_file_deleted      | 0
  staged_new_file_modified     | 1 +
  subdir/deleted_file          | 0
  subdir/modified_file         | 1 +
- 8 files changed, 4 insertions(+), 2 deletions(-)
+ 9 files changed, 4 insertions(+), 2 deletions(-)
 """;
 
   setUp(() {
@@ -127,16 +133,19 @@ index e69de29..c217c63 100644
   });
 
   tearDown(() {
-    if (Platform.isLinux || Platform.isMacOS) {
+    if (Platform.isLinux || Platform.isMacOS || Platform.isWindows) {
       tmpDir.deleteSync(recursive: true);
     }
   });
+
+  List<String> readFileLines(File file) =>
+      splitter.convert(file.readAsStringSync());
 
   group('Diff', () {
     test('returns diff between index and workdir', () {
       final diff = Diff.indexToWorkdir(repo: repo, index: repo.index);
 
-      expect(diff.length, 8);
+      expect(diff.length, 9);
       for (var i = 0; i < diff.deltas.length; i++) {
         expect(diff.deltas[i].newFile.path, indexToWorkdir[i]);
       }
@@ -358,10 +367,12 @@ index e69de29..c217c63 100644
         final file = File(p.join(tmpDir.path, 'subdir', 'modified_file'));
 
         Checkout.head(repo: repo, strategy: {GitCheckout.force});
-        expect(file.readAsStringSync(), '');
+
+        expect(readFileLines(file), <String>[]);
 
         Diff.parse(patchText).apply(repo: repo);
-        expect(file.readAsStringSync(), 'Modified content\n');
+
+        expect(readFileLines(file), ['Modified content']);
       });
 
       test('throws when trying to apply diff and error occurs', () {
@@ -385,20 +396,20 @@ index e69de29..c217c63 100644
         final file = File(p.join(tmpDir.path, 'subdir', 'modified_file'));
 
         Checkout.head(repo: repo, strategy: {GitCheckout.force});
-        expect(file.readAsStringSync(), '');
+        expect(readFileLines(file), <String>[]);
 
         diff.apply(repo: repo, hunkIndex: hunk.index);
-        expect(file.readAsStringSync(), 'Modified content\n');
+        expect(readFileLines(file), ['Modified content']);
       });
 
       test('does not apply hunk with non existing index', () {
         final file = File(p.join(tmpDir.path, 'subdir', 'modified_file'));
 
         Checkout.head(repo: repo, strategy: {GitCheckout.force});
-        expect(file.readAsStringSync(), '');
+        expect(readFileLines(file), <String>[]);
 
         Diff.parse(patchText).apply(repo: repo, hunkIndex: 10);
-        expect(file.readAsStringSync(), '');
+        expect(readFileLines(file), <String>[]);
       });
 
       test('applies diff to tree', () {
@@ -529,7 +540,7 @@ index e69de29..c217c63 100644
       final diff = Diff.indexToWorkdir(repo: repo, index: repo.index);
       final patches = diff.patches;
 
-      expect(patches.length, 8);
+      expect(patches.length, 9);
       expect(patches.first.delta.status, GitDelta.deleted);
     });
 
@@ -539,7 +550,7 @@ index e69de29..c217c63 100644
 
       expect(stats.insertions, 4);
       expect(stats.deletions, 2);
-      expect(stats.filesChanged, 8);
+      expect(stats.filesChanged, 9);
       expect(stats.print(format: {GitDiffStats.full}, width: 80), statsPrint);
     });
 

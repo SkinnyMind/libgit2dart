@@ -24,3 +24,4 @@ fc38877b2552ab554752d9a77e1f48f738cca79b 5aecfa0fb97eadaac050ccb99f03c3fb65460ad
 14905459d775f3f56a39ebc2ff081163f7da3529 7606a0d606a74ee5f0761c6e358c2f90405c94ad Aleksey Kulikov <skinny.mind@gmail.com> 1634304003 +0300	checkout: moving from master to their-conflict
 7606a0d606a74ee5f0761c6e358c2f90405c94ad 0e409d66f701eea5038fe508ead4c098da699d2c Aleksey Kulikov <skinny.mind@gmail.com> 1634304018 +0300	commit: delete their for conflict
 0e409d66f701eea5038fe508ead4c098da699d2c 14905459d775f3f56a39ebc2ff081163f7da3529 Aleksey Kulikov <skinny.mind@gmail.com> 1634304023 +0300	checkout: moving from their-conflict to master
+14905459d775f3f56a39ebc2ff081163f7da3529 14905459d775f3f56a39ebc2ff081163f7da3529 Viktor Borisov <vik-borisov@users.noreply.github.com> 1677219441 +0700	reset: moving to HEAD

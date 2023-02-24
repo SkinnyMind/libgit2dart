@@ -9,3 +9,5 @@ c68ff54aabf660fcdd9a2838d401583fe31249e3 78b8bf123e3952c970ae5c1ce0a3ea1d1336f6e
 fc38877b2552ab554752d9a77e1f48f738cca79b 5aecfa0fb97eadaac050ccb99f03c3fb65460ad4 Aleksey Kulikov <skinny.mind@gmail.com> 1626091274 +0300	commit: add another feature file
 5aecfa0fb97eadaac050ccb99f03c3fb65460ad4 78b8bf123e3952c970ae5c1ce0a3ea1d1336f6e8 Aleksey Kulikov <skinny.mind@gmail.com> 1626091285 +0300	checkout: moving from feature to master
 78b8bf123e3952c970ae5c1ce0a3ea1d1336f6e8 821ed6e80627b8769d170a293862f9fc60825226 Aleksey Kulikov <skinny.mind@gmail.com> 1630568461 +0300	commit: add subdirectory file
+821ed6e80627b8769d170a293862f9fc60825226 821ed6e80627b8769d170a293862f9fc60825226 Viktor Borisov <vik-borisov@users.noreply.github.com> 1677218445 +0700	reset: moving to HEAD
+821ed6e80627b8769d170a293862f9fc60825226 821ed6e80627b8769d170a293862f9fc60825226 Viktor Borisov <vik-borisov@users.noreply.github.com> 1677220197 +0700	reset: moving to HEAD

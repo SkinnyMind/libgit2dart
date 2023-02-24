@@ -1,3 +1,4 @@
+import 'dart:convert';
 import 'dart:ffi';
 import 'dart:io';
 
@@ -12,6 +13,8 @@ void main() {
   late Directory tmpDir;
   const lastCommit = '821ed6e80627b8769d170a293862f9fc60825226';
   const newCommit = 'c68ff54aabf660fcdd9a2838d401583fe31249e3';
+
+  const splitter = LineSplitter();
 
   setUp(() {
     tmpDir = setupRepo(Directory(p.join('test', 'assets', 'test_repo')));
@@ -349,7 +352,9 @@ void main() {
 
     test('returns log for reference', () {
       final ref = Reference.lookup(repo: repo, name: 'refs/heads/master');
-      expect(ref.log.last.message, 'commit (initial): init');
+      final message = splitter.convert(ref.log.last.message);
+
+      expect(message, ['commit (initial): init']);
     });
 
     group('set target', () {

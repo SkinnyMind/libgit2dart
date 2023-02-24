@@ -1,5 +1,6 @@
 // ignore_for_file: unnecessary_string_escapes
 
+import 'dart:convert';
 import 'dart:ffi';
 import 'dart:io';
 
@@ -12,6 +13,8 @@ import 'helpers/util.dart';
 void main() {
   late Repository repo;
   late Directory tmpDir;
+
+  const splitter = LineSplitter();
 
   setUp(() {
     tmpDir = setupRepo(Directory(p.join('test', 'assets', 'merge_repo')));
@@ -216,9 +219,13 @@ Another feature edit
         );
 
         expect(repo.index.conflicts, isEmpty);
-        expect(
+
+        final lines = splitter.convert(
           File(p.join(repo.workdir, 'conflict_file')).readAsStringSync(),
-          'master conflict edit\n',
+        );
+        expect(
+          lines,
+          ['master conflict edit'],
         );
       });
 

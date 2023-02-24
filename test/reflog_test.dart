@@ -1,3 +1,4 @@
+import 'dart:convert';
 import 'dart:ffi';
 import 'dart:io';
 
@@ -11,6 +12,8 @@ void main() {
   late Repository repo;
   late RefLog reflog;
   late Directory tmpDir;
+
+  const splitter = LineSplitter();
 
   setUp(() {
     tmpDir = setupRepo(Directory(p.join('test', 'assets', 'test_repo')));
@@ -32,7 +35,9 @@ void main() {
     });
 
     test('returns the log message', () {
-      expect(reflog[0].message, "commit: add subdirectory file");
+      final message = splitter.convert(reflog[0].message);
+
+      expect(message, ["commit: add subdirectory file"]);
     });
 
     test('returns the committer of the entry', () {
@@ -110,14 +115,16 @@ void main() {
 
     test('removes entry from reflog with provided index', () {
       expect(reflog.length, 4);
-      expect(reflog[0].message, 'commit: add subdirectory file');
+
+      var message = splitter.convert(reflog[0].message);
+      expect(message, ['commit: add subdirectory file']);
 
       reflog.remove(0);
       expect(reflog.length, 3);
+
+      message = splitter.convert(reflog[0].message);
       expect(
-        reflog[0].message,
-        "merge feature: Merge made by the 'recursive' strategy.",
-      );
+          message, ["merge feature: Merge made by the 'recursive' strategy."]);
     });
 
     test('throws when trying to remove entry from reflog at invalid index', () {

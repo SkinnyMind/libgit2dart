@@ -1,3 +1,4 @@
+import 'dart:convert';
 import 'dart:io';
 
 import 'package:libgit2dart/libgit2dart.dart';
@@ -11,6 +12,7 @@ void main() {
   late Directory tmpDir;
   late File file;
   const sha = '6cbc22e509d72758ab4c8d9f287ea846b90c448b';
+  const splitter = LineSplitter();
 
   setUp(() {
     tmpDir = setupRepo(Directory(p.join('test', 'assets', 'test_repo')));
@@ -22,36 +24,40 @@ void main() {
     tmpDir.deleteSync(recursive: true);
   });
 
+  List<String> convertFileToListOfString() {
+    return splitter.convert(file.readAsStringSync());
+  }
+
   group('Reset', () {
     test('resets with hard', () {
-      expect(file.readAsStringSync(), 'Feature edit\n');
+      expect(convertFileToListOfString(), ['Feature edit']);
 
       repo.reset(oid: repo[sha], resetType: GitReset.hard);
       expect(file.readAsStringSync(), isEmpty);
     });
 
     test('resets with soft', () {
-      expect(file.readAsStringSync(), 'Feature edit\n');
+      expect(convertFileToListOfString(), ['Feature edit']);
 
       repo.reset(oid: repo[sha], resetType: GitReset.soft);
-      expect(file.readAsStringSync(), 'Feature edit\n');
+      expect(convertFileToListOfString(), ['Feature edit']);
 
       final diff = Diff.indexToWorkdir(repo: repo, index: repo.index);
       expect(diff.deltas, isEmpty);
     });
 
     test('resets with mixed', () {
-      expect(file.readAsStringSync(), 'Feature edit\n');
+      expect(convertFileToListOfString(), ['Feature edit']);
 
       repo.reset(oid: repo[sha], resetType: GitReset.mixed);
-      expect(file.readAsStringSync(), 'Feature edit\n');
+      expect(convertFileToListOfString(), ['Feature edit']);
 
       final diff = Diff.indexToWorkdir(repo: repo, index: repo.index);
       expect(diff.deltas.length, 1);
     });
 
     test('resets with provided checkout options', () {
-      expect(file.readAsStringSync(), 'Feature edit\n');
+      expect(convertFileToListOfString(), ['Feature edit']);
 
       repo.reset(
         oid: repo[sha],
@@ -60,7 +66,7 @@ void main() {
         pathspec: ['feature_file'],
       );
 
-      expect(file.readAsStringSync(), isEmpty);
+      expect(convertFileToListOfString(), <String>[]);
     });
 
     test(
