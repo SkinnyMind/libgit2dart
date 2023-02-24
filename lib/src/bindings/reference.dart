@@ -449,5 +449,31 @@ Pointer<git_reference> duplicate(Pointer<git_reference> source) {
   return result;
 }
 
+/// Lookup a reference by name and resolve immediately to OID.
+///
+/// This function provides a quick way to resolve a reference name straight
+/// through to the object id that it refers to.  This avoids having to
+/// allocate or free any `git_reference` objects for simple situations.
+///
+/// The name will be checked for validity.
+/// See [createSymbolic] for rules about valid names.
+///
+/// Throws a [LibGit2Error] if error occured.
+Pointer<git_oid> nameToId({
+  required Pointer<git_repository> repoPointer,
+  required String refName,
+}) {
+  final result = calloc<git_oid>();
+  final nameC = refName.toChar();
+
+  final error = libgit2.git_reference_name_to_id(result, repoPointer, nameC);
+
+  if (error < 0) {
+    throw LibGit2Error(libgit2.git_error_last());
+  } else {
+    return result;
+  }
+}
+
 /// Free the given reference.
 void free(Pointer<git_reference> ref) => libgit2.git_reference_free(ref);

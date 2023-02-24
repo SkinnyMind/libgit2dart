@@ -530,6 +530,11 @@ void main() {
       );
     });
 
+    test('get oid by name', () {
+      final oid = Reference.nameToId(repo: repo, refName: 'HEAD');
+      expect(oid, repo.head.target);
+    });
+
     test('manually releases allocated memory', () {
       final ref = Reference.lookup(repo: repo, name: 'refs/heads/master');
       expect(() => ref.free(), returnsNormally);

@@ -339,6 +339,11 @@ class Repository extends Equatable {
     );
   }
 
+  /// Retrieve the commit that HEAD is currently pointing to
+  Commit get headCommit {
+    return Commit.lookup(repo: this, oid: head.target);
+  }
+
   /// Removes all the metadata associated with an ongoing command like
   /// merge, revert, cherry-pick, etc. For example: MERGE_HEAD, MERGE_MSG, etc.
   ///

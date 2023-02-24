@@ -246,6 +246,10 @@ void main() {
       expect(() => repo.free(), returnsNormally);
     });
 
+    test('get head commit', () {
+      expect(repo.headCommit.oid.sha, lastCommit);
+    });
+
     test('returns string representation of Repository object', () {
       expect(repo.toString(), contains('Repository{'));
     });

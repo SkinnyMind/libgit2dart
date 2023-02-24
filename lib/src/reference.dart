@@ -191,6 +191,24 @@ class Reference extends Equatable {
     bindings.ensureLog(repoPointer: repo.pointer, refName: refName);
   }
 
+  /// Lookup a reference by name and resolve immediately to OID.
+  ///
+  /// This function provides a quick way to resolve a reference name straight
+  /// through to the object id that it refers to.  This avoids having to
+  /// allocate or free any `git_reference` objects for simple situations.
+  ///
+  /// The name will be checked for validity.
+  /// See [createSymbolic] for rules about valid names.
+  ///
+  /// Throws a [LibGit2Error] if error occured.
+  static Oid nameToId({
+    required Repository repo,
+    required String refName,
+  }) {
+    final res = bindings.nameToId(repoPointer: repo.pointer, refName: refName);
+    return Oid(res);
+  }
+
   /// Creates a copy of an existing reference.
   Reference duplicate() => Reference(bindings.duplicate(_refPointer));
 
